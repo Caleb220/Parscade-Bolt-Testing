@@ -20,7 +20,7 @@ import { env } from '@/config/env';
  * - No domain-specific restrictions in client configuration
  * - Supabase handles CORS and domain validation on the server side
  */
-export const supabase = createClient(env.supabase.url, env.supabase.anonKey, {
+export const supabase = createClient(env.VITE_SUPABASE_URL, env.VITE_SUPABASE_ANON_KEY, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
