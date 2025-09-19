@@ -88,7 +88,7 @@ const signOutFunctionSchema = z.function({
   output: asyncVoid,
 });
 
-/** Single email async function signature (reset/resend confirmation). */
+/** Single email async function signature (resend confirmation). */
 const singleEmailAsyncFunctionSchema = z.function({
   input: [emailSchema],
   output: asyncVoid,
@@ -107,7 +107,6 @@ export const authContextSchema = authStateSchema.extend({
   signIn: signInFunctionSchema,
   signUp: signUpFunctionSchema,
   signOut: signOutFunctionSchema,
-  resetPassword: singleEmailAsyncFunctionSchema,
   resendConfirmationEmail: singleEmailAsyncFunctionSchema,
   clearError: clearErrorFunctionSchema,
 });

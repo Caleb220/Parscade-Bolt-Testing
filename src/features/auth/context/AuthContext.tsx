@@ -4,25 +4,6 @@ import { supabase } from '../../../lib/supabase';
 import type { AuthError, AuthApiError, User as SupabaseUser } from '@supabase/supabase-js';
 import { logger } from '../../../services/logger';
 import type { TypedSupabaseUser } from '../../../types/supabase';
-import { isRecoveryMode } from '../../../services/passwordResetService';
-
-// SECURITY: Recovery mode detection prevents dashboard redirects during password reset
-// This ensures users always see the password reset form when clicking recovery links
-const useRecoveryModeDetection = () => {
-  return useMemo(() => {
-    try {
-      return isRecoveryMode();
-    } catch (error) {
-      // DEFENSIVE: If recovery detection fails, assume not in recovery mode
-      // This prevents crashes while maintaining security (no false positives)
-      logger.warn('Recovery mode detection failed', {
-        context: { feature: 'auth', action: 'recoveryModeDetection' },
-        error: error instanceof Error ? error : new Error(String(error)),
-      });
-      return false;
-    }
-  }, []);
-};
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -92,9 +73,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
   const initializationRef = useRef(false);
   const authStateChangeRef = useRef<{ unsubscribe: () => void } | null>(null);
-  
-  // DEFENSIVE: Safe recovery mode detection that won't crash the app
-  const inRecoveryMode = useRecoveryModeDetection();
 
   // Memoized auth state change handler to prevent recreation on every render
   const handleAuthStateChange = useCallback(
@@ -102,16 +80,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Prevent processing during initial load to avoid double-processing
       if (!initializationRef.current) {
         return;
-      }
-
-      // CRITICAL: Check for recovery mode to prevent dashboard redirects
-      // This ensures password reset flow is not interrupted by auth state changes
-      // Use the memoized recovery mode detection from component scope
-      if (inRecoveryMode) {
-        logger.info('Auth state change during recovery mode - processing without redirects', {
-          context: { feature: 'password-reset', action: 'authStateChangeInRecovery' },
-          metadata: { event, hasSession: !!session },
-        });
       }
 
       logger.debug('Auth state change event', {
@@ -138,13 +106,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           username: typedUser.user_metadata?.full_name || undefined,
         });
         
-        // IMPORTANT: Do not redirect to dashboard during recovery mode
-        // The recovery flow will handle completion and redirects
-        if (!inRecoveryMode) {
-          logger.debug('Normal sign-in completed - ready for dashboard redirect', {
-            context: { feature: 'auth', action: 'signInComplete' },
-          });
-        }
+        logger.debug('Normal sign-in completed - ready for dashboard redirect', {
+          context: { feature: 'auth', action: 'signInComplete' },
+        });
       } else if (event === 'SIGNED_OUT') {
         dispatch({ type: 'AUTH_SIGNOUT' });
         logger.clearUserContext();
@@ -161,7 +125,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         });
       }
     },
-    [isRecoveryMode]
+    []
   );
 
   // Initialize auth state once on mount
@@ -353,66 +317,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     });
   }, []);
 
-  const resetPassword = useCallback(async (email: string): Promise<void> => {
-    try {
-      logger.info('Attempting password reset', {
-        context: { 
-          feature: 'auth', 
-          action: 'resetPassword',
-        },
-        metadata: {
-          currentOrigin: window.location.origin,
-          emailDomain: email.split('@')[1],
-        },
-      });
-      
-      // Dynamic redirect URL generation - works on any domain
-      // SECURITY: Uses current origin to prevent redirect attacks while allowing flexibility
-      const currentOrigin = window.location.origin;
-      const redirectUrl = `${currentOrigin}/reset-password`;
-      
-      const { error } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), {
-        redirectTo: redirectUrl,
-      });
-
-      if (error) {
-        logger.error('Supabase reset password error', {
-          context: { 
-            feature: 'auth', 
-            action: 'resetPasswordAPI',
-          },
-          error,
-          metadata: {
-            errorCode: 'status' in error ? error.status : 'unknown',
-            redirectUrl, // Log the redirect URL for debugging
-          },
-        });
-        
-        throw new Error(getPasswordResetErrorMessage(error));
-      }
-      
-      logger.info('Password reset email request completed successfully', {
-        context: { 
-          feature: 'auth', 
-          action: 'resetPasswordSuccess',
-        },
-        metadata: {
-          redirectUrl, // Log successful redirect URL
-        },
-      });
-    } catch (resetError) {
-      logger.error('Reset password function error', {
-        context: { feature: 'auth', action: 'resetPasswordError' },
-        error: resetError instanceof Error ? resetError : new Error(String(resetError)),
-      });
-      
-      const message = resetError instanceof Error 
-        ? resetError.message 
-        : 'Failed to send reset email. Please try again.';
-      throw new Error(message);
-    }
-  }, []);
-
   const resendConfirmationEmail = useCallback(async (email: string): Promise<void> => {
     try {
       const { error } = await supabase.auth.resend({
@@ -441,62 +345,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     signIn,
     signUp,
     signOut,
-    resetPassword,
     resendConfirmationEmail,
     clearError,
-  }), [state, signIn, signUp, signOut, resetPassword, resendConfirmationEmail, clearError]);
+  }), [state, signIn, signUp, signOut, resendConfirmationEmail, clearError]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-};
-
-/**
- * Converts Supabase password reset errors to user-friendly messages.
- */
-const getPasswordResetErrorMessage = (error: AuthError | AuthApiError): string => {
-  if ('status' in error && error.status) {
-    switch (error.status) {
-      case 500:
-        return 'Email service configuration error. Please check your Supabase email settings or contact support.';
-      case 429:
-        return 'Too many password reset requests. Please wait a few minutes before trying again.';
-      case 422:
-        return 'Invalid email address format. Please check and try again.';
-      case 400:
-        return 'Unable to send password reset email. Please verify your email address.';
-      case 404:
-        return 'Email service not configured. Please contact support.';
-      default:
-        break;
-    }
-  }
-
-  const message = error.message?.toLowerCase() || '';
-  
-  if (message.includes('internal server error') || message.includes('500')) {
-    return 'Email service is currently unavailable. Please check your Supabase configuration or try again later.';
-  }
-  
-  if (message.includes('smtp') || message.includes('email service')) {
-    return 'Email service configuration error. Please check your Supabase SMTP settings.';
-  }
-  
-  if (message.includes('rate limit')) {
-    return 'Too many password reset requests. Please wait 5 minutes before trying again.';
-  }
-  
-  if (message.includes('email not confirmed')) {
-    return 'Please confirm your email address first, then try resetting your password.';
-  }
-  
-  if (message.includes('user not found')) {
-    return 'If an account with this email exists, you will receive a password reset link.';
-  }
-  
-  if (message.includes('invalid email')) {
-    return 'Please enter a valid email address.';
-  }
-
-  return `Email service error: ${error.message || 'Please check your Supabase configuration or contact support.'}`;
 };
 
 /**

@@ -6,7 +6,7 @@ import LoadingSpinner from '@/components/atoms/LoadingSpinner';
 import ErrorBoundary from '@/components/molecules/ErrorBoundary';
 import { env } from '@/config/env';
 import AccountPage from '@/features/account/pages/AccountPage';
-import { AuthProvider, ForgotPasswordPage, ResetPasswordPage, useAuth } from '@/features/auth';
+import { AuthProvider, useAuth } from '@/features/auth';
 import { DashboardPage } from '@/features/dashboard';
 import AboutPage from '@/features/marketing/pages/AboutPage';
 import BillingPage from '@/features/marketing/pages/BillingPage';
@@ -18,7 +18,6 @@ import PrivacyPage from '@/features/marketing/pages/PrivacyPage';
 import ProductPage from '@/features/marketing/pages/ProductPage';
 import TermsPage from '@/features/marketing/pages/TermsPage';
 import { logger } from '@/services/logger';
-import { isRecoveryMode } from '@/services/passwordResetService';
 import { analytics, trackPageView } from '@/utils/analytics';
 import { defaultSEO, updateSEO } from '@/utils/seo';
 
@@ -55,7 +54,6 @@ const PublicRoute: React.FC<{ children: React.ReactNode; redirectTo?: string }> 
   redirectTo = '/dashboard' 
 }) => {
   const { isAuthenticated, isLoading } = useAuth();
-  const location = useLocation();
   
   if (isLoading) {
     return (
@@ -63,22 +61,6 @@ const PublicRoute: React.FC<{ children: React.ReactNode; redirectTo?: string }> 
         <LoadingSpinner size="lg" />
       </div>
     );
-  }
-  
-  // CRITICAL: Check for recovery mode to prevent dashboard redirects
-  // This ensures password reset flow always shows the reset form
-  const inRecoveryMode = isRecoveryMode() || 
-    location.pathname === '/reset-password' || 
-    location.pathname === '/auth/recovery' ||
-    location.search.includes('type=recovery') ||
-    location.hash.includes('type=recovery');
-  
-  if (inRecoveryMode) {
-    logger.info('Recovery mode detected - bypassing authenticated redirect', {
-      context: { feature: 'password-reset', action: 'bypassAuthRedirect' },
-      metadata: { pathname: location.pathname, search: location.search, hash: location.hash },
-    });
-    return <>{children}</>;
   }
   
   if (isAuthenticated) {
@@ -97,25 +79,6 @@ const PublicRoute: React.FC<{ children: React.ReactNode; redirectTo?: string }> 
 const RouteHandler: FC = () => {
   const location = useLocation();
   
-  // ANTI-FLICKER: Early recovery detection prevents home page from rendering
-  // This must happen before any routing decisions to avoid visual flash
-  const inRecoveryMode = useMemo(() => {
-    try {
-      return isRecoveryMode() || 
-        location.pathname === '/reset-password' || 
-        location.pathname === '/auth/recovery' ||
-        location.search.includes('type=recovery') ||
-        location.hash.includes('type=recovery');
-    } catch (error) {
-      // DEFENSIVE: If detection fails, assume not in recovery to prevent crashes
-      logger.warn('Recovery mode detection failed in RouteHandler', {
-        context: { feature: 'password-reset', action: 'routeHandlerRecoveryDetection' },
-        error: error instanceof Error ? error : new Error(String(error)),
-      });
-      return false;
-    }
-  }, [location.pathname, location.search, location.hash]);
-
   useEffect(() => {
     // Define SEO configuration for each route
     const routeSEO: Record<string, Partial<SeoConfig>> = {
@@ -163,14 +126,6 @@ const RouteHandler: FC = () => {
         title: 'Parscade',
         description: 'An unexpected error occurred.',
       },
-      '/reset-password': {
-        title: 'Parscade - Reset Password',
-        description: 'Set a new password for your Parscade account.',
-      },
-      '/forgot-password': {
-        title: 'Parscade - Forgot Password',
-        description: 'Request a password reset link for your Parscade account.',
-      },
     } as const;
 
     const currentRoute = routeSEO[location.pathname];
@@ -182,39 +137,7 @@ const RouteHandler: FC = () => {
 
     // Track page view
     trackPageView(location.pathname);
-    
-    // Log recovery mode detection
-    if (inRecoveryMode) {
-      logger.info('Recovery mode detected in app router', {
-        context: { feature: 'password-reset', action: 'recoveryModeRouting' },
-      });
-    }
-  }, [location, inRecoveryMode]);
-
-  // In recovery mode, restrict routing to only the reset password page
-  if (inRecoveryMode && location.pathname !== '/reset-password') {
-    logger.warn('Attempted navigation during recovery mode blocked', {
-      context: { feature: 'password-reset', action: 'navigationBlocked' },
-      metadata: { attemptedPath: location.pathname },
-    });
-    
-    // ANTI-FLICKER: Use React Router navigation instead of window.location
-    // This prevents page reload and maintains smooth UX
-    return null;
-  }
-  
-  // ANTI-FLICKER: Show minimal loading state during auth initialization
-  // This prevents home page from flashing before recovery mode is detected
-  if (inRecoveryMode && location.pathname === '/') {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading recovery...</p>
-        </div>
-      </div>
-    );
-  }
+  }, [location]);
   
   return (
     <AnimatePresence mode="wait">
@@ -236,20 +159,13 @@ const RouteHandler: FC = () => {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/terms" element={<TermsPage />} />
-        {/* DEDICATED RECOVERY ROUTES - Always accessible, no auth redirects */}
-        <Route path="/reset-password" element={
+        {/* DEPRECATED ROUTES - Redirect to login with support message */}
+        <Route path="/reset-password" element={<Navigate to="/login-support" replace />} />
+        <Route path="/auth/recovery" element={<Navigate to="/login-support" replace />} />
+        <Route path="/forgot-password" element={<Navigate to="/login-support" replace />} />
+        <Route path="/login-support" element={
           <PublicRoute>
-            <ResetPasswordPage />
-          </PublicRoute>
-        } />
-        <Route path="/auth/recovery" element={
-          <PublicRoute>
-            <ResetPasswordPage />
-          </PublicRoute>
-        } />
-        <Route path="/forgot-password" element={
-          <PublicRoute>
-            <ForgotPasswordPage />
+            <LoginSupportPage />
           </PublicRoute>
         } />
         <Route path="/404" element={<NotFoundPage />} />
@@ -257,6 +173,46 @@ const RouteHandler: FC = () => {
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </AnimatePresence>
+  );
+};
+
+/**
+ * Support page for users who previously used password reset
+ */
+const LoginSupportPage: React.FC = () => {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+      <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 max-w-md w-full text-center">
+        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Need Help Signing In?
+        </h1>
+        <p className="text-gray-600 mb-6">
+          Password reset is currently unavailable. For assistance with your account, please contact our support team.
+        </p>
+        <div className="space-y-3">
+          <a
+            href="mailto:admin@parscade.com?subject=Account Access Help"
+            className="inline-flex items-center justify-center w-full px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+          >
+            Contact Support
+          </a>
+          <a
+            href="/"
+            className="inline-flex items-center justify-center w-full px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+          >
+            Back to Login
+          </a>
+        </div>
+        <p className="text-xs text-gray-500 mt-4">
+          Response time: Within 24 hours
+        </p>
+      </div>
+    </div>
   );
 };
 

@@ -15,7 +15,7 @@ interface AuthFormProps {
 }
 
 const AuthForm: React.FC<AuthFormProps> = ({ mode, onModeChange, onSuccess }) => {
-  const { signIn, signUp, resetPassword, isLoading, error, clearError } = useAuth();
+  const { signIn, signUp, isLoading, error, clearError } = useAuth();
 
   const [formData, setFormData] = useState({
     email: '',
@@ -24,9 +24,6 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onModeChange, onSuccess }) =>
   });
 
   const [formErrors, setFormErrors] = useState<FormErrors>({});
-  const [showResetPassword, setShowResetPassword] = useState(false);
-  const [resetEmail, setResetEmail] = useState('');
-  const [resetSuccess, setResetSuccess] = useState(false);
   const [attemptCount, setAttemptCount] = useState(0);
 
   // Rate limiting configuration
@@ -123,30 +120,6 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onModeChange, onSuccess }) =>
     }
   }, [formData, mode, isRateLimited, validateForm, clearError, signIn, signUp, error, onSuccess]);
 
-  // Memoized reset password handler
-  const handleResetPassword = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!resetEmail.trim()) {
-      setFormErrors({ email: 'Email is required' });
-      return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(resetEmail.trim())) {
-      setFormErrors({ email: 'Please enter a valid email address' });
-      return;
-    }
-
-    try {
-      await resetPassword(resetEmail.trim());
-      setResetSuccess(true);
-      setFormErrors({});
-    } catch (resetError) {
-      setFormErrors({ general: (resetError as Error).message });
-    }
-  }, [resetEmail, resetPassword]);
-
   // Memoized input change handlers to prevent recreation
   const handleInputChange = useCallback((field: keyof typeof formData) => (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -172,100 +145,13 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onModeChange, onSuccess }) =>
   const handlePasswordChange = useCallback(handleInputChange('password'), [handleInputChange]);
   const handleFullNameChange = useCallback(handleInputChange('fullName'), [handleInputChange]);
 
-  // Memoized reset email change handler
-  const handleResetEmailChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    setResetEmail(event.target.value);
-  }, []);
-
   // Memoized mode change handlers
-  const handleShowResetPassword = useCallback(() => {
-    setShowResetPassword(true);
-    setFormErrors({});
-    clearError();
-  }, [clearError]);
-
-  const handleBackToSignIn = useCallback(() => {
-    setShowResetPassword(false);
-    setResetSuccess(false);
-    setResetEmail('');
-    setFormErrors({});
-    clearError();
-  }, [clearError]);
-
   const handleModeToggle = useCallback(() => {
     onModeChange(mode === 'signin' ? 'signup' : 'signin');
   }, [mode, onModeChange]);
 
   // Memoized form content to prevent unnecessary re-renders
   const formContent = useMemo(() => {
-    if (showResetPassword) {
-      return (
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -20 }}
-          className="w-full max-w-md"
-        >
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Reset Password</h2>
-            <p className="text-gray-600">
-              Enter your email address and we'll send you a link to reset your password.
-            </p>
-          </div>
-
-          {resetSuccess ? (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="text-center p-6 bg-green-50 rounded-lg border border-green-200"
-            >
-              <CheckCircle className="w-12 h-12 text-green-600 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-green-900 mb-2">Check your email</h3>
-              <p className="text-green-700 mb-4">
-                We've sent a password reset link to {resetEmail}
-              </p>
-              <Button variant="outline" onClick={handleBackToSignIn}>
-                Back to Sign In
-              </Button>
-            </motion.div>
-          ) : (
-            <form onSubmit={handleResetPassword} className="space-y-6">
-              <Input
-                type="email"
-                label="Email Address"
-                value={resetEmail}
-                onChange={handleResetEmailChange}
-                error={formErrors.email}
-                leftIcon={<Mail className="w-5 h-5" />}
-                placeholder="Enter your email"
-                required
-              />
-
-              {formErrors.general && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex items-center p-3 bg-red-50 border border-red-200 rounded-md"
-                >
-                  <AlertCircle className="w-5 h-5 text-red-600 mr-2 flex-shrink-0" />
-                  <span className="text-sm text-red-700">{formErrors.general}</span>
-                </motion.div>
-              )}
-
-              <div className="flex flex-col gap-4">
-                <Button type="submit" fullWidth isLoading={isLoading}>
-                  Send Reset Link
-                </Button>
-                <Button type="button" variant="outline" onClick={handleBackToSignIn}>
-                  Back to Sign In
-                </Button>
-              </div>
-            </form>
-          )}
-        </motion.div>
-      );
-    }
-
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -320,14 +206,16 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onModeChange, onSuccess }) =>
           />
 
           {mode === 'signin' && (
-            <div className="flex justify-end">
-              <button
-                type="button"
-                onClick={handleShowResetPassword}
-                className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200"
-              >
-                Forgot your password?
-              </button>
+            <div className="text-center">
+              <p className="text-sm text-gray-500">
+                Locked out?{' '}
+                <a 
+                  href="mailto:admin@parscade.com?subject=Account Access Help"
+                  className="text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200"
+                >
+                  Contact support
+                </a>
+              </p>
             </div>
           )}
 
@@ -388,23 +276,16 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onModeChange, onSuccess }) =>
       </motion.div>
     );
   }, [
-    showResetPassword,
-    resetSuccess,
-    resetEmail,
     formErrors,
     mode,
     formData,
     error,
     isLoading,
     isRateLimited,
-    handleResetPassword,
-    handleBackToSignIn,
-    handleResetEmailChange,
     handleSubmit,
     handleFullNameChange,
     handleEmailChange,
     handlePasswordChange,
-    handleShowResetPassword,
     handleModeToggle,
   ]);
 

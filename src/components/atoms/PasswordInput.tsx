@@ -1,15 +1,12 @@
 import React, { useState, forwardRef } from 'react';
 import type { InputHTMLAttributes } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { validatePassword, getPasswordStrengthLabel, getPasswordStrengthColor } from '../../utils/passwordValidation';
 import type { ComponentWithRef } from '../../types/common';
 
 interface PasswordInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
   readonly label?: string;
   readonly error?: string;
   readonly helperText?: string;
-  readonly showStrengthMeter?: boolean;
   readonly variant?: 'default' | 'filled';
 }
 
@@ -19,7 +16,6 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
       label,
       error,
       helperText,
-      showStrengthMeter = false,
       variant = 'default',
       className = '',
       id,
@@ -31,12 +27,6 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
   ) => {
     const [showPassword, setShowPassword] = useState(false);
     const inputId = id ?? `password-${Math.random().toString(36).slice(2, 11)}`;
-    
-    // NULL-SAFE: Only calculate strength when we have actual content
-    // This prevents crashes when value is undefined during initial render
-    const passwordStrength = showStrengthMeter && typeof value === 'string' && value.length > 0
-      ? validatePassword(value) 
-      : null;
 
     const baseClasses = 'block w-full pr-12 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed';
 
@@ -97,61 +87,10 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
           </button>
         </div>
 
-        {/* Password Strength Meter */}
-        <AnimatePresence>
-          {showStrengthMeter && typeof value === 'string' && value.length > 0 && passwordStrength && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.2 }}
-              className="mt-2"
-            >
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-xs text-gray-600">Password strength</span>
-                <span className={`text-xs font-medium ${
-                  passwordStrength.score >= 4 ? 'text-green-600' : 
-                  passwordStrength.score >= 3 ? 'text-yellow-600' : 'text-red-600'
-                }`}>
-                  {getPasswordStrengthLabel(passwordStrength.score)}
-                </span>
-              </div>
-              
-              <div className="flex space-x-1 mb-2">
-                {Array.from({ length: 5 }, (_, index) => (
-                  <div
-                    key={index}
-                    className={`h-1 flex-1 rounded-full transition-colors duration-300 ${
-                      index < passwordStrength.score
-                        ? getPasswordStrengthColor(passwordStrength.score)
-                        : 'bg-gray-200'
-                    }`}
-                  />
-                ))}
-              </div>
-              
-              {passwordStrength.feedback.length > 0 && (
-                <ul className="text-xs text-gray-600 space-y-1">
-                  {passwordStrength.feedback.map((feedback, index) => (
-                    <li key={index} className="flex items-center">
-                      <span className="w-1 h-1 bg-gray-400 rounded-full mr-2 flex-shrink-0" />
-                      {feedback}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </motion.div>
-          )}
-        </AnimatePresence>
-
         {error && (
-          <motion.p
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-1 text-sm text-red-600"
-          >
+          <p className="mt-1 text-sm text-red-600">
             {error}
-          </motion.p>
+          </p>
         )}
         
         {helperText && !error && (
