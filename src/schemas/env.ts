@@ -28,6 +28,8 @@ export const rawEnvSchema = z
     VITE_SUPABASE_URL: httpsUrlSchema,
     VITE_SUPABASE_ANON_KEY: secureString('VITE_SUPABASE_ANON_KEY', 20),
     VITE_ANALYTICS_KEY: optionalSecureString('VITE_ANALYTICS_KEY', 12),
+    VITE_API_BASE_URL: httpsUrlSchema.default('https://api.parscade.com'),
+    VITE_BILLING_ENABLED: z.coerce.boolean().default(false),
   })
   .catchall(z.unknown());
 
@@ -46,6 +48,16 @@ export const envSchema = z
     analytics: z
       .object({
         key: optionalSecureString('VITE_ANALYTICS_KEY', 12),
+      })
+      .strict(),
+    api: z
+      .object({
+        baseUrl: httpsUrlSchema,
+      })
+      .strict(),
+    features: z
+      .object({
+        billingEnabled: z.boolean(),
       })
       .strict(),
   })
@@ -68,6 +80,12 @@ export const buildEnv = (raw: unknown): AppEnv => {
     },
     analytics: {
       key: parsedRaw.VITE_ANALYTICS_KEY,
+    },
+    api: {
+      baseUrl: parsedRaw.VITE_API_BASE_URL,
+    },
+    features: {
+      billingEnabled: parsedRaw.VITE_BILLING_ENABLED,
     },
   });
 };

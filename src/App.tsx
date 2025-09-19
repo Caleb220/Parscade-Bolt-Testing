@@ -2,6 +2,7 @@ import React, { useEffect, useMemo } from 'react';
 import { BrowserRouter as Router, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 
+import { QueryProvider } from '@/providers/QueryProvider';
 import LoadingSpinner from '@/components/atoms/LoadingSpinner';
 import ErrorBoundary from '@/components/molecules/ErrorBoundary';
 import ProtectedRoute from '@/components/templates/ProtectedRoute';
@@ -223,11 +224,13 @@ const App: FC = () => {
 
   return (
     <ErrorBoundary fallback={<ErrorPage />}>
-      <AuthProvider>
-        <Router>
-          <RouteHandler />
-        </Router>
-      </AuthProvider>
+      <QueryProvider>
+        <AuthProvider>
+          <Router>
+            <RouteHandler />
+          </Router>
+        </AuthProvider>
+      </QueryProvider>
     </ErrorBoundary>
   );
 };
