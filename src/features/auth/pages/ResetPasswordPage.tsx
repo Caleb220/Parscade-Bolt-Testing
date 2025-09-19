@@ -497,6 +497,7 @@ const ResetPasswordPage: React.FC = () => {
                 </p>
               </div>
             </div>
+            </div>
           </motion.div>
         )}
 
