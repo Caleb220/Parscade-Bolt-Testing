@@ -141,24 +141,36 @@ export const updateAccountSettings = async (
     return fetchOrCreateAccountSettings(userId);
   }
 
-  const sanitizedUpdates = sanitizeForUpdate(updates);
-
-  const response = await supabase
-    .from(TABLE_NAME)
-    .update(sanitizedUpdates)
-    .eq('user_id', userId)
-    .select()
-    .maybeSingle();
-
-  const row = ensureMaybeSingle(response, 'Update account settings');
-
-  if (!row) {
-    const defaults = createDefaultAccountSettings(userId, updates as Partial<AccountSettings>);
-    return insertAccountSettings(defaults);
+  // For now, only profile updates are supported via API Gateway
+  if (updates.profile) {
+    try {
+      const updatedProfile = await accountApi.updateProfile({
+        fullName: updates.profile.fullName,
+        timezone: updates.profile.timezone,
+      });
+      
+      // Merge with existing settings
+      const currentSettings = await fetchOrCreateAccountSettings(userId);
+      return {
+        ...currentSettings,
+        profile: {
+          ...currentSettings.profile,
+          fullName: updatedProfile.fullName || currentSettings.profile.fullName,
+          email: updatedProfile.email,
+          timezone: updatedProfile.timezone || currentSettings.profile.timezone,
+        },
+      };
+    } catch (error) {
+      logger.error('Failed to update profile via API Gateway', {
+        context: { feature: 'account-settings', action: 'updateProfile' },
+        error: error instanceof Error ? error : new Error(String(error)),
+      });
+      throw error;
+    }
   }
 
-  const parsedRow = accountSettingsRowSchema.parse(row);
-  return mapRowToAccountSettings(parsedRow);
+  // For other sections, return current settings (to be implemented later)
+  return fetchOrCreateAccountSettings(userId, updates as Partial<AccountSettings>);
 };
 
 export const updateAccountSettingsSection = async <T extends keyof SectionSchemaMap>(
