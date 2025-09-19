@@ -309,7 +309,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Redirect to server logout endpoint for final cleanup
     // This will set Clear-Site-Data headers and redirect to login
     setTimeout(() => {
-      window.location.href = '/login?logged_out=1';
+      window.location.href = '/';
     }, 100);
   }, []);
 
