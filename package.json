@@ -12,7 +12,9 @@
     "format:fix": "prettier --write .",
     "typecheck": "tsc --noEmit",
     "preview": "vite preview",
-    "test": "echo 'No tests configured'",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run",
     "security:audit": "npm audit --production"
   },
   "dependencies": {
