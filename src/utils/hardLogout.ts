@@ -338,7 +338,8 @@ export const triggerServerLogout = (): void => {
   try {
     // Navigate to server logout endpoint which will:
     // 1. Set Clear-Site-Data headers
-    // 2. Redirect to home page
+    // 2. Add Cache-Control: no-store
+    // 3. Redirect to login with logout confirmation
     window.location.href = '/api/auth/logout';
   } catch (error) {
     logger.warn('Failed to trigger server logout', {

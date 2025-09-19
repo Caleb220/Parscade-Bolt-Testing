@@ -64,70 +64,44 @@ const MockAuthProvider: React.FC<{
   );
 };
 
-describe('LoginPage', () => {
+describe('HomePage Auth Flow', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('renders login form without errors', () => {
+  it('renders home page without errors', () => {
     render(
       <BrowserRouter>
         <MockAuthProvider>
-          <LoginPage />
+          <HomePage />
         </MockAuthProvider>
       </BrowserRouter>
     );
 
-    expect(screen.getByText('Welcome back')).toBeInTheDocument();
-    expect(screen.getByLabelText('Email Address')).toBeInTheDocument();
-    expect(screen.getByLabelText('Password')).toBeInTheDocument();
+    expect(screen.getByText(/Transform Documents into/)).toBeInTheDocument();
   });
 
-  it('shows logout success message when logged_out=1 in URL', () => {
-    render(
-      <MemoryRouter initialEntries={['/login?logged_out=1']}>
-        <MockAuthProvider>
-          <LoginPage />
-        </MockAuthProvider>
-      </MemoryRouter>
-    );
-
-    expect(screen.getByText("You've been signed out successfully")).toBeInTheDocument();
-  });
-
-  it('does not show logout message without logged_out parameter', () => {
-    render(
-      <MemoryRouter initialEntries={['/login']}>
-        <MockAuthProvider>
-          <LoginPage />
-        </MockAuthProvider>
-      </MemoryRouter>
-    );
-
-    expect(screen.queryByText("You've been signed out successfully")).not.toBeInTheDocument();
-  });
-
-  it('shows loading state when auth is loading', () => {
+  it('shows auth modal when not authenticated', () => {
     render(
       <BrowserRouter>
-        <MockAuthProvider isLoading={true}>
-          <LoginPage />
+        <MockAuthProvider>
+          <HomePage />
         </MockAuthProvider>
       </BrowserRouter>
     );
 
-    expect(screen.getByText('Checking authentication...')).toBeInTheDocument();
+    expect(screen.getByText('Join Beta Program')).toBeInTheDocument();
   });
 
-  it('provides link to join beta program for new users', () => {
+  it('shows dashboard link when authenticated', () => {
     render(
       <BrowserRouter>
-        <MockAuthProvider>
-          <LoginPage />
+        <MockAuthProvider isAuthenticated={true}>
+          <HomePage />
         </MockAuthProvider>
       </BrowserRouter>
     );
 
-    expect(screen.getByText('Join our beta program')).toBeInTheDocument();
+    expect(screen.getByText(/Welcome back/)).toBeInTheDocument();
   });
 });
