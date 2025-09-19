@@ -10,7 +10,9 @@ import {
   AboutPage,
   BillingPage,
   ContactPage,
-  ErrorPage,
   HomePage,
-
-}
+  NotFoundPage,
+  PrivacyPage,
+  ProductPage,
+  TermsPage,
+} from './features/marketing';
