@@ -5,7 +5,6 @@
 
 export const PATHS = {
   HOME: '/',
-  LOGIN: '/login',
   DASHBOARD: '/dashboard',
   ACCOUNT: '/account',
   BILLING: '/billing',
@@ -20,8 +19,7 @@ export const PATHS = {
 } as const;
 
 export const AUTH_PATHS = {
-  LOGIN: PATHS.LOGIN,
-  LOGOUT_REDIRECT: `${PATHS.LOGIN}?logged_out=1`,
+  LOGOUT_REDIRECT: `${PATHS.HOME}?logged_out=1`,
   RESET_PASSWORD: '/reset-password',
   AUTH_RECOVERY: '/auth/recovery',
   FORGOT_PASSWORD: '/forgot-password',

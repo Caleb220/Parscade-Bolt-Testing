@@ -20,7 +20,7 @@ interface ProtectedRouteProps {
  */
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
   children, 
-  redirectTo = PATHS.LOGIN
+  redirectTo = PATHS.HOME
 }) => {
   const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();

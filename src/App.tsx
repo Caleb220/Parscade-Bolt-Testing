@@ -7,7 +7,7 @@ import ErrorBoundary from '@/components/molecules/ErrorBoundary';
 import ProtectedRoute from '@/components/templates/ProtectedRoute';
 import { env } from '@/config/env';
 import AccountPage from '@/features/account/pages/AccountPage';
-import { AuthProvider, LoginPage, useAuth } from '@/features/auth';
+import { AuthProvider, useAuth } from '@/features/auth';
 import { DashboardPage } from '@/features/dashboard';
 import AboutPage from '@/features/marketing/pages/AboutPage';
 import BillingPage from '@/features/marketing/pages/BillingPage';
@@ -128,19 +128,14 @@ const RouteHandler: FC = () => {
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={
-          <PublicRoute>
-            <LoginPage />
-          </PublicRoute>
-        } />
         <Route path="/product" element={<ProductPage />} />
         <Route path="/dashboard" element={
-          <ProtectedRoute redirectTo="/login">
+          <ProtectedRoute redirectTo="/">
             <DashboardPage />
           </ProtectedRoute>
         } />
         <Route path="/account" element={
-          <ProtectedRoute redirectTo="/login">
+          <ProtectedRoute redirectTo="/">
             <AccountPage />
           </ProtectedRoute>
         } />
