@@ -215,8 +215,8 @@ const LoginSupportPage: React.FC = () => {
 const App: FC = () => {
   useEffect(() => {
     // Initialize analytics if API key is available
-    if (env.analytics.key) {
-      analytics.init(env.analytics.key);
+    if (env.analytics) {
+      analytics.init(env.analytics);
     }
     
     // Set up global request context for Sentry
