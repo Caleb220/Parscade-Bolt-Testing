@@ -1,6 +1,7 @@
 import React, { forwardRef } from 'react';
-import type { InputHTMLAttributes } from 'react';
+
 import type { ComponentWithRef } from '../../types/common';
+import type { InputHTMLAttributes } from 'react';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   readonly label?: string;

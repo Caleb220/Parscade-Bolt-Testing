@@ -1,7 +1,8 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { Home, ArrowLeft, Mail } from 'lucide-react';
+import React from 'react';
 import { Link } from 'react-router-dom';
+
 import Button from '../../../components/atoms/Button';
 import Layout from '../../../components/templates/Layout';
 

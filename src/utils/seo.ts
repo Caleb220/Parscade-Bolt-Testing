@@ -1,6 +1,7 @@
 import { seoConfigSchema } from '../schemas';
-import type { SeoConfig } from '../schemas';
 import { logWarn } from './log';
+
+import type { SeoConfig } from '../schemas';
 
 /**
  * Updates the document's SEO metadata based on the provided configuration.

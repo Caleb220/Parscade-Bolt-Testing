@@ -1,4 +1,4 @@
-import { ZodError, ZodIssue } from 'zod';
+import type { ZodError, ZodIssue } from 'zod';
 
 export const isZodError = (err: unknown): err is ZodError => !!err && typeof err === 'object' && 'issues' in (err as any);
 

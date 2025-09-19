@@ -1,8 +1,14 @@
-import React, { ReactNode } from 'react';
 import { motion } from 'framer-motion';
-import Header from '../organisms/Header';
-import Footer from '../organisms/Footer';
+
 import ErrorBoundary from '../molecules/ErrorBoundary';
+import React from 'react';
+
+
+import type { ReactNode } from 'react';
+import Footer from '../organisms/Footer';
+import Header from '../organisms/Header';
+
+import type { ReactNode } from 'react';
 
 interface LayoutProps {
   children: ReactNode;
@@ -28,5 +34,4 @@ const Layout: React.FC<LayoutProps> = ({ children, className = '' }) => {
     </ErrorBoundary>
   );
 };
-
-export default Layout;
+import React from 'react';

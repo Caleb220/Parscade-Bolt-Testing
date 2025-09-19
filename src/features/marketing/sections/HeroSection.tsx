@@ -1,9 +1,13 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Play } from 'lucide-react';
+
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import Button from '../../../components/atoms/Button';
-import { useAuth, AuthModal } from '../../auth';
+import { useAuth } from '../../auth';
+import { AuthModal } from '../../auth';
 
 
 const HeroSection: React.FC = () => {
@@ -220,5 +224,3 @@ const HeroSection: React.FC = () => {
     </>
   );
 };
-
-export default HeroSection;

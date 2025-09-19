@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ChevronDown } from 'lucide-react';
-import Button from '../atoms/Button';
+
+import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../../features/auth';
 import AuthModal from '../../features/auth/components/AuthModal';
 import UserMenu from './UserMenu';
-import { useAuth } from '../../features/auth';
+import AuthModal from '../../features/auth/components/AuthModal';
+import Button from '../atoms/Button';
 
 interface NavigationItem {
   label: string;
@@ -246,5 +249,3 @@ const Navigation: React.FC = () => {
     </>
   );
 };
-
-export default Navigation;

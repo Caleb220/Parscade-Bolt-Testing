@@ -16,8 +16,9 @@
  * - Uses TypeScript for compile-time safety
  */
 
-import { supabase } from '../lib/supabase';
 import { logger } from './logger';
+import { supabase } from '../lib/supabase';
+
 import type { AuthError, AuthApiError } from '@supabase/supabase-js';
 
 /**

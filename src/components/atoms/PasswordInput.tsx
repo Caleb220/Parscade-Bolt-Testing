@@ -1,8 +1,9 @@
-import React, { useState, forwardRef } from 'react';
-import type { InputHTMLAttributes } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Eye, EyeOff } from 'lucide-react';
+import React, { useState, forwardRef } from 'react';
+
 import { validatePassword, getPasswordStrengthLabel, getPasswordStrengthColor } from '../../utils/passwordValidation';
+
 import type { ComponentWithRef } from '../../types/common';
 
 interface PasswordInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {

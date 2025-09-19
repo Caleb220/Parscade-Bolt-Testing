@@ -1,10 +1,13 @@
-import React, { createContext, useContext, useReducer, useEffect, ReactNode, useCallback, useMemo, useRef } from 'react';
-import type { AuthState, AuthContextType, User } from '../types/authTypes';
-import { supabase } from '../../../lib/supabase';
+import React, { createContext, useContext, useReducer, useEffect, useCallback, useMemo, useRef } from 'react';
 import type { AuthError, AuthApiError, User as SupabaseUser } from '@supabase/supabase-js';
+
+import { supabase } from '../../../lib/supabase';
 import { logger } from '../../../services/logger';
-import type { TypedSupabaseUser } from '../../../types/supabase';
 import { isRecoveryMode } from '../../../services/passwordResetService';
+
+import type { ReactNode } from 'react';
+import type { AuthState, AuthContextType, User } from '../types/authTypes';
+import type { TypedSupabaseUser } from '../../../types/supabase';
 
 // SECURITY: Recovery mode detection prevents dashboard redirects during password reset
 // This ensures users always see the password reset form when clicking recovery links

@@ -1,14 +1,15 @@
-import React, { useMemo } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Users, Settings, Plus } from 'lucide-react';
-import Layout from '../../../components/templates/Layout';
+
+import React, { useMemo } from 'react';
+
 import Button from '../../../components/atoms/Button';
 import LoadingSpinner from '../../../components/atoms/LoadingSpinner';
+import Layout from '../../../components/templates/Layout';
 import { useAuth } from '../../auth';
-import AuthLoadingSkeleton from '../../../components/molecules/AuthLoadingSkeleton';
 import StatCardGrid from '../components/StatCardGrid';
-
 const DashboardPage: React.FC = () => {
+import { useAuth } from '../../auth';
   const { isEmailConfirmed, user, resendConfirmationEmail } = useAuth();
   const [isResendingEmail, setIsResendingEmail] = React.useState(false);
   const [resendSuccess, setResendSuccess] = React.useState(false);

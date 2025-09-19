@@ -1,8 +1,8 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { Target, Users, Lightbulb, Rocket } from 'lucide-react';
-import Layout from '../../../components/templates/Layout';
+import React from 'react';
 import Button from '../../../components/atoms/Button';
+import Layout from '../../../components/templates/Layout';
 
 const AboutPage: React.FC = () => {
   const values = [

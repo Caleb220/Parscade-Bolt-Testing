@@ -1,4 +1,3 @@
-import React from 'react';
 import { z } from 'zod';
 
 import {
@@ -9,6 +8,8 @@ import {
   nonEmptyTextSchema,
   slugSchema,
 } from '../common';
+
+import type React from 'react';
 
 /**
  * Application user roles.

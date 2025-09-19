@@ -1,9 +1,8 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+
 import Layout from '../../../components/templates/Layout';
-import { useAuth } from '../../auth';
-import AuthLoadingSkeleton from '../../../components/molecules/AuthLoadingSkeleton';
 import AccountSettingsPanel from '../../account/components/AccountSettingsPanel';
+import { useAuth } from '../../auth';
 
 const AccountPage: React.FC = () => {
   const { user } = useAuth();

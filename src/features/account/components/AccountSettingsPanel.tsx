@@ -1,5 +1,4 @@
 
-import React, { useEffect, useMemo, useState } from 'react';
 import {
   AlertCircle,
   AlertTriangle,
@@ -17,13 +16,17 @@ import {
   Users,
   Webhook,
 } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+
 import Button from '../../../components/atoms/Button';
 import LoadingSpinner from '../../../components/atoms/LoadingSpinner';
 import { useAuth } from '../../../features/auth';
 import { supabase } from '../../../lib/supabase';
-import { useAccountSettings } from '../hooks/useAccountSettings';
 import { validatePassword as evaluatePasswordStrength } from '../../../utils/passwordValidation';
-import {
+import { formatErrorForUser } from '../../../utils/zodError';
+import { useAccountSettings } from '../hooks/useAccountSettings';
+
+import type {
   AccountSettingsSection,
   IntegrationSettings,
   NotificationSettings,
@@ -31,7 +34,6 @@ import {
   SecuritySettings,
   WebhookConfig,
 } from '../../../schemas/account/accountSettings';
-import { formatErrorForUser } from '../../../utils/zodError';
 
 interface TabProps {
   id: TabId;

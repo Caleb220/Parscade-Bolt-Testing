@@ -1,6 +1,6 @@
-import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import React from 'react';
 
 /**
  * Password Strength Indicator Component
@@ -81,7 +81,7 @@ const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps> = ({
 }) => {
   // NULL-SAFE: Handle undefined/null password and ensure we have actual content
   const safePassword = password ?? '';
-  if (safePassword.length === 0 || !strength) {
+  if (!safePassword || safePassword.length === 0 || !strength) {
     return null;
   }
 
@@ -138,7 +138,7 @@ const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps> = ({
         </div>
 
         {/* Feedback Messages */}
-        {strength.feedback.length > 0 && (
+        {strength.feedback && strength.feedback.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}

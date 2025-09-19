@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Phone, MapPin, Send, CheckCircle } from 'lucide-react';
-import Layout from '../../../components/templates/Layout';
+
+import React, { useState } from 'react';
+
 import Button from '../../../components/atoms/Button';
 import Input from '../../../components/atoms/Input';
+import Layout from '../../../components/templates/Layout';
 
 const ContactPage: React.FC = () => {
   const [formData, setFormData] = useState({

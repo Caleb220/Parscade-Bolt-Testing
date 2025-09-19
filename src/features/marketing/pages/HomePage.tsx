@@ -1,11 +1,12 @@
+import { motion } from 'framer-motion';
 import React, { Suspense, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import Layout from '../../../components/templates/Layout';
-import HeroSection from '../sections/HeroSection';
-import FeaturesSection from '../sections/FeaturesSection';
-import { AuthModal } from '../../auth';
+
 import LoadingSpinner from '../../../components/atoms/LoadingSpinner';
+import Layout from '../../../components/templates/Layout';
+import { AuthModal } from '../../auth';
+import FeaturesSection from '../sections/FeaturesSection';
+import HeroSection from '../sections/HeroSection';
 
 const PipelineCarousel = React.lazy(() => import('../components/PipelineCarousel'));
 

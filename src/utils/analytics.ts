@@ -3,11 +3,12 @@ import {
   analyticsUserSchema,
   nonEmptyTextSchema,
 } from '../schemas';
+import { logInfo, logWarn } from './log';
+
 import type {
   AnalyticsEvent,
   AnalyticsUser,
 } from '../schemas';
-import { logInfo, logWarn } from './log';
 
 /**
  * Analytics service class for tracking user events and behavior.

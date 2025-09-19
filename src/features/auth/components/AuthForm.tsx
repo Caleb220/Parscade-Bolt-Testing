@@ -1,12 +1,16 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, User, AlertCircle, CheckCircle, ArrowRight } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+
+
 import Button from '../../../components/atoms/Button';
 import Input from '../../../components/atoms/Input';
-import PasswordInput from '../../../components/atoms/PasswordInput';
-import { useAuth } from '../context/AuthContext';
-import { FormErrors } from '../types/authTypes';
 import { validatePassword } from '../../../utils/passwordValidation';
+
+import type { FormErrors } from '../types/authTypes';
+import { useAuth } from '../context/AuthContext';
+
+import type { FormErrors } from '../types/authTypes';
 
 interface AuthFormProps {
   mode: 'signin' | 'signup';

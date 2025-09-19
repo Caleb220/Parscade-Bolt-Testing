@@ -2,27 +2,31 @@ import React, { useEffect, useMemo } from 'react';
 import type { FC } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
+
 import { AuthProvider, ResetPasswordPage, ForgotPasswordPage } from './features/auth';
 import { useAuth } from './features/auth';
-import ErrorBoundary from './components/molecules/ErrorBoundary';
-import HomePage from './features/marketing/pages/HomePage';
-import ProductPage from './features/marketing/pages/ProductPage';
 import { DashboardPage } from './features/dashboard';
 import AccountPage from './features/account/pages/AccountPage';
-import BillingPage from './features/marketing/pages/BillingPage';
-import ContactPage from './features/marketing/pages/ContactPage';
-import AboutPage from './features/marketing/pages/AboutPage';
-import PrivacyPage from './features/marketing/pages/PrivacyPage';
-import TermsPage from './features/marketing/pages/TermsPage';
-import NotFoundPage from './features/marketing/pages/NotFoundPage';
-import ErrorPage from './features/marketing/pages/ErrorPage';
-import { updateSEO, defaultSEO } from './utils/seo';
+import {
+  AboutPage,
+  BillingPage,
+  ContactPage,
+  ErrorPage,
+  HomePage,
+  NotFoundPage,
+  PrivacyPage,
+  ProductPage,
+  TermsPage,
+} from './features/marketing';
+import ErrorBoundary from './components/molecules/ErrorBoundary';
+import LoadingSpinner from './components/atoms/LoadingSpinner';
+import { env } from './config/env';
 import { isRecoveryMode } from './services/passwordResetService';
-import type { SeoConfig } from './schemas';
+import { updateSEO, defaultSEO } from './utils/seo';
 import { analytics, trackPageView } from './utils/analytics';
 import { logger } from './services/logger';
-import { env } from './config/env';
-import LoadingSpinner from './components/atoms/LoadingSpinner';
+
+import type { SeoConfig } from './schemas';
 
 /**
  * Protected Route component that prevents authentication loops

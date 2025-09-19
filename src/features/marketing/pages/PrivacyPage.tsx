@@ -1,6 +1,7 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { Shield, Eye, Lock, Users } from 'lucide-react';
+import React from 'react';
+
 import Layout from '../../../components/templates/Layout';
 
 const PrivacyPage: React.FC = () => {

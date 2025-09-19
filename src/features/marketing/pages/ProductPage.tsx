@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { 
   FileText, 
@@ -10,10 +9,13 @@ import {
   Code,
   BarChart3
 } from 'lucide-react';
-import Layout from '../../../components/templates/Layout';
-import Button from '../../../components/atoms/Button';
-import { useAuth } from '../../auth';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
+
+import Button from '../../../components/atoms/Button';
+import Layout from '../../../components/templates/Layout';
+import { useAuth } from '../../auth';
+
 
 const ProductPage: React.FC = () => {
   const { isAuthenticated } = useAuth();

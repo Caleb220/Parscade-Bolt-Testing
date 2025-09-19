@@ -1,15 +1,17 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Lock, CheckCircle, AlertCircle, ArrowRight, Eye, EyeOff, Shield } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
+import { Lock, CheckCircle, AlertCircle, ArrowRight, Eye, EyeOff, Shield } from 'lucide-react';
+
 import { useAuth } from '../context/AuthContext';
-import Layout from '../../../components/templates/Layout';
 import PublicAuthLayout from '../../../components/templates/PublicAuthLayout';
 import LoadingButton from '../../../components/atoms/LoadingButton';
 import LoadingSpinner from '../../../components/atoms/LoadingSpinner';
 import PasswordStrengthIndicator from '../../../components/atoms/PasswordStrengthIndicator';
 import { supabase } from '../../../lib/supabase';
+import { logger } from '../../../services/logger';
+import { trackFormSubmit } from '../../../utils/analytics';
 import {
   extractResetTokens,
   establishRecoverySession,
@@ -18,10 +20,9 @@ import {
   isRecoveryMode,
   completeRecoveryFlow,
   validatePasswordStrength,
-  type PasswordResetTokens,
 } from '../../../services/passwordResetService';
-import { logger } from '../../../services/logger';
-import { trackFormSubmit } from '../../../utils/analytics';
+
+import type { PasswordResetTokens } from '../../../services/passwordResetService';
 
 /**
  * Zod schema for password reset form with enterprise security requirements.

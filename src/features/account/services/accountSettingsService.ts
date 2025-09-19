@@ -2,12 +2,6 @@ import { z } from 'zod';
 
 import { supabase } from '../../../lib/supabase';
 import {
-  AccountSettings,
-  AccountSettingsUpdate,
-  IntegrationSettings,
-  NotificationSettings,
-  ProfileSettings,
-  SecuritySettings,
   accountSettingsSchema,
   accountSettingsUpdateSchema,
   createDefaultAccountSettings,
@@ -17,8 +11,12 @@ import {
   profileSettingsSchema,
   securitySettingsSchema,
 } from '../../../schemas';
-import { ensureMaybeSingle, ensureSingle, pruneUndefined, SupabaseServiceError } from '../../../services/supabaseClient';
 import { logger } from '../../../services/logger';
+import { ensureMaybeSingle, ensureSingle, pruneUndefined, SupabaseServiceError } from '../../../services/supabaseClient';
+
+import type {
+  AccountSettings,
+  AccountSettingsUpdate} from '../../../schemas';
 
 const TABLE_NAME = 'account_settings';
 

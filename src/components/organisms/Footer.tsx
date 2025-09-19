@@ -1,6 +1,7 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { Github, Twitter, Linkedin, Mail } from 'lucide-react';
+import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -128,5 +129,3 @@ const Footer: React.FC = () => {
     </footer>
   );
 };
-
-export default Footer;

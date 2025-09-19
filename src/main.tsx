@@ -1,7 +1,8 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { logger } from './services/logger';
+
 import App from './App.tsx';
+import { logger } from './services/logger';
 import './index.css';
 
 console.info('🚀 Parscade application starting', {

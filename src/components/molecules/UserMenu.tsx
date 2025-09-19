@@ -1,6 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, Settings, LogOut, ChevronDown } from 'lucide-react';
+
+import React, { useState, useRef, useEffect } from 'react';
+
 import { useAuth } from '../../features/auth';
 
 const UserMenu: React.FC = () => {
