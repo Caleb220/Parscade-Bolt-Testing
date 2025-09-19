@@ -91,7 +91,7 @@ const HomePage: React.FC = () => {
                 className="bg-white text-blue-600 hover:bg-gray-50 border-2 border-white shadow-lg"
               >
                 Join Beta Program
-              </button>
+              </Button>
               <Button 
                 variant="outline" 
                 size="lg"
