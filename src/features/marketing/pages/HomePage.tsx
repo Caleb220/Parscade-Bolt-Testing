@@ -1,6 +1,7 @@
 import React, { Suspense, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import Button from '../../../components/atoms/Button';
 import Layout from '../../../components/templates/Layout';
 import HeroSection from '../sections/HeroSection';
 import FeaturesSection from '../sections/FeaturesSection';
