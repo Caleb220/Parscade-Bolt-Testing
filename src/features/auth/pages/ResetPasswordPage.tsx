@@ -642,7 +642,6 @@ const ResetPasswordPage: React.FC = () => {
           </div>
         </div>
         </motion.div>
-      </motion.div>
     </PublicAuthLayout>
   );
 };
