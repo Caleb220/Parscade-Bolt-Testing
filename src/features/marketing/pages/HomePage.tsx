@@ -98,7 +98,7 @@ const HomePage: React.FC = () => {
                 className="border-2 border-white text-white hover:bg-white hover:text-blue-600 bg-transparent"
               >
                 Request Early Access
-              </button>
+              </Button>
             </div>
             <p className="text-blue-200 text-sm mt-4">
               Early access • Beta program • Shape the product with us
