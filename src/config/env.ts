@@ -1,4 +1,4 @@
-import { buildEnv } from '../schemas';
+import { buildEnv } from '@/schemas';
 
 const rawEnv = import.meta.env ?? {};
 

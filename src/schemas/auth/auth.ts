@@ -8,7 +8,7 @@ import {
   optionalHttpsUrlSchema,
   optionalTrimmedStringSchema,
   uuidSchema,
-} from '../common';
+} from '@/schemas/common';
 
 /**
  * Auth provider metadata persisted with Supabase users.

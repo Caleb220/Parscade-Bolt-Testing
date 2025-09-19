@@ -4,7 +4,7 @@ import {
   idSchema,
   nonEmptyTextSchema,
   optionalEmailSchema,
-} from './common';
+} from '@/schemas/common';
 
 /**
  * Supported analytics property value types.

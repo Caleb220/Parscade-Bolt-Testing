@@ -8,7 +8,7 @@ import {
   isoDateTimeSchema,
   nonEmptyTextSchema,
   slugSchema,
-} from '../common';
+} from '@/schemas/common';
 
 /**
  * Application user roles.
