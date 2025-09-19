@@ -1,0 +1,1143 @@
+openapi: 3.0.3
+info:
+  title: Parscade API
+  description: Enterprise document parsing and extraction API
+  version: 1.0.0
+  contact:
+    name: Parscade Support
+    email: support@parscade.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.parscade.com
+    description: Production server
+  - url: https://staging-api.parscade.com
+    description: Staging server
+  - url: http://localhost:8000
+    description: Development server
+
+security:
+  - bearerAuth: []
+
+paths:
+  # Health Check Endpoints
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Basic health check
+      description: Returns the current health status of the API Gateway
+      security: []
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /ready:
+    get:
+      tags:
+        - Health
+      summary: Readiness check
+      description: Comprehensive readiness check including dependency status
+      security: []
+      responses:
+        '200':
+          description: Service is ready
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadinessResponse'
+        '503':
+          description: Service is not ready
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadinessResponse'
+
+  # Authentication Endpoints
+  /v1/auth/callback:
+    post:
+      tags:
+        - Authentication
+      summary: Handle authentication callback
+      description: Process authentication callback from Supabase
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                access_token:
+                  type: string
+                  description: JWT access token from Supabase
+                refresh_token:
+                  type: string
+                  description: Refresh token from Supabase
+              required:
+                - access_token
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Authentication failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # User Account Endpoints
+  /v1/account/me:
+    get:
+      tags:
+        - Account
+      summary: Get current user profile
+      description: Retrieve the authenticated user's profile information
+      responses:
+        '200':
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    patch:
+      tags:
+        - Account
+      summary: Update user profile
+      description: Update the authenticated user's profile information
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileRequest'
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '400':
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Account
+      summary: Delete user account
+      description: Initiate deletion of the authenticated user's account
+      responses:
+        '200':
+          description: Account deletion initiated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Account deletion initiated. You will receive a confirmation email.
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # Upload Endpoints
+  /v1/uploads/sign:
+    post:
+      tags:
+        - Uploads
+      summary: Generate signed upload URL
+      description: Generate a pre-signed URL for direct document upload to object storage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignedUploadRequest'
+      responses:
+        '200':
+          description: Signed URL generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignedUploadResponse'
+        '400':
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/uploads/{storageKey}/complete:
+    post:
+      tags:
+        - Uploads
+      summary: Complete upload
+      description: Confirm completion of document upload and create document record
+      parameters:
+        - name: storageKey
+          in: path
+          required: true
+          description: The storage key for the uploaded file
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteUploadRequest'
+      responses:
+        '201':
+          description: Upload completed and document created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '400':
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # Document Endpoints
+  /v1/documents:
+    get:
+      tags:
+        - Documents
+      summary: List user documents
+      description: Retrieve a paginated list of documents for the authenticated user
+      parameters:
+        - name: page
+          in: query
+          description: Page number (1-based)
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: status
+          in: query
+          description: Filter by document status
+          schema:
+            $ref: '#/components/schemas/DocumentStatus'
+        - name: search
+          in: query
+          description: Search in document names
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Documents retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentList'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/documents/{documentId}:
+    get:
+      tags:
+        - Documents
+      summary: Get document details
+      description: Retrieve detailed information about a specific document
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          description: Document ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Document retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '404':
+          description: Document not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Documents
+      summary: Delete document
+      description: Delete a document and all associated data
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          description: Document ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Document deleted successfully
+        '404':
+          description: Document not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/documents/{documentId}/download:
+    get:
+      tags:
+        - Documents
+      summary: Download document
+      description: Generate a pre-signed URL for downloading the original document
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          description: Document ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Download URL generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  downloadUrl:
+                    type: string
+                    format: uri
+                    description: Pre-signed download URL
+                  expiresAt:
+                    type: string
+                    format: date-time
+                    description: URL expiration timestamp
+        '404':
+          description: Document not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # Job Endpoints
+  /v1/jobs:
+    get:
+      tags:
+        - Jobs
+      summary: List user jobs
+      description: Retrieve a paginated list of jobs for the authenticated user
+      parameters:
+        - name: page
+          in: query
+          description: Page number (1-based)
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: status
+          in: query
+          description: Filter by job status
+          schema:
+            $ref: '#/components/schemas/JobStatus'
+        - name: type
+          in: query
+          description: Filter by job type
+          schema:
+            $ref: '#/components/schemas/JobType'
+      responses:
+        '200':
+          description: Jobs retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobList'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      tags:
+        - Jobs
+      summary: Create new job
+      description: Submit a new document processing job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateJobRequest'
+      responses:
+        '201':
+          description: Job created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+        '400':
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/jobs/{jobId}:
+    get:
+      tags:
+        - Jobs
+      summary: Get job details
+      description: Retrieve detailed information about a specific job
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          description: Job ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Job retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+        '404':
+          description: Job not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Jobs
+      summary: Cancel job
+      description: Cancel a pending or running job
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          description: Job ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Job cancelled successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+        '404':
+          description: Job not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Job cannot be cancelled (already completed or failed)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # Admin Endpoints (feature-flagged)
+  /v1/admin/users:
+    get:
+      tags:
+        - Admin
+      summary: List all users (Admin only)
+      description: Retrieve a paginated list of all users (admin access required)
+      parameters:
+        - name: page
+          in: query
+          description: Page number (1-based)
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: role
+          in: query
+          description: Filter by user role
+          schema:
+            $ref: '#/components/schemas/UserRole'
+      responses:
+        '200':
+          description: Users retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserList'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Admin access required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/admin/jobs:
+    get:
+      tags:
+        - Admin
+      summary: List all jobs (Admin only)
+      description: Retrieve a paginated list of all jobs across all users (admin access required)
+      parameters:
+        - name: page
+          in: query
+          description: Page number (1-based)
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: status
+          in: query
+          description: Filter by job status
+          schema:
+            $ref: '#/components/schemas/JobStatus'
+        - name: userId
+          in: query
+          description: Filter by user ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Jobs retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobList'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Admin access required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Supabase JWT token
+
+  schemas:
+    # Health Schemas
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: ok
+        timestamp:
+          type: string
+          format: date-time
+        uptime:
+          type: number
+          description: Server uptime in seconds
+        version:
+          type: string
+          example: 1.0.0
+      required:
+        - status
+        - timestamp
+        - uptime
+        - version
+
+    ReadinessResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [ready, not_ready]
+        services:
+          type: object
+          properties:
+            database:
+              type: string
+              enum: [healthy, unhealthy, not_configured]
+            redis:
+              type: string
+              enum: [healthy, unhealthy, not_configured]
+            storage:
+              type: string
+              enum: [healthy, unhealthy, not_configured]
+          required:
+            - database
+            - redis
+            - storage
+      required:
+        - status
+        - services
+
+    # Authentication Schemas
+    AuthResponse:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/UserProfile'
+        session:
+          type: object
+          properties:
+            access_token:
+              type: string
+            refresh_token:
+              type: string
+            expires_at:
+              type: string
+              format: date-time
+      required:
+        - user
+        - session
+
+    # User Schemas
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        fullName:
+          type: string
+          nullable: true
+        avatarUrl:
+          type: string
+          format: uri
+          nullable: true
+        timezone:
+          type: string
+          default: UTC
+        emailVerified:
+          type: boolean
+        role:
+          $ref: '#/components/schemas/UserRole'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - email
+        - timezone
+        - emailVerified
+        - role
+        - createdAt
+        - updatedAt
+
+    UpdateProfileRequest:
+      type: object
+      properties:
+        fullName:
+          type: string
+          nullable: true
+        timezone:
+          type: string
+      additionalProperties: false
+
+    UserRole:
+      type: string
+      enum: [admin, user]
+
+    UserList:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserProfile'
+        pagination:
+          $ref: '#/components/schemas/PaginationMetadata'
+      required:
+        - users
+        - pagination
+
+    # Upload Schemas
+    SignedUploadRequest:
+      type: object
+      properties:
+        fileName:
+          type: string
+          description: Original file name
+        mimeType:
+          type: string
+          description: MIME type of the file
+        size:
+          type: integer
+          minimum: 1
+          description: File size in bytes
+      required:
+        - fileName
+        - mimeType
+        - size
+
+    SignedUploadResponse:
+      type: object
+      properties:
+        uploadUrl:
+          type: string
+          format: uri
+          description: Pre-signed upload URL
+        storageKey:
+          type: string
+          description: Unique storage key for the file
+        expiresAt:
+          type: string
+          format: date-time
+          description: Upload URL expiration timestamp
+      required:
+        - uploadUrl
+        - storageKey
+        - expiresAt
+
+    CompleteUploadRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Display name for the document
+        metadata:
+          type: object
+          description: Additional metadata for the document
+          additionalProperties: true
+      required:
+        - name
+
+    # Document Schemas
+    Document:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        name:
+          type: string
+          description: Display name of the document
+        originalName:
+          type: string
+          description: Original file name
+        mimeType:
+          type: string
+          description: MIME type of the file
+        size:
+          type: integer
+          description: File size in bytes
+        storageKey:
+          type: string
+          description: Storage key for the file
+        status:
+          $ref: '#/components/schemas/DocumentStatus'
+        metadata:
+          type: object
+          description: Document metadata
+          additionalProperties: true
+        extractedText:
+          type: string
+          nullable: true
+          description: Extracted text content
+        structureData:
+          type: object
+          nullable: true
+          description: Structured data extracted from document
+          additionalProperties: true
+        thumbnailKey:
+          type: string
+          nullable: true
+          description: Storage key for document thumbnail
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - userId
+        - name
+        - originalName
+        - mimeType
+        - size
+        - storageKey
+        - status
+        - metadata
+        - createdAt
+        - updatedAt
+
+    DocumentStatus:
+      type: string
+      enum: [uploading, processing, completed, failed]
+
+    DocumentList:
+      type: object
+      properties:
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/Document'
+        pagination:
+          $ref: '#/components/schemas/PaginationMetadata'
+      required:
+        - documents
+        - pagination
+
+    # Job Schemas
+    Job:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        documentId:
+          type: string
+          format: uuid
+          nullable: true
+        type:
+          $ref: '#/components/schemas/JobType'
+        status:
+          $ref: '#/components/schemas/JobStatus'
+        source:
+          $ref: '#/components/schemas/JobSource'
+        sourceUrl:
+          type: string
+          format: uri
+          nullable: true
+          description: Source URL for URL-based jobs
+        sourceKey:
+          type: string
+          nullable: true
+          description: Storage key for S3-based jobs
+        metadata:
+          type: object
+          description: Job metadata
+          additionalProperties: true
+        options:
+          type: object
+          description: Job processing options
+          additionalProperties: true
+        resultRef:
+          type: string
+          nullable: true
+          description: Reference to job results
+        error:
+          type: string
+          nullable: true
+          description: Error message if job failed
+        attempts:
+          type: integer
+          description: Number of processing attempts
+        maxAttempts:
+          type: integer
+          description: Maximum number of attempts allowed
+        progress:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: Job progress percentage
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        startedAt:
+          type: string
+          format: date-time
+          nullable: true
+        completedAt:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+        - id
+        - userId
+        - type
+        - status
+        - source
+        - metadata
+        - options
+        - attempts
+        - maxAttempts
+        - progress
+        - createdAt
+        - updatedAt
+
+    CreateJobRequest:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/JobType'
+        source:
+          $ref: '#/components/schemas/JobSource'
+        documentId:
+          type: string
+          format: uuid
+          description: Required for upload-based jobs
+        sourceUrl:
+          type: string
+          format: uri
+          description: Required for URL-based jobs
+        sourceKey:
+          type: string
+          description: Required for S3-based jobs
+        options:
+          type: object
+          description: Job processing options
+          additionalProperties: true
+          default: {}
+      required:
+        - type
+        - source
+      oneOf:
+        - properties:
+            source:
+              const: upload
+          required:
+            - documentId
+        - properties:
+            source:
+              const: url
+          required:
+            - sourceUrl
+        - properties:
+            source:
+              const: s3
+          required:
+            - sourceKey
+
+    JobType:
+      type: string
+      enum: [analyze_structure, extract_text, parse_document]
+
+    JobStatus:
+      type: string
+      enum: [cancelled, completed, failed, pending, processing]
+
+    JobSource:
+      type: string
+      enum: [s3, upload, url]
+
+    JobList:
+      type: object
+      properties:
+        jobs:
+          type: array
+          items:
+            $ref: '#/components/schemas/Job'
+        pagination:
+          $ref: '#/components/schemas/PaginationMetadata'
+      required:
+        - jobs
+        - pagination
+
+    # Common Schemas
+    PaginationMetadata:
+      type: object
+      properties:
+        page:
+          type: integer
+          minimum: 1
+        limit:
+          type: integer
+          minimum: 1
+        total:
+          type: integer
+          minimum: 0
+        totalPages:
+          type: integer
+          minimum: 0
+        hasNext:
+          type: boolean
+        hasPrevious:
+          type: boolean
+      required:
+        - page
+        - limit
+        - total
+        - totalPages
+        - hasNext
+        - hasPrevious
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error code
+        message:
+          type: string
+          description: Human-readable error message
+        details:
+          type: object
+          description: Additional error details
+          additionalProperties: true
+        timestamp:
+          type: string
+          format: date-time
+        requestId:
+          type: string
+          description: Request ID for tracking
+      required:
+        - error
+        - message
+        - timestamp
+
+tags:
+  - name: Health
+    description: Health check and readiness endpoints
+  - name: Authentication
+    description: User authentication and session management
+  - name: Account
+    description: User account management
+  - name: Uploads
+    description: File upload management
+  - name: Documents
+    description: Document management and retrieval
+  - name: Jobs
+    description: Background job management and processing
+  - name: Admin
+    description: Administrative endpoints (admin access required)
