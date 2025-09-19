@@ -485,4 +485,37 @@ class ApiClient {
   }
 }
 
+/**
+ * Type guard to check if error is an ApiError
+ */
+export const isApiError = (error: unknown): error is ApiError => {
+  return error instanceof ApiError;
+};
+
+/**
+ * Extract user-friendly message from any error
+ */
+export const getErrorMessage = (error: unknown): string => {
+  if (isApiError(error)) {
+    return error.getUserMessage();
+  }
+  
+  if (error instanceof Error) {
+    return error.message;
+  }
+  
+  return 'An unexpected error occurred';
+};
+
+/**
+ * Extract correlation ID from any error for debugging
+ */
+export const getRequestId = (error: unknown): string | undefined => {
+  if (isApiError(error)) {
+    return error.requestId;
+  }
+  
+  return undefined;
+};
+
 export const apiClient = new ApiClient();
