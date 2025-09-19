@@ -42,3 +42,5 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
 };
 
 export default FeatureCard;
+  )
+}
