@@ -9,7 +9,6 @@ import Layout from '../../../components/templates/Layout';
 import { useAuth } from '../../auth';
 import StatCardGrid from '../components/StatCardGrid';
 const DashboardPage: React.FC = () => {
-import { useAuth } from '../../auth';
   const { isEmailConfirmed, user, resendConfirmationEmail } = useAuth();
   const [isResendingEmail, setIsResendingEmail] = React.useState(false);
   const [resendSuccess, setResendSuccess] = React.useState(false);
