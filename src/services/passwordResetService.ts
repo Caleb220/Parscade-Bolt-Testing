@@ -539,9 +539,10 @@ export const completeRecoveryFlow = async (): Promise<void> => {
     // Force sign out for security
     await supabase.auth.signOut();
     
-    // Secure redirect with success state
+    // Dynamic redirect using current origin - works on any domain
     setTimeout(() => {
-      window.location.href = '/?reset=success';
+      const currentOrigin = window.location.origin;
+      window.location.href = `${currentOrigin}/?reset=success`;
     }, 1000);
   } catch (error) {
     logger.error('Error completing recovery flow', {
@@ -549,8 +550,9 @@ export const completeRecoveryFlow = async (): Promise<void> => {
       error: error instanceof Error ? error : new Error(String(error)),
     });
     
-    // Fallback: force redirect
-    window.location.href = '/?reset=error';
+    // Fallback: dynamic redirect using current origin
+    const currentOrigin = window.location.origin;
+    window.location.href = `${currentOrigin}/?reset=error`;
   }
 };
 

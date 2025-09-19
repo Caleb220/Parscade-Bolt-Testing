@@ -2,6 +2,12 @@ import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createTransport } from 'npm:nodemailer@6.9.7'
 
 const corsHeaders = {
+  // SECURITY: Allow any origin for contact form submissions
+  // This is safe because:
+  // 1. Contact forms are public-facing by nature
+  // 2. No sensitive data is returned in responses
+  // 3. Authentication is not required for this endpoint
+  // 4. Rate limiting and input validation provide protection
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',

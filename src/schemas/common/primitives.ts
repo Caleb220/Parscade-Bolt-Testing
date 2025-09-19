@@ -118,6 +118,8 @@ export const timezoneSchema = z
 
 /**
  * HTTPS URL schema that rejects insecure protocols and strips trailing slashes.
+ * SECURITY: Allows any valid HTTPS domain for flexibility while maintaining security.
+ * HTTP is only allowed for localhost/development environments.
  */
 export const httpsUrlSchema = z
   .string({ required_error: 'URL is required.' })
@@ -128,7 +130,8 @@ export const httpsUrlSchema = z
       const u = new URL(value);
       if (u.protocol === 'https:') return true;
       const host = u.hostname.toLowerCase();
-      // Allow HTTP for localhost-style development targets
+      // SECURITY: Allow HTTP only for localhost/development environments
+      // This enables local development while enforcing HTTPS in production
       if (u.protocol === 'http:' && (host === 'localhost' || host === '127.0.0.1' || host === '::1' || host.endsWith('.local'))) {
         return true;
       }
@@ -136,7 +139,7 @@ export const httpsUrlSchema = z
     } catch {
       return false;
     }
-  }, 'URL must use HTTPS (HTTP allowed for localhost).')
+  }, 'URL must use HTTPS (HTTP allowed for localhost and .local domains only).')
   .max(2048, 'URL must be 2048 characters or less.')
   .transform(dropTrailingSlashes);
 
@@ -152,6 +155,7 @@ const imagePathSchema = z
       const u = new URL(value);
       if (u.protocol === 'https:') return true;
       const host = u.hostname.toLowerCase();
+      // SECURITY: Same localhost exception as httpsUrlSchema for consistency
       if (u.protocol === 'http:' && (host === 'localhost' || host === '127.0.0.1' || host === '::1' || host.endsWith('.local'))) {
         return true;
       }
@@ -159,7 +163,7 @@ const imagePathSchema = z
     } catch {
       return false;
     }
-  }, 'Image must be HTTPS, root-relative, or HTTP on localhost during development.')
+  }, 'Image must be HTTPS, root-relative, or HTTP on localhost/.local domains during development.')
   .max(2048, 'Image path must be 2048 characters or less.');
 
 /** Optional HTTPS image URL or root-relative path schema. */

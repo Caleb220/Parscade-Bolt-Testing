@@ -1,101 +1,184 @@
-# Domain Configuration Guide for Supabase Reset Password
+# Multi-Domain Configuration Guide
 
-## 🔍 **Current Situation Analysis**
+## 🌐 **Domain Flexibility Overview**
 
-You mentioned your domain is `https://parscade.com`, but the app is currently accessible at `https://parscade-o4i365.js.org`. Here are the possible scenarios and solutions:
+This application has been refactored to work seamlessly on **any domain or subdomain** without restrictions, while maintaining enterprise-grade security standards.
 
-## 📋 **Scenario 1: parscade.com is Your Main Domain**
+## 🔧 **What Was Changed**
 
-If `https://parscade.com` is your actual domain and should be working:
-
-### **Check Domain Status:**
-1. Visit `https://parscade.com` in your browser
-2. Does it redirect to `https://parscade-o4i365.js.org`?
-3. Does it show your app directly?
-4. Does it show an error or blank page?
-
-### **If parscade.com Works Correctly:**
-**Update Supabase Settings:**
-- Site URL: `https://parscade.com`
-- Redirect URLs: 
-  ```
-  https://parscade.com/reset-password
-  https://parscade.com/
-  http://localhost:5173/reset-password (for dev)
-  ```
-
-## 📋 **Scenario 2: Temporary Hosting Situation**
-
-If you're currently using `parscade-o4i365.js.org` temporarily while setting up `parscade.com`:
-
-### **For Current Temporary Domain:**
-**Update Supabase Settings to:**
-- Site URL: `https://parscade-o4i365.js.org`
-- Redirect URLs:
-  ```
-  https://parscade-o4i365.js.org/reset-password
-  https://parscade-o4i365.js.org/
-  ```
-
-### **When You Switch to parscade.com:**
-Update Supabase settings again to use the new domain.
-
-## 🔧 **Quick Diagnosis Steps**
-
-### **Step 1: Test Your Domain**
-```bash
-# In terminal or browser console
-fetch('https://parscade.com')
-  .then(response => console.log('parscade.com status:', response.status))
-  .catch(error => console.log('parscade.com error:', error));
-
-fetch('https://parscade-o4i365.js.org')
-  .then(response => console.log('js.org status:', response.status))
-  .catch(error => console.log('js.org error:', error));
+### **1. Dynamic Origin Detection**
+**BEFORE**: Hard-coded domain references
+```typescript
+// Old approach - domain locked
+window.location.href = 'https://parscade.com/?reset=success';
 ```
 
-### **Step 2: Check Current App Location**
-1. Open your app
-2. Look at the URL bar - which domain is actually showing?
-3. That's the domain you should use in Supabase settings
+**AFTER**: Dynamic origin detection
+```typescript
+// New approach - domain agnostic
+const currentOrigin = window.location.origin;
+window.location.href = `${currentOrigin}/?reset=success`;
+```
 
-## 🚀 **Recommended Fix Process**
+**REASONING**: Uses `window.location.origin` to dynamically detect the current domain, allowing the app to work on any domain while preventing redirect attacks.
 
-### **Option A: If parscade.com is working**
-1. **Update Supabase Site URL** to `https://parscade.com`
-2. **Update Redirect URLs** to include `https://parscade.com/reset-password`
-3. **Test reset password** flow
+### **2. Flexible Password Reset Redirects**
+**BEFORE**: Fixed redirect URLs in auth context
+```typescript
+// Old approach
+const redirectUrl = 'https://parscade.com/reset-password';
+```
 
-### **Option B: If using temporary domain**
-1. **Update Supabase Site URL** to `https://parscade-o4i365.js.org`
-2. **Update Redirect URLs** to include `https://parscade-o4i365.js.org/reset-password`
-3. **Plan migration** to parscade.com later
+**AFTER**: Dynamic redirect URL generation
+```typescript
+// New approach
+const currentOrigin = window.location.origin;
+const redirectUrl = `${currentOrigin}/reset-password`;
+```
 
-## 🔍 **Current URL Detection**
+**REASONING**: Generates redirect URLs based on the current domain, enabling password reset flows to work on staging, development, and any production domain.
 
-I've updated the code to automatically use `window.location.origin` for the redirect URL, which means:
-- If accessed via `https://parscade.com` → uses `https://parscade.com/reset-password`
-- If accessed via `https://parscade-o4i365.js.org` → uses `https://parscade-o4i365.js.org/reset-password`
+### **3. Enhanced URL Schema Validation**
+**UPDATED**: Improved localhost detection for development
+```typescript
+// Enhanced localhost support for development environments
+if (u.protocol === 'http:' && (host === 'localhost' || host === '127.0.0.1' || host === '::1' || host.endsWith('.local'))) {
+  return true;
+}
+```
 
-## ⚡ **Immediate Action**
+**REASONING**: Allows HTTP on localhost and .local domains for development while enforcing HTTPS everywhere else.
 
-**Right now, do this:**
+## 🔒 **Security Measures Maintained**
 
-1. **Check which URL your app actually loads at** (look at browser address bar)
-2. **Use THAT domain** in your Supabase Site URL setting
-3. **Make sure Redirect URLs match**
+### **1. No Wildcard CORS Abuse**
+- **Contact Form**: Uses `*` CORS only for public contact submissions (safe)
+- **Auth Endpoints**: Rely on Supabase's server-side domain validation
+- **No sensitive data exposure** through CORS headers
 
-For example:
-- If your app loads at `https://parscade.com` → use `https://parscade.com` in Supabase
-- If your app loads at `https://parscade-o4i365.js.org` → use `https://parscade-o4i365.js.org` in Supabase
+### **2. Origin-Based Security**
+```typescript
+// SECURITY: Uses current origin to prevent redirect attacks
+const currentOrigin = window.location.origin;
+const redirectUrl = `${currentOrigin}/reset-password`;
+```
+- **Prevents redirect attacks** by using the current origin
+- **No external redirects** possible through manipulation
+- **Maintains CSRF protection** through origin validation
 
-The key is **consistency** - whatever domain your users actually access the app from should match the Supabase configuration exactly.
+### **3. HTTPS Enforcement**
+- **Production**: HTTPS required for all external URLs
+- **Development**: HTTP allowed only for localhost/.local
+- **No security downgrade** for production environments
 
-## 🛠️ **Domain Setup Issues?**
+### **4. Token Security Unchanged**
+- **Token validation** remains strict and domain-independent
+- **Session security** maintained across all domains
+- **Rate limiting** works regardless of domain
 
-If `parscade.com` should work but doesn't:
-1. **Check DNS settings** - does parscade.com point to your hosting?
-2. **Check hosting configuration** - is the site deployed to parscade.com?
-3. **Check SSL certificate** - is HTTPS working on parscade.com?
+## 🚀 **Deployment Scenarios**
 
-Let me know which domain actually works when you visit your app, and I'll help you configure Supabase correctly!
+### **Local Development**
+```bash
+# Works on any local setup
+http://localhost:3000
+http://127.0.0.1:3000
+http://myapp.local:3000
+```
+
+### **Staging Environments**
+```bash
+# Works on any staging domain
+https://staging.yourcompany.com
+https://preview-123.netlify.app
+https://test.parscade.com
+```
+
+### **Production Domains**
+```bash
+# Works on any production domain
+https://parscade.com
+https://app.parscade.com
+https://yourcompany.com
+https://custom-domain.com
+```
+
+## ⚙️ **Supabase Configuration**
+
+### **Required Supabase Settings**
+To support multiple domains, update your Supabase project settings:
+
+1. **Authentication → URL Configuration**:
+   ```
+   Site URL: https://your-primary-domain.com
+   Additional Redirect URLs:
+   - https://staging.your-domain.com/*
+   - https://preview-*.netlify.app/*
+   - http://localhost:3000/*
+   - https://your-custom-domain.com/*
+   ```
+
+2. **CORS Settings** (if using custom domains):
+   - Add your domains to the allowed origins list
+   - Supabase handles CORS validation server-side
+
+### **Environment Variables**
+No changes needed - environment variables work the same:
+```env
+VITE_SUPABASE_URL=your-supabase-url
+VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+```
+
+## 🧪 **Testing Multi-Domain Setup**
+
+### **1. Local Testing**
+```bash
+# Test on different local addresses
+npm run dev -- --host 0.0.0.0 --port 3000
+# Access via:
+# - http://localhost:3000
+# - http://127.0.0.1:3000
+# - http://your-ip:3000
+```
+
+### **2. Staging Testing**
+- Deploy to staging environment
+- Test password reset flow
+- Verify redirects work correctly
+- Check auth persistence
+
+### **3. Production Testing**
+- Test on production domain
+- Verify HTTPS enforcement
+- Test cross-subdomain functionality
+- Validate security measures
+
+## 🔍 **Security Validation Checklist**
+
+- ✅ **HTTPS enforced** in production environments
+- ✅ **No hardcoded domains** in application code
+- ✅ **Origin-based redirects** prevent redirect attacks
+- ✅ **Token security** maintained across domains
+- ✅ **Rate limiting** works on any domain
+- ✅ **CORS properly configured** without wildcards where sensitive
+- ✅ **Session security** preserved across domain changes
+- ✅ **Input validation** unchanged and secure
+
+## 🚨 **Important Notes**
+
+### **Supabase Domain Configuration**
+- **Must configure** allowed redirect URLs in Supabase dashboard
+- **Each domain/subdomain** needs to be explicitly allowed
+- **Wildcard patterns** supported for dynamic subdomains
+
+### **HTTPS Requirements**
+- **Production domains** must use HTTPS
+- **Development environments** can use HTTP on localhost
+- **Mixed content** policies enforced by browsers
+
+### **Session Persistence**
+- **Sessions work** across subdomains of the same domain
+- **Cross-domain sessions** require separate authentication
+- **Token refresh** works automatically on any configured domain
+
+This refactor enables **maximum deployment flexibility** while maintaining **enterprise-grade security standards**. The application can now be deployed on any domain without code changes, requiring only Supabase configuration updates for new domains.

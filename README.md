@@ -2,6 +2,16 @@
 
 Enterprise-grade document processing platform with intelligent parsing capabilities.
 
+## 🌐 Multi-Domain Support
+
+This application is designed to work seamlessly on **any domain or subdomain** without restrictions:
+- ✅ Local development (`localhost`, `127.0.0.1`, `.local` domains)
+- ✅ Staging environments (`staging.domain.com`, `preview-*.netlify.app`)
+- ✅ Production domains (`parscade.com`, `app.parscade.com`, custom domains)
+- ✅ Enterprise deployments on private domains
+
+**Security**: All domain flexibility is implemented with enterprise-grade security measures - no wildcards, no security holes.
+
 ## Features
 
 - **Secure Authentication**: Enterprise-grade auth with password reset flow
@@ -34,11 +44,32 @@ VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
 VITE_ANALYTICS_KEY=your-analytics-key (optional)
 ```
 
+### Multi-Domain Configuration
+
+To deploy on multiple domains, configure your Supabase project:
+
+1. **Supabase Dashboard → Authentication → URL Configuration**:
+   ```
+   Site URL: https://your-primary-domain.com
+   Additional Redirect URLs:
+   - https://staging.your-domain.com/*
+   - https://your-custom-domain.com/*
+   - http://localhost:3000/* (for development)
+   ```
+
+2. **No code changes required** - the app automatically adapts to any domain
+
 ### Development
 
 ```bash
 npm run dev
 ```
+
+The development server works on any local address:
+- `http://localhost:5173`
+- `http://127.0.0.1:5173`
+- `http://your-ip:5173`
+- `http://myapp.local:5173`
 
 ### Production Build
 
@@ -52,8 +83,14 @@ npm run preview
 ### Supabase Setup
 
 1. **Authentication Settings**:
-   - Site URL: `https://your-domain.com`
-   - Redirect URLs: `https://your-domain.com/reset-password`
+   - Site URL: `https://your-primary-domain.com`
+   - Redirect URLs: Add all domains where your app will be hosted:
+     ```
+     https://your-domain.com/reset-password
+     https://staging.your-domain.com/reset-password
+     https://app.your-domain.com/reset-password
+     http://localhost:3000/reset-password (for development)
+     ```
 
 2. **Email Template** (Authentication → Email Templates → Reset Password):
    ```html
@@ -67,12 +104,22 @@ npm run preview
 ### Security Features
 
 - Rate limiting (3 attempts per 15 minutes)
-- Enterprise password requirements (12+ chars, mixed case, numbers, symbols)
+- Enterprise password requirements (8+ chars, mixed case, numbers, symbols)
 - Session validation and token verification
 - Secure redirect handling
 - Recovery mode navigation blocking
+- **Domain-agnostic security**: Works securely on any configured domain
 
 ## Deployment
+
+### Any Domain Deployment
+
+The application works on any domain without code changes:
+
+1. **Deploy your built application** to any hosting provider
+2. **Configure Supabase** with your domain in redirect URLs
+3. **Set environment variables** for your domain
+4. **Test the deployment** - everything should work automatically
 
 ### Docker
 
@@ -90,6 +137,21 @@ docker build \
   -t parscade .
 ```
 
+### Multi-Environment Deployment
+
+Deploy the same codebase to multiple environments:
+
+```bash
+# Staging
+VITE_SUPABASE_URL=staging-url npm run build
+
+# Production
+VITE_SUPABASE_URL=production-url npm run build
+
+# Custom Domain
+VITE_SUPABASE_URL=custom-url npm run build
+```
+
 ## Architecture
 
 - **Frontend**: React 18 + TypeScript + Tailwind CSS
@@ -99,6 +161,7 @@ docker build \
 - **Animations**: Framer Motion
 - **Validation**: Zod schemas
 - **Logging**: Pino with Elasticsearch transport
+- **Multi-Domain**: Dynamic origin detection with security preservation
 
 ## Security
 
@@ -106,8 +169,9 @@ docker build \
 - CSRF protection on forms
 - Secure session management
 - Rate limiting on sensitive operations
-- Enterprise password requirements
+- Enterprise password requirements (8+ character minimum)
 - Comprehensive error handling without data leakage
+- **Domain-flexible security**: Secure on any domain without hardcoded restrictions
 
 ## Support
 

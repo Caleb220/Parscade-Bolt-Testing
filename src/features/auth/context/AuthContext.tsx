@@ -326,8 +326,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         },
       });
       
-      // Use current origin for redirects to avoid domain mismatches
-      const redirectUrl = `${window.location.origin}/reset-password`;
+      // Dynamic redirect URL generation - works on any domain
+      // SECURITY: Uses current origin to prevent redirect attacks while allowing flexibility
+      const currentOrigin = window.location.origin;
+      const redirectUrl = `${currentOrigin}/reset-password`;
       
       const { error } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), {
         redirectTo: redirectUrl,
@@ -342,6 +344,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           error,
           metadata: {
             errorCode: 'status' in error ? error.status : 'unknown',
+            redirectUrl, // Log the redirect URL for debugging
           },
         });
         
@@ -352,6 +355,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         context: { 
           feature: 'auth', 
           action: 'resetPasswordSuccess',
+        },
+        metadata: {
+          redirectUrl, // Log successful redirect URL
         },
       });
     } catch (resetError) {
