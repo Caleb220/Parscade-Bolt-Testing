@@ -4,9 +4,8 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { jobsApi } from '@/lib/api';
+import { jobsApi, isApiError } from '@/lib/api';
 import { logger } from '@/services/logger';
-import { isApiError } from '@/lib/api/errors';
 
 import type { paths } from '@/types/api-types';
 
@@ -16,7 +15,7 @@ type CreateJobRequest = paths['/v1/jobs']['post']['requestBody']['content']['app
 type Job = paths['/v1/jobs']['post']['responses']['201']['content']['application/json'];
 
 /**
- * Query keys for job-related queries
+ * Query keys for job queries
  */
 export const jobKeys = {
   all: ['jobs'] as const,
@@ -33,26 +32,26 @@ export const useJobs = (params?: JobListParams) => {
   return useQuery({
     queryKey: jobKeys.list(params),
     queryFn: () => jobsApi.listJobs(params),
-    staleTime: 30 * 1000, // Jobs data can be stale for 30 seconds
+    staleTime: 30 * 1000,
   });
 };
 
 /**
- * Hook to fetch specific job details with polling for active jobs
+ * Hook to fetch job details with auto-polling for active jobs
  */
 export const useJob = (jobId: string) => {
   return useQuery({
     queryKey: jobKeys.detail(jobId),
     queryFn: () => jobsApi.getJob(jobId),
+    enabled: !!jobId,
     refetchInterval: (data) => {
       // Poll every 2 seconds for active jobs
       if (data?.status === 'pending' || data?.status === 'processing') {
         return 2000;
       }
-      // Stop polling for completed/failed/cancelled jobs
       return false;
     },
-    staleTime: 10 * 1000, // Job details can be stale for 10 seconds
+    staleTime: 10 * 1000,
   });
 };
 
@@ -65,10 +64,7 @@ export const useCreateJob = () => {
   return useMutation({
     mutationFn: (request: CreateJobRequest) => jobsApi.createJob(request),
     onSuccess: (newJob) => {
-      // Invalidate job lists to include the new job
       queryClient.invalidateQueries({ queryKey: jobKeys.lists() });
-      
-      // Add the new job to cache
       queryClient.setQueryData(jobKeys.detail(newJob.id), newJob);
 
       logger.info('Job created successfully', {
@@ -86,38 +82,7 @@ export const useCreateJob = () => {
 };
 
 /**
- * Hook to cancel a job
- */
-export const useCancelJob = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (jobId: string) => jobsApi.cancelJob(jobId),
-    onSuccess: (updatedJob) => {
-      // Update job in cache
-      queryClient.setQueryData(jobKeys.detail(updatedJob.id), updatedJob);
-      
-      // Invalidate job lists
-      queryClient.invalidateQueries({ queryKey: jobKeys.lists() });
-
-      logger.info('Job cancelled successfully', {
-        context: { feature: 'jobs', action: 'cancelJob' },
-        metadata: { jobId: updatedJob.id },
-      });
-    },
-    onError: (error, jobId) => {
-      logger.error('Failed to cancel job', {
-        context: { feature: 'jobs', action: 'cancelJob' },
-        metadata: { jobId },
-        error: error instanceof Error ? error : new Error(String(error)),
-      });
-    },
-  });
-};
-
-/**
- * Hook to submit a parsing job for an uploaded document
- * Combines document creation with job submission
+ * Hook to submit parse job for document
  */
 export const useSubmitParseJob = () => {
   const createJobMutation = useCreateJob();
@@ -133,4 +98,31 @@ export const useSubmitParseJob = () => {
       });
     },
   };
+};
+
+/**
+ * Hook to cancel a job
+ */
+export const useCancelJob = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (jobId: string) => jobsApi.cancelJob(jobId),
+    onSuccess: (updatedJob) => {
+      queryClient.setQueryData(jobKeys.detail(updatedJob.id), updatedJob);
+      queryClient.invalidateQueries({ queryKey: jobKeys.lists() });
+
+      logger.info('Job cancelled successfully', {
+        context: { feature: 'jobs', action: 'cancelJob' },
+        metadata: { jobId: updatedJob.id },
+      });
+    },
+    onError: (error, jobId) => {
+      logger.error('Failed to cancel job', {
+        context: { feature: 'jobs', action: 'cancelJob' },
+        metadata: { jobId },
+        error: error instanceof Error ? error : new Error(String(error)),
+      });
+    },
+  });
 };

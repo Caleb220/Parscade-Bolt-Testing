@@ -1,12 +1,11 @@
 /**
  * File Upload Hooks
- * React Query hooks for file upload operations with progress tracking
+ * React Query hooks for complete file upload flow
  */
 
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { uploadsApi } from '@/lib/api';
-import { jobKeys } from './useJobs';
+import { uploadsApi, isApiError } from '@/lib/api';
 import { documentKeys } from './useDocuments';
 import { logger } from '@/services/logger';
 
@@ -20,10 +19,11 @@ interface UploadProgress {
   readonly progress: number;
   readonly bytesUploaded?: number;
   readonly totalBytes?: number;
+  readonly error?: string;
 }
 
 /**
- * Comprehensive file upload hook with full flow management
+ * Comprehensive file upload hook with progress tracking
  */
 export const useFileUpload = () => {
   const queryClient = useQueryClient();
@@ -32,26 +32,21 @@ export const useFileUpload = () => {
     progress: 0,
   });
 
-  // Get signed upload URL
   const getSignedUrlMutation = useMutation({
     mutationFn: (request: SignedUploadRequest) => uploadsApi.getSignedUploadUrl(request),
   });
 
-  // Complete upload and create document record
   const completeUploadMutation = useMutation({
     mutationFn: ({ storageKey, request }: { storageKey: string; request: CompleteUploadRequest }) =>
       uploadsApi.completeUpload(storageKey, request),
     onSuccess: (document) => {
-      // Add document to cache
       queryClient.setQueryData(documentKeys.detail(document.id), document);
-      
-      // Invalidate document lists
       queryClient.invalidateQueries({ queryKey: documentKeys.lists() });
     },
   });
 
   /**
-   * Upload file with complete flow: sign → upload → complete
+   * Complete file upload flow: sign → upload → complete
    */
   const uploadFile = async (file: File, displayName?: string): Promise<string> => {
     try {
@@ -66,7 +61,7 @@ export const useFileUpload = () => {
 
       setUploadProgress({ phase: 'uploading', progress: 0, totalBytes: file.size });
 
-      // Step 2: Upload file directly to storage
+      // Step 2: Upload directly to storage
       await uploadsApi.uploadFileToSignedUrl(
         signedUpload.uploadUrl,
         file,
@@ -111,7 +106,8 @@ export const useFileUpload = () => {
       return document.id;
 
     } catch (error) {
-      setUploadProgress({ phase: 'error', progress: 0 });
+      const errorMessage = isApiError(error) ? error.getUserMessage() : 'Upload failed';
+      setUploadProgress({ phase: 'error', progress: 0, error: errorMessage });
 
       logger.error('File upload failed', {
         context: { feature: 'uploads', action: 'uploadFile' },
@@ -126,28 +122,13 @@ export const useFileUpload = () => {
   return {
     uploadFile,
     uploadProgress,
-    isUploading: uploadProgress.phase === 'signing' || uploadProgress.phase === 'uploading' || uploadProgress.phase === 'completing',
+    isUploading: ['signing', 'uploading', 'completing'].includes(uploadProgress.phase),
     reset: () => setUploadProgress({ phase: 'completed', progress: 0 }),
   };
 };
 
 /**
- * Hook for getting signed upload URL only
- */
-export const useSignedUpload = () => {
-  return useMutation({
-    mutationFn: (request: SignedUploadRequest) => uploadsApi.getSignedUploadUrl(request),
-    onError: (error) => {
-      logger.error('Failed to get signed upload URL', {
-        context: { feature: 'uploads', action: 'getSignedUrl' },
-        error: error instanceof Error ? error : new Error(String(error)),
-      });
-    },
-  });
-};
-
-/**
- * Hook for direct file upload to signed URL
+ * Hook for direct upload to signed URL only
  */
 export const useDirectUpload = () => {
   const [uploadProgress, setUploadProgress] = useState(0);

@@ -1,30 +1,102 @@
 /**
  * Enterprise API Client for Parscade Backend Integration
- * 
- * FEATURES:
- * - Auto-generated TypeScript types from OpenAPI spec
- * - Automatic Supabase JWT injection
- * - Request/response logging (dev only)
- * - Retry logic with exponential backoff
- * - Correlation ID tracking for observability
- * - Comprehensive error handling
+ * Auto-generated types from OpenAPI spec with professional error handling
  */
 
 import { supabase } from '@/lib/supabase';
 import { env } from '@/config/env';
 import { logger } from '@/services/logger';
-import { ApiError, NetworkError, ValidationError, AuthError } from './errors';
 
 import type { paths } from '@/types/api-types';
 
 /**
- * Type-safe API client configuration
+ * Extract error response type from OpenAPI paths
  */
-interface ApiClientConfig {
-  readonly baseUrl: string;
-  readonly timeout?: number;
-  readonly retryAttempts?: number;
-  readonly retryDelay?: number;
+type ErrorResponse = paths['/health']['get']['responses']['503']['content']['application/json'];
+
+/**
+ * Enterprise API Error with correlation tracking
+ */
+export class ApiError extends Error {
+  public readonly name = 'ApiError';
+  public readonly code: string;
+  public readonly statusCode: number;
+  public readonly details?: Record<string, unknown>;
+  public readonly timestamp: string;
+  public readonly requestId?: string;
+  public readonly endpoint?: string;
+
+  constructor(
+    message: string,
+    code: string,
+    statusCode: number,
+    details?: Record<string, unknown>,
+    requestId?: string,
+    endpoint?: string
+  ) {
+    super(message);
+    this.code = code;
+    this.statusCode = statusCode;
+    this.details = details;
+    this.timestamp = new Date().toISOString();
+    this.requestId = requestId;
+    this.endpoint = endpoint;
+  }
+
+  static fromResponse(
+    response: Response,
+    errorData: ErrorResponse | null,
+    endpoint?: string
+  ): ApiError {
+    const code = errorData?.error || `HTTP_${response.status}`;
+    const message = errorData?.message || response.statusText || 'An error occurred';
+    const details = errorData?.details;
+    const requestId = errorData?.requestId || response.headers.get('x-request-id') || undefined;
+
+    return new ApiError(message, code, response.status, details, requestId, endpoint);
+  }
+
+  getUserMessage(): string {
+    switch (this.code) {
+      case 'UNAUTHORIZED':
+      case 'TOKEN_EXPIRED':
+        return 'Your session has expired. Please sign in again.';
+      case 'FORBIDDEN':
+        return 'You do not have permission to perform this action.';
+      case 'NOT_FOUND':
+        return 'The requested resource was not found.';
+      case 'VALIDATION_ERROR':
+        return 'Please check your input and try again.';
+      case 'RATE_LIMIT_EXCEEDED':
+        return 'Too many requests. Please wait a moment and try again.';
+      case 'SERVER_ERROR':
+        return 'A server error occurred. Please try again later.';
+      case 'NETWORK_ERROR':
+        return 'Network connection failed. Please check your internet connection.';
+      default:
+        return this.message;
+    }
+  }
+
+  isRetryable(): boolean {
+    return (
+      this.statusCode >= 500 ||
+      this.statusCode === 429 ||
+      this.code === 'NETWORK_ERROR' ||
+      this.code === 'TIMEOUT'
+    );
+  }
+
+  getRetryDelay(): number {
+    if (this.statusCode === 429) {
+      const retryAfter = this.details?.retryAfter;
+      if (typeof retryAfter === 'number') {
+        return retryAfter * 1000;
+      }
+    }
+    
+    return Math.min(1000 * Math.pow(2, (this.details?.attempt as number) || 0), 8000);
+  }
 }
 
 /**
@@ -38,7 +110,7 @@ interface RequestOptions {
 }
 
 /**
- * Internal request context for correlation tracking
+ * Request context for correlation tracking
  */
 interface RequestContext {
   readonly method: string;
@@ -52,54 +124,37 @@ interface RequestContext {
  * Enterprise API Client Class
  */
 class ApiClient {
-  private readonly config: ApiClientConfig;
+  private readonly baseUrl: string;
+  private readonly timeout: number;
+  private readonly retryAttempts: number;
   private readonly isDevelopment: boolean;
 
-  constructor(config: ApiClientConfig) {
-    this.config = {
-      timeout: 30000,
-      retryAttempts: 3,
-      retryDelay: 1000,
-      ...config,
-    };
+  constructor() {
+    this.baseUrl = env.api.baseUrl;
+    this.timeout = 30000;
+    this.retryAttempts = 3;
     this.isDevelopment = env.mode === 'development';
   }
 
-  /**
-   * Generate unique request ID for correlation tracking
-   */
   private generateRequestId(): string {
     return `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 
-  /**
-   * Get current Supabase JWT token
-   */
   private async getAuthToken(): Promise<string | null> {
     try {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      
-      if (error) {
-        logger.warn('Failed to get auth session', {
-          context: { feature: 'api-client', action: 'getAuthToken' },
-          error,
-        });
-        return null;
-      }
-
+      const { data: { session } } = await supabase.auth.getSession();
       return session?.access_token || null;
     } catch (error) {
-      logger.error('Critical error getting auth token', {
-        context: { feature: 'api-client', action: 'getAuthToken' },
-        error: error instanceof Error ? error : new Error(String(error)),
-      });
+      if (this.isDevelopment) {
+        logger.error('Failed to get auth token', {
+          context: { feature: 'api-client', action: 'getAuthToken' },
+          error: error instanceof Error ? error : new Error(String(error)),
+        });
+      }
       return null;
     }
   }
 
-  /**
-   * Log request/response in development only
-   */
   private logRequest(context: RequestContext, response?: Response, error?: Error): void {
     if (!this.isDevelopment) return;
 
@@ -119,30 +174,20 @@ class ApiClient {
       }),
     };
 
-    if (error) {
-      logger.debug(`API Request Failed: ${context.method} ${context.url}`, {
-        metadata: logData,
-      });
-    } else {
-      logger.debug(`API Request: ${context.method} ${context.url}`, {
-        metadata: logData,
-      });
-    }
+    logger.debug(`API ${error ? 'Error' : 'Request'}: ${context.method} ${context.url}`, {
+      metadata: logData,
+    });
   }
 
-  /**
-   * Execute HTTP request with retries and error handling
-   */
   private async executeRequest(
     url: string,
     init: RequestInit,
     options: RequestOptions = {}
   ): Promise<Response> {
-    const fullUrl = url.startsWith('http') ? url : `${this.config.baseUrl}${url}`;
+    const fullUrl = url.startsWith('http') ? url : `${this.baseUrl}${url}`;
     const requestId = this.generateRequestId();
-    const maxAttempts = options.retryAttempts ?? this.config.retryAttempts ?? 3;
+    const maxAttempts = options.retryAttempts ?? this.retryAttempts;
 
-    // Build headers
     const authToken = await this.getAuthToken();
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -170,7 +215,7 @@ class ApiClient {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => {
           controller.abort();
-        }, options.timeout ?? this.config.timeout);
+        }, options.timeout ?? this.timeout);
 
         const response = await fetch(fullUrl, {
           ...init,
@@ -181,26 +226,36 @@ class ApiClient {
         clearTimeout(timeoutId);
         this.logRequest(context, response);
 
-        // Handle non-2xx responses
         if (!response.ok) {
           const errorData = await this.parseErrorResponse(response);
           const apiError = ApiError.fromResponse(response, errorData, fullUrl);
           
-          // Don't retry client errors (4xx) except 401/408/429
+          // Handle auth errors immediately
+          if (response.status === 401 || response.status === 403) {
+            // Attempt to refresh session
+            try {
+              await supabase.auth.refreshSession();
+              const newToken = await this.getAuthToken();
+              if (newToken && attempt === 1) {
+                // Retry once with new token
+                headers.Authorization = `Bearer ${newToken}`;
+                continue;
+              }
+            } catch (refreshError) {
+              // Refresh failed, redirect to home
+              window.location.href = '/';
+              throw apiError;
+            }
+          }
+
+          // Don't retry client errors except auth and rate limiting
           if (response.status >= 400 && response.status < 500) {
-            if (response.status === 401) {
-              throw new AuthError(apiError.message, response.status, requestId);
-            }
-            if (response.status === 400 && errorData?.details) {
-              throw ValidationError.fromBackendError(errorData, requestId);
-            }
-            // Only retry 408 (timeout) and 429 (rate limit) from 4xx range
             if (response.status !== 408 && response.status !== 429) {
               throw apiError;
             }
           }
 
-          // Retry for 5xx errors and specific 4xx errors
+          // Retry for server errors and specific client errors
           if (attempt < maxAttempts && (options.retryable !== false)) {
             await this.sleep(this.getRetryDelay(attempt, apiError));
             lastError = apiError;
@@ -215,14 +270,15 @@ class ApiClient {
       } catch (error) {
         this.logRequest(context, undefined, error instanceof Error ? error : new Error(String(error)));
 
-        if (error instanceof ApiError || error instanceof AuthError || error instanceof ValidationError) {
+        if (error instanceof ApiError) {
           throw error;
         }
 
-        // Handle network/fetch errors
-        const networkError = new NetworkError(
+        const networkError = new ApiError(
           `Network request failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-          error instanceof Error ? error : undefined
+          'NETWORK_ERROR',
+          0,
+          { originalError: error instanceof Error ? error.message : String(error) }
         );
 
         if (attempt < maxAttempts && options.retryable !== false) {
@@ -235,12 +291,9 @@ class ApiClient {
       }
     }
 
-    throw lastError || new NetworkError('Max retry attempts exceeded');
+    throw lastError || new ApiError('Max retry attempts exceeded', 'MAX_RETRIES', 0);
   }
 
-  /**
-   * Parse error response from backend
-   */
   private async parseErrorResponse(response: Response): Promise<ErrorResponse | null> {
     try {
       const contentType = response.headers.get('content-type');
@@ -248,36 +301,24 @@ class ApiClient {
         return await response.json();
       }
     } catch (error) {
-      logger.warn('Failed to parse error response', {
-        context: { feature: 'api-client', action: 'parseErrorResponse' },
-        error: error instanceof Error ? error : new Error(String(error)),
-      });
+      // Silently fail for error response parsing
     }
     return null;
   }
 
-  /**
-   * Calculate retry delay with exponential backoff
-   */
   private getRetryDelay(attempt: number, error?: ApiError): number {
     if (error?.getRetryDelay) {
       return error.getRetryDelay();
     }
     
-    const baseDelay = this.config.retryDelay ?? 1000;
+    const baseDelay = 1000;
     return Math.min(baseDelay * Math.pow(2, attempt - 1), 8000);
   }
 
-  /**
-   * Sleep utility for retry delays
-   */
   private sleep(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
-  /**
-   * Generic GET request
-   */
   async get<T>(
     url: string,
     params?: Record<string, string | number | boolean>,
@@ -306,9 +347,6 @@ class ApiClient {
     return this.parseResponse<T>(response);
   }
 
-  /**
-   * Generic POST request
-   */
   async post<T>(
     url: string,
     body?: unknown,
@@ -322,9 +360,6 @@ class ApiClient {
     return this.parseResponse<T>(response);
   }
 
-  /**
-   * Generic PATCH request
-   */
   async patch<T>(
     url: string,
     body?: unknown,
@@ -338,9 +373,6 @@ class ApiClient {
     return this.parseResponse<T>(response);
   }
 
-  /**
-   * Generic DELETE request
-   */
   async delete<T>(
     url: string,
     options?: RequestOptions
@@ -349,7 +381,6 @@ class ApiClient {
       method: 'DELETE',
     }, options);
 
-    // Handle 204 No Content responses
     if (response.status === 204) {
       return null as T;
     }
@@ -357,9 +388,6 @@ class ApiClient {
     return this.parseResponse<T>(response);
   }
 
-  /**
-   * Upload file directly to signed URL
-   */
   async uploadFile(
     signedUrl: string,
     file: File,
@@ -369,7 +397,6 @@ class ApiClient {
       const xhr = new XMLHttpRequest();
       const requestId = this.generateRequestId();
 
-      // Progress tracking
       if (onProgress) {
         xhr.upload.addEventListener('progress', (event) => {
           if (event.lengthComputable) {
@@ -379,7 +406,6 @@ class ApiClient {
         });
       }
 
-      // Success handler
       xhr.addEventListener('load', () => {
         if (xhr.status >= 200 && xhr.status < 300) {
           if (this.isDevelopment) {
@@ -400,15 +426,15 @@ class ApiClient {
         }
       });
 
-      // Error handler
       xhr.addEventListener('error', () => {
-        const error = new NetworkError(
-          `File upload network error: ${file.name}`
+        const error = new ApiError(
+          `File upload network error: ${file.name}`,
+          'NETWORK_ERROR',
+          0
         );
         reject(error);
       });
 
-      // Timeout handler
       xhr.addEventListener('timeout', () => {
         const error = new ApiError(
           `File upload timeout: ${file.name}`,
@@ -420,8 +446,7 @@ class ApiClient {
         reject(error);
       });
 
-      // Configure and send request
-      xhr.timeout = this.config.timeout ?? 30000;
+      xhr.timeout = this.timeout;
       xhr.open('PUT', signedUrl);
       xhr.setRequestHeader('Content-Type', file.type);
       xhr.setRequestHeader('X-Request-ID', requestId);
@@ -436,9 +461,6 @@ class ApiClient {
     });
   }
 
-  /**
-   * Parse JSON response with error handling
-   */
   private async parseResponse<T>(response: Response): Promise<T> {
     const contentType = response.headers.get('content-type');
     
@@ -463,12 +485,4 @@ class ApiClient {
   }
 }
 
-/**
- * Singleton API client instance
- */
-export const apiClient = new ApiClient({
-  baseUrl: env.api.baseUrl,
-  timeout: 30000,
-  retryAttempts: 3,
-  retryDelay: 1000,
-});
+export const apiClient = new ApiClient();

@@ -1,6 +1,6 @@
 /**
  * Account API Module
- * Generated from OpenAPI spec - Account management endpoints
+ * Auto-generated from OpenAPI spec
  */
 
 import { apiClient } from '../client';
@@ -11,7 +11,7 @@ type UpdateProfileRequest = paths['/v1/account/me']['patch']['requestBody']['con
 type DeleteAccountResponse = paths['/v1/account/me']['delete']['responses']['200']['content']['application/json'];
 
 /**
- * Account management endpoints for user profile operations
+ * Account management endpoints
  */
 export const accountApi = {
   /**
@@ -33,7 +33,7 @@ export const accountApi = {
    */
   async deleteAccount(): Promise<DeleteAccountResponse> {
     return apiClient.delete<DeleteAccountResponse>('/v1/account/me', {
-      retryable: false, // Account deletion should not be retried
+      retryable: false,
     });
   },
 } as const;

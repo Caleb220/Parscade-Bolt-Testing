@@ -1,6 +1,6 @@
 /**
  * Documents API Hooks
- * React Query hooks for document management operations
+ * React Query hooks for document management
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -14,7 +14,7 @@ type DocumentList = paths['/v1/documents']['get']['responses']['200']['content']
 type Document = paths['/v1/documents/{documentId}']['get']['responses']['200']['content']['application/json'];
 
 /**
- * Query keys for document-related queries
+ * Query keys for document queries
  */
 export const documentKeys = {
   all: ['documents'] as const,
@@ -25,13 +25,13 @@ export const documentKeys = {
 } as const;
 
 /**
- * Hook to fetch paginated list of user documents
+ * Hook to fetch user documents from API Gateway
  */
 export const useDocuments = (params?: DocumentListParams) => {
   return useQuery({
     queryKey: documentKeys.list(params),
     queryFn: () => documentsApi.listDocuments(params),
-    staleTime: 2 * 60 * 1000, // Documents can be stale for 2 minutes
+    staleTime: 2 * 60 * 1000,
   });
 };
 
@@ -42,13 +42,13 @@ export const useDocument = (documentId: string) => {
   return useQuery({
     queryKey: documentKeys.detail(documentId),
     queryFn: () => documentsApi.getDocument(documentId),
-    enabled: !!documentId, // Only run if documentId is provided
-    staleTime: 5 * 60 * 1000, // Document details can be stale for 5 minutes
+    enabled: !!documentId,
+    staleTime: 5 * 60 * 1000,
   });
 };
 
 /**
- * Hook to delete a document
+ * Hook to delete document
  */
 export const useDeleteDocument = () => {
   const queryClient = useQueryClient();
@@ -56,10 +56,7 @@ export const useDeleteDocument = () => {
   return useMutation({
     mutationFn: (documentId: string) => documentsApi.deleteDocument(documentId),
     onSuccess: (_result, documentId) => {
-      // Remove document from cache
       queryClient.removeQueries({ queryKey: documentKeys.detail(documentId) });
-      
-      // Invalidate document lists to reflect deletion
       queryClient.invalidateQueries({ queryKey: documentKeys.lists() });
 
       logger.info('Document deleted successfully', {

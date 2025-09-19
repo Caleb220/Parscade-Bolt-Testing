@@ -1,6 +1,6 @@
 /**
  * Admin API Module
- * Generated from OpenAPI spec - Admin endpoints (feature-flagged)
+ * Auto-generated from OpenAPI spec (feature-flagged)
  */
 
 import { apiClient } from '../client';
@@ -12,7 +12,7 @@ type AdminJobListParams = paths['/v1/admin/jobs']['get']['parameters']['query'];
 type JobList = paths['/v1/admin/jobs']['get']['responses']['200']['content']['application/json'];
 
 /**
- * Admin endpoints for user and job management (admin role required)
+ * Admin endpoints (admin role required)
  */
 export const adminApi = {
   /**

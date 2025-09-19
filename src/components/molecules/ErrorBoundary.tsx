@@ -1,6 +1,7 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 import Button from '../atoms/Button';
+import { isApiError, getErrorMessage, getRequestId } from '@/lib/api';
 
 interface Props {
   children: ReactNode;
@@ -23,11 +24,21 @@ class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    // Log error securely without exposing sensitive data
-    console.error('React Error Boundary caught an error:', error.message);
-    
-    if (errorInfo?.componentStack) {
-      console.error('Component stack:', errorInfo.componentStack);
+    // Handle API errors specifically
+    if (isApiError(error)) {
+      const requestId = getRequestId(error);
+      // Only log request ID in development
+      if (import.meta.env?.MODE === 'development' && requestId) {
+        console.error(`API Error [${requestId}]:`, error.getUserMessage());
+      }
+    } else {
+      // Log other errors securely in development only
+      if (import.meta.env?.MODE === 'development') {
+        console.error('React Error Boundary caught an error:', error.message);
+        if (errorInfo?.componentStack) {
+          console.error('Component stack:', errorInfo.componentStack);
+        }
+      }
     }
   }
 
@@ -49,11 +60,11 @@ class ErrorBoundary extends Component<Props, State> {
             </div>
             
             <h1 className="text-xl font-semibold text-gray-900 mb-2">
-              Something went wrong
+              {isApiError(this.state.error) ? 'Service Error' : 'Something went wrong'}
             </h1>
             
             <p className="text-gray-600 mb-6">
-              We're sorry, but something unexpected happened. Please try again.
+              {this.state.error ? getErrorMessage(this.state.error) : 'We\'re sorry, but something unexpected happened. Please try again.'}
             </p>
             
             {import.meta.env?.MODE === 'development' && this.state.error && (

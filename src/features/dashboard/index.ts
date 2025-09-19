@@ -1,2 +1,3 @@
 export { default as DashboardPage } from './pages/DashboardPage';
-export { default as StatCardGrid } from './components/StatCardGrid';
+export { default as FileUploadZone } from './components/FileUploadZone';
+export { default as JobsList } from './components/JobsList';

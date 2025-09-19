@@ -1,6 +1,6 @@
 /**
  * Health API Module
- * Generated from OpenAPI spec - Health endpoints
+ * Auto-generated from OpenAPI spec
  */
 
 import { apiClient } from '../client';
@@ -10,7 +10,7 @@ type HealthResponse = paths['/health']['get']['responses']['200']['content']['ap
 type ReadinessResponse = paths['/ready']['get']['responses']['200']['content']['application/json'];
 
 /**
- * Health check endpoints for monitoring API Gateway status
+ * Health endpoints for monitoring API status
  */
 export const healthApi = {
   /**
@@ -21,7 +21,7 @@ export const healthApi = {
   },
 
   /**
-   * Comprehensive readiness check including dependencies
+   * Comprehensive readiness check
    */
   async getReadiness(): Promise<ReadinessResponse> {
     return apiClient.get<ReadinessResponse>('/ready');

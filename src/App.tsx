@@ -10,6 +10,7 @@ import { env } from '@/config/env';
 import AccountPage from '@/features/account/pages/AccountPage';
 import { AuthProvider, useAuth } from '@/features/auth';
 import { DashboardPage } from '@/features/dashboard';
+import { JobDetailPage } from '@/features/jobs';
 import AboutPage from '@/features/marketing/pages/AboutPage';
 import BillingPage from '@/features/marketing/pages/BillingPage';
 import ContactPage from '@/features/marketing/pages/ContactPage';
@@ -133,6 +134,11 @@ const RouteHandler: FC = () => {
         <Route path="/dashboard" element={
           <ProtectedRoute redirectTo="/">
             <DashboardPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/jobs/:jobId" element={
+          <ProtectedRoute redirectTo="/">
+            <JobDetailPage />
           </ProtectedRoute>
         } />
         <Route path="/account" element={

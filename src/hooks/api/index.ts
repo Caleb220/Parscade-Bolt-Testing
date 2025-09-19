@@ -1,6 +1,6 @@
 /**
  * API Hooks Export
- * Centralized export for all API-related React Query hooks
+ * Enterprise-grade React Query hooks for Parscade Backend
  */
 
 export * from './useAccount';

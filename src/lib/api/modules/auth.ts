@@ -1,6 +1,6 @@
 /**
  * Authentication API Module
- * Generated from OpenAPI spec - Authentication endpoints
+ * Auto-generated from OpenAPI spec
  */
 
 import { apiClient } from '../client';
@@ -18,7 +18,7 @@ export const authApi = {
    */
   async callback(request: AuthCallbackRequest): Promise<AuthResponse> {
     return apiClient.post<AuthResponse>('/v1/auth/callback', request, {
-      retryable: false, // Auth operations should not be retried
+      retryable: false,
     });
   },
 } as const;

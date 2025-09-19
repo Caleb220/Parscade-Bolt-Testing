@@ -1,6 +1,6 @@
 /**
  * Jobs API Module
- * Generated from OpenAPI spec - Job management endpoints
+ * Auto-generated from OpenAPI spec
  */
 
 import { apiClient } from '../client';
@@ -12,11 +12,11 @@ type CreateJobRequest = paths['/v1/jobs']['post']['requestBody']['content']['app
 type Job = paths['/v1/jobs']['post']['responses']['201']['content']['application/json'];
 
 /**
- * Job management endpoints for document processing operations
+ * Job management endpoints for document processing
  */
 export const jobsApi = {
   /**
-   * List user jobs with pagination and filtering
+   * List user jobs with pagination
    */
   async listJobs(params?: JobListParams): Promise<JobList> {
     return apiClient.get<JobList>('/v1/jobs', params);
@@ -30,7 +30,7 @@ export const jobsApi = {
   },
 
   /**
-   * Get job details by ID
+   * Get job details and status
    */
   async getJob(jobId: string): Promise<Job> {
     return apiClient.get<Job>(`/v1/jobs/${jobId}`);
@@ -41,7 +41,19 @@ export const jobsApi = {
    */
   async cancelJob(jobId: string): Promise<Job> {
     return apiClient.delete<Job>(`/v1/jobs/${jobId}`, {
-      retryable: false, // Cancellation should not be retried
+      retryable: false,
+    });
+  },
+
+  /**
+   * Submit parse job for document
+   */
+  async submitParseJob(documentId: string, options?: Record<string, unknown>): Promise<Job> {
+    return this.createJob({
+      type: 'parse_document',
+      source: 'upload',
+      documentId,
+      options: options || {},
     });
   },
 } as const;

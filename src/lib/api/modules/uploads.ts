@@ -1,6 +1,6 @@
 /**
- * Uploads API Module
- * Generated from OpenAPI spec - File upload endpoints
+ * File Upload API Module
+ * Auto-generated from OpenAPI spec
  */
 
 import { apiClient } from '../client';
@@ -16,7 +16,7 @@ type CompleteUploadResponse = paths['/v1/uploads/{storageKey}/complete']['post']
  */
 export const uploadsApi = {
   /**
-   * Generate signed URL for direct file upload
+   * Get signed URL for direct file upload
    */
   async getSignedUploadUrl(request: SignedUploadRequest): Promise<SignedUploadResponse> {
     return apiClient.post<SignedUploadResponse>('/v1/uploads/sign', request);
@@ -36,7 +36,7 @@ export const uploadsApi = {
   },
 
   /**
-   * Upload file directly to signed URL with progress tracking
+   * Upload file to signed URL with progress tracking
    */
   async uploadFileToSignedUrl(
     signedUrl: string,

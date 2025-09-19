@@ -1,6 +1,6 @@
 /**
  * Documents API Module
- * Generated from OpenAPI spec - Document management endpoints
+ * Auto-generated from OpenAPI spec
  */
 
 import { apiClient } from '../client';
@@ -12,7 +12,7 @@ type Document = paths['/v1/documents/{documentId}']['get']['responses']['200']['
 type DownloadResponse = paths['/v1/documents/{documentId}/download']['get']['responses']['200']['content']['application/json'];
 
 /**
- * Document management endpoints for file operations
+ * Document management endpoints
  */
 export const documentsApi = {
   /**
@@ -34,12 +34,12 @@ export const documentsApi = {
    */
   async deleteDocument(documentId: string): Promise<void> {
     return apiClient.delete<void>(`/v1/documents/${documentId}`, {
-      retryable: false, // Deletion should not be retried
+      retryable: false,
     });
   },
 
   /**
-   * Generate pre-signed URL for downloading document
+   * Generate download URL for document
    */
   async getDownloadUrl(documentId: string): Promise<DownloadResponse> {
     return apiClient.get<DownloadResponse>(`/v1/documents/${documentId}/download`);

@@ -1,6 +1,4 @@
-import { z } from 'zod';
-
-import { supabase } from '../../../lib/supabase';
+import { accountApi } from '@/lib/api';
 import {
   AccountSettings,
   AccountSettingsUpdate,
@@ -8,127 +6,50 @@ import {
   NotificationSettings,
   ProfileSettings,
   SecuritySettings,
-  accountSettingsSchema,
   accountSettingsUpdateSchema,
   createDefaultAccountSettings,
-  integrationSettingsSchema,
-  notificationSettingsSchema,
-  optionalIsoDateTimeSchema,
-  profileSettingsSchema,
-  securitySettingsSchema,
 } from '../../../schemas';
-import { ensureMaybeSingle, ensureSingle, pruneUndefined, SupabaseServiceError } from '../../../services/supabaseClient';
 import { logger } from '../../../services/logger';
 
-const TABLE_NAME = 'account_settings';
-
-const supabaseTimestampSchema = optionalIsoDateTimeSchema.nullish();
-
-const accountSettingsRowSchema = z
-  .object({
-    user_id: accountSettingsSchema.shape.userId,
-    profile: profileSettingsSchema.nullable(),
-    security: securitySettingsSchema.nullable(),
-    notifications: notificationSettingsSchema.nullable(),
-    integrations: integrationSettingsSchema.nullable(),
-    created_at: supabaseTimestampSchema,
-    updated_at: supabaseTimestampSchema,
-  })
-  .strict();
-
-type AccountSettingsRow = z.infer<typeof accountSettingsRowSchema>;
-
-const mapRowToAccountSettings = (row: AccountSettingsRow): AccountSettings => {
-  const defaults = createDefaultAccountSettings(row.user_id);
-  const merged: AccountSettings = {
-    userId: row.user_id,
-    profile: row.profile ?? defaults.profile,
-    security: row.security ?? defaults.security,
-    notifications: row.notifications ?? defaults.notifications,
-    integrations: row.integrations ?? defaults.integrations,
-    createdAt: row.created_at ?? defaults.createdAt,
-    updatedAt: row.updated_at ?? defaults.updatedAt,
-  };
-
-  return accountSettingsSchema.parse(merged);
-};
-
-const sanitizeForInsert = (settings: AccountSettings) => {
-  const sanitized = accountSettingsSchema.parse(settings);
-  return pruneUndefined({
-    user_id: sanitized.userId,
-    profile: sanitized.profile,
-    security: sanitized.security,
-    notifications: sanitized.notifications,
-    integrations: sanitized.integrations,
-  });
-};
-
-const sanitizeForUpdate = (updates: AccountSettingsUpdate) => {
-  const sanitized = accountSettingsUpdateSchema.parse(updates);
-  return pruneUndefined({
-    profile: sanitized.profile,
-    security: sanitized.security,
-    notifications: sanitized.notifications,
-    integrations: sanitized.integrations,
-    updated_at: new Date().toISOString(),
-  });
-};
-
-const insertAccountSettings = async (settings: AccountSettings): Promise<AccountSettings> => {
-  const payload = sanitizeForInsert(settings);
-
-  try {
-    const response = await supabase.from(TABLE_NAME).insert(payload).select().single();
-    const data = ensureSingle(response, 'Insert account settings');
-    const parsedRow = accountSettingsRowSchema.parse(data);
-    return mapRowToAccountSettings(parsedRow);
-  } catch (error) {
-    if (error instanceof SupabaseServiceError && error.causeError.code === '23505') {
-      const existing = await fetchOrCreateAccountSettings(settings.userId);
-      return existing;
-    }
-    throw error;
-  }
-};
-
+/**
+ * Fetch or create account settings from API Gateway
+ */
 export const fetchOrCreateAccountSettings = async (
   userId: string,
   seed?: AccountSettingsUpdate,
 ): Promise<AccountSettings> => {
-  const response = await supabase
-    .from(TABLE_NAME)
-    .select('*')
-    .eq('user_id', userId)
-    .maybeSingle();
-
-  const row = ensureMaybeSingle(response, 'Fetch account settings');
-  if (row) {
+  try {
+    // Fetch from API Gateway
+    const profile = await accountApi.getProfile();
     logger.debug('Found existing account settings', {
       context: { feature: 'account-settings', action: 'fetchSettings', userId },
     });
-    const parsedRow = accountSettingsRowSchema.parse(row);
-    return mapRowToAccountSettings(parsedRow);
+    
+    // Convert API profile to AccountSettings format
+    const defaults = createDefaultAccountSettings(userId, seed as Partial<AccountSettings> | undefined);
+    return {
+      ...defaults,
+      profile: {
+        ...defaults.profile,
+        fullName: profile.fullName || defaults.profile.fullName,
+        email: profile.email,
+        timezone: profile.timezone || defaults.profile.timezone,
+      },
+    };
+  } catch (error) {
+    logger.info('Creating default account settings for new user', {
+      context: { feature: 'account-settings', action: 'createDefaults', userId },
+    });
+    
+    const sanitizedSeed = seed ? accountSettingsUpdateSchema.parse(seed) : undefined;
+    const defaults = createDefaultAccountSettings(userId, sanitizedSeed as Partial<AccountSettings> | undefined);
+    return defaults;
   }
-
-  logger.info('Creating default account settings for new user', {
-    context: { feature: 'account-settings', action: 'createDefaults', userId },
-  });
-  const sanitizedSeed = seed ? accountSettingsUpdateSchema.parse(seed) : undefined;
-  const defaults = createDefaultAccountSettings(userId, sanitizedSeed as Partial<AccountSettings> | undefined);
-  return insertAccountSettings(defaults);
 };
 
-const sectionSchemaMap = {
-  profile: profileSettingsSchema,
-  security: securitySettingsSchema,
-  notifications: notificationSettingsSchema,
-  integrations: integrationSettingsSchema,
-} as const;
-
-type SectionSchemaMap = typeof sectionSchemaMap;
-type SectionPayloadMap = { [K in keyof SectionSchemaMap]: z.infer<SectionSchemaMap[K]> };
-
+/**
+ * Update account settings via API Gateway
+ */
 export const updateAccountSettings = async (
   userId: string,
   updates: AccountSettingsUpdate,
@@ -137,42 +58,49 @@ export const updateAccountSettings = async (
     return fetchOrCreateAccountSettings(userId);
   }
 
-  const sanitizedUpdates = sanitizeForUpdate(updates);
-
-  const response = await supabase
-    .from(TABLE_NAME)
-    .update(sanitizedUpdates)
-    .eq('user_id', userId)
-    .select()
-    .maybeSingle();
-
-  const row = ensureMaybeSingle(response, 'Update account settings');
-
-  if (!row) {
-    const defaults = createDefaultAccountSettings(userId, updates as Partial<AccountSettings>);
-    return insertAccountSettings(defaults);
+  // For now, only profile updates are supported via API Gateway
+  if (updates.profile) {
+    try {
+      const updatedProfile = await accountApi.updateProfile({
+        fullName: updates.profile.fullName,
+        timezone: updates.profile.timezone,
+      });
+      
+      // Merge with existing settings
+      const currentSettings = await fetchOrCreateAccountSettings(userId);
+      return {
+        ...currentSettings,
+        profile: {
+          ...currentSettings.profile,
+          fullName: updatedProfile.fullName || currentSettings.profile.fullName,
+          email: updatedProfile.email,
+          timezone: updatedProfile.timezone || currentSettings.profile.timezone,
+        },
+      };
+    } catch (error) {
+      logger.error('Failed to update profile via API Gateway', {
+        context: { feature: 'account-settings', action: 'updateProfile' },
+        error: error instanceof Error ? error : new Error(String(error)),
+      });
+      throw error;
+    }
   }
 
-  const parsedRow = accountSettingsRowSchema.parse(row);
-  return mapRowToAccountSettings(parsedRow);
+  // For other sections, return current settings (to be implemented later)
+  return fetchOrCreateAccountSettings(userId, updates as Partial<AccountSettings>);
 };
 
-export const updateAccountSettingsSection = async <T extends keyof SectionSchemaMap>(
+/**
+ * Update specific account settings section
+ */
+export const updateAccountSettingsSection = async <T extends keyof AccountSettings>(
   userId: string,
   section: T,
-  value: SectionPayloadMap[T],
+  value: AccountSettings[T],
 ): Promise<AccountSettings> => {
-  const schema = sectionSchemaMap[section];
-  const sanitizedValue = schema.parse(value);
-  const updates = accountSettingsUpdateSchema.parse({ [section]: sanitizedValue } as AccountSettingsUpdate);
+  const updates = accountSettingsUpdateSchema.parse({ 
+    [section]: value 
+  } as AccountSettingsUpdate);
 
   return updateAccountSettings(userId, updates);
 };
-
-
-
-
-
-
-
-
