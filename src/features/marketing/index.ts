@@ -10,3 +10,4 @@ export { default as NotFoundPage } from './pages/NotFoundPage';
 export { default as ErrorPage } from './pages/ErrorPage';
 export { default as BillingPage } from './pages/BillingPage';
 export { default as HomePage } from './pages/HomePage';
+export { default as BetaCTASection } from './components/BetaCTASection';
