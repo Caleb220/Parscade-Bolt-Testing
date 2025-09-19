@@ -123,7 +123,7 @@ const ContactPage: React.FC = () => {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
-              className="lg:col-span-1"
+              className="lg:col-span-1 order-2 lg:order-1"
             >
               <h2 className="text-2xl font-bold text-gray-900 mb-8">
                 Contact Information
@@ -197,9 +197,9 @@ const ContactPage: React.FC = () => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="lg:col-span-2"
+              className="lg:col-span-2 order-1 lg:order-2"
             >
-              <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
+              <div className="bg-white rounded-2xl p-6 lg:p-8 shadow-sm border border-gray-100">
                 <h2 className="text-2xl font-bold text-gray-900 mb-8">
                   Send us a Message
                 </h2>

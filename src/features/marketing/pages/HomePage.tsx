@@ -31,7 +31,7 @@ const HomePage: React.FC = () => {
       <HeroSection />
 
       <section className="py-20 bg-white" aria-labelledby="pipeline-demo">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -42,7 +42,7 @@ const HomePage: React.FC = () => {
             <h2 id="pipeline-demo" className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
               See how it works
             </h2>
-            <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto px-4">
+            <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">
               Our intelligent pipeline transforms your documents through four seamless stages, delivering structured data ready for your applications.
             </p>
           </motion.div>
@@ -54,14 +54,14 @@ const HomePage: React.FC = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
           >
             <Suspense
-              fallback={(
+              fallback={
                 <div className="flex h-72 items-center justify-center rounded-2xl border border-dashed border-gray-300">
                   <div className="text-center">
                     <LoadingSpinner size="lg" className="mx-auto mb-4" />
                     <span className="text-sm text-gray-500">Loading interactive preview...</span>
                   </div>
                 </div>
-              )}
+              }
             >
               <PipelineCarousel />
             </Suspense>
@@ -72,7 +72,7 @@ const HomePage: React.FC = () => {
       <FeaturesSection />
 
       <section className="py-20 bg-gradient-to-br from-blue-600 to-purple-700" aria-labelledby="final-cta">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="max-w-4xl mx-auto px-6 sm:px-8 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -82,14 +82,14 @@ const HomePage: React.FC = () => {
             <h2 id="final-cta" className="text-3xl lg:text-4xl font-bold text-white mb-6">
               Join the future of document processing
             </h2>
-            <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+            <p className="text-lg sm:text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
               Be among the first to experience next-generation document parsing. Join our beta program and help shape the future of intelligent data extraction.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-50 transition-colors duration-200 shadow-lg">
+              <button className="bg-white text-blue-600 px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg hover:bg-gray-50 transition-colors duration-200 shadow-lg">
                 Join Beta Program
               </button>
-              <button className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-white hover:text-blue-600 transition-colors duration-200">
+              <button className="border-2 border-white text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg hover:bg-white hover:text-blue-600 transition-colors duration-200">
                 Request Early Access
               </button>
             </div>

@@ -116,7 +116,7 @@ const BillingPage: React.FC = () => {
 
           {/* Pricing Cards */}
           {/* Desktop Grid */}
-          <div className="hidden lg:grid lg:grid-cols-3 gap-8 mb-16">
+          <div className="hidden sm:grid sm:grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
             {plans.map((plan, index) => (
               <motion.div
                 key={plan.name}
@@ -176,7 +176,7 @@ const BillingPage: React.FC = () => {
           </div>
 
           {/* Mobile Carousel */}
-          <div className="lg:hidden mb-16">
+          <div className="sm:hidden mb-16">
             <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 px-4 pb-4 scrollbar-hide">
               {plans.map((plan, index) => (
                 <motion.div
@@ -184,17 +184,16 @@ const BillingPage: React.FC = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className={`relative flex-shrink-0 w-80 bg-white rounded-2xl shadow-sm border ${
+                  className={`relative flex-shrink-0 w-72 min-h-[500px] bg-white rounded-2xl shadow-sm border ${
                     plan.popular 
                       ? 'border-blue-200 ring-2 ring-blue-100' 
                       : 'border-gray-200'
-                  } p-8 flex flex-col h-full snap-center`}
+                  } p-6 flex flex-col snap-center`}
                 >
                   {plan.popular && (
-                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                      <div className="bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-medium flex items-center">
-                        <Star className="w-4 h-4 mr-1" />
-                        Most Popular
+                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
+                      <div className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap">
+                        ⭐ Most Popular
                       </div>
                     </div>
                   )}
@@ -202,7 +201,7 @@ const BillingPage: React.FC = () => {
                   <div className="text-center mb-8">
                     <h3 className="text-xl font-semibold text-gray-900 mb-2">{plan.name}</h3>
                     <div className="flex items-baseline justify-center mb-4">
-                      <span className="text-4xl font-bold text-gray-900">
+                      <span className="text-3xl font-bold text-gray-900">
                         {plan.monthlyPrice ? (
                           `$${isAnnual ? plan.annualPrice : plan.monthlyPrice}`
                         ) : (
@@ -211,12 +210,12 @@ const BillingPage: React.FC = () => {
                       </span>
                       <span className="text-gray-600 ml-1">{plan.period}</span>
                     </div>
-                    <p className="text-gray-600">{plan.description}</p>
+                    <p className="text-sm text-gray-600">{plan.description}</p>
                   </div>
 
-                  <ul className="space-y-4 mb-8 flex-grow">
+                  <ul className="space-y-3 mb-8 flex-grow">
                     {plan.features.map((feature) => (
-                      <li key={feature} className="flex items-center">
+                      <li key={feature} className="flex items-start">
                         <Check className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" />
                         <span className="text-gray-700">{feature}</span>
                       </li>
@@ -227,7 +226,7 @@ const BillingPage: React.FC = () => {
                     <Button
                       variant={plan.popular ? 'primary' : 'outline'}
                       size="lg"
-                      fullWidth
+                      fullWidth 
                     >
                       {plan.name === 'Enterprise' ? 'Contact Us' : 'Join Beta'}
                     </Button>
@@ -242,7 +241,7 @@ const BillingPage: React.FC = () => {
                 <div
                   key={plan.name}
                   className={`w-2 h-2 rounded-full transition-colors duration-200 ${
-                    plan.popular ? 'bg-blue-600' : 'bg-gray-300'
+                    index === 1 ? 'bg-blue-600' : 'bg-gray-300'
                   }`}
                 />
               ))}
@@ -254,11 +253,24 @@ const BillingPage: React.FC = () => {
             </div>
           </div>
           {/* Features Comparison */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 sm:hidden">
+            {plans.map((plan, index) => (
+              <div key={plan.name} className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 flex flex-col min-h-[500px]">
+                {plan.popular && (
+                  <div className="text-center mb-4">
+                    <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-medium">⭐ Most Popular</span>
+                  </div>
+                )}
+                {/* Same content as mobile carousel */}
+              </div>
+            ))}
+          </div>
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 mb-16"
+            className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 lg:p-8 mb-16"
           >
             <h3 className="text-2xl font-bold text-gray-900 mb-8 text-center">
               What we're building
@@ -296,7 +308,7 @@ const BillingPage: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
-            className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8"
+            className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 lg:p-8"
           >
             <h3 className="text-2xl font-bold text-gray-900 mb-8 text-center">
               Beta Program FAQ
@@ -334,7 +346,7 @@ const BillingPage: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}
-            className="text-center mt-16"
+            className="text-center mt-12 px-4"
           >
             <h3 className="text-2xl font-bold text-gray-900 mb-4">
               Join our beta program
@@ -342,7 +354,7 @@ const BillingPage: React.FC = () => {
             <p className="text-gray-600 mb-8">
               Be among the first to experience the future of document processing. Help us build something amazing.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto sm:max-w-none">
               <Button size="lg">
                 Join Beta Program
               </Button>

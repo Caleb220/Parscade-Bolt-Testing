@@ -97,7 +97,7 @@ const FeaturesSection: React.FC = () => {
         </motion.div>
 
         {/* Features Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 px-4 sm:px-0">
           {features.map((feature, index) => (
             <FeatureCard
               key={feature.title}
@@ -105,6 +105,7 @@ const FeaturesSection: React.FC = () => {
               description={feature.description}
               icon={feature.icon}
               delay={index * 0.1}
+              className="h-full"
             />
           ))}
         </div>
@@ -117,7 +118,7 @@ const FeaturesSection: React.FC = () => {
           transition={{ duration: 0.6, delay: 0.3 }}
           className="text-center mt-16"
         >
-          <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 max-w-2xl mx-auto">
+          <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-gray-100 max-w-2xl mx-auto mx-4 sm:mx-auto">
             <h3 className="text-2xl font-bold text-gray-900 mb-4">
               Want to be part of the journey?
             </h3>

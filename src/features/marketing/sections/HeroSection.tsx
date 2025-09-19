@@ -48,7 +48,7 @@ const HeroSection: React.FC = () => {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-center lg:text-left"
+            className="text-center lg:text-left px-4 lg:px-0"
           >
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -65,7 +65,7 @@ const HeroSection: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="text-3xl sm:text-4xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight"
             >
               Transform Documents into
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
@@ -77,7 +77,7 @@ const HeroSection: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="text-lg sm:text-xl text-gray-600 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0"
+              className="text-base sm:text-lg lg:text-xl text-gray-600 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0"
             >
               We're building the next generation of document processing. Our intelligent parsing platform will automatically extract, structure, and deliver data from any document format with unprecedented accuracy.
             </motion.p>
@@ -92,7 +92,7 @@ const HeroSection: React.FC = () => {
                 size="lg"
                 onClick={handleJoinBetaClick}
                 rightIcon={getButtonIcon()}
-                className="text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4"
+                className="text-base px-6 py-3 sm:px-8 sm:py-4 w-full sm:w-auto"
                 disabled={isLoading}
               >
                 {getButtonText()}
@@ -101,7 +101,7 @@ const HeroSection: React.FC = () => {
                 variant="outline"
                 size="lg"
                 leftIcon={<Play className="w-5 h-5" />}
-                className="text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4"
+                className="text-base px-6 py-3 sm:px-8 sm:py-4 w-full sm:w-auto"
               >
                 Watch Demo
               </Button>

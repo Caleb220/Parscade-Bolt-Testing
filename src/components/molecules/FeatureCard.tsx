@@ -30,9 +30,9 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
         <div className="flex-shrink-0">
           <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto sm:mx-0">
             <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
-          </div>
+  className={`bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300 flex flex-col ${className}`}
         </div>
-        <div className="flex-1 text-center sm:text-left">
+  <div className="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-4 flex-grow">
           <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">{title}</h3>
           <p className="text-sm sm:text-base text-gray-600 leading-relaxed">{description}</p>
         </div>
