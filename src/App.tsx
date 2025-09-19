@@ -47,12 +47,14 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 
 /**
  * Public Route component that redirects authenticated users
+ * ENHANCED: Checks for recovery mode to prevent dashboard redirects during password reset
  */
 const PublicRoute: React.FC<{ children: React.ReactNode; redirectTo?: string }> = ({ 
   children, 
   redirectTo = '/dashboard' 
 }) => {
   const { isAuthenticated, isLoading } = useAuth();
+  const location = useLocation();
   
   if (isLoading) {
     return (
@@ -60,6 +62,22 @@ const PublicRoute: React.FC<{ children: React.ReactNode; redirectTo?: string }> 
         <LoadingSpinner size="lg" />
       </div>
     );
+  }
+  
+  // CRITICAL: Check for recovery mode to prevent dashboard redirects
+  // This ensures password reset flow always shows the reset form
+  const inRecoveryMode = isRecoveryMode() || 
+    location.pathname === '/reset-password' || 
+    location.pathname === '/auth/recovery' ||
+    location.search.includes('type=recovery') ||
+    location.hash.includes('type=recovery');
+  
+  if (inRecoveryMode) {
+    logger.info('Recovery mode detected - bypassing authenticated redirect', {
+      context: { feature: 'password-reset', action: 'bypassAuthRedirect' },
+      metadata: { pathname: location.pathname, search: location.search, hash: location.hash },
+    });
+    return <>{children}</>;
   }
   
   if (isAuthenticated) {
@@ -183,7 +201,13 @@ const RouteHandler: FC = () => {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/terms" element={<TermsPage />} />
+        {/* DEDICATED RECOVERY ROUTES - Always accessible during password reset */}
         <Route path="/reset-password" element={
+          <PublicRoute redirectTo="/dashboard">
+            <ResetPasswordPage />
+          </PublicRoute>
+        } />
+        <Route path="/auth/recovery" element={
           <PublicRoute redirectTo="/dashboard">
             <ResetPasswordPage />
           </PublicRoute>

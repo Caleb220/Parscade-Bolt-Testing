@@ -87,9 +87,13 @@ npm run preview
    - Redirect URLs: Add all domains where your app will be hosted:
      ```
      https://your-domain.com/reset-password
+     https://your-domain.com/auth/recovery
      https://staging.your-domain.com/reset-password
+     https://staging.your-domain.com/auth/recovery
      https://app.your-domain.com/reset-password
+     https://app.your-domain.com/auth/recovery
      http://localhost:3000/reset-password (for development)
+     http://localhost:3000/auth/recovery (for development)
      ```
 
 2. **Email Template** (Authentication → Email Templates → Reset Password):
@@ -100,6 +104,14 @@ npm run preview
 3. **SMTP Configuration** (recommended for production):
    - Configure custom SMTP provider
    - Test email delivery
+
+### Recovery Flow Features
+
+- **Dedicated recovery routes**: `/reset-password` and `/auth/recovery`
+- **Dashboard redirect prevention**: Never redirects to dashboard during password reset
+- **Auto-login handling**: Gracefully handles Supabase auto-login from email links
+- **Secure completion**: Forces fresh authentication with new password
+- **Success messaging**: Clear confirmation and next steps
 
 ### Security Features
 

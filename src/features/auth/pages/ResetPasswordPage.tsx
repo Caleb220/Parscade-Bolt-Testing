@@ -30,6 +30,12 @@ import { trackFormSubmit } from '../../../utils/analytics';
  * This component implements a comprehensive password reset flow with enterprise-grade
  * security measures, user experience optimizations, and robust error handling.
  * 
+ * RECOVERY MODE HANDLING:
+ * - Always renders the password reset form, even if user is auto-logged in
+ * - Prevents dashboard redirects during the recovery process
+ * - Handles both /reset-password and /auth/recovery routes
+ * - Implements secure token validation and session management
+ * 
  * SECURITY FEATURES:
  * - Token-based authentication with automatic expiry validation
  * - Rate limiting with exponential backoff to prevent brute force attacks
@@ -51,6 +57,14 @@ import { trackFormSubmit } from '../../../utils/analytics';
  * - Separates concerns between validation, UI, and business logic
  * - Uses Framer Motion for smooth animations
  * - Implements proper accessibility with ARIA labels and screen reader support
+ * 
+ * RECOVERY FLOW LOGIC:
+ * 1. Detect recovery mode from URL parameters or route
+ * 2. Extract and validate reset tokens
+ * 3. Establish secure recovery session (if needed)
+ * 4. Present password reset form (always, regardless of auth state)
+ * 5. Handle password update with comprehensive validation
+ * 6. Complete recovery with secure cleanup and redirect
  */
 
 interface ResetPasswordState {
@@ -123,10 +137,11 @@ const ResetPasswordPage: React.FC = () => {
    * INITIALIZATION PROCESS:
    * 1. Check if already initialized to prevent duplicate runs
    * 2. Detect recovery mode from URL parameters
-   * 3. Handle auto-login scenario (user already authenticated via reset link)
-   * 4. Extract and validate reset tokens from URL
-   * 5. Establish secure recovery session
-   * 6. Update component state based on results
+   * 3. Extract and validate reset tokens from URL
+   * 4. Establish secure recovery session (if tokens present)
+   * 5. Handle auto-login scenario (user already authenticated via reset link)
+   * 6. Always show reset form in recovery mode (never redirect to dashboard)
+   * 7. Update component state based on results
    */
   const initializeResetFlow = useCallback(async (): Promise<void> => {
     if (initializationRef.current || !mountedRef.current) return;
@@ -154,25 +169,26 @@ const ResetPasswordPage: React.FC = () => {
         }));
       }
       
-      // Handle auto-login scenario (Supabase automatically logs in user via reset link)
-      if (isAuthenticated && user) {
-        logger.info('User auto-logged in from reset link', {
-          context: { feature: 'password-reset', action: 'autoLoginDetected' },
-          metadata: { userId: user.id },
-        });
-        
-        safeSetState(prev => ({
-          ...prev,
-          isAutoLoggedIn: true,
-          isValidSession: true,
-          isLoading: false,
-        }));
-        return;
-      }
-      
       // Extract and validate reset tokens from URL
       const tokens = extractResetTokens();
       if (!tokens) {
+        // Check if user is already authenticated (auto-login scenario)
+        if (isAuthenticated && user) {
+          logger.info('User auto-logged in from reset link - no tokens needed', {
+            context: { feature: 'password-reset', action: 'autoLoginDetected' },
+            metadata: { userId: user.id },
+          });
+          
+          safeSetState(prev => ({
+            ...prev,
+            isAutoLoggedIn: true,
+            isValidSession: true,
+            isLoading: false,
+          }));
+          return;
+        }
+        
+        // No tokens and not authenticated - invalid state
         safeSetState(prev => ({
           ...prev,
           error: 'Invalid or missing password reset tokens. Please request a new reset link.',
@@ -185,6 +201,23 @@ const ResetPasswordPage: React.FC = () => {
       
       // Establish secure recovery session
       await establishRecoverySession(tokens);
+      
+      // Check if user is now authenticated after session establishment
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        logger.info('User authenticated after session establishment', {
+          context: { feature: 'password-reset', action: 'sessionEstablished' },
+          metadata: { userId: session.user.id },
+        });
+        
+        safeSetState(prev => ({
+          ...prev,
+          isAutoLoggedIn: true,
+          isValidSession: true,
+          isLoading: false,
+        }));
+        return;
+      }
       
       safeSetState(prev => ({
         ...prev,

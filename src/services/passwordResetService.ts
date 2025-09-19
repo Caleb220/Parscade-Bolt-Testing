@@ -262,6 +262,14 @@ export const isRecoveryMode = (): boolean => {
       return true;
     }
     
+    // Additional check: dedicated recovery route
+    if (window.location.pathname === '/auth/recovery' || window.location.pathname === '/reset-password') {
+      logger.info('Recovery mode detected via dedicated route', {
+        context: { feature: 'password-reset', action: 'recoveryModeDetection' },
+      });
+      return true;
+    }
+    
     return false;
   } catch (error) {
     logger.warn('Error checking recovery mode', {
@@ -539,7 +547,8 @@ export const completeRecoveryFlow = async (): Promise<void> => {
     // Force sign out for security
     await supabase.auth.signOut();
     
-    // Dynamic redirect using current origin - works on any domain
+    // OPTION A (Recommended): Sign out and redirect to login with success message
+    // This ensures users must authenticate with their new password
     setTimeout(() => {
       const currentOrigin = window.location.origin;
       window.location.href = `${currentOrigin}/?reset=success`;

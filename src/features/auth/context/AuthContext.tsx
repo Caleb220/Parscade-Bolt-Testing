@@ -82,6 +82,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return;
       }
 
+      // CRITICAL: Check for recovery mode to prevent dashboard redirects
+      // This ensures password reset flow is not interrupted by auth state changes
+      const inRecoveryMode = isRecoveryMode();
+      if (inRecoveryMode) {
+        logger.info('Auth state change during recovery mode - processing without redirects', {
+          context: { feature: 'password-reset', action: 'authStateChangeInRecovery' },
+          metadata: { event, hasSession: !!session },
+        });
+      }
+
       logger.debug('Auth state change event', {
         context: { feature: 'auth', action: 'stateChange' },
         metadata: { event, hasSession: !!session },
@@ -105,6 +115,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           email: typedUser.email || undefined,
           username: typedUser.user_metadata?.full_name || undefined,
         });
+        
+        // IMPORTANT: Do not redirect to dashboard during recovery mode
+        // The recovery flow will handle completion and redirects
+        if (!inRecoveryMode) {
+          logger.debug('Normal sign-in completed - ready for dashboard redirect', {
+            context: { feature: 'auth', action: 'signInComplete' },
+          });
+        }
       } else if (event === 'SIGNED_OUT') {
         dispatch({ type: 'AUTH_SIGNOUT' });
         logger.clearUserContext();
@@ -121,7 +139,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         });
       }
     },
-    []
+    [isRecoveryMode]
   );
 
   // Initialize auth state once on mount
