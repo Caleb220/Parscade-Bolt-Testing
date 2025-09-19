@@ -9,7 +9,6 @@ const Footer: React.FC = () => {
     Product: [
       { label: 'Features', href: '/product' },
       { label: 'Pricing', href: '/billing' },
-      { label: 'Beta Program', href: '/dashboard' },
     ],
     Company: [
       { label: 'About Us', href: '/about' },
