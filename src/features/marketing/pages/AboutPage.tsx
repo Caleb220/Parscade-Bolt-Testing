@@ -145,34 +145,36 @@ const AboutPage: React.FC = () => {
             </div>
           </motion.div>
 
-          {/* Join Us */}
+        <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-            className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white text-center"
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
           >
-            <h2 className="text-3xl font-bold mb-4">Join Our Journey</h2>
-            <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
-              We're looking for beta users, advisors, and team members who share our vision. 
-              Help us build the future of document processing.
+            <h2 className="text-3xl lg:text-4xl font-bold text-white mb-6">
+              Ready to shape the future with us?
+            </h2>
+            <p className="text-xl text-blue-100 mb-8">
+              Join our beta program and be among the first to experience next-generation document processing.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                className="bg-white text-blue-600 hover:bg-gray-50 border-2 border-white" 
-                size="lg"
+              <button
+                onClick={handleJoinBetaClick}
+                className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-50 transition-colors duration-200 shadow-lg border-2 border-white"
               >
-                Join Beta Program
-              </Button>
-              <Button 
-                variant="outline" 
-                className="border-2 border-white text-white hover:bg-white hover:text-blue-600" 
-                size="lg"
+                {isAuthenticated ? 'Go to Dashboard' : 'Join Beta Program'}
+              </button>
+              <button
+                className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-white hover:text-blue-600 transition-colors duration-200 bg-transparent"
               >
-                Contact Us
-              </Button>
+                {isAuthenticated ? 'View Features' : 'Request Access'}
+              </button>
             </div>
           </motion.div>
+        </div>
+      </section>
         </div>
       </div>
     </Layout>
