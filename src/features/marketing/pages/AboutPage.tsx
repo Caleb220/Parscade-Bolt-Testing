@@ -1,10 +1,22 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Target, Users, Lightbulb, Rocket } from 'lucide-react';
 import Layout from '../../../components/templates/Layout';
 import Button from '../../../components/atoms/Button';
+import { useAuth } from '../../auth';
 
 const AboutPage: React.FC = () => {
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
+  const handleJoinBetaClick = (): void => {
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    } else {
+      navigate('/', { state: { openAuthModal: true } });
+    }
+  };
   const values = [
     {
       icon: Target,
@@ -146,35 +158,35 @@ const AboutPage: React.FC = () => {
           </motion.div>
 
         <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <h2 className="text-3xl lg:text-4xl font-bold text-white mb-6">
-              Ready to shape the future with us?
-            </h2>
-            <p className="text-xl text-blue-100 mb-8">
-              Join our beta program and be among the first to experience next-generation document processing.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button
-                onClick={handleJoinBetaClick}
-                className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-50 transition-colors duration-200 shadow-lg border-2 border-white"
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
               >
-                {isAuthenticated ? 'Go to Dashboard' : 'Join Beta Program'}
-              </button>
-              <button
-                className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-white hover:text-blue-600 transition-colors duration-200 bg-transparent"
-              >
-                {isAuthenticated ? 'View Features' : 'Request Access'}
-              </button>
+                <h2 className="text-3xl lg:text-4xl font-bold text-white mb-6">
+                  Ready to shape the future with us?
+                </h2>
+                <p className="text-xl text-blue-100 mb-8">
+                  Join our beta program and be among the first to experience next-generation document processing.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <button
+                    onClick={handleJoinBetaClick}
+                    className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-50 transition-colors duration-200 shadow-lg border-2 border-white"
+                  >
+                    {isAuthenticated ? 'Go to Dashboard' : 'Join Beta Program'}
+                  </button>
+                  <button
+                    className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-white hover:text-blue-600 transition-colors duration-200 bg-transparent"
+                  >
+                    {isAuthenticated ? 'View Features' : 'Request Access'}
+                  </button>
+                </div>
+              </motion.div>
             </div>
-          </motion.div>
-        </div>
-      </section>
+           </section>
         </div>
       </div>
     </Layout>
