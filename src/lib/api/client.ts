@@ -130,7 +130,7 @@ class ApiClient {
   private readonly isDevelopment: boolean;
 
   constructor() {
-    this.baseUrl = env.api.baseUrl;
+    this.baseUrl = env.VITE_API_BASE_URL;
     this.timeout = 30000;
     this.retryAttempts = 3;
     this.isDevelopment = env.mode === 'development';
