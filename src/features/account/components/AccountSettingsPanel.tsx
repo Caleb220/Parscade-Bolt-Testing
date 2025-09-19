@@ -359,7 +359,7 @@ const AccountSettingsPanel: React.FC = () => {
                             onClick={() => setShowApiKeys({ ...showApiKeys, development: !showApiKeys.development })}
                             className="text-gray-500 hover:text-gray-700"
                           >
-                            {showApiKeys.development ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                            {showApiKeys.development ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                           </button>
                         </div>
                         <Input
