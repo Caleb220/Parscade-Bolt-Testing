@@ -418,6 +418,7 @@ const ResetPasswordPage: React.FC = () => {
               Back to Home
             </LoadingButton>
           </div>
+          </div>
         </div>
       </PublicAuthLayout>
     );
