@@ -48,7 +48,7 @@ const Footer: React.FC = () => {
                 alt="Parscade Logo"
                 className="w-8 h-8 sm:w-10 sm:h-10 rounded-full mr-2 sm:mr-3 bg-white/10 p-1"
               />
-              <span className="text-3xl sm:text-3xl font-black text-white logo-text-light">
+              <span className="text-4xl sm:text-3xl font-black text-white logo-text-light">
                 Parscade
               </span>
             </Link>
