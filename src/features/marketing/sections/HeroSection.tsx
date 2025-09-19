@@ -101,7 +101,7 @@ const HeroSection: React.FC = () => {
                 variant="outline"
                 size="lg"
                 leftIcon={<Play className="w-5 h-5" />}
-                className="text-base px-6 py-3 sm:px-8 sm:py-4 w-full sm:w-auto"
+                className="text-base px-6 py-3 sm:px-8 sm:py-4 w-full sm:w-auto border-2 border-gray-300 hover:border-blue-600 bg-white"
               >
                 Watch Demo
               </Button>

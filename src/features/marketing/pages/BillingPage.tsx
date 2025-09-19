@@ -116,7 +116,7 @@ const BillingPage: React.FC = () => {
 
           {/* Pricing Cards */}
           {/* Desktop Grid */}
-          <div className="hidden sm:grid sm:grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+          <div className="hidden lg:grid lg:grid-cols-3 gap-8 mb-16">
             {plans.map((plan, index) => (
               <motion.div
                 key={plan.name}
@@ -127,7 +127,7 @@ const BillingPage: React.FC = () => {
                   plan.popular 
                     ? 'border-blue-200 ring-2 ring-blue-100' 
                     : 'border-gray-200'
-                } p-8 flex flex-col h-full`}
+                } p-8 flex flex-col min-h-[500px]`}
               >
                 {plan.popular && (
                   <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
@@ -153,7 +153,7 @@ const BillingPage: React.FC = () => {
                   <p className="text-gray-600">{plan.description}</p>
                 </div>
 
-                <ul className="space-y-4 mb-8 flex-grow">
+                <ul className="space-y-4 flex-grow">
                   {plan.features.map((feature) => (
                     <li key={feature} className="flex items-center">
                       <Check className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" />
@@ -162,7 +162,7 @@ const BillingPage: React.FC = () => {
                   ))}
                 </ul>
 
-                <div>
+                <div className="mt-8">
                   <Button
                     variant={plan.popular ? 'primary' : 'outline'}
                     size="lg"
@@ -176,7 +176,7 @@ const BillingPage: React.FC = () => {
           </div>
 
           {/* Mobile Carousel */}
-          <div className="sm:hidden mb-16">
+          <div className="lg:hidden mb-16">
             <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 px-4 pb-4 scrollbar-hide">
               {plans.map((plan, index) => (
                 <motion.div
@@ -191,14 +191,15 @@ const BillingPage: React.FC = () => {
                   } p-6 flex flex-col snap-center`}
                 >
                   {plan.popular && (
-                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
-                      <div className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap">
+                    <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 z-10">
+                      <div className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap flex items-center">
+                        <Star className="w-3 h-3 mr-1" />
                         ⭐ Most Popular
                       </div>
                     </div>
                   )}
 
-                  <div className="text-center mb-8">
+                  <div className="text-center mb-6 mt-3">
                     <h3 className="text-xl font-semibold text-gray-900 mb-2">{plan.name}</h3>
                     <div className="flex items-baseline justify-center mb-4">
                       <span className="text-3xl font-bold text-gray-900">
@@ -213,16 +214,16 @@ const BillingPage: React.FC = () => {
                     <p className="text-sm text-gray-600">{plan.description}</p>
                   </div>
 
-                  <ul className="space-y-3 mb-8 flex-grow">
+                  <ul className="space-y-3 flex-grow">
                     {plan.features.map((feature) => (
                       <li key={feature} className="flex items-start">
-                        <Check className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" />
-                        <span className="text-gray-700">{feature}</span>
+                        <Check className="w-4 h-4 text-green-500 mr-3 flex-shrink-0 mt-0.5" />
+                        <span className="text-sm text-gray-700">{feature}</span>
                       </li>
                     ))}
                   </ul>
 
-                  <div>
+                  <div className="mt-6">
                     <Button
                       variant={plan.popular ? 'primary' : 'outline'}
                       size="lg"
@@ -251,19 +252,6 @@ const BillingPage: React.FC = () => {
             <div className="text-center mt-4">
               <p className="text-sm text-gray-500">← Swipe to see all plans →</p>
             </div>
-          </div>
-          {/* Features Comparison */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 sm:hidden">
-            {plans.map((plan, index) => (
-              <div key={plan.name} className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 flex flex-col min-h-[500px]">
-                {plan.popular && (
-                  <div className="text-center mb-4">
-                    <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-medium">⭐ Most Popular</span>
-                  </div>
-                )}
-                {/* Same content as mobile carousel */}
-              </div>
-            ))}
           </div>
 
           <motion.div

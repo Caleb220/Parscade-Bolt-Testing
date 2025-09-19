@@ -86,10 +86,17 @@ const HomePage: React.FC = () => {
               Be among the first to experience next-generation document parsing. Join our beta program and help shape the future of intelligent data extraction.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-white text-blue-600 px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg hover:bg-gray-50 transition-colors duration-200 shadow-lg">
+              <Button 
+                size="lg"
+                className="bg-white text-blue-600 hover:bg-gray-50 border-2 border-white shadow-lg"
+              >
                 Join Beta Program
               </button>
-              <button className="border-2 border-white text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg hover:bg-white hover:text-blue-600 transition-colors duration-200">
+              <Button 
+                variant="outline" 
+                size="lg"
+                className="border-2 border-white text-white hover:bg-white hover:text-blue-600 bg-transparent"
+              >
                 Request Early Access
               </button>
             </div>
