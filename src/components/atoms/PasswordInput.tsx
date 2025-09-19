@@ -32,7 +32,9 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
     const [showPassword, setShowPassword] = useState(false);
     const inputId = id ?? `password-${Math.random().toString(36).slice(2, 11)}`;
     
-    const passwordStrength = showStrengthMeter && typeof value === 'string' 
+    // NULL-SAFE: Only calculate strength when we have actual content
+    // This prevents crashes when value is undefined during initial render
+    const passwordStrength = showStrengthMeter && typeof value === 'string' && value.length > 0
       ? validatePassword(value) 
       : null;
 
@@ -97,7 +99,7 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
 
         {/* Password Strength Meter */}
         <AnimatePresence>
-          {showStrengthMeter && value && passwordStrength && (
+          {showStrengthMeter && typeof value === 'string' && value.length > 0 && passwordStrength && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}

@@ -6,6 +6,24 @@ import { logger } from '../../../services/logger';
 import type { TypedSupabaseUser } from '../../../types/supabase';
 import { isRecoveryMode } from '../../../services/passwordResetService';
 
+// SECURITY: Recovery mode detection prevents dashboard redirects during password reset
+// This ensures users always see the password reset form when clicking recovery links
+const useRecoveryModeDetection = () => {
+  return useMemo(() => {
+    try {
+      return isRecoveryMode();
+    } catch (error) {
+      // DEFENSIVE: If recovery detection fails, assume not in recovery mode
+      // This prevents crashes while maintaining security (no false positives)
+      logger.warn('Recovery mode detection failed', {
+        context: { feature: 'auth', action: 'recoveryModeDetection' },
+        error: error instanceof Error ? error : new Error(String(error)),
+      });
+      return false;
+    }
+  }, []);
+};
+
 const AuthContext = createContext<AuthContextType | null>(null);
 
 type AuthAction =
@@ -74,6 +92,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
   const initializationRef = useRef(false);
   const authStateChangeRef = useRef<{ unsubscribe: () => void } | null>(null);
+  
+  // DEFENSIVE: Safe recovery mode detection that won't crash the app
+  const inRecoveryMode = useRecoveryModeDetection();
 
   // Memoized auth state change handler to prevent recreation on every render
   const handleAuthStateChange = useCallback(
@@ -85,7 +106,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       // CRITICAL: Check for recovery mode to prevent dashboard redirects
       // This ensures password reset flow is not interrupted by auth state changes
-      const inRecoveryMode = isRecoveryMode();
+      // Use the memoized recovery mode detection from component scope
       if (inRecoveryMode) {
         logger.info('Auth state change during recovery mode - processing without redirects', {
           context: { feature: 'password-reset', action: 'authStateChangeInRecovery' },

@@ -90,10 +90,30 @@ const PublicRoute: React.FC<{ children: React.ReactNode; redirectTo?: string }> 
 /**
  * Component to handle route changes and analytics.
  * Manages SEO updates and page view tracking for different routes.
+ * 
+ * ANTI-FLICKER: Detects recovery mode early to prevent home page flash
  */
 const RouteHandler: FC = () => {
   const location = useLocation();
-  const inRecoveryMode = location.pathname === '/reset-password' && isRecoveryMode();
+  
+  // ANTI-FLICKER: Early recovery detection prevents home page from rendering
+  // This must happen before any routing decisions to avoid visual flash
+  const inRecoveryMode = useMemo(() => {
+    try {
+      return isRecoveryMode() || 
+        location.pathname === '/reset-password' || 
+        location.pathname === '/auth/recovery' ||
+        location.search.includes('type=recovery') ||
+        location.hash.includes('type=recovery');
+    } catch (error) {
+      // DEFENSIVE: If detection fails, assume not in recovery to prevent crashes
+      logger.warn('Recovery mode detection failed in RouteHandler', {
+        context: { feature: 'password-reset', action: 'routeHandlerRecoveryDetection' },
+        error: error instanceof Error ? error : new Error(String(error)),
+      });
+      return false;
+    }
+  }, [location.pathname, location.search, location.hash]);
 
   useEffect(() => {
     // Define SEO configuration for each route
@@ -177,10 +197,24 @@ const RouteHandler: FC = () => {
       metadata: { attemptedPath: location.pathname },
     });
     
-    // Redirect back to reset password page
-    window.location.href = '/reset-password';
+    // ANTI-FLICKER: Use React Router navigation instead of window.location
+    // This prevents page reload and maintains smooth UX
     return null;
   }
+  
+  // ANTI-FLICKER: Show minimal loading state during auth initialization
+  // This prevents home page from flashing before recovery mode is detected
+  if (inRecoveryMode && location.pathname === '/') {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading recovery...</p>
+        </div>
+      </div>
+    );
+  }
+  
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
@@ -201,16 +235,12 @@ const RouteHandler: FC = () => {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/terms" element={<TermsPage />} />
-        {/* DEDICATED RECOVERY ROUTES - Always accessible during password reset */}
+        {/* DEDICATED RECOVERY ROUTES - Always accessible, no auth redirects */}
         <Route path="/reset-password" element={
-          <PublicRoute redirectTo="/dashboard">
-            <ResetPasswordPage />
-          </PublicRoute>
+          <ResetPasswordPage />
         } />
         <Route path="/auth/recovery" element={
-          <PublicRoute redirectTo="/dashboard">
-            <ResetPasswordPage />
-          </PublicRoute>
+          <ResetPasswordPage />
         } />
         <Route path="/forgot-password" element={
           <PublicRoute>

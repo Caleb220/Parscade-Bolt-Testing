@@ -20,13 +20,14 @@ interface PasswordStrength {
 }
 
 interface PasswordStrengthIndicatorProps {
-  readonly password: string;
+  readonly password: string | null | undefined;
   readonly strength: PasswordStrength | null;
   readonly className?: string;
 }
 
 /**
  * Maps strength scores to user-friendly labels and colors
+ * NULL-SAFE: Handles undefined/null password inputs gracefully
  */
 const getStrengthConfig = (score: number, isValid: boolean) => {
   if (isValid && score >= 5) {
@@ -78,7 +79,9 @@ const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps> = ({
   strength,
   className = '',
 }) => {
-  if (!password || !strength) {
+  // NULL-SAFE: Handle undefined/null password and ensure we have actual content
+  const safePassword = password ?? '';
+  if (safePassword.length === 0 || !strength) {
     return null;
   }
 

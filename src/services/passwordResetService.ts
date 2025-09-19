@@ -144,35 +144,39 @@ const rateLimiter = new PasswordResetRateLimiter();
  * - Complexity requirements prevent common weak passwords
  * - Pattern detection prevents dictionary attacks
  * - Detailed feedback helps users create strong passwords
+ * 
+ * NULL-SAFE: Handles undefined/null inputs gracefully to prevent crashes
  */
-const validatePasswordStrength = (password: string): { isValid: boolean; errors: string[] } => {
+const validatePasswordStrength = (password: string | null | undefined): { isValid: boolean; errors: string[] } => {
+  // NULL-SAFE: Convert any falsy input to empty string
+  const safePassword = password ?? '';
   const errors: string[] = [];
 
-  if (password.length < 8) {
+  if (safePassword.length < 8) {
     errors.push('Password must be at least 8 characters long');
   }
 
-  if (password.length > 128) {
+  if (safePassword.length > 128) {
     errors.push('Password must be less than 128 characters');
   }
 
-  if (!/[A-Z]/.test(password)) {
+  if (!/[A-Z]/.test(safePassword)) {
     errors.push('Password must contain at least one uppercase letter');
   }
 
-  if (!/[a-z]/.test(password)) {
+  if (!/[a-z]/.test(safePassword)) {
     errors.push('Password must contain at least one lowercase letter');
   }
 
-  if (!/\d/.test(password)) {
+  if (!/\d/.test(safePassword)) {
     errors.push('Password must contain at least one number');
   }
 
-  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(safePassword)) {
     errors.push('Password must contain at least one special character');
   }
 
-  if (/(.)\1{2,}/.test(password)) {
+  if (/(.)\1{2,}/.test(safePassword)) {
     errors.push('Password cannot contain more than 2 consecutive identical characters');
   }
 
@@ -184,7 +188,7 @@ const validatePasswordStrength = (password: string): { isValid: boolean; errors:
     /^(abc|bcd|cde|def|efg|fgh|ghi|hij|ijk|jkl|klm|lmn|mno|nop|opq|pqr|qrs|rst|stu|tuv|uvw|vwx|wxy|xyz)+/i, // Sequential letters
   ];
 
-  if (commonPatterns.some(pattern => pattern.test(password))) {
+  if (commonPatterns.some(pattern => pattern.test(safePassword))) {
     errors.push('Password cannot contain common patterns or dictionary words');
   }
 
@@ -201,22 +205,28 @@ const validatePasswordStrength = (password: string): { isValid: boolean; errors:
  * - Separates field-level errors for better UX
  * - Validates both passwords independently then together
  * - Returns structured error object for easy UI binding
+ * 
+ * NULL-SAFE: All validation handles undefined/null inputs gracefully
  */
 const validatePasswordResetForm = (formData: PasswordResetForm): { isValid: boolean; errors: Record<string, string> } => {
   const errors: Record<string, string> = {};
+  
+  // NULL-SAFE: Ensure we have safe strings for validation
+  const safePassword = formData.password ?? '';
+  const safeConfirmPassword = formData.confirmPassword ?? '';
 
-  if (!formData.password) {
+  if (safePassword.length === 0) {
     errors.password = 'Password is required';
   } else {
-    const strengthValidation = validatePasswordStrength(formData.password);
+    const strengthValidation = validatePasswordStrength(safePassword);
     if (!strengthValidation.isValid) {
       errors.password = strengthValidation.errors[0] || 'Password does not meet security requirements';
     }
   }
 
-  if (!formData.confirmPassword) {
+  if (safeConfirmPassword.length === 0) {
     errors.confirmPassword = 'Password confirmation is required';
-  } else if (formData.password !== formData.confirmPassword) {
+  } else if (safePassword !== safeConfirmPassword) {
     errors.confirmPassword = 'Passwords do not match';
   }
 

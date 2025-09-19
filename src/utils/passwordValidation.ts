@@ -11,55 +11,59 @@ export interface PasswordStrength {
 
 /**
  * Validates password strength according to enterprise security requirements.
- * Updated to use 8-character minimum for better user experience while maintaining security.
+ * Uses 8-character minimum for better user experience while maintaining security.
  * Enterprise security is achieved through complexity requirements rather than just length.
+ * 
+ * DEFENSIVE CODING: All input is null-safe and handles edge cases gracefully.
  */
-export const validatePassword = (password: string): PasswordStrength => {
+export const validatePassword = (password: string | null | undefined): PasswordStrength => {
+  // NULL-SAFE: Handle undefined/null password inputs gracefully
+  const safePassword = password ?? '';
   const feedback: string[] = [];
   let score = 0;
 
-  // Length check (minimum 8 characters - industry standard for user-friendly security)
-  if (password.length < 8) {
+  // Length check (minimum 8 characters - industry standard for user-friendly security)  
+  if (safePassword.length < 8) {
     feedback.push('At least 8 characters required');
   } else {
     score += 1;
   }
 
   // Uppercase check
-  if (!/[A-Z]/.test(password)) {
+  if (!/[A-Z]/.test(safePassword)) {
     feedback.push('Add uppercase letters');
   } else {
     score += 1;
   }
 
   // Lowercase check
-  if (!/[a-z]/.test(password)) {
+  if (!/[a-z]/.test(safePassword)) {
     feedback.push('Add lowercase letters');
   } else {
     score += 1;
   }
 
   // Number check
-  if (!/\d/.test(password)) {
+  if (!/\d/.test(safePassword)) {
     feedback.push('Add numbers');
   } else {
     score += 1;
   }
 
   // Special character check
-  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(safePassword)) {
     feedback.push('Add special characters (!@#$%^&*)');
   } else {
     score += 1;
   }
 
   // Common patterns check
-  if (/(.)\1{2,}/.test(password)) {
+  if (/(.)\1{2,}/.test(safePassword)) {
     feedback.push('Avoid repeating characters');
     score = Math.max(0, score - 1);
   }
 
-  if (/123|abc|qwe|password|admin|user|test|12345678/i.test(password)) {
+  if (/123|abc|qwe|password|admin|user|test|12345678/i.test(safePassword)) {
     feedback.push('Avoid common patterns');
     score = Math.max(0, score - 1);
   }

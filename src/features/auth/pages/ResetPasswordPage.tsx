@@ -82,6 +82,7 @@ const ResetPasswordPage: React.FC = () => {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   
   // Form state management
+  // CONTROLLED INPUTS: Explicit initial state prevents undefined access crashes
   const [formData, setFormData] = useState<PasswordResetForm>({
     password: '',
     confirmPassword: '',
@@ -363,7 +364,11 @@ const ResetPasswordPage: React.FC = () => {
   }, [formData, sessionId, safeSetState]);
 
   // Calculate password strength for real-time feedback
-  const passwordStrength = formData.password ? validatePasswordStrength(formData.password) : null;
+  // NULL-SAFE: Only calculate strength when we have actual password content
+  const passwordStrength = useMemo(() => {
+    const safePassword = formData.password ?? '';
+    return safePassword.length > 0 ? validatePasswordStrength(safePassword) : null;
+  }, [formData.password]);
 
   // Choose appropriate layout based on recovery mode
   const LayoutComponent = state.inRecoveryMode ? RecoveryLayout : Layout;
