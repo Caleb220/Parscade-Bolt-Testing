@@ -118,9 +118,6 @@ const ProductPage: React.FC = () => {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
               We're building an intelligent parsing platform that will transform how businesses extract and structure data from documents. Join us in shaping the future.
             </p>
-            <Button size="lg" rightIcon={<ArrowRight className="w-5 h-5" />}>
-              Join Beta Program
-            </Button>
           </motion.div>
         </div>
       </section>
