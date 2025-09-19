@@ -47,21 +47,6 @@ const features = [
     description: 'Developer-friendly APIs and webhooks designed for seamless integration with your existing systems.',
     icon: Webhook,
   },
-  {
-    title: '24/7 Processing',
-    description: 'Designing for 24/7 availability with high uptime targets and automatic failover capabilities.',
-    icon: Clock,
-  },
-  {
-    title: 'Team Collaboration',
-    description: 'Team collaboration features with role-based access control and audit trails for enterprise workflows.',
-    icon: Users,
-  },
-  {
-    title: 'Global Infrastructure',
-    description: 'Planning global infrastructure for low latency processing and data residency compliance.',
-    icon: Globe,
-  },
 ];
 
 const FeaturesSection: React.FC = () => {
@@ -109,32 +94,6 @@ const FeaturesSection: React.FC = () => {
             />
           ))}
         </div>
-
-        {/* CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="text-center mt-16"
-        >
-          <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-gray-100 max-w-2xl mx-auto mx-4 sm:mx-auto">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">
-              Want to be part of the journey?
-            </h3>
-            <p className="text-gray-600 mb-6">
-              Join our beta program and help us build the future of document processing. Your feedback will directly shape our product.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button onClick={handleJoinBetaClick}>
-                {isAuthenticated ? 'Go to Dashboard' : 'Join Beta Program'}
-              </Button>
-              <Button variant="outline">
-                Learn More
-              </Button>
-            </div>
-          </div>
-        </motion.div>
       </div>
     </section>
   );
