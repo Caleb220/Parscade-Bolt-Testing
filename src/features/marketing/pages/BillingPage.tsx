@@ -115,7 +115,8 @@ const BillingPage: React.FC = () => {
           </motion.div>
 
           {/* Pricing Cards */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+          {/* Desktop Grid */}
+          <div className="hidden lg:grid lg:grid-cols-3 gap-8 mb-16">
             {plans.map((plan, index) => (
               <motion.div
                 key={plan.name}
@@ -174,6 +175,84 @@ const BillingPage: React.FC = () => {
             ))}
           </div>
 
+          {/* Mobile Carousel */}
+          <div className="lg:hidden mb-16">
+            <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 px-4 pb-4 scrollbar-hide">
+              {plans.map((plan, index) => (
+                <motion.div
+                  key={plan.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  className={`relative flex-shrink-0 w-80 bg-white rounded-2xl shadow-sm border ${
+                    plan.popular 
+                      ? 'border-blue-200 ring-2 ring-blue-100' 
+                      : 'border-gray-200'
+                  } p-8 flex flex-col h-full snap-center`}
+                >
+                  {plan.popular && (
+                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                      <div className="bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-medium flex items-center">
+                        <Star className="w-4 h-4 mr-1" />
+                        Most Popular
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="text-center mb-8">
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">{plan.name}</h3>
+                    <div className="flex items-baseline justify-center mb-4">
+                      <span className="text-4xl font-bold text-gray-900">
+                        {plan.monthlyPrice ? (
+                          `$${isAnnual ? plan.annualPrice : plan.monthlyPrice}`
+                        ) : (
+                          'Custom'
+                        )}
+                      </span>
+                      <span className="text-gray-600 ml-1">{plan.period}</span>
+                    </div>
+                    <p className="text-gray-600">{plan.description}</p>
+                  </div>
+
+                  <ul className="space-y-4 mb-8 flex-grow">
+                    {plan.features.map((feature) => (
+                      <li key={feature} className="flex items-center">
+                        <Check className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" />
+                        <span className="text-gray-700">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div>
+                    <Button
+                      variant={plan.popular ? 'primary' : 'outline'}
+                      size="lg"
+                      fullWidth
+                    >
+                      {plan.name === 'Enterprise' ? 'Contact Us' : 'Join Beta'}
+                    </Button>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+            
+            {/* Carousel Indicators */}
+            <div className="flex justify-center mt-6 space-x-2">
+              {plans.map((plan, index) => (
+                <div
+                  key={plan.name}
+                  className={`w-2 h-2 rounded-full transition-colors duration-200 ${
+                    plan.popular ? 'bg-blue-600' : 'bg-gray-300'
+                  }`}
+                />
+              ))}
+            </div>
+            
+            {/* Swipe Hint */}
+            <div className="text-center mt-4">
+              <p className="text-sm text-gray-500">← Swipe to see all plans →</p>
+            </div>
+          </div>
           {/* Features Comparison */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
