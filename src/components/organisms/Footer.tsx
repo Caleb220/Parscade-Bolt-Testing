@@ -9,18 +9,13 @@ const Footer: React.FC = () => {
     Product: [
       { label: 'Features', href: '/product' },
       { label: 'Pricing', href: '/billing' },
-      { label: 'Beta Program', href: '/about' },
-      { label: 'Roadmap', href: '/contact' },
+      { label: 'Beta Program', href: '/dashboard' },
     ],
     Company: [
       { label: 'About Us', href: '/about' },
-      { label: 'Contact', href: '/contact' },
-      { label: 'Beta Community', href: '/about' },
     ],
     Support: [
       { label: 'Contact Us', href: '/contact' },
-      { label: 'Beta Support', href: '/contact' },
-      { label: 'Feedback', href: '/contact' },
     ],
     Legal: [
       { label: 'Privacy Policy', href: '/privacy' },
@@ -29,9 +24,8 @@ const Footer: React.FC = () => {
   };
 
   const socialLinks = [
-    { icon: Twitter, href: 'https://twitter.com/parscade', label: 'Twitter' },
-    { icon: Github, href: 'https://github.com/parscade', label: 'GitHub' },
-    { icon: Linkedin, href: 'https://linkedin.com/company/parscade', label: 'LinkedIn' },
+    { icon: Github, href: 'https://github.com/Parscade', label: 'GitHub' },
+    { icon: Linkedin, href: 'https://www.linkedin.com/company/parscade', label: 'LinkedIn' },
     { icon: Mail, href: 'mailto:admin@parscade.com', label: 'Email' },
   ];
 
