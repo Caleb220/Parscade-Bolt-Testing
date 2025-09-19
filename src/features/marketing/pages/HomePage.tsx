@@ -115,6 +115,8 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
+      <FeaturesSection /> 
+
       <BetaCTASection />
       
       <AuthModal
