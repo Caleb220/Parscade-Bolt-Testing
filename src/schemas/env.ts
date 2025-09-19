@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { httpsUrlSchema } from '@/schemas/common';
+import { httpsUrlSchema } from './common';
 
 const insecureValuePatterns = [/placeholder/i, /changeme/i, /example/i, /^\s*$/];
 

@@ -5,7 +5,7 @@ import {
   nonEmptyTextSchema,
   optionalHttpsUrlSchema,
   optionalImagePathSchema,
-} from '@/schemas/common';
+} from './common';
 
 /**
  * SEO configuration schema guaranteeing both compile-time and runtime validation

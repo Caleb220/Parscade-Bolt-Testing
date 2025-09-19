@@ -1,9 +1,8 @@
 import { z } from 'zod';
-
 import {
-  booleanSchema,
   nonEmptyTextSchema,
-} from '@/schemas/common';
+  booleanSchema,
+} from '../common';
 
 /**
  * Password reset form data schema with strict validation rules.

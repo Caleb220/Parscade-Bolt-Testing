@@ -1,29 +1,28 @@
 import React, { useEffect, useMemo } from 'react';
-import { BrowserRouter as Router, Navigate, Route, Routes, useLocation } from 'react-router-dom';
-import { AnimatePresence } from 'framer-motion';
-
-import LoadingSpinner from '@/components/atoms/LoadingSpinner';
-import ErrorBoundary from '@/components/molecules/ErrorBoundary';
-import { env } from '@/config/env';
-import AccountPage from '@/features/account/pages/AccountPage';
-import { AuthProvider, ForgotPasswordPage, ResetPasswordPage, useAuth } from '@/features/auth';
-import { DashboardPage } from '@/features/dashboard';
-import AboutPage from '@/features/marketing/pages/AboutPage';
-import BillingPage from '@/features/marketing/pages/BillingPage';
-import ContactPage from '@/features/marketing/pages/ContactPage';
-import ErrorPage from '@/features/marketing/pages/ErrorPage';
-import HomePage from '@/features/marketing/pages/HomePage';
-import NotFoundPage from '@/features/marketing/pages/NotFoundPage';
-import PrivacyPage from '@/features/marketing/pages/PrivacyPage';
-import ProductPage from '@/features/marketing/pages/ProductPage';
-import TermsPage from '@/features/marketing/pages/TermsPage';
-import { logger } from '@/services/logger';
-import { isRecoveryMode } from '@/services/passwordResetService';
-import { analytics, trackPageView } from '@/utils/analytics';
-import { defaultSEO, updateSEO } from '@/utils/seo';
-
 import type { FC } from 'react';
-import type { SeoConfig } from '@/schemas';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
+import { AuthProvider, ResetPasswordPage, ForgotPasswordPage } from './features/auth';
+import { useAuth } from './features/auth';
+import ErrorBoundary from './components/molecules/ErrorBoundary';
+import HomePage from './features/marketing/pages/HomePage';
+import ProductPage from './features/marketing/pages/ProductPage';
+import { DashboardPage } from './features/dashboard';
+import AccountPage from './features/account/pages/AccountPage';
+import BillingPage from './features/marketing/pages/BillingPage';
+import ContactPage from './features/marketing/pages/ContactPage';
+import AboutPage from './features/marketing/pages/AboutPage';
+import PrivacyPage from './features/marketing/pages/PrivacyPage';
+import TermsPage from './features/marketing/pages/TermsPage';
+import NotFoundPage from './features/marketing/pages/NotFoundPage';
+import ErrorPage from './features/marketing/pages/ErrorPage';
+import { updateSEO, defaultSEO } from './utils/seo';
+import { isRecoveryMode } from './services/passwordResetService';
+import type { SeoConfig } from './schemas';
+import { analytics, trackPageView } from './utils/analytics';
+import { logger } from './services/logger';
+import { env } from './config/env';
+import LoadingSpinner from './components/atoms/LoadingSpinner';
 
 /**
  * Protected Route component that prevents authentication loops

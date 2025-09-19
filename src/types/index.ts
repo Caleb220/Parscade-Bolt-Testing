@@ -6,9 +6,10 @@ import {
   pipelineStepSchema,
   routeConfigSchema,
   userSchema,
-} from '@/schemas/core';
-
-import type { CoreAuthState, PipelineStep, User } from '@/schemas/core';
+  type CoreAuthState,
+  type PipelineStep,
+  type User,
+} from '../schemas/core';
 
 export {
   coreAuthStateSchema,
