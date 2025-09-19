@@ -29,6 +29,9 @@ export const rawEnvSchema = z
     VITE_SUPABASE_ANON_KEY: secureString('VITE_SUPABASE_ANON_KEY', 20),
     VITE_ANALYTICS_KEY: optionalSecureString('VITE_ANALYTICS_KEY', 12),
     VITE_API_BASE_URL: httpsUrlSchema.default('https://api.parscade.com'),
+    VITE_WORKER_BASE_URL: httpsUrlSchema.default('https://worker.parscade.com'),
+    VITE_APP_ENV: z.enum(['development', 'staging', 'production']).default('production'),
+    VITE_SENTRY_DSN: optionalSecureString('VITE_SENTRY_DSN', 10),
     VITE_BILLING_ENABLED: z.coerce.boolean().default(false),
   })
   .catchall(z.unknown());
@@ -53,6 +56,13 @@ export const envSchema = z
     api: z
       .object({
         baseUrl: httpsUrlSchema,
+        workerUrl: httpsUrlSchema,
+      })
+      .strict(),
+    app: z
+      .object({
+        env: z.enum(['development', 'staging', 'production']),
+        sentryDsn: optionalSecureString('VITE_SENTRY_DSN', 10),
       })
       .strict(),
     features: z
@@ -83,6 +93,11 @@ export const buildEnv = (raw: unknown): AppEnv => {
     },
     api: {
       baseUrl: parsedRaw.VITE_API_BASE_URL,
+      workerUrl: parsedRaw.VITE_WORKER_BASE_URL,
+    },
+    app: {
+      env: parsedRaw.VITE_APP_ENV,
+      sentryDsn: parsedRaw.VITE_SENTRY_DSN,
     },
     features: {
       billingEnabled: parsedRaw.VITE_BILLING_ENABLED,

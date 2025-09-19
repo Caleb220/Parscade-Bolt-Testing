@@ -215,14 +215,14 @@ const LoginSupportPage: React.FC = () => {
 const App: FC = () => {
   useEffect(() => {
     // Initialize analytics if API key is available
-    if (env.analytics) {
-      analytics.init(env.analytics);
+    if (env.analytics.key) {
+      analytics.init(env.analytics.key);
     }
     
     // Set up global request context for Sentry
     logger.setContext('app', {
-      version: import.meta.env?.VITE_APP_VERSION || '1.0.0',
-      environment: import.meta.env?.MODE || 'development',
+      version: '1.0.0',
+      environment: env.mode,
       url: window.location.href,
       userAgent: navigator.userAgent,
     });

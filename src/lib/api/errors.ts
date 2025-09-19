@@ -1,11 +1,6 @@
 /**
- * API Error Classes for Parscade Backend Integration
- * 
- * ENTERPRISE ARCHITECTURE:
- * - Structured error hierarchy for different error types
- * - Correlation ID tracking for observability
- * - User-friendly message mapping
- * - Type-safe error handling with request/response context
+ * API Error handling for Parscade Backend Integration
+ * Centralized error definitions and utilities
  */
 
 import type { paths } from '@/types/api-types';
@@ -13,10 +8,10 @@ import type { paths } from '@/types/api-types';
 /**
  * Extract error response type from OpenAPI paths
  */
-type ErrorResponse = paths['/v1/account/me']['get']['responses']['401']['content']['application/json'];
+type ErrorResponse = paths['/health']['get']['responses']['503']['content']['application/json'];
 
 /**
- * Base API error class with correlation tracking and structured details
+ * Enterprise API Error with correlation tracking
  */
 export class ApiError extends Error {
   public readonly name = 'ApiError';
@@ -44,9 +39,6 @@ export class ApiError extends Error {
     this.endpoint = endpoint;
   }
 
-  /**
-   * Create ApiError from backend error response
-   */
   static fromResponse(
     response: Response,
     errorData: ErrorResponse | null,
@@ -60,9 +52,6 @@ export class ApiError extends Error {
     return new ApiError(message, code, response.status, details, requestId, endpoint);
   }
 
-  /**
-   * Get user-friendly error message
-   */
   getUserMessage(): string {
     switch (this.code) {
       case 'UNAUTHORIZED':
@@ -85,94 +74,24 @@ export class ApiError extends Error {
     }
   }
 
-  /**
-   * Check if error is retryable
-   */
   isRetryable(): boolean {
     return (
-      this.statusCode >= 500 || // Server errors
-      this.statusCode === 429 || // Rate limiting
+      this.statusCode >= 500 ||
+      this.statusCode === 429 ||
       this.code === 'NETWORK_ERROR' ||
       this.code === 'TIMEOUT'
     );
   }
 
-  /**
-   * Get suggested retry delay in milliseconds
-   */
   getRetryDelay(): number {
     if (this.statusCode === 429) {
-      // Check for Retry-After header value in details
       const retryAfter = this.details?.retryAfter;
       if (typeof retryAfter === 'number') {
         return retryAfter * 1000;
       }
     }
     
-    // Exponential backoff: 1s, 2s, 4s, 8s
     return Math.min(1000 * Math.pow(2, (this.details?.attempt as number) || 0), 8000);
-  }
-}
-
-/**
- * Authentication-specific error
- */
-export class AuthError extends ApiError {
-  public readonly name = 'AuthError';
-
-  constructor(message: string, statusCode: number, requestId?: string) {
-    super(message, 'AUTH_ERROR', statusCode, undefined, requestId);
-  }
-}
-
-/**
- * Network-specific error for connection issues
- */
-export class NetworkError extends ApiError {
-  public readonly name = 'NetworkError';
-
-  constructor(message: string, originalError?: Error) {
-    super(message, 'NETWORK_ERROR', 0, { originalError: originalError?.message });
-  }
-}
-
-/**
- * Validation error from backend
- */
-export class ValidationError extends ApiError {
-  public readonly name = 'ValidationError';
-  public readonly fieldErrors: Record<string, string>;
-
-  constructor(
-    message: string,
-    fieldErrors: Record<string, string> = {},
-    details?: Record<string, unknown>,
-    requestId?: string
-  ) {
-    super(message, 'VALIDATION_ERROR', 400, details, requestId);
-    this.fieldErrors = fieldErrors;
-  }
-
-  /**
-   * Create ValidationError from backend response
-   */
-  static fromBackendError(
-    errorData: ErrorResponse,
-    requestId?: string
-  ): ValidationError {
-    const details = errorData.details || {};
-    const fieldErrors: Record<string, string> = {};
-
-    // Extract field-specific errors from details
-    if (typeof details === 'object' && details !== null) {
-      for (const [key, value] of Object.entries(details)) {
-        if (typeof value === 'string') {
-          fieldErrors[key] = value;
-        }
-      }
-    }
-
-    return new ValidationError(errorData.message, fieldErrors, details, requestId);
   }
 }
 
@@ -181,27 +100,6 @@ export class ValidationError extends ApiError {
  */
 export const isApiError = (error: unknown): error is ApiError => {
   return error instanceof ApiError;
-};
-
-/**
- * Type guard to check if error is an AuthError
- */
-export const isAuthError = (error: unknown): error is AuthError => {
-  return error instanceof AuthError;
-};
-
-/**
- * Type guard to check if error is a NetworkError
- */
-export const isNetworkError = (error: unknown): error is NetworkError => {
-  return error instanceof NetworkError;
-};
-
-/**
- * Type guard to check if error is a ValidationError
- */
-export const isValidationError = (error: unknown): error is ValidationError => {
-  return error instanceof ValidationError;
 };
 
 /**

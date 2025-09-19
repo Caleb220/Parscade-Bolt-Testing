@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { logger } from '@/services/logger';
 import { isApiError, getRequestId } from '@/lib/api';
+import { env } from '@/config/env';
 
 /**
  * Create configured QueryClient with enterprise settings
@@ -31,7 +32,7 @@ const createQueryClient = (): QueryClient => {
         // Retry with exponential backoff
         retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
         // Refetch on window focus in development only
-        refetchOnWindowFocus: import.meta.env.MODE === 'development',
+        refetchOnWindowFocus: env.mode === 'development',
       },
       mutations: {
         // Don't retry mutations by default
@@ -63,7 +64,7 @@ export const QueryProvider: React.FC<QueryProviderProps> = ({ children }) => {
   return (
     <QueryClientProvider client={queryClient}>
       {children}
-      {import.meta.env.MODE === 'development' && (
+      {env.mode === 'development' && (
         <ReactQueryDevtools initialIsOpen={false} />
       )}
     </QueryClientProvider>
