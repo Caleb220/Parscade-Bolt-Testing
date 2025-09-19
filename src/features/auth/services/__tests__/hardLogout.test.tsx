@@ -41,29 +41,35 @@ describe('hardLogout', () => {
     vi.clearAllMocks();
     global.BroadcastChannel = MockBroadcastChannel as any;
     
-    // Mock localStorage
-    Object.defineProperty(window, 'localStorage', {
-      value: {
+    // Mock localStorage with proper Storage interface
+    const mockLocalStorage = {
         getItem: vi.fn(),
         setItem: vi.fn(),
         removeItem: vi.fn(),
         clear: vi.fn(),
         key: vi.fn(),
         length: 0,
-        keys: vi.fn().mockReturnValue([
-          'sb-test-auth-token',
-          'supabase.auth.token',
-          'other-key'
-        ]),
-      },
+    };
+    
+    Object.defineProperty(window, 'localStorage', {
+      value: mockLocalStorage,
+      configurable: true,
       writable: true,
     });
 
-    // Mock sessionStorage
+    // Mock sessionStorage with proper Storage interface
+    const mockSessionStorage = {
+      clear: vi.fn(),
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+      removeItem: vi.fn(),
+      key: vi.fn(),
+      length: 0,
+    };
+    
     Object.defineProperty(window, 'sessionStorage', {
-      value: {
-        clear: vi.fn(),
-      },
+      value: mockSessionStorage,
+      configurable: true,
       writable: true,
     });
 
