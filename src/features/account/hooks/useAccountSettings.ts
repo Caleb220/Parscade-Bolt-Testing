@@ -95,7 +95,7 @@ export const useAccountSettings = ({ userId, email, fullName }: UseAccountSettin
       if (defaults) {
         setSettings(defaults);
       }
-      setError(formatErrorForUser(err, 'We could not load your settings.'))
+      setError(formatErrorForUser(err, 'We could not load your settings.'));
     } finally {
       setIsLoading(false);
       loadingRef.current = false;
@@ -130,7 +130,7 @@ export const useAccountSettings = ({ userId, email, fullName }: UseAccountSettin
           error: err instanceof Error ? err : new Error(String(err)),
           metadata: { section },
         });
-        setError(formatErrorForUser(err, 'We could not load your settings.'))
+        setError(formatErrorForUser(err, 'We could not load your settings.'));
         throw err;
       } finally {
         setSavingSection(null);
@@ -158,3 +158,7 @@ export const useAccountSettings = ({ userId, email, fullName }: UseAccountSettin
     refresh: loadSettings,
     saveProfile,
     saveSecurity,
+    saveNotifications,
+    saveIntegrations,
+  };
+};
