@@ -16,7 +16,8 @@ import {
   Globe,
   Clock,
   Smartphone,
-  Key
+  Key,
+  Mail
 } from 'lucide-react';
 
 import Button from '@/components/atoms/Button';

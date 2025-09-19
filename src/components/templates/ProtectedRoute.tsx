@@ -2,6 +2,7 @@ import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import LoadingSpinner from '@/components/atoms/LoadingSpinner';
 import { useAuth } from '@/features/auth';
+import { PATHS } from '@/routes/paths';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -19,7 +20,7 @@ interface ProtectedRouteProps {
  */
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
   children, 
-  redirectTo = '/login' 
+  redirectTo = PATHS.LOGIN
 }) => {
   const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();

@@ -88,7 +88,7 @@ serve(async (req) => {
         JSON.stringify({ 
           success: true, 
           message: 'Logout completed successfully',
-          redirectUrl: `${baseUrl}/login?logged_out=1`,
+          redirectUrl: `${baseUrl}${AUTH_PATHS.LOGOUT_REDIRECT}`,
           timestamp: new Date().toISOString(),
         }),
         {

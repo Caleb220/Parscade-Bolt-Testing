@@ -13,6 +13,7 @@
 
 import { supabase } from '@/lib/supabase';
 import { logger } from '@/services/logger';
+import { AUTH_PATHS } from '@/routes/paths';
 
 /**
  * Cross-tab logout synchronization channel
@@ -347,6 +348,6 @@ export const triggerServerLogout = (): void => {
     });
     
     // Fallback to direct redirect
-    window.location.href = '/login?logged_out=1';
+    window.location.href = AUTH_PATHS.LOGOUT_REDIRECT;
   }
 };

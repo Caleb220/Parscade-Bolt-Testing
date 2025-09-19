@@ -7,7 +7,7 @@ import ErrorBoundary from '@/components/molecules/ErrorBoundary';
 import ProtectedRoute from '@/components/templates/ProtectedRoute';
 import { env } from '@/config/env';
 import AccountPage from '@/features/account/pages/AccountPage';
-import { AuthProvider, useAuth } from '@/features/auth';
+import { AuthProvider, LoginPage, useAuth } from '@/features/auth';
 import { DashboardPage } from '@/features/dashboard';
 import AboutPage from '@/features/marketing/pages/AboutPage';
 import BillingPage from '@/features/marketing/pages/BillingPage';
@@ -20,6 +20,7 @@ import ProductPage from '@/features/marketing/pages/ProductPage';
 import TermsPage from '@/features/marketing/pages/TermsPage';
 import { logger } from '@/services/logger';
 import { analytics, trackPageView } from '@/utils/analytics';
+import { AUTH_PATHS, PATHS } from '@/routes/paths';
 import { defaultSEO, updateSEO } from '@/utils/seo';
 
 import type { FC } from 'react';
@@ -82,6 +83,10 @@ const RouteHandler: FC = () => {
         title: 'Parscade',
         description: 'Choose the perfect plan for your document processing needs. Simple, transparent pricing with no hidden fees.',
       },
+      '/login': {
+        title: 'Parscade - Sign In',
+        description: 'Sign in to your Parscade account to access your document processing dashboard.',
+      },
       '/contact': {
         title: 'Parscade',
         description: 'Get in touch with our team. We\'re here to help with any questions about Parscade.',
@@ -123,6 +128,11 @@ const RouteHandler: FC = () => {
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={
+          <PublicRoute>
+            <LoginPage />
+          </PublicRoute>
+        } />
         <Route path="/product" element={<ProductPage />} />
         <Route path="/dashboard" element={
           <ProtectedRoute redirectTo="/login">
