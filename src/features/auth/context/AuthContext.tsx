@@ -4,6 +4,7 @@ import { supabase } from '../../../lib/supabase';
 import type { AuthError, AuthApiError, User as SupabaseUser } from '@supabase/supabase-js';
 import { logger } from '../../../services/logger';
 import type { TypedSupabaseUser } from '../../../types/supabase';
+import { isRecoveryMode } from '../../../services/passwordResetService';
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
