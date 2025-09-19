@@ -13,7 +13,7 @@ import {
   optionalTrimmedStringSchema,
   slugSchema,
   time24HourStringSchema,
-} from '../common';
+} from '@/schemas/common';
 
 /**
  * Notification cadence options used by marketing + account communications.
