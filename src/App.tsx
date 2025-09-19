@@ -237,10 +237,14 @@ const RouteHandler: FC = () => {
         <Route path="/terms" element={<TermsPage />} />
         {/* DEDICATED RECOVERY ROUTES - Always accessible, no auth redirects */}
         <Route path="/reset-password" element={
-          <ResetPasswordPage />
+          <PublicRoute>
+            <ResetPasswordPage />
+          </PublicRoute>
         } />
         <Route path="/auth/recovery" element={
-          <ResetPasswordPage />
+          <PublicRoute>
+            <ResetPasswordPage />
+          </PublicRoute>
         } />
         <Route path="/forgot-password" element={
           <PublicRoute>

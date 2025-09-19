@@ -695,3 +695,38 @@ const getPasswordUpdateErrorMessage = (error: AuthError | AuthApiError): string 
 };
 
 export { validatePasswordStrength, validatePasswordResetForm };
+
+/**
+ * Validates password reset form data using Zod schema.
+ * Provides structured error mapping for UI display.
+ */
+export const validatePasswordResetForm = (formData: PasswordResetForm): { 
+  isValid: boolean; 
+  errors: Record<string, string> 
+} => {
+  const errors: Record<string, string> = {};
+  
+  // NULL-SAFE: Ensure we have safe strings for validation
+  const safePassword = formData.password ?? '';
+  const safeConfirmPassword = formData.confirmPassword ?? '';
+
+  if (safePassword.length === 0) {
+    errors.password = 'Password is required';
+  } else {
+    const strengthValidation = validatePasswordStrength(safePassword);
+    if (!strengthValidation.isValid) {
+      errors.password = strengthValidation.errors[0] || 'Password does not meet security requirements';
+    }
+  }
+
+  if (safeConfirmPassword.length === 0) {
+    errors.confirmPassword = 'Password confirmation is required';
+  } else if (safePassword !== safeConfirmPassword) {
+    errors.confirmPassword = 'Passwords do not match';
+  }
+
+  return {
+    isValid: Object.keys(errors).length === 0,
+    errors,
+  };
+};

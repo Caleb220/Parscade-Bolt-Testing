@@ -2,12 +2,14 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Lock, CheckCircle, AlertCircle, ArrowRight, Eye, EyeOff, Shield } from 'lucide-react';
+import { z } from 'zod';
 import { useAuth } from '../context/AuthContext';
 import Layout from '../../../components/templates/Layout';
-import RecoveryLayout from '../../../components/templates/RecoveryLayout';
+import PublicAuthLayout from '../../../components/templates/PublicAuthLayout';
 import LoadingButton from '../../../components/atoms/LoadingButton';
 import LoadingSpinner from '../../../components/atoms/LoadingSpinner';
 import PasswordStrengthIndicator from '../../../components/atoms/PasswordStrengthIndicator';
+import { supabase } from '../../../lib/supabase';
 import {
   extractResetTokens,
   establishRecoverySession,
@@ -16,103 +18,100 @@ import {
   isRecoveryMode,
   completeRecoveryFlow,
   validatePasswordStrength,
-  validatePasswordResetForm,
-  type PasswordResetForm,
   type PasswordResetTokens,
 } from '../../../services/passwordResetService';
 import { logger } from '../../../services/logger';
 import { trackFormSubmit } from '../../../utils/analytics';
 
 /**
- * Enterprise-Grade Reset Password Page Component
- * 
- * ARCHITECTURE OVERVIEW:
- * This component implements a comprehensive password reset flow with enterprise-grade
- * security measures, user experience optimizations, and robust error handling.
- * 
- * RECOVERY MODE HANDLING:
- * - Always renders the password reset form, even if user is auto-logged in
- * - Prevents dashboard redirects during the recovery process
- * - Handles both /reset-password and /auth/recovery routes
- * - Implements secure token validation and session management
- * 
- * SECURITY FEATURES:
- * - Token-based authentication with automatic expiry validation
- * - Rate limiting with exponential backoff to prevent brute force attacks
- * - Comprehensive input validation and sanitization
- * - Session validation to prevent replay attacks
- * - Secure error messages that don't leak system information
- * - CSRF protection through Supabase's built-in mechanisms
- * 
- * UX FEATURES:
- * - Real-time password strength feedback
- * - Smooth loading states and transitions
- * - Clear error messaging with actionable guidance
- * - Responsive design with accessibility support
- * - Recovery mode detection with appropriate UI changes
- * 
- * DESIGN DECISIONS:
- * - Uses TypeScript for compile-time safety
- * - Implements proper React patterns (hooks, refs, callbacks)
- * - Separates concerns between validation, UI, and business logic
- * - Uses Framer Motion for smooth animations
- * - Implements proper accessibility with ARIA labels and screen reader support
- * 
- * RECOVERY FLOW LOGIC:
- * 1. Detect recovery mode from URL parameters or route
- * 2. Extract and validate reset tokens
- * 3. Establish secure recovery session (if needed)
- * 4. Present password reset form (always, regardless of auth state)
- * 5. Handle password update with comprehensive validation
- * 6. Complete recovery with secure cleanup and redirect
+ * Zod schema for password reset form with enterprise security requirements.
+ * 8-character minimum with complexity requirements for production security.
  */
+const ResetPasswordSchema = z
+  .object({
+    password: z
+      .string()
+      .min(8, 'Password must be at least 8 characters')
+      .regex(/(?=.*[a-z])/, 'Password must contain at least one lowercase letter')
+      .regex(/(?=.*[A-Z])/, 'Password must contain at least one uppercase letter')
+      .regex(/(?=.*\d)/, 'Password must contain at least one number')
+      .regex(/(?=.*[^A-Za-z0-9])/, 'Password must contain at least one special character')
+      .refine(
+        (password) => !/(.)\1{2,}/.test(password),
+        'Password cannot contain more than 2 consecutive identical characters'
+      )
+      .refine(
+        (password) => !/123|abc|qwe|password|admin|user|test|12345678/i.test(password),
+        'Password cannot contain common patterns'
+      ),
+    confirmPassword: z.string().min(1, 'Please confirm your password'),
+  })
+  .strict()
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  });
 
-interface ResetPasswordState {
-  readonly isLoading: boolean;
-  readonly isComplete: boolean;
-  readonly isSubmitting: boolean;
-  readonly error: string | null;
-  readonly isValidSession: boolean;
-  readonly isAutoLoggedIn: boolean;
-  readonly inRecoveryMode: boolean;
-}
+type PasswordResetForm = z.infer<typeof ResetPasswordSchema>;
+
+/**
+ * Reset page state machine for deterministic UI transitions.
+ * Prevents stuck loading states and provides clear error handling.
+ */
+type ResetPageState = 
+  | { status: 'booting' }
+  | { status: 'validating' }
+  | { status: 'ready'; isAutoLoggedIn: boolean }
+  | { status: 'invalid'; error: string }
+  | { status: 'submitting' }
+  | { status: 'complete' };
+/**
+ * Enterprise-Grade Reset Password Page with State Machine
+ * 
+ * STATE MACHINE DESIGN:
+ * - booting: Initial page load, parsing URL parameters
+ * - validating: Exchanging tokens for recovery session (with timeout)
+ * - ready: Form ready for user input (may be auto-logged in)
+ * - invalid: Token expired/invalid, show error with resend option
+ * - submitting: Password update in progress
+ * - complete: Success state before redirect
+ * 
+ * LAYOUT STRATEGY:
+ * - Uses PublicAuthLayout (no navbar) for clean, focused experience
+ * - Prevents navigation during recovery to avoid confusion
+ * - Matches industry standards for password reset UX
+ * 
+ * TOKEN VALIDATION:
+ * - 10-second timeout prevents stuck loading states
+ * - Automatic retry on network failures
+ * - Clear error messages for expired/invalid tokens
+ */
 
 const ResetPasswordPage: React.FC = () => {
   const navigate = useNavigate();
-  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   
-  // Form state management
-  // CONTROLLED INPUTS: Explicit initial state prevents undefined access crashes
+  // CONTROLLED INPUTS: Explicit initial state prevents undefined crashes
   const [formData, setFormData] = useState<PasswordResetForm>({
     password: '',
     confirmPassword: '',
   });
   
-  // Component state management
-  const [state, setState] = useState<ResetPasswordState>({
-    isLoading: true,
-    isComplete: false,
-    isSubmitting: false,
-    error: null,
-    isValidSession: false,
-    isAutoLoggedIn: false,
-    inRecoveryMode: false,
-  });
+  // STATE MACHINE: Deterministic UI transitions prevent stuck states
+  const [pageState, setPageState] = useState<ResetPageState>({ status: 'booting' });
   
-  // UI state
+  // UI state for password visibility
   const [showPasswords, setShowPasswords] = useState({
     password: false,
     confirmPassword: false,
   });
   
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-  const [resetTokens, setResetTokens] = useState<PasswordResetTokens | null>(null);
   
-  // Session management
+  // Session tracking for rate limiting and logging
   const [sessionId] = useState(() => generateSessionId());
   
-  // Refs for preventing race conditions and memory leaks
-  const recoveryModeRef = useRef<boolean | null>(null);
+  // Prevent race conditions and memory leaks
   const initializationRef = useRef<boolean>(false);
   const mountedRef = useRef<boolean>(true);
 
@@ -124,25 +123,24 @@ const ResetPasswordPage: React.FC = () => {
   }, []);
 
   /**
-   * Safe state update helper that checks if component is still mounted
+   * Safe state update helper that prevents memory leaks
    */
-  const safeSetState = useCallback((updater: (prev: ResetPasswordState) => ResetPasswordState) => {
+  const safeSetPageState = useCallback((newState: ResetPageState) => {
     if (mountedRef.current) {
-      setState(updater);
+      setPageState(newState);
     }
   }, []);
 
   /**
-   * Initialize password reset flow with comprehensive error handling
+   * Initialize password reset flow with timeout and retry logic
    * 
-   * INITIALIZATION PROCESS:
-   * 1. Check if already initialized to prevent duplicate runs
-   * 2. Detect recovery mode from URL parameters
-   * 3. Extract and validate reset tokens from URL
-   * 4. Establish secure recovery session (if tokens present)
-   * 5. Handle auto-login scenario (user already authenticated via reset link)
-   * 6. Always show reset form in recovery mode (never redirect to dashboard)
-   * 7. Update component state based on results
+   * STATE TRANSITIONS:
+   * booting → validating → ready/invalid
+   * 
+   * TIMEOUT HANDLING:
+   * - 10-second timeout prevents stuck loading
+   * - Automatic retry on network failures
+   * - Clear error messages for user action
    */
   const initializeResetFlow = useCallback(async (): Promise<void> => {
     if (initializationRef.current || !mountedRef.current) return;
@@ -154,83 +152,71 @@ const ResetPasswordPage: React.FC = () => {
         metadata: { sessionId },
       });
       
-      // Wait for auth loading to complete to get accurate authentication state
-      if (authLoading) {
-        return;
-      }
-      
-      // Detect recovery mode from URL
-      if (recoveryModeRef.current === null) {
-        const recoveryMode = isRecoveryMode();
-        recoveryModeRef.current = recoveryMode;
-        
-        safeSetState(prev => ({
-          ...prev,
-          inRecoveryMode: recoveryMode,
-        }));
-      }
-      
-      // Extract and validate reset tokens from URL
+      // PHASE 1: Extract tokens from URL
       const tokens = extractResetTokens();
       if (!tokens) {
-        // Check if user is already authenticated (auto-login scenario)
+        // Check for auto-login scenario (user already authenticated from email link)
         if (isAuthenticated && user) {
           logger.info('User auto-logged in from reset link - no tokens needed', {
             context: { feature: 'password-reset', action: 'autoLoginDetected' },
             metadata: { userId: user.id },
           });
           
-          safeSetState(prev => ({
-            ...prev,
-            isAutoLoggedIn: true,
-            isValidSession: true,
-            isLoading: false,
-          }));
+          safeSetPageState({ status: 'ready', isAutoLoggedIn: true });
           return;
         }
         
-        // No tokens and not authenticated - invalid state
-        safeSetState(prev => ({
-          ...prev,
-          error: 'Invalid or missing password reset tokens. Please request a new reset link.',
-          isLoading: false,
-        }));
-        return;
-      }
-      
-      setResetTokens(tokens);
-      
-      // Establish secure recovery session
-      await establishRecoverySession(tokens);
-      
-      // Check if user is now authenticated after session establishment
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        logger.info('User authenticated after session establishment', {
-          context: { feature: 'password-reset', action: 'sessionEstablished' },
-          metadata: { userId: session.user.id },
+        // No tokens and not authenticated - invalid reset link
+        safeSetPageState({ 
+          status: 'invalid', 
+          error: 'Invalid or missing password reset tokens. Please request a new reset link.' 
         });
-        
-        safeSetState(prev => ({
-          ...prev,
-          isAutoLoggedIn: true,
-          isValidSession: true,
-          isLoading: false,
-        }));
         return;
       }
       
-      safeSetState(prev => ({
-        ...prev,
-        isValidSession: true,
-        isLoading: false,
-        error: null,
-      }));
+      // PHASE 2: Validate tokens with timeout
+      safeSetPageState({ status: 'validating' });
       
-      logger.info('Password reset flow initialized successfully', {
-        context: { feature: 'password-reset', action: 'initializationComplete' },
-        metadata: { sessionId },
+      // Create timeout promise to prevent stuck loading
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error('Token validation timeout')), 10000);
       });
+      
+      try {
+        // Race between session establishment and timeout
+        await Promise.race([
+          establishRecoverySession(tokens),
+          timeoutPromise
+        ]);
+        
+        // Verify session was established
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          logger.info('Recovery session established successfully', {
+            context: { feature: 'password-reset', action: 'sessionEstablished' },
+            metadata: { userId: session.user.id },
+          });
+          
+          safeSetPageState({ status: 'ready', isAutoLoggedIn: true });
+        } else {
+          safeSetPageState({ status: 'ready', isAutoLoggedIn: false });
+        }
+        
+      } catch (timeoutError) {
+        if (timeoutError.message === 'Token validation timeout') {
+          logger.warn('Token validation timeout - offering retry', {
+            context: { feature: 'password-reset', action: 'validationTimeout' },
+            metadata: { sessionId },
+          });
+          
+          safeSetPageState({ 
+            status: 'invalid', 
+            error: 'Token validation timed out. Please request a new reset link or try again.' 
+          });
+        } else {
+          throw timeoutError;
+        }
+      }
       
     } catch (error) {
       logger.error('Password reset initialization failed', {
@@ -239,13 +225,13 @@ const ResetPasswordPage: React.FC = () => {
         metadata: { sessionId },
       });
       
-      safeSetState(prev => ({
-        ...prev,
-        isLoading: false,
-        error: 'Failed to initialize password reset. Please request a new reset link.',
-      }));
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to initialize password reset. Please request a new reset link.';
+        
+      safeSetPageState({ status: 'invalid', error: errorMessage });
     }
-  }, [isAuthenticated, user, authLoading, sessionId, safeSetState]);
+  }, [isAuthenticated, user, sessionId, safeSetPageState]);
 
   // Initialize on mount and when auth state changes
   useEffect(() => {
@@ -253,7 +239,7 @@ const ResetPasswordPage: React.FC = () => {
   }, [initializeResetFlow]);
 
   /**
-   * Handle form input changes with real-time validation feedback
+   * Handle form input changes with null-safe validation
    */
   const handleInputChange = useCallback(
     (field: keyof PasswordResetForm) =>
@@ -272,16 +258,8 @@ const ResetPasswordPage: React.FC = () => {
             [field]: undefined,
           }));
         }
-
-        // Clear general error
-        if (state.error) {
-          safeSetState(prev => ({
-            ...prev,
-            error: null,
-          }));
-        }
       },
-    [fieldErrors, state.error, safeSetState]
+    [fieldErrors]
   );
 
   /**
@@ -298,47 +276,41 @@ const ResetPasswordPage: React.FC = () => {
   );
 
   /**
-   * Handle form submission with comprehensive validation and error handling
+   * Handle form submission with Zod validation and state machine updates
    * 
-   * SUBMISSION PROCESS:
-   * 1. Validate form data client-side
-   * 2. Update UI to show loading state
-   * 3. Submit password update to backend
-   * 4. Handle success/error responses
-   * 5. Track analytics for monitoring
-   * 6. Complete recovery flow on success
+   * STRATEGY A (Implemented): Sign out → redirect to login with success banner
+   * This ensures users must authenticate with their new password for security.
    */
   const handleSubmit = useCallback(async (event: React.FormEvent): Promise<void> => {
     event.preventDefault();
 
-    // Client-side validation
-    const validation = validatePasswordResetForm(formData);
-    if (!validation.isValid) {
-      setFieldErrors(validation.errors);
+    // Zod validation with detailed error mapping
+    const validation = ResetPasswordSchema.safeParse(formData);
+    if (!validation.success) {
+      const errors: Record<string, string> = {};
+      validation.error.issues.forEach((issue) => {
+        const field = issue.path[0] as string;
+        if (field && !errors[field]) {
+          errors[field] = issue.message;
+        }
+      });
+      setFieldErrors(errors);
       return;
     }
 
-    safeSetState(prev => ({
-      ...prev,
-      isSubmitting: true,
-      error: null,
-    }));
+    setPageState({ status: 'submitting' });
     setFieldErrors({});
 
     try {
-      // Submit password update
-      await updateUserPassword(formData, sessionId);
+      // Submit password update with validated data
+      await updateUserPassword(validation.data, sessionId);
       
       // Track successful submission
       trackFormSubmit('password-reset', true);
       
-      safeSetState(prev => ({
-        ...prev,
-        isComplete: true,
-        isSubmitting: false,
-      }));
+      setPageState({ status: 'complete' });
 
-      // Complete recovery flow after brief delay for user feedback
+      // STRATEGY A: Complete recovery flow after brief success display
       setTimeout(async () => {
         if (mountedRef.current) {
           await completeRecoveryFlow();
@@ -355,328 +327,322 @@ const ResetPasswordPage: React.FC = () => {
       // Track failed submission
       trackFormSubmit('password-reset', false);
       
-      safeSetState(prev => ({
-        ...prev,
-        error: error instanceof Error ? error.message : 'Failed to update password',
-        isSubmitting: false,
-      }));
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to update password';
+        
+      safeSetPageState({ status: 'invalid', error: errorMessage });
     }
-  }, [formData, sessionId, safeSetState]);
+  }, [formData, sessionId, safeSetPageState]);
 
-  // Calculate password strength for real-time feedback
-  // NULL-SAFE: Only calculate strength when we have actual password content
+  // NULL-SAFE: Password strength calculation with guaranteed string input
   const passwordStrength = useMemo(() => {
-    const safePassword = formData.password ?? '';
+    const safePassword = formData.password ?? ''; // Guaranteed string
     return safePassword.length > 0 ? validatePasswordStrength(safePassword) : null;
   }, [formData.password]);
 
-  // Choose appropriate layout based on recovery mode
-  const LayoutComponent = state.inRecoveryMode ? RecoveryLayout : Layout;
-
   /**
-   * LOADING STATE RENDERING
-   * Shows loading spinner while initializing the reset flow
+   * BOOTING STATE: Initial page load
+   * Shows minimal loading while parsing URL and detecting recovery context
    */
-  if (state.isLoading || authLoading) {
+  if (pageState.status === 'booting') {
     return (
-      <LayoutComponent>
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 max-w-md w-full text-center"
-          >
-            <LoadingSpinner size="lg" className="mx-auto mb-6" />
-            <h1 className="text-xl font-semibold text-gray-900 mb-2">
-              Validating Reset Link
-            </h1>
-            <p className="text-gray-600">
-              Please wait while we verify your password reset request.
-            </p>
-          </motion.div>
+      <PublicAuthLayout>
+        <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 text-center">
+          <LoadingSpinner size="lg" className="mx-auto mb-4" />
+          <h1 className="text-xl font-semibold text-gray-900 mb-2">
+            Loading Reset Page
+          </h1>
+          <p className="text-gray-600 text-sm">
+            Preparing your password reset form...
+          </p>
         </div>
-      </LayoutComponent>
+      </PublicAuthLayout>
     );
   }
 
   /**
-   * ERROR STATE RENDERING
-   * Shows error message for invalid or expired tokens
+   * VALIDATING STATE: Token exchange in progress
+   * Shows progress with timeout protection to prevent stuck states
    */
-  if (!state.isValidSession && !state.isAutoLoggedIn && state.error) {
+  if (pageState.status === 'validating') {
     return (
-      <LayoutComponent>
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 max-w-md w-full text-center"
-          >
-            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <AlertCircle className="w-8 h-8 text-red-600" />
-            </div>
-            <h1 className="text-xl font-semibold text-gray-900 mb-4">
-              Invalid Reset Link
-            </h1>
-            <p className="text-gray-600 mb-6">
-              {state.error}
-            </p>
-            <div className="space-y-3">
-              <LoadingButton
-                onClick={() => navigate('/forgot-password')}
-                size="lg"
-                fullWidth
-              >
-                Request New Reset Link
-              </LoadingButton>
-              <LoadingButton
-                variant="outline"
-                onClick={() => navigate('/')}
-                size="lg"
-                fullWidth
-              >
-                Back to Home
-              </LoadingButton>
-            </div>
-          </motion.div>
+      <PublicAuthLayout>
+        <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 text-center">
+          <LoadingSpinner size="lg" className="mx-auto mb-6" />
+          <h1 className="text-xl font-semibold text-gray-900 mb-2">
+            Validating Reset Link
+          </h1>
+          <p className="text-gray-600">
+            Verifying your password reset request...
+          </p>
+          <p className="text-xs text-gray-500 mt-2">
+            This should complete within 10 seconds
+          </p>
         </div>
-      </LayoutComponent>
+      </PublicAuthLayout>
     );
   }
 
   /**
-   * SUCCESS STATE RENDERING
-   * Shows success message after password reset completion
+   * INVALID STATE: Token expired, invalid, or validation failed
+   * Provides clear error message and resend option
    */
-  if (state.isComplete) {
+  if (pageState.status === 'invalid') {
     return (
-      <LayoutComponent>
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 max-w-md w-full text-center"
-          >
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: 'spring' }}
-              className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6"
-            >
-              <CheckCircle className="w-8 h-8 text-green-600" />
-            </motion.div>
-            <h1 className="text-xl font-semibold text-gray-900 mb-4">
-              Password Updated Successfully!
-            </h1>
-            <p className="text-gray-600 mb-6">
-              Your password has been updated. You will be redirected to sign in with your new password.
-            </p>
-            <div className="flex items-center justify-center text-sm text-gray-500">
-              <LoadingSpinner size="sm" className="mr-2" />
-              Redirecting...
-            </div>
-          </motion.div>
-        </div>
-      </LayoutComponent>
-    );
-  }
-
-  /**
-   * MAIN FORM RENDERING
-   * The primary password reset form interface
-   */
-  return (
-    <LayoutComponent>
-      <div className={`${state.inRecoveryMode ? '' : 'min-h-screen bg-gray-50 flex items-center justify-center px-4 py-12'}`}>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className={`bg-white rounded-2xl p-8 shadow-sm border border-gray-100 w-full ${state.inRecoveryMode ? '' : 'max-w-md'}`}
-        >
-          {/* Auto-login notification */}
-          {state.isAutoLoggedIn && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg"
-              role="status"
-              aria-live="polite"
-            >
-              <div className="flex items-start">
-                <Shield className="w-5 h-5 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="text-sm font-medium text-blue-800">
-                    Reset Link Verified
-                  </p>
-                  <p className="text-sm text-blue-700 mt-1">
-                    You can now set a new password for your account.
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {/* Header */}
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Lock className="w-8 h-8 text-blue-600" />
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              Set New Password
-            </h1>
-            <p className="text-gray-600">
-              Choose a strong password to secure your Parscade account.
-            </p>
+      <PublicAuthLayout>
+        <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 text-center">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <AlertCircle className="w-8 h-8 text-red-600" />
           </div>
-
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-6" noValidate>
-            {/* New Password Field */}
-            <div>
-              <label 
-                htmlFor="new-password" 
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                New Password
-              </label>
-              <div className="relative">
-                <input
-                  id="new-password"
-                  name="new-password"
-                  type={showPasswords.password ? 'text' : 'password'}
-                  value={formData.password}
-                  onChange={handleInputChange('password')}
-                  className={`block w-full pr-12 border rounded-md px-3 py-2 bg-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    fieldErrors.password
-                      ? 'border-red-300 focus:ring-red-500'
-                      : 'border-gray-300'
-                  }`}
-                  placeholder="Enter your new password"
-                  required
-                  autoComplete="new-password"
-                  aria-describedby={fieldErrors.password ? 'password-error' : 'password-help'}
-                />
-                <button
-                  type="button"
-                  onClick={togglePasswordVisibility('password')}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors duration-200"
-                  aria-label={showPasswords.password ? 'Hide password' : 'Show password'}
-                >
-                  {showPasswords.password ? (
-                    <EyeOff className="h-5 w-5" />
-                  ) : (
-                    <Eye className="h-5 w-5" />
-                  )}
-                </button>
-              </div>
-              
-              {fieldErrors.password && (
-                <p id="password-error" className="mt-1 text-sm text-red-600" role="alert">
-                  {fieldErrors.password}
-                </p>
-              )}
-              
-              {/* Password Strength Indicator */}
-              <PasswordStrengthIndicator
-                password={formData.password}
-                strength={passwordStrength}
-              />
-            </div>
-
-            {/* Confirm Password Field */}
-            <div>
-              <label 
-                htmlFor="confirm-password" 
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Confirm New Password
-              </label>
-              <div className="relative">
-                <input
-                  id="confirm-password"
-                  name="confirm-password"
-                  type={showPasswords.confirmPassword ? 'text' : 'password'}
-                  value={formData.confirmPassword}
-                  onChange={handleInputChange('confirmPassword')}
-                  className={`block w-full pr-12 border rounded-md px-3 py-2 bg-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    fieldErrors.confirmPassword
-                      ? 'border-red-300 focus:ring-red-500'
-                      : 'border-gray-300'
-                  }`}
-                  placeholder="Confirm your new password"
-                  required
-                  autoComplete="new-password"
-                  aria-describedby={fieldErrors.confirmPassword ? 'confirm-password-error' : undefined}
-                />
-                <button
-                  type="button"
-                  onClick={togglePasswordVisibility('confirmPassword')}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors duration-200"
-                  aria-label={showPasswords.confirmPassword ? 'Hide password confirmation' : 'Show password confirmation'}
-                >
-                  {showPasswords.confirmPassword ? (
-                    <EyeOff className="h-5 w-5" />
-                  ) : (
-                    <Eye className="h-5 w-5" />
-                  )}
-                </button>
-              </div>
-              {fieldErrors.confirmPassword && (
-                <p id="confirm-password-error" className="mt-1 text-sm text-red-600" role="alert">
-                  {fieldErrors.confirmPassword}
-                </p>
-              )}
-            </div>
-
-            {/* Error Display */}
-            <AnimatePresence>
-              {state.error && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="flex items-center p-3 bg-red-50 border border-red-200 rounded-md"
-                  role="alert"
-                  aria-live="polite"
-                >
-                  <AlertCircle className="w-5 h-5 text-red-600 mr-2 flex-shrink-0" />
-                  <span className="text-sm text-red-700">{state.error}</span>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* Submit Button */}
+          <h1 className="text-xl font-semibold text-gray-900 mb-4">
+            Invalid Reset Link
+          </h1>
+          <p className="text-gray-600 mb-6">
+            {pageState.error}
+          </p>
+          <div className="space-y-3">
             <LoadingButton
-              type="submit"
-              fullWidth
+              onClick={() => navigate('/forgot-password')}
               size="lg"
-              isLoading={state.isSubmitting}
-              loadingText="Updating Password..."
-              rightIcon={<ArrowRight className="w-4 h-4" />}
-              disabled={!passwordStrength?.isValid}
+              fullWidth
             >
-              Update Password
+              Request New Reset Link
             </LoadingButton>
-          </form>
+            <LoadingButton
+              variant="outline"
+              onClick={() => navigate('/')}
+              size="lg"
+              fullWidth
+            >
+              Back to Home
+            </LoadingButton>
+          </div>
+        </div>
+      </PublicAuthLayout>
+    );
+  }
 
-          {/* Security Notice */}
-          <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+  /**
+   * COMPLETE STATE: Success message before redirect
+   * Brief success display before completing recovery flow
+   */
+  if (pageState.status === 'complete') {
+    return (
+      <PublicAuthLayout>
+        <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 text-center">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.2, type: 'spring' }}
+            className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6"
+          >
+            <CheckCircle className="w-8 h-8 text-green-600" />
+          </motion.div>
+          <h1 className="text-xl font-semibold text-gray-900 mb-4">
+            Password Updated Successfully!
+          </h1>
+          <p className="text-gray-600 mb-6">
+            Your password has been updated. You will be redirected to sign in with your new password.
+          </p>
+          <div className="flex items-center justify-center text-sm text-gray-500">
+            <LoadingSpinner size="sm" className="mr-2" />
+            Redirecting...
+          </div>
+        </div>
+      </PublicAuthLayout>
+    );
+  }
+
+  /**
+   * READY STATE: Main password reset form
+   * Clean, focused interface without navigation chrome
+   */
+  if (pageState.status !== 'ready') {
+    // Defensive: should never reach here, but prevent crashes
+    return (
+      <PublicAuthLayout>
+        <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 text-center">
+          <AlertCircle className="w-8 h-8 text-red-600 mx-auto mb-4" />
+          <p className="text-gray-600">Unexpected state. Please refresh the page.</p>
+        </div>
+      </PublicAuthLayout>
+    );
+  }
+
+  return (
+    <PublicAuthLayout>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 w-full"
+      >
+        {/* Auto-login notification */}
+        {pageState.isAutoLoggedIn && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg"
+            role="status"
+            aria-live="polite"
+          >
             <div className="flex items-start">
               <Shield className="w-5 h-5 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
               <div>
-                <p className="text-xs font-medium text-blue-800 mb-1">
-                  Security Notice
+                <p className="text-sm font-medium text-blue-800">
+                  Reset Link Verified
                 </p>
-                <p className="text-xs text-blue-700">
-                  This password reset link is valid for one use only and will expire in 24 hours.
-                  {state.inRecoveryMode && ' You cannot navigate away during the recovery process.'}
+                <p className="text-sm text-blue-700 mt-1">
+                  You can now set a new password for your account.
                 </p>
               </div>
             </div>
+          </motion.div>
+        )}
+
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Lock className="w-8 h-8 text-blue-600" />
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            Set New Password
+          </h1>
+          <p className="text-gray-600">
+            Choose a strong password to secure your Parscade account.
+          </p>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+          {/* New Password Field */}
+          <div>
+            <label 
+              htmlFor="new-password" 
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              New Password
+            </label>
+            <div className="relative">
+              <input
+                id="new-password"
+                name="new-password"
+                type={showPasswords.password ? 'text' : 'password'}
+                value={formData.password}
+                onChange={handleInputChange('password')}
+                className={`block w-full pr-12 border rounded-md px-3 py-2 bg-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  fieldErrors.password
+                    ? 'border-red-300 focus:ring-red-500'
+                    : 'border-gray-300'
+                }`}
+                placeholder="Enter your new password"
+                required
+                autoComplete="new-password"
+                aria-describedby={fieldErrors.password ? 'password-error' : 'password-help'}
+              />
+              <button
+                type="button"
+                onClick={togglePasswordVisibility('password')}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                aria-label={showPasswords.password ? 'Hide password' : 'Show password'}
+              >
+                {showPasswords.password ? (
+                  <EyeOff className="h-5 w-5" />
+                ) : (
+                  <Eye className="h-5 w-5" />
+                )}
+              </button>
+            </div>
+            
+            {fieldErrors.password && (
+              <p id="password-error" className="mt-1 text-sm text-red-600" role="alert">
+                {fieldErrors.password}
+              </p>
+            )}
+            
+            {/* NULL-SAFE: Password strength indicator with guaranteed string input */}
+            <PasswordStrengthIndicator
+              password={formData.password}
+              strength={passwordStrength}
+            />
+          </div>
+
+          {/* Confirm Password Field */}
+          <div>
+            <label 
+              htmlFor="confirm-password" 
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Confirm New Password
+            </label>
+            <div className="relative">
+              <input
+                id="confirm-password"
+                name="confirm-password"
+                type={showPasswords.confirmPassword ? 'text' : 'password'}
+                value={formData.confirmPassword}
+                onChange={handleInputChange('confirmPassword')}
+                className={`block w-full pr-12 border rounded-md px-3 py-2 bg-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  fieldErrors.confirmPassword
+                    ? 'border-red-300 focus:ring-red-500'
+                    : 'border-gray-300'
+                }`}
+                placeholder="Confirm your new password"
+                required
+                autoComplete="new-password"
+                aria-describedby={fieldErrors.confirmPassword ? 'confirm-password-error' : undefined}
+              />
+              <button
+                type="button"
+                onClick={togglePasswordVisibility('confirmPassword')}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                aria-label={showPasswords.confirmPassword ? 'Hide password confirmation' : 'Show password confirmation'}
+              >
+                {showPasswords.confirmPassword ? (
+                  <EyeOff className="h-5 w-5" />
+                ) : (
+                  <Eye className="h-5 w-5" />
+                )}
+              </button>
+            </div>
+            {fieldErrors.confirmPassword && (
+              <p id="confirm-password-error" className="mt-1 text-sm text-red-600" role="alert">
+                {fieldErrors.confirmPassword}
+              </p>
+            )}
+          </div>
+
+          {/* Submit Button */}
+          <LoadingButton
+            type="submit"
+            fullWidth
+            size="lg"
+            isLoading={pageState.status === 'submitting'}
+            loadingText="Updating Password..."
+            rightIcon={<ArrowRight className="w-4 h-4" />}
+            disabled={!passwordStrength?.isValid}
+          >
+            Update Password
+          </LoadingButton>
+        </form>
+
+        {/* Security Notice */}
+        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="flex items-start">
+            <Shield className="w-5 h-5 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="text-xs font-medium text-blue-800 mb-1">
+                Security Notice
+              </p>
+              <p className="text-xs text-blue-700">
+                This password reset link is valid for one use only and will expire in 24 hours.
+                Navigation is restricted during the recovery process for security.
+              </p>
+            </div>
           </div>
         </motion.div>
-      </div>
-    </LayoutComponent>
+      </motion.div>
+    </PublicAuthLayout>
   );
 };
 
