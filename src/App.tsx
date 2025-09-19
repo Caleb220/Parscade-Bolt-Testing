@@ -4,6 +4,7 @@ import { AnimatePresence } from 'framer-motion';
 
 import LoadingSpinner from '@/components/atoms/LoadingSpinner';
 import ErrorBoundary from '@/components/molecules/ErrorBoundary';
+import ProtectedRoute from '@/components/templates/ProtectedRoute';
 import { env } from '@/config/env';
 import AccountPage from '@/features/account/pages/AccountPage';
 import { AuthProvider, useAuth } from '@/features/auth';
@@ -145,12 +146,12 @@ const RouteHandler: FC = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/product" element={<ProductPage />} />
         <Route path="/dashboard" element={
-          <ProtectedRoute>
+          <ProtectedRoute redirectTo="/login">
             <DashboardPage />
           </ProtectedRoute>
         } />
         <Route path="/account" element={
-          <ProtectedRoute>
+          <ProtectedRoute redirectTo="/login">
             <AccountPage />
           </ProtectedRoute>
         } />

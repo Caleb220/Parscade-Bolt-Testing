@@ -185,6 +185,37 @@ VITE_SUPABASE_URL=custom-url npm run build
 - Comprehensive error handling without data leakage
 - **Domain-flexible security**: Secure on any domain without hardcoded restrictions
 
+## Hard Logout & Session Sanitization
+
+This application implements enterprise-grade "hard logout" functionality that ensures complete session termination:
+
+### Features
+- **Global Token Revocation**: Uses `supabase.auth.signOut({ scope: 'global' })` to invalidate all sessions
+- **Complete Storage Purge**: Clears localStorage, sessionStorage, cookies, and IndexedDB
+- **Cross-Tab Synchronization**: Broadcasts logout events to all open tabs
+- **Cache Prevention**: Sets `Clear-Site-Data` headers to prevent cached page restoration
+- **Realtime Connection Cleanup**: Closes all Supabase realtime channels
+- **Route Protection**: Protected routes include `Cache-Control: no-store` headers
+
+### Security Guarantees
+After logout, users are guaranteed to be signed out with:
+- ✅ No silent re-login possible
+- ✅ All tabs logged out simultaneously  
+- ✅ Page refresh keeps user logged out
+- ✅ Back button doesn't show cached content
+- ✅ All client-side auth data purged
+- ✅ Server-side tokens revoked globally
+
+### Implementation
+```typescript
+import { performHardLogout } from './utils/hardLogout';
+
+// Trigger complete logout
+await performHardLogout();
+```
+
+The system automatically handles cross-tab synchronization and server-side cleanup through the `/auth/logout` endpoint.
+
 ## Support
 
 - Email: admin@parscade.com

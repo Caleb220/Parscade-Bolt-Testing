@@ -3,6 +3,7 @@ import type { AuthState, AuthContextType, User } from '../types/authTypes';
 import { supabase } from '../../../lib/supabase';
 import type { AuthError, AuthApiError, User as SupabaseUser } from '@supabase/supabase-js';
 import { logger } from '../../../services/logger';
+import { performHardLogout, setupCrossTabLogoutListener } from '../../../utils/hardLogout';
 import type { TypedSupabaseUser } from '../../../types/supabase';
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -73,6 +74,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
   const initializationRef = useRef(false);
   const authStateChangeRef = useRef<{ unsubscribe: () => void } | null>(null);
+  const crossTabCleanupRef = useRef<(() => void) | null>(null);
 
   // Memoized auth state change handler to prevent recreation on every render
   const handleAuthStateChange = useCallback(
@@ -179,6 +181,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         if (isMounted) {
           const { data: { subscription } } = supabase.auth.onAuthStateChange(handleAuthStateChange);
           authStateChangeRef.current = subscription;
+          
+          // Set up cross-tab logout listener
+          const crossTabCleanup = setupCrossTabLogoutListener(() => {
+            logger.info('Processing cross-tab logout signal', {
+              context: { feature: 'auth', action: 'crossTabLogout' }
+            });
+            dispatch({ type: 'AUTH_SIGNOUT' });
+            logger.clearUserContext();
+          });
+          crossTabCleanupRef.current = crossTabCleanup;
         }
       } catch (initError) {
         if (!isMounted) return;
@@ -199,6 +211,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (authStateChangeRef.current) {
         authStateChangeRef.current.unsubscribe();
         authStateChangeRef.current = null;
+      }
+      if (crossTabCleanupRef.current) {
+        crossTabCleanupRef.current();
+        crossTabCleanupRef.current = null;
       }
     };
   }, []); // Empty dependency array - only run once on mount
@@ -265,45 +281,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   const signOut = useCallback(async (): Promise<void> => {
-    logger.info('Starting user logout process', {
+    logger.info('Starting hard logout process', {
       context: { feature: 'auth', action: 'signOut' },
     });
     
     try {
-      // Update UI immediately for smooth user experience
+      // Update UI immediately for smooth user experience  
       dispatch({ type: 'AUTH_SIGNOUT' });
       
       // Clear user context immediately
       logger.clearUserContext();
       
-      // Sign out from Supabase (this will trigger auth state change)
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        logger.warn('Supabase signout warning', {
-          context: { feature: 'auth', action: 'supabaseSignOut' },
-          error,
-        });
-      }
-      
-      // Clear auth-related localStorage items
-      const keysToRemove = Object.keys(localStorage).filter(key => 
-        key.includes('supabase') || 
-        key.includes('auth') || 
-        key.includes('token') ||
-        key.includes('session')
-      );
-      
-      keysToRemove.forEach(key => {
-        try {
-          localStorage.removeItem(key);
-        } catch (storageError) {
-          logger.warn('Could not clear localStorage item', {
-            context: { feature: 'auth', action: 'clearStorage' },
-            metadata: { key },
-            error: storageError instanceof Error ? storageError : new Error(String(storageError)),
-          });
-        }
-      });
+      // Perform comprehensive hard logout
+      await performHardLogout();
       
     } catch (signOutError) {
       logger.warn('Background signout error occurred', {
@@ -312,9 +302,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       });
     }
     
-    logger.info('User logout process completed', {
+    logger.info('Hard logout process completed', {
       context: { feature: 'auth', action: 'signOutComplete' },
     });
+    
+    // Redirect to server logout endpoint for final cleanup
+    // This will set Clear-Site-Data headers and redirect to login
+    setTimeout(() => {
+      window.location.href = '/login?logged_out=1';
+    }, 100);
   }, []);
 
   const resendConfirmationEmail = useCallback(async (email: string): Promise<void> => {

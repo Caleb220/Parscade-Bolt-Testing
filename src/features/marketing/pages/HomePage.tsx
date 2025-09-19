@@ -14,11 +14,13 @@ const HomePage: React.FC = () => {
   const location = useLocation();
   const [authModalOpen, setAuthModalOpen] = React.useState<boolean>(false);
   const [showSuccessMessage, setShowSuccessMessage] = React.useState<boolean>(false);
+  const [showLogoutMessage, setShowLogoutMessage] = React.useState<boolean>(false);
 
   useEffect(() => {
     // Check URL parameters for various states
     const urlParams = new URLSearchParams(location.search);
     const resetStatus = urlParams.get('reset');
+    const loggedOut = urlParams.get('logged_out');
     
     // Handle password reset success
     if (resetStatus === 'success') {
@@ -30,6 +32,18 @@ const HomePage: React.FC = () => {
       setTimeout(() => {
         setShowSuccessMessage(false);
       }, 10000);
+    }
+    
+    // Handle logout confirmation
+    if (loggedOut === '1') {
+      setShowLogoutMessage(true);
+      // Clean URL after showing message
+      window.history.replaceState({}, document.title, window.location.pathname);
+      
+      // Auto-hide logout message after 8 seconds
+      setTimeout(() => {
+        setShowLogoutMessage(false);
+      }, 8000);
     }
     
     // Check if we should open the auth modal (e.g., from ProductPage redirect)
@@ -65,6 +79,38 @@ const HomePage: React.FC = () => {
               onClick={() => setShowSuccessMessage(false)}
               className="text-white hover:text-green-200 transition-colors duration-200"
               aria-label="Close success message"
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </button>
+          </div>
+        </motion.div>
+      )}
+      
+      {/* Logout Success Banner */}
+      {showLogoutMessage && (
+        <motion.div
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -50 }}
+          className="bg-blue-600 text-white py-3 px-4 text-center relative"
+          role="alert"
+          aria-live="polite"
+        >
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <div className="flex items-center">
+              <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+              </svg>
+              <span className="font-medium">
+                ✅ You've been signed out successfully. All sessions have been cleared.
+              </span>
+            </div>
+            <button
+              onClick={() => setShowLogoutMessage(false)}
+              className="text-white hover:text-blue-200 transition-colors duration-200"
+              aria-label="Close logout message"
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />

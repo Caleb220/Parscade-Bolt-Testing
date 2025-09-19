@@ -5,6 +5,11 @@ import { env } from '@/config/env';
 /**
  * Supabase client configuration with domain-agnostic settings
  * 
+ * HARD LOGOUT SECURITY:
+ * - autoRefreshToken: Handles token refresh (disabled on logout)
+ * - persistSession: Maintains sessions (cleared on logout)
+ * - detectSessionInUrl: Required for auth flows (disabled after logout)
+ * 
  * SECURITY CONSIDERATIONS:
  * - autoRefreshToken: Automatically refreshes tokens regardless of domain
  * - persistSession: Maintains sessions across page reloads on any domain
@@ -20,6 +25,11 @@ export const supabase = createClient(env.supabase.url, env.supabase.anonKey, {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true,
+    // HARD LOGOUT: These settings are overridden during logout process
+    // - autoRefreshToken disabled to prevent silent re-login
+    // - persistSession cleared completely
+    // - detectSessionInUrl disabled to prevent token restoration
+    
     // SECURITY: No domain restrictions in client config
     // Domain validation is handled by Supabase server-side configuration
   },
