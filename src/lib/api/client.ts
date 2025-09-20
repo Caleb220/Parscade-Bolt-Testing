@@ -172,13 +172,17 @@ class ApiClient {
 
     const authToken = await this.getAuthToken();
     const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
       'X-Request-ID': requestId,
       'X-Client-Version': '1.0.0',
       'Accept': 'application/json',
       'Origin': window.location.origin,
       ...options.headers,
     };
+
+    // Only set Content-Type if not multipart/form-data
+    if (!options.headers?.['Content-Type'] || options.headers['Content-Type'] !== undefined) {
+      headers['Content-Type'] = 'application/json';
+    }
 
     if (authToken) {
       headers.Authorization = `Bearer ${authToken}`;
@@ -338,9 +342,17 @@ class ApiClient {
     body?: unknown,
     options?: RequestOptions
   ): Promise<T> {
+    let requestBody: BodyInit | undefined;
+    
+    if (body instanceof FormData) {
+      requestBody = body;
+    } else if (body !== undefined) {
+      requestBody = JSON.stringify(body);
+    }
+
     const response = await this.executeRequest(url, {
       method: 'POST',
-      body: body ? JSON.stringify(body) : undefined,
+      body: requestBody,
     }, options);
 
     return this.parseResponse<T>(response);
@@ -450,12 +462,27 @@ class ApiClient {
   private async parseResponse<T>(response: Response): Promise<T> {
     const contentType = response.headers.get('content-type');
     
+    // Handle empty responses (204 No Content)
+    if (response.status === 204) {
+      return null as T;
+    }
+
     if (!contentType?.includes('application/json')) {
-      throw new ApiError(
-        'Invalid response format',
-        'INVALID_RESPONSE',
-        response.status
-      );
+      // Try to get text response for better error messages
+      try {
+        const text = await response.text();
+        throw new ApiError(
+          `Invalid response format. Expected JSON, got: ${contentType}. Response: ${text.slice(0, 100)}`,
+          'INVALID_RESPONSE',
+          response.status
+        );
+      } catch {
+        throw new ApiError(
+          'Invalid response format',
+          'INVALID_RESPONSE',
+          response.status
+        );
+      }
     }
 
     try {

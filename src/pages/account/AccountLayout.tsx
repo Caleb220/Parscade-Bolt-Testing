@@ -9,12 +9,13 @@ import { User, Shield, Bell, Zap } from 'lucide-react';
 import Layout from '@/components/templates/Layout';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAccount } from '@/hooks/api/useAccountData';
+import { getErrorMessage } from '@/lib/api';
 import type { User as UserType } from '@/lib/types';
 
 interface AccountContextType {
   user: UserType | undefined;
   isLoading: boolean;
-  error: Error | null;
+  error: unknown;
 }
 
 const AccountContext = createContext<AccountContextType | null>(null);
@@ -36,7 +37,7 @@ const tabs = [
 
 const AccountLayout: React.FC = () => {
   const location = useLocation();
-  const { data: user, isLoading, error } = useAccount();
+  const { data: user, isLoading, error, refetch } = useAccount();
 
   const activeTab = tabs.find(tab => 
     tab.path === location.pathname || 
@@ -46,7 +47,7 @@ const AccountLayout: React.FC = () => {
   const contextValue: AccountContextType = {
     user,
     isLoading,
-    error: error instanceof Error ? error : null,
+    error,
   };
 
   return (
@@ -91,6 +92,19 @@ const AccountLayout: React.FC = () => {
                       <span className="text-sm font-medium text-gray-700">
                         {user.full_name || user.email}
                       </span>
+                    </div>
+                  )}
+                  {error && (
+                    <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded text-sm">
+                      <p className="text-red-600">
+                        Failed to load account data: {getErrorMessage(error)}
+                      </p>
+                      <button 
+                        onClick={() => refetch()}
+                        className="text-red-700 hover:text-red-800 underline mt-1"
+                      >
+                        Retry
+                      </button>
                     </div>
                   )}
                 </div>

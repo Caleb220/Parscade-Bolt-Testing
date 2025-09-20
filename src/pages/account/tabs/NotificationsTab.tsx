@@ -1,12 +1,13 @@
 /**
- * Notifications Tab Component
+ * Notifications Tab Component - Enhanced with Backend Integration
+ * Comprehensive notification preferences management with real-time validation
  */
 
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
-import { Bell, Mail, Smartphone, Webhook, Clock, Save } from 'lucide-react';
+import { Bell, Mail, Smartphone, Webhook, Clock, Save, AlertCircle, CheckCircle } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,11 +20,12 @@ import { useToast } from '@/components/ui/use-toast';
 import { useAccountContext } from '../AccountLayout';
 import { useNotificationPrefs, useUpdateNotificationPrefs } from '@/hooks/api/useAccountData';
 import { notificationPrefsSchema, type NotificationPrefsFormData } from '@/lib/validation/account';
+import { getErrorMessage } from '@/lib/api';
 
 const NotificationsTab: React.FC = () => {
   const { user } = useAccountContext();
   const { toast } = useToast();
-  const { data: prefs, isLoading } = useNotificationPrefs();
+  const { data: prefs, isLoading, error, refetch } = useNotificationPrefs();
   const updatePrefs = useUpdateNotificationPrefs();
 
   const {
@@ -35,7 +37,7 @@ const NotificationsTab: React.FC = () => {
     setValue,
   } = useForm<NotificationPrefsFormData>({
     resolver: zodResolver(notificationPrefsSchema),
-    defaultValues: prefs || {
+    defaultValues: {
       channels: { email: true, in_app: true, webhook: false },
       categories: {
         product: 'immediate',
@@ -44,30 +46,54 @@ const NotificationsTab: React.FC = () => {
         jobs: 'immediate',
         digest: 'daily',
       },
+      dnd: {
+        start: '22:00',
+        end: '08:00',
+        timezone: 'UTC',
+      },
+      webhook_url: '',
     },
   });
 
   // Reset form when prefs data changes
   React.useEffect(() => {
     if (prefs) {
-      reset(prefs);
+      reset({
+        channels: prefs.channels,
+        categories: prefs.categories,
+        dnd: prefs.dnd || {
+          start: '22:00',
+          end: '08:00',
+          timezone: 'UTC',
+        },
+        webhook_url: prefs.webhook_url || '',
+      });
     }
   }, [prefs, reset]);
 
   const watchedChannels = watch('channels');
   const watchedCategories = watch('categories');
+  const watchedDnd = watch('dnd');
 
   const onSubmit = async (data: NotificationPrefsFormData) => {
     try {
-      await updatePrefs.mutateAsync(data);
+      // Clean up webhook_url if webhook channel is disabled
+      const cleanedData = {
+        ...data,
+        webhook_url: data.channels.webhook ? data.webhook_url : '',
+        dnd: data.dnd?.start && data.dnd?.end ? data.dnd : undefined,
+      };
+
+      await updatePrefs.mutateAsync(cleanedData);
+      
       toast({
         title: 'Notifications updated',
-        description: 'Your notification preferences have been saved.',
+        description: 'Your notification preferences have been saved successfully.',
       });
     } catch (error) {
       toast({
         title: 'Update failed',
-        description: 'Failed to update notification preferences.',
+        description: getErrorMessage(error),
         variant: 'destructive',
       });
     }
@@ -95,6 +121,23 @@ const NotificationsTab: React.FC = () => {
           </Card>
         ))}
       </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card>
+        <CardContent className="p-8">
+          <div className="text-center">
+            <AlertCircle className="w-8 h-8 text-red-600 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Failed to load preferences</h3>
+            <p className="text-gray-600 mb-4">{getErrorMessage(error)}</p>
+            <Button onClick={() => refetch()}>
+              Retry
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
@@ -160,17 +203,26 @@ const NotificationsTab: React.FC = () => {
             </div>
 
             {watchedChannels?.webhook && (
-              <div className="mt-4 space-y-2">
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mt-4 space-y-2"
+              >
                 <Label htmlFor="webhook_url">Webhook URL</Label>
                 <Input
                   id="webhook_url"
                   {...register('webhook_url')}
                   placeholder="https://your-app.com/webhooks/notifications"
+                  className="px-3"
                 />
                 {errors.webhook_url && (
                   <p className="text-sm text-red-600">{errors.webhook_url.message}</p>
                 )}
-              </div>
+                <p className="text-xs text-gray-500">
+                  We'll send POST requests to this URL with notification data
+                </p>
+              </motion.div>
             )}
           </CardContent>
         </Card>
@@ -191,21 +243,21 @@ const NotificationsTab: React.FC = () => {
               { key: 'jobs' as const, label: 'Job Status', description: 'Document processing updates' },
               { key: 'digest' as const, label: 'Weekly Digest', description: 'Summary of your activity' },
             ].map(({ key, label, description }) => (
-              <div key={key} className="flex items-center justify-between">
+              <div key={key} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
                 <div>
                   <div className="font-medium text-gray-900">{label}</div>
                   <div className="text-sm text-gray-500">{description}</div>
                 </div>
-                <div className="flex space-x-2">
-                  {['off', 'immediate', 'daily'].map((frequency) => (
-                    <label key={frequency} className="flex items-center space-x-1">
+                <div className="flex space-x-1">
+                  {(['off', 'immediate', 'daily'] as const).map((frequency) => (
+                    <label key={frequency} className="flex items-center space-x-1 cursor-pointer">
                       <input
                         type="radio"
                         value={frequency}
                         {...register(`categories.${key}`)}
-                        className="rounded border-gray-300"
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                       />
-                      <span className="text-sm capitalize">{frequency}</span>
+                      <span className="text-sm capitalize whitespace-nowrap">{frequency}</span>
                     </label>
                   ))}
                 </div>
@@ -233,6 +285,7 @@ const NotificationsTab: React.FC = () => {
                   id="dnd_start"
                   type="time"
                   {...register('dnd.start')}
+                  className="px-3"
                 />
                 {errors.dnd?.start && (
                   <p className="text-sm text-red-600">{errors.dnd.start.message}</p>
@@ -245,6 +298,7 @@ const NotificationsTab: React.FC = () => {
                   id="dnd_end"
                   type="time"
                   {...register('dnd.end')}
+                  className="px-3"
                 />
                 {errors.dnd?.end && (
                   <p className="text-sm text-red-600">{errors.dnd.end.message}</p>
@@ -263,14 +317,52 @@ const NotificationsTab: React.FC = () => {
                   <option value="America/Chicago">Central Time</option>
                   <option value="America/Denver">Mountain Time</option>
                   <option value="America/Los_Angeles">Pacific Time</option>
+                  <option value="Europe/London">London</option>
+                  <option value="Europe/Berlin">Berlin</option>
+                  <option value="Asia/Tokyo">Tokyo</option>
                 </select>
                 {errors.dnd?.timezone && (
                   <p className="text-sm text-red-600">{errors.dnd.timezone.message}</p>
                 )}
               </div>
             </div>
+
+            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm text-blue-800">
+                <strong>Do Not Disturb:</strong> When enabled, you won't receive notifications during the specified hours.
+                Email notifications will be delayed until the quiet period ends.
+              </p>
+            </div>
           </CardContent>
         </Card>
+
+        {/* Form Errors */}
+        {updatePrefs.error && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center p-3 bg-red-50 border border-red-200 rounded-lg"
+          >
+            <AlertCircle className="w-5 h-5 text-red-600 mr-2 flex-shrink-0" />
+            <span className="text-sm text-red-700">
+              {getErrorMessage(updatePrefs.error)}
+            </span>
+          </motion.div>
+        )}
+
+        {/* Success Message */}
+        {updatePrefs.isSuccess && !isDirty && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center p-3 bg-green-50 border border-green-200 rounded-lg"
+          >
+            <CheckCircle className="w-5 h-5 text-green-600 mr-2 flex-shrink-0" />
+            <span className="text-sm text-green-700">
+              Notification preferences updated successfully
+            </span>
+          </motion.div>
+        )}
 
         {/* Save Button - Sticky on Mobile */}
         <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4 -mx-6 sm:static sm:bg-transparent sm:border-t-0 sm:p-0 sm:mx-0">

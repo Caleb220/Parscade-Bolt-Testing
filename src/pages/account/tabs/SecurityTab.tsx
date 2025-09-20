@@ -1,5 +1,6 @@
 /**
- * Security Tab Component
+ * Security Tab Component - Enhanced with Backend Integration
+ * Comprehensive security management with API keys, sessions, and security events
  */
 
 import React, { useState } from 'react';
@@ -17,7 +18,9 @@ import {
   Monitor,
   Shield,
   AlertTriangle,
-  CheckCircle
+  CheckCircle,
+  RefreshCw,
+  AlertCircle as AlertIcon
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -39,28 +42,32 @@ import {
   useSecurityEvents
 } from '@/hooks/api/useAccountData';
 import { apiKeySchema, type ApiKeyFormData } from '@/lib/validation/account';
+import { getErrorMessage } from '@/lib/api';
 
 const SecurityTab: React.FC = () => {
   const { user } = useAccountContext();
   const { toast } = useToast();
   
-  const { data: apiKeys, isLoading: keysLoading } = useApiKeys();
-  const { data: sessions, isLoading: sessionsLoading } = useSessions();
-  const { data: securityEvents, isLoading: eventsLoading } = useSecurityEvents();
+  const { data: apiKeys, isLoading: keysLoading, error: keysError, refetch: refetchKeys } = useApiKeys();
+  const { data: sessions, isLoading: sessionsLoading, error: sessionsError } = useSessions();
+  const { data: securityEvents, isLoading: eventsLoading, error: eventsError } = useSecurityEvents();
   
   const createApiKey = useCreateApiKey();
   const revokeApiKey = useRevokeApiKey();
   const revokeSession = useRevokeSession();
 
   const [showNewKeyDialog, setShowNewKeyDialog] = useState(false);
-  const [newKeyResult, setNewKeyResult] = useState<string | null>(null);
+  const [newKeyResult, setNewKeyResult] = useState<{ key: string; name: string } | null>(null);
   const [visibleKeys, setVisibleKeys] = useState<Set<string>>(new Set());
+  const [confirmRevokeKey, setConfirmRevokeKey] = useState<string | null>(null);
+  const [confirmRevokeSession, setConfirmRevokeSession] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
+    watch,
   } = useForm<ApiKeyFormData>({
     resolver: zodResolver(apiKeySchema),
     defaultValues: {
@@ -69,30 +76,77 @@ const SecurityTab: React.FC = () => {
     },
   });
 
+  const watchedScopes = watch('scopes');
+
   const onCreateApiKey = async (data: ApiKeyFormData) => {
     try {
       const result = await createApiKey.mutateAsync(data);
-      setNewKeyResult(result.key);
+      setNewKeyResult({ key: result.key, name: result.name });
       reset();
+      
       toast({
         title: 'API key created',
-        description: 'Your new API key has been created successfully.',
+        description: `Your new API key "${result.name}" has been created successfully.`,
       });
     } catch (error) {
       toast({
         title: 'Creation failed',
-        description: 'Failed to create API key. Please try again.',
+        description: getErrorMessage(error),
         variant: 'destructive',
       });
     }
   };
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    toast({
-      title: 'Copied',
-      description: 'API key copied to clipboard.',
-    });
+  const handleRevokeApiKey = async (keyId: string, keyName: string) => {
+    try {
+      await revokeApiKey.mutateAsync(keyId);
+      setConfirmRevokeKey(null);
+      
+      toast({
+        title: 'API key revoked',
+        description: `API key "${keyName}" has been revoked successfully.`,
+      });
+    } catch (error) {
+      toast({
+        title: 'Revocation failed',
+        description: getErrorMessage(error),
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleRevokeSession = async (sessionId: string) => {
+    try {
+      await revokeSession.mutateAsync(sessionId);
+      setConfirmRevokeSession(null);
+      
+      toast({
+        title: 'Session revoked',
+        description: 'The session has been revoked successfully.',
+      });
+    } catch (error) {
+      toast({
+        title: 'Revocation failed',
+        description: getErrorMessage(error),
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const copyToClipboard = async (text: string, description: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast({
+        title: 'Copied',
+        description: `${description} copied to clipboard.`,
+      });
+    } catch (error) {
+      toast({
+        title: 'Copy failed',
+        description: 'Unable to copy to clipboard. Please copy manually.',
+        variant: 'destructive',
+      });
+    }
   };
 
   const toggleKeyVisibility = (keyId: string) => {
@@ -103,6 +157,15 @@ const SecurityTab: React.FC = () => {
       newVisible.add(keyId);
     }
     setVisibleKeys(newVisible);
+  };
+
+  const formatUserAgent = (userAgent: string): string => {
+    if (userAgent.includes('Chrome')) return 'Chrome';
+    if (userAgent.includes('Firefox')) return 'Firefox';
+    if (userAgent.includes('Safari') && !userAgent.includes('Chrome')) return 'Safari';
+    if (userAgent.includes('Edge')) return 'Edge';
+    if (userAgent.includes('Mobile')) return 'Mobile Browser';
+    return 'Unknown Browser';
   };
 
   return (
@@ -120,7 +183,7 @@ const SecurityTab: React.FC = () => {
               API Keys
             </CardTitle>
             <CardDescription>
-              Manage your API keys for programmatic access
+              Manage your API keys for programmatic access to Parscade
             </CardDescription>
           </div>
           <Dialog open={showNewKeyDialog} onOpenChange={setShowNewKeyDialog}>
@@ -130,7 +193,7 @@ const SecurityTab: React.FC = () => {
                 New Key
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-w-md">
               <DialogHeader>
                 <DialogTitle>Create API Key</DialogTitle>
                 <DialogDescription>
@@ -148,14 +211,21 @@ const SecurityTab: React.FC = () => {
                     <p className="text-sm text-green-700 mb-3">
                       Copy this key now - it won't be shown again for security reasons.
                     </p>
-                    <div className="flex items-center space-x-2">
-                      <Input value={newKeyResult} readOnly className="font-mono text-sm" />
-                      <Button
-                        size="sm"
-                        onClick={() => copyToClipboard(newKeyResult)}
-                      >
-                        <Copy className="w-4 h-4" />
-                      </Button>
+                    <div className="space-y-2">
+                      <Label>Key Name: {newKeyResult.name}</Label>
+                      <div className="flex items-center space-x-2">
+                        <Input 
+                          value={newKeyResult.key} 
+                          readOnly 
+                          className="font-mono text-sm" 
+                        />
+                        <Button
+                          size="sm"
+                          onClick={() => copyToClipboard(newKeyResult.key, 'API key')}
+                        >
+                          <Copy className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </div>
                   </div>
                   <Button
@@ -171,9 +241,9 @@ const SecurityTab: React.FC = () => {
               ) : (
                 <form onSubmit={handleSubmit(onCreateApiKey)} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="name">Key Name</Label>
+                    <Label htmlFor="key_name">Key Name</Label>
                     <Input
-                      id="name"
+                      id="key_name"
                       {...register('name')}
                       placeholder="Production API, Development, etc."
                     />
@@ -185,15 +255,22 @@ const SecurityTab: React.FC = () => {
                   <div className="space-y-2">
                     <Label>Scopes</Label>
                     <div className="space-y-2">
-                      {['read', 'write', 'admin'].map((scope) => (
-                        <label key={scope} className="flex items-center space-x-2">
+                      {[
+                        { value: 'read', label: 'Read', description: 'View documents and data' },
+                        { value: 'write', label: 'Write', description: 'Create and update data' },
+                        { value: 'admin', label: 'Admin', description: 'Full administrative access' },
+                      ].map((scope) => (
+                        <label key={scope.value} className="flex items-start space-x-2">
                           <input
                             type="checkbox"
-                            value={scope}
+                            value={scope.value}
                             {...register('scopes')}
-                            className="rounded border-gray-300"
+                            className="rounded border-gray-300 mt-1"
                           />
-                          <span className="text-sm capitalize">{scope}</span>
+                          <div className="flex-1">
+                            <span className="text-sm font-medium">{scope.label}</span>
+                            <p className="text-xs text-gray-500">{scope.description}</p>
+                          </div>
                         </label>
                       ))}
                     </div>
@@ -223,8 +300,17 @@ const SecurityTab: React.FC = () => {
           {keysLoading ? (
             <div className="space-y-3">
               {Array.from({ length: 2 }).map((_, i) => (
-                <Skeleton key={i} className="h-16 w-full" />
+                <Skeleton key={i} className="h-20 w-full" />
               ))}
+            </div>
+          ) : keysError ? (
+            <div className="text-center py-8">
+              <AlertIcon className="w-8 h-8 text-red-400 mx-auto mb-2" />
+              <p className="text-red-600 mb-4">{getErrorMessage(keysError)}</p>
+              <Button variant="outline" onClick={() => refetchKeys()}>
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Retry
+              </Button>
             </div>
           ) : !apiKeys?.length ? (
             <div className="text-center py-8">
@@ -240,7 +326,7 @@ const SecurityTab: React.FC = () => {
                   className="flex items-center justify-between p-4 border border-gray-200 rounded-lg"
                 >
                   <div className="flex-1">
-                    <div className="flex items-center space-x-3">
+                    <div className="flex items-center space-x-3 mb-2">
                       <h4 className="font-medium text-gray-900">{key.name}</h4>
                       <div className="flex space-x-1">
                         {key.scopes.map((scope) => (
@@ -250,7 +336,7 @@ const SecurityTab: React.FC = () => {
                         ))}
                       </div>
                     </div>
-                    <div className="flex items-center space-x-4 mt-1 text-sm text-gray-500">
+                    <div className="flex items-center space-x-4 text-sm text-gray-500">
                       <span>Created {new Date(key.created_at).toLocaleDateString()}</span>
                       {key.last_used_at && (
                         <span>Last used {new Date(key.last_used_at).toLocaleDateString()}</span>
@@ -259,9 +345,9 @@ const SecurityTab: React.FC = () => {
                     {key.preview && (
                       <div className="flex items-center space-x-2 mt-2">
                         <Input
-                          value={visibleKeys.has(key.id) ? `pk_live_${key.preview}...` : '•'.repeat(20)}
+                          value={visibleKeys.has(key.id) ? key.preview : '•'.repeat(20)}
                           readOnly
-                          className="font-mono text-xs"
+                          className="font-mono text-xs flex-1"
                         />
                         <Button
                           size="sm"
@@ -270,17 +356,50 @@ const SecurityTab: React.FC = () => {
                         >
                           {visibleKeys.has(key.id) ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                         </Button>
+                        {visibleKeys.has(key.id) && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => copyToClipboard(key.preview!, 'API key preview')}
+                          >
+                            <Copy className="w-4 h-4" />
+                          </Button>
+                        )}
                       </div>
                     )}
                   </div>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => revokeApiKey.mutate(key.id)}
-                    disabled={revokeApiKey.isPending}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
+                  <Dialog open={confirmRevokeKey === key.id} onOpenChange={(open) => !open && setConfirmRevokeKey(null)}>
+                    <DialogTrigger asChild>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setConfirmRevokeKey(key.id)}
+                        disabled={revokeApiKey.isPending}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Revoke API Key</DialogTitle>
+                        <DialogDescription>
+                          Are you sure you want to revoke the API key "{key.name}"? This action cannot be undone.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="flex justify-end space-x-2">
+                        <Button variant="outline" onClick={() => setConfirmRevokeKey(null)}>
+                          Cancel
+                        </Button>
+                        <Button 
+                          variant="destructive" 
+                          onClick={() => handleRevokeApiKey(key.id, key.name)}
+                          disabled={revokeApiKey.isPending}
+                        >
+                          {revokeApiKey.isPending ? 'Revoking...' : 'Revoke Key'}
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               ))}
             </div>
@@ -306,6 +425,11 @@ const SecurityTab: React.FC = () => {
                 <Skeleton key={i} className="h-16 w-full" />
               ))}
             </div>
+          ) : sessionsError ? (
+            <div className="text-center py-8">
+              <AlertIcon className="w-8 h-8 text-red-400 mx-auto mb-2" />
+              <p className="text-red-600">{getErrorMessage(sessionsError)}</p>
+            </div>
           ) : !sessions?.length ? (
             <div className="text-center py-8">
               <Monitor className="w-8 h-8 text-gray-400 mx-auto mb-2" />
@@ -329,26 +453,50 @@ const SecurityTab: React.FC = () => {
                     <div>
                       <div className="flex items-center space-x-2">
                         <span className="font-medium text-gray-900">
-                          {session.user_agent.split(' ')[0] || 'Unknown Device'}
+                          {formatUserAgent(session.user_agent)}
                         </span>
                         {session.is_current && (
                           <Badge variant="default" className="text-xs">Current</Badge>
                         )}
                       </div>
                       <div className="text-sm text-gray-500">
-                        {session.ip_address} • Last seen {new Date(session.last_seen).toLocaleDateString()}
+                        {session.ip_address} • Last seen {new Date(session.last_seen).toLocaleString()}
                       </div>
                     </div>
                   </div>
                   {!session.is_current && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => revokeSession.mutate(session.id)}
-                      disabled={revokeSession.isPending}
-                    >
-                      Revoke
-                    </Button>
+                    <Dialog open={confirmRevokeSession === session.id} onOpenChange={(open) => !open && setConfirmRevokeSession(null)}>
+                      <DialogTrigger asChild>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setConfirmRevokeSession(session.id)}
+                          disabled={revokeSession.isPending}
+                        >
+                          Revoke
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Revoke Session</DialogTitle>
+                          <DialogDescription>
+                            Are you sure you want to revoke this session? The user will be signed out from that device.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="flex justify-end space-x-2">
+                          <Button variant="outline" onClick={() => setConfirmRevokeSession(null)}>
+                            Cancel
+                          </Button>
+                          <Button 
+                            variant="destructive" 
+                            onClick={() => handleRevokeSession(session.id)}
+                            disabled={revokeSession.isPending}
+                          >
+                            {revokeSession.isPending ? 'Revoking...' : 'Revoke Session'}
+                          </Button>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
                   )}
                 </div>
               ))}
@@ -375,20 +523,29 @@ const SecurityTab: React.FC = () => {
                 <Skeleton key={i} className="h-12 w-full" />
               ))}
             </div>
+          ) : eventsError ? (
+            <div className="text-center py-8">
+              <AlertIcon className="w-8 h-8 text-red-400 mx-auto mb-2" />
+              <p className="text-red-600">{getErrorMessage(eventsError)}</p>
+            </div>
           ) : !securityEvents?.length ? (
             <div className="text-center py-8">
               <Shield className="w-8 h-8 text-gray-400 mx-auto mb-2" />
               <p className="text-gray-600">No security events</p>
+              <p className="text-gray-500 text-sm">Security activities will appear here</p>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-3 max-h-80 overflow-y-auto">
               {securityEvents.map((event) => (
                 <div key={event.id} className="flex items-start space-x-3 p-3 border border-gray-200 rounded-lg">
                   <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
                     <Shield className="w-4 h-4 text-blue-600" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">{event.description}</p>
+                    <p className="text-sm font-medium text-gray-900 capitalize">
+                      {event.event_type.replace(/_/g, ' ')}
+                    </p>
+                    <p className="text-sm text-gray-600">{event.description}</p>
                     <div className="flex items-center space-x-2 mt-1 text-xs text-gray-500">
                       <span>{new Date(event.created_at).toLocaleString()}</span>
                       {event.ip_address && <span>• {event.ip_address}</span>}

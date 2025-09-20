@@ -1,5 +1,6 @@
 /**
  * Account API endpoints with typed responses
+ * Updated for backend integration with comprehensive error handling
  */
 
 import { apiClient } from './client';
@@ -29,7 +30,14 @@ export const accountAPI = {
   async uploadAvatar(file: File): Promise<{ avatar_url: string }> {
     const formData = new FormData();
     formData.append('avatar', file);
-    return apiClient.uploadFile('/v1/account/avatar', formData);
+    
+    // Use a special upload method for multipart/form-data
+    return apiClient.post<{ avatar_url: string }>('/v1/account/avatar', formData, {
+      headers: {
+        // Remove Content-Type to let browser set it with boundary
+        'Content-Type': undefined,
+      },
+    });
   },
 
   // API Keys endpoints
