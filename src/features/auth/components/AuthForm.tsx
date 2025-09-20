@@ -9,6 +9,7 @@ import { validatePassword } from '../../../utils/passwordValidation';
 
 import type { FormErrors } from '../types/authTypes';
 import { useAuth } from '../context/AuthContext';
+import PasswordInput from '@/components/atoms/PasswordInput';
 
 
 interface AuthFormProps {
