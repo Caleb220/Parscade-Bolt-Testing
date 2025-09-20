@@ -179,7 +179,7 @@ const ProfileTab: React.FC = () => {
                     id="full_name"
                     {...register('full_name')}
                     placeholder="Enter your full name"
-                    className="pl-22"
+                    className="pl-8 pr-3"
                   />
                 </div>
                 {errors.full_name && (
@@ -207,7 +207,7 @@ const ProfileTab: React.FC = () => {
                     id="company"
                     {...register('company')}
                     placeholder="Your company name"
-                    className="pl-22"
+                    className="pl-8 pr-3"
                   />
                 </div>
                 {errors.company && (
@@ -235,7 +235,7 @@ const ProfileTab: React.FC = () => {
                     id="phone"
                     {...register('phone')}
                     placeholder="+1234567890"
-                    className="pl-22"
+                    className="pl-8 pr-3"
                   />
                 </div>
                 {errors.phone && (
@@ -251,7 +251,7 @@ const ProfileTab: React.FC = () => {
                   <select
                     id="timezone"
                     {...register('timezone')}
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 pl-11 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    className="flex h-10 w-full rounded-md border border-input bg-background py-2 pl-8 pr-3 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   >
                     <option value="UTC">UTC</option>
                     <option value="America/New_York">Eastern Time</option>
