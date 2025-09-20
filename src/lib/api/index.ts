@@ -4,7 +4,7 @@
  */
 
 export { apiClient } from './client';
-export { ApiError, isApiError, getErrorMessage, getRequestId } from './errors';
+export { isApiError, getErrorMessage, getRequestId } from './errors';
 export { healthApi } from './modules/health';
 export { authApi } from './modules/auth';
 export { accountApi } from './modules/account';
