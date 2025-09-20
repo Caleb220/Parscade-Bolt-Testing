@@ -284,5 +284,3 @@ export async function httpUpload(
     xhr.send(file);
   });
 }
-
-export { httpUpload }
