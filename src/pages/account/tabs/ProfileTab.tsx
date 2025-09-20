@@ -174,12 +174,12 @@ const ProfileTab: React.FC = () => {
               <div className="space-y-2">
                 <Label htmlFor="full_name">Full Name</Label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                   <Input
                     id="full_name"
                     {...register('full_name')}
                     placeholder="Enter your full name"
-                    className="pl-10"
+                    className="pl-11"
                   />
                 </div>
                 {errors.full_name && (
@@ -202,12 +202,12 @@ const ProfileTab: React.FC = () => {
               <div className="space-y-2">
                 <Label htmlFor="company">Company</Label>
                 <div className="relative">
-                  <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                   <Input
                     id="company"
                     {...register('company')}
                     placeholder="Your company name"
-                    className="pl-10"
+                    className="pl-11"
                   />
                 </div>
                 {errors.company && (
@@ -230,12 +230,12 @@ const ProfileTab: React.FC = () => {
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone Number</Label>
                 <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                   <Input
                     id="phone"
                     {...register('phone')}
                     placeholder="+1234567890"
-                    className="pl-10"
+                    className="pl-11"
                   />
                 </div>
                 {errors.phone && (
@@ -247,11 +247,11 @@ const ProfileTab: React.FC = () => {
               <div className="space-y-2">
                 <Label htmlFor="timezone">Timezone</Label>
                 <div className="relative">
-                  <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                   <select
                     id="timezone"
                     {...register('timezone')}
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 pl-10 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 pl-11 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   >
                     <option value="UTC">UTC</option>
                     <option value="America/New_York">Eastern Time</option>
