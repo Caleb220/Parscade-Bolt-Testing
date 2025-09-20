@@ -5,7 +5,7 @@ import Button from '../../../components/atoms/Button';
 import Input from '../../../components/atoms/Input';
 import PasswordInput from '../../../components/atoms/PasswordInput';
 import { useAuth } from '../context/AuthContext';
-import { FormErrors } from '../types/authTypes';
+import type { FormErrors } from '../types/authTypes';
 import { validatePassword } from '../../../utils/passwordValidation';
 
 interface AuthFormProps {
