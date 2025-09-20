@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, User, AlertCircle, CheckCircle, ArrowRight } from 'lucide-react';
+import { Mail, User, AlertCircle, ArrowRight } from 'lucide-react';
 import Button from '../../../components/atoms/Button';
 import Input from '../../../components/atoms/Input';
 import PasswordInput from '../../../components/atoms/PasswordInput';

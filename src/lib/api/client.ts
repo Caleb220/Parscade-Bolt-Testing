@@ -55,20 +55,6 @@ class ApiClient {
     return `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 
-  private async getAuthToken(): Promise<string | null> {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      return session?.access_token || null;
-    } catch (error) {
-      if (this.isDevelopment) {
-        logger.error('Failed to get auth token', {
-          context: { feature: 'api-client', action: 'getAuthToken' },
-          error: error instanceof Error ? error : new Error(String(error)),
-        });
-      }
-      return null;
-    }
-  }
 
   private async getAuthToken(): Promise<string | null> {
     const maxAttempts = 3;

@@ -1,5 +1,4 @@
 import React, { useState, forwardRef } from 'react';
-import type { InputHTMLAttributes } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import type { ComponentWithRef } from '../../types/common';
 
@@ -8,6 +7,7 @@ interface PasswordInputProps extends Omit<React.InputHTMLAttributes<HTMLInputEle
   readonly error?: string;
   readonly helperText?: string;
   readonly variant?: 'default' | 'filled';
+  readonly showStrengthMeter?: boolean | undefined; // <-- add this
 }
 
 const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
@@ -21,6 +21,7 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
       id,
       value = '',
       onChange,
+      showStrengthMeter = false,
       ...props
     },
     ref

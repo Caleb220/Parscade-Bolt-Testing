@@ -1,6 +1,5 @@
 export { default as AccountSettingsPanel } from './components/AccountSettingsPanel';
 export { useAccountSettings } from './hooks/useAccountSettings';
-export type { AccountSettingsSection } from './hooks/useAccountSettings';
 export {
   accountSettingsSchema,
   accountSettingsUpdateSchema,

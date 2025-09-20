@@ -13,7 +13,6 @@ import SecurityTab from '@/pages/account/tabs/SecurityTab';
 import NotificationsTab from '@/pages/account/tabs/NotificationsTab';
 import IntegrationsTab from '@/pages/account/tabs/IntegrationsTab';
 import { Toaster } from '@/components/ui/toaster';
-import AccountPage from '@/features/account/pages/AccountPage';
 import { AuthProvider, useAuth } from '@/features/auth';
 import { DashboardPage } from '@/features/dashboard';
 import { JobDetailPage } from '@/features/jobs';
@@ -28,7 +27,6 @@ import ProductPage from '@/features/marketing/pages/ProductPage';
 import TermsPage from '@/features/marketing/pages/TermsPage';
 import { logger } from '@/services/logger';
 import { analytics, trackPageView } from '@/utils/analytics';
-import { AUTH_PATHS, PATHS } from '@/routes/paths';
 import { defaultSEO, updateSEO } from '@/utils/seo';
 
 import type { FC } from 'react';
@@ -162,6 +160,7 @@ const RouteHandler: FC = () => {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/terms" element={<TermsPage />} />
+        
         {/* DEPRECATED ROUTES - Redirect to login with support message */}
         <Route path="/reset-password" element={<Navigate to="/login-support" replace />} />
         <Route path="/auth/recovery" element={<Navigate to="/login-support" replace />} />
