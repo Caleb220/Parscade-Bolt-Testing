@@ -179,7 +179,7 @@ const ProfileTab: React.FC = () => {
                     id="full_name"
                     {...register('full_name')}
                     placeholder="Enter your full name"
-                    className="pl-11"
+                    className="pl-22"
                   />
                 </div>
                 {errors.full_name && (
