@@ -83,7 +83,7 @@ const UserMenu: React.FC = () => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -10 }}
             transition={{ duration: 0.15 }}
-            className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50"
+            className="absolute right-0 sm:right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50 -translate-x-1/2 sm:translate-x-0"
           >
             {/* User Info */}
             <div className="px-4 py-3 border-b border-gray-100">
