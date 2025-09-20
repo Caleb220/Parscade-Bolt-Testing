@@ -8,6 +8,7 @@ import { env } from '@/config/env';
 import { logger } from '@/services/logger';
 
 import type { paths } from '@/types/api-types';
+import { ApiError } from './errors';
 
 /**
  * Extract error response type from OpenAPI paths
