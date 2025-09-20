@@ -71,6 +71,72 @@ class ApiClient {
     }
   }
 
+  private async getAuthToken(): Promise<string | null> {
+    const maxAttempts = 3;
+    const baseDelay = 500; // 500ms base delay
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          if (this.isDevelopment) {
+            logger.warn(`Auth session error (attempt ${attempt}/${maxAttempts})`, {
+              context: { feature: 'api-client', action: 'getAuthToken' },
+              error,
+            });
+          }
+          
+          if (attempt < maxAttempts) {
+            await this.sleep(baseDelay * attempt);
+            continue;
+          }
+          return null;
+        }
+
+        if (session?.access_token) {
+          if (this.isDevelopment && attempt > 1) {
+            logger.debug(`Auth token retrieved on attempt ${attempt}`, {
+              context: { feature: 'api-client', action: 'getAuthToken' },
+            });
+          }
+          return session.access_token;
+        }
+
+        // No session or access token
+        if (this.isDevelopment) {
+          logger.debug(`No auth session found (attempt ${attempt}/${maxAttempts})`, {
+            context: { feature: 'api-client', action: 'getAuthToken' },
+            metadata: { hasSession: !!session, sessionKeys: session ? Object.keys(session) : [] },
+          });
+        }
+
+        // If this is the last attempt, return null
+        if (attempt === maxAttempts) {
+          return null;
+        }
+
+        // Wait before retrying
+        await this.sleep(baseDelay * attempt);
+
+      } catch (error) {
+        if (this.isDevelopment) {
+          logger.warn(`Auth token retrieval failed (attempt ${attempt}/${maxAttempts})`, {
+            context: { feature: 'api-client', action: 'getAuthToken' },
+            error: error instanceof Error ? error : new Error(String(error)),
+          });
+        }
+
+        if (attempt === maxAttempts) {
+          return null;
+        }
+
+        await this.sleep(baseDelay * attempt);
+      }
+    }
+
+    return null;
+  }
   private logRequest(context: RequestContext, response?: Response, error?: Error): void {
     if (!this.isDevelopment) return;
 
