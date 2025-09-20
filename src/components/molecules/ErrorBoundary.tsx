@@ -1,5 +1,5 @@
 import { AlertTriangle, RefreshCw } from 'lucide-react';
-import React, { Component } from 'react';
+import { Component } from 'react';
 
 import Button from '../atoms/Button';
 

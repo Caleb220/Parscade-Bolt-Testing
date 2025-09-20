@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { Lock, CheckCircle, AlertCircle, ArrowRight, Eye, EyeOff, Shield } from 'lucide-react';
@@ -17,12 +17,11 @@ import {
   establishRecoverySession,
   updateUserPassword,
   generateSessionId,
-  isRecoveryMode,
   completeRecoveryFlow,
   validatePasswordStrength,
 } from '../../../services/passwordResetService';
+import { PasswordStrength } from '@/utils/passwordValidation';
 
-import type { PasswordResetTokens } from '../../../services/passwordResetService';
 
 /**
  * Zod schema for password reset form with enterprise security requirements.
@@ -66,6 +65,13 @@ type ResetPageState =
   | { status: 'invalid'; error: string }
   | { status: 'submitting' }
   | { status: 'complete' };
+
+
+
+type FieldKey = 'password' | 'confirmPassword';
+
+type FieldErrors = Partial<Record<FieldKey, string>>;
+
 /**
  * Enterprise-Grade Reset Password Page with State Machine
  * 
@@ -107,7 +113,7 @@ const ResetPasswordPage: React.FC = () => {
     confirmPassword: false,
   });
   
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   
   // Session tracking for rate limiting and logging
   const [sessionId] = useState(() => generateSessionId());
@@ -203,7 +209,7 @@ const ResetPasswordPage: React.FC = () => {
           safeSetPageState({ status: 'ready', isAutoLoggedIn: false });
         }
         
-      } catch (timeoutError) {
+      } catch (timeoutError: any) {
         if (timeoutError.message === 'Token validation timeout') {
           logger.warn('Token validation timeout - offering retry', {
             context: { feature: 'password-reset', action: 'validationTimeout' },
@@ -336,10 +342,9 @@ const ResetPasswordPage: React.FC = () => {
     }
   }, [formData, sessionId, safeSetPageState]);
 
-  // NULL-SAFE: Password strength calculation with guaranteed string input
-  const passwordStrength = useMemo(() => {
-    const safePassword = formData.password ?? ''; // Guaranteed string
-    return safePassword.length > 0 ? validatePasswordStrength(safePassword) : null;
+  const passwordStrength = useMemo<PasswordStrength | null>(() => {
+  const pwd = formData.password ?? '';
+  return pwd ? validatePasswordStrength(pwd) : null;
   }, [formData.password]);
 
   /**

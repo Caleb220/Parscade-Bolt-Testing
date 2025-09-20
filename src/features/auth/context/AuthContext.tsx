@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect, useCallback, useMemo, useRef } from 'react';
-import type { AuthError, AuthApiError, User as SupabaseUser } from '@supabase/supabase-js';
+import { AuthError, AuthApiError, User as SupabaseUser } from '@supabase/supabase-js';
 
 import { supabase } from '../../../lib/supabase';
 import { logger } from '../../../services/logger';
@@ -261,10 +261,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Success state will be handled by auth state change listener
       // No need to dispatch here to avoid double state updates
     } catch (authError) {
-      // Ensure loading state is always stopped on error
-      const message = (authError as any)?.name === 'AuthError'
-        ? getAuthErrorMessage(authError)
-        : 'An unexpected error occurred';
+      let message = "";
+      if (authError instanceof AuthError) {
+        message = getAuthErrorMessage(authError)
+      }
+      else {
+        message = 'An unexpected error occurred'
+      }
       dispatch({ type: 'AUTH_ERROR', payload: message });
       throw authError;
     }
@@ -295,11 +298,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // No need to dispatch here to avoid double state updates
     } catch (signUpError) {
       // Ensure loading state is always stopped on error
-      const message = (signUpError as any)?.name === 'AuthError'
-        ? getAuthErrorMessage(signUpError)
-        : 'An unexpected error occurred';
+
+      // catch AuthError messages
+      let message = "";
+      if (signUpError instanceof AuthError) {
+        message = getAuthErrorMessage(signUpError)
+      }
+      else {
+        message = 'Failed to complete sign up process'
+      }
       dispatch({ type: 'AUTH_ERROR', payload: message });
       throw signUpError;
+
     }
   }, []);
 
@@ -427,10 +437,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         throw error;
       }
     } catch (resendError) {
-      const message = (resendError as any)?.name === 'AuthError'
-        ? getAuthErrorMessage(resendError)
-        : 'Failed to resend confirmation email';
-      throw new Error(message);
+
+      // catch AuthError messages
+      let message = "";
+      if (resendError instanceof AuthError) {
+        message = getAuthErrorMessage(resendError)
+      }
+      else {
+        message = 'Failed to resend confirmation email'
+      }
+      throw new Error(message)
     }
   }, []);
 

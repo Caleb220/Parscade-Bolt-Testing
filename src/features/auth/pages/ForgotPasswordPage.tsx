@@ -1,15 +1,15 @@
 import { motion } from 'framer-motion';
 import { Mail, CheckCircle, AlertCircle, ArrowLeft, Clock, Shield } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { Mail, CheckCircle, AlertCircle, ArrowLeft, Clock, Shield } from 'lucide-react';
 
 
 import Input from '../../../components/atoms/Input';
 import LoadingButton from '../../../components/atoms/LoadingButton';
 import { logger } from '../../../services/logger';
 import { trackFormSubmit } from '../../../utils/analytics';
-import { trackFormSubmit } from '../../../utils/analytics';
 import { useAuth } from '../context/AuthContext';
+import { useCallback, useState } from 'react';
+import Layout from '../../../components/templates/Layout';
 
 /**
  * Enterprise-Grade Forgot Password Page Component

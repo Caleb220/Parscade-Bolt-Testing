@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React from 'react';
 import type { FC } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
@@ -11,6 +11,7 @@ import {
   BillingPage,
   ContactPage,
   HomePage,
+  ErrorPage,
   NotFoundPage,
   PrivacyPage,
   ProductPage,
@@ -19,9 +20,9 @@ import {
 
 // Protected Route Component
 const ProtectedRoute: FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, loading } = useAuth();
+  const { user, isLoading } = useAuth();
   
-  if (loading) {
+  if (isLoading) {
     return <div>Loading...</div>;
   }
   
@@ -30,9 +31,9 @@ const ProtectedRoute: FC<{ children: React.ReactNode }> = ({ children }) => {
 
 // Public Route Component (redirect if authenticated)
 const PublicRoute: FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, loading } = useAuth();
+  const { user, isLoading } = useAuth();
   
-  if (loading) {
+  if (isLoading) {
     return <div>Loading...</div>;
   }
   

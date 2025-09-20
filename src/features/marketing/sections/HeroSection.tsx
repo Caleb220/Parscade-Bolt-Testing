@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Play } from 'lucide-react';
 
@@ -224,3 +223,5 @@ const HeroSection: React.FC = () => {
     </>
   );
 };
+
+export default HeroSection;

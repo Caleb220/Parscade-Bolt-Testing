@@ -4,8 +4,7 @@ import ErrorBoundary from '../molecules/ErrorBoundary';
 import React from 'react';
 
 
-import type { ReactNode } from 'react';
-import Footer from '../organisms/Footer';
+import { Footer } from '../organisms/Footer';
 import Header from '../organisms/Header';
 
 import type { ReactNode } from 'react';
@@ -34,4 +33,5 @@ const Layout: React.FC<LayoutProps> = ({ children, className = '' }) => {
     </ErrorBoundary>
   );
 };
-import React from 'react';
+
+export default Layout;

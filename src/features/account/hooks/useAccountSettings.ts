@@ -12,12 +12,6 @@ import {
   accountSettingsSchema,
   createDefaultAccountSettings,
 } from '../../../schemas';
-import { logger } from '../../../services/logger';
-import { formatErrorForUser } from '../../../utils/zodError';
-import {
-  fetchOrCreateAccountSettings,
-  updateAccountSettingsSection,
-} from '../services/accountSettingsService';
 
 import type {
   AccountSettings,

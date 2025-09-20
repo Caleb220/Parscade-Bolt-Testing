@@ -82,7 +82,7 @@ const insertAccountSettings = async (settings: AccountSettings): Promise<Account
     const parsedRow = accountSettingsRowSchema.parse(data);
     return mapRowToAccountSettings(parsedRow);
   } catch (error) {
-    if (error instanceof SupabaseServiceError && error.causeError.code === '23505') {
+    if (error instanceof SupabaseServiceError && error.causeError.message === '23505') {
       const existing = await fetchOrCreateAccountSettings(settings.userId);
       return existing;
     }

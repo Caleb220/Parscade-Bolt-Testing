@@ -20,6 +20,7 @@ import { logger } from './logger';
 import { supabase } from '../lib/supabase';
 
 import type { AuthError, AuthApiError } from '@supabase/supabase-js';
+import { PasswordStrength } from '@/utils/passwordValidation';
 
 /**
  * Strongly typed interfaces for better code safety and documentation
@@ -35,6 +36,19 @@ export interface PasswordResetTokens {
 export interface PasswordResetForm {
   readonly password: string;
   readonly confirmPassword: string;
+}
+
+interface AuthHashParams {
+  access_token?: string;
+  refresh_token?: string;
+  expires_in?: string;   // keep as string if you pass it through
+  token_type?: string;
+  type?: string;         // e.g. 'recovery' | 'invite' | 'magiclink' | ...
+}
+
+interface ValidPassword {
+  password?: string,
+  confirmPassword?: string,
 }
 
 /**
@@ -148,56 +162,46 @@ const rateLimiter = new PasswordResetRateLimiter();
  * 
  * NULL-SAFE: Handles undefined/null inputs gracefully to prevent crashes
  */
-const validatePasswordStrength = (password: string | null | undefined): { isValid: boolean; errors: string[] } => {
-  // NULL-SAFE: Convert any falsy input to empty string
-  const safePassword = password ?? '';
-  const errors: string[] = [];
+function validatePasswordStrength(password: string | null | undefined): PasswordStrength {
+  const pwd = password ?? '';
 
-  if (safePassword.length < 8) {
-    errors.push('Password must be at least 8 characters long');
-  }
+  const violations: string[] = [];
+  const suggestions: string[] = [];
 
-  if (safePassword.length > 128) {
-    errors.push('Password must be less than 128 characters');
-  }
+  // hard policy (violations)
+  if (pwd.length < 8) violations.push('Use at least 8 characters');
+  if (pwd.length > 128) violations.push('Use fewer than 128 characters');
 
-  if (!/[A-Z]/.test(safePassword)) {
-    errors.push('Password must contain at least one uppercase letter');
-  }
+  // composition (suggestions)
+  if (!/[A-Z]/.test(pwd)) suggestions.push('Add an uppercase letter');
+  if (!/[a-z]/.test(pwd)) suggestions.push('Add a lowercase letter');
+  if (!/\d/.test(pwd)) suggestions.push('Add a number');
+  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pwd)) suggestions.push('Add a special character');
 
-  if (!/[a-z]/.test(safePassword)) {
-    errors.push('Password must contain at least one lowercase letter');
-  }
-
-  if (!/\d/.test(safePassword)) {
-    errors.push('Password must contain at least one number');
-  }
-
-  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(safePassword)) {
-    errors.push('Password must contain at least one special character');
-  }
-
-  if (/(.)\1{2,}/.test(safePassword)) {
-    errors.push('Password cannot contain more than 2 consecutive identical characters');
-  }
-
-  // Enhanced common pattern detection
+  // patterns (treat as violations)
   const commonPatterns = [
     /123|abc|qwe|password|admin|user|test|login|welcome|letmein/i,
-    /^(.)\1+$/, // All same character
-    /^(012|123|234|345|456|567|678|789|890)+/i, // Sequential numbers
-    /^(abc|bcd|cde|def|efg|fgh|ghi|hij|ijk|jkl|klm|lmn|mno|nop|opq|pqr|qrs|rst|stu|tuv|uvw|vwx|wxy|xyz)+/i, // Sequential letters
+    /^(.)\1+$/,                                   // all same char
+    /(.)\1{2,}/,                                  // 3+ repeats
+    /(012|123|234|345|456|567|678|789|890)/i,     // numeric sequences
+    /(abc|bcd|cde|def|efg|fgh|ghi|hij|jkl|klm|lmn|mno|nop|opq|pqr|qrs|rst|stu|tuv|uvw|vwx|wxy|xyz)/i
   ];
+  if (commonPatterns.some((rx) => rx.test(pwd))) violations.push('Avoid common sequences or dictionary words');
 
-  if (commonPatterns.some(pattern => pattern.test(safePassword))) {
-    errors.push('Password cannot contain common patterns or dictionary words');
-  }
+  // score: 0..4 (simple heuristic)
+  // base points for length + character sets, minus penalty for violations
+  const lengthPts = pwd.length >= 16 ? 2 : pwd.length >= 12 ? 1.5 : pwd.length >= 8 ? 1 : 0;
+  const setPts = [/[A-Z]/, /[a-z]/, /\d/, /[^\w]/].reduce((n, rx) => n + (rx.test(pwd) ? 1 : 0), 0);
+  const penalty = violations.length ? 1 : 0;
+  const raw = Math.max(0, lengthPts + setPts - penalty);
+  const score = Math.max(0, Math.min(4, Math.round(raw))) as 0 | 1 | 2 | 3 | 4;
 
   return {
-    isValid: errors.length === 0,
-    errors,
+    score,
+    isValid: violations.length === 0 && pwd.length >= 8,
+    feedback: [...violations, ...suggestions]
   };
-};
+}
 
 /**
  * Comprehensive form validation with detailed error mapping
@@ -210,7 +214,7 @@ const validatePasswordStrength = (password: string | null | undefined): { isVali
  * NULL-SAFE: All validation handles undefined/null inputs gracefully
  */
 const validatePasswordResetForm = (formData: PasswordResetForm): { isValid: boolean; errors: Record<string, string> } => {
-  const errors: Record<string, string> = {};
+  const errors: ValidPassword = {};
   
   // NULL-SAFE: Ensure we have safe strings for validation
   const safePassword = formData.password ?? '';
@@ -300,9 +304,13 @@ export const isRecoveryMode = (): boolean => {
  * - Prevents token injection attacks
  * - Logs extraction attempts for monitoring
  */
+
+
+
+
 export const extractResetTokens = (): PasswordResetTokens | null => {
   try {
-    const rawParams: Record<string, string> = {};
+    const rawParams: AuthHashParams = {};
     
     // Primary: Extract from URL hash (Supabase standard)
     if (window.location.hash) {

@@ -3,9 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ChevronDown } from 'lucide-react';
 
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../features/auth';
-import AuthModal from '../../features/auth/components/AuthModal';
 import UserMenu from './UserMenu';
 import AuthModal from '../../features/auth/components/AuthModal';
 import Button from '../atoms/Button';
@@ -249,3 +247,5 @@ const Navigation: React.FC = () => {
     </>
   );
 };
+
+export default Navigation;
