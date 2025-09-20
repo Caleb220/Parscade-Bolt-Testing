@@ -31,49 +31,27 @@ const Footer: React.FC = () => {
   return (
     <footer className="bg-gray-900 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6 lg:gap-8">
-          {/* Brand */}
-          <div className="lg:col-span-2">
-            <Link 
-              to="/" 
-              className="text-2xl sm:text-3xl font-black text-white mb-4 block"
-              style={{
-                fontFamily: "'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-              }}
-            >
-            </Link>
-            <Link to="/" className="flex items-center mb-4">
-              <img
-                src="/main-logo.png"
-                alt="Parscade Logo"
-                className="w-8 h-8 sm:w-10 sm:h-10 rounded-full mr-2 sm:mr-3 bg-white/10 p-1"
-              />
-              <span className="text-4xl sm:text-3xl font-black text-white logo-text-light">
-                Parscade
-              </span>
-            </Link>
-            <p className="text-gray-400 mb-6 max-w-md text-sm sm:text-base">
-              Transform unstructured documents into structured data with our intelligent parsing platform.
-            </p>
-            <div className="flex space-x-4">
-              {socialLinks.map(({ icon: Icon, href, label }) => (
-                <a
-                  key={label}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-white transition-colors duration-200"
-                  aria-label={label}
-                >
-                  <Icon className="w-5 h-5" />
-                </a>
-              ))}
-            </div>
-          </div>
+        {/* Brand */}
+        <div className="mb-8">
+          <Link to="/" className="flex items-center mb-4">
+            <img
+              src="/main-logo.png"
+              alt="Parscade Logo"
+              className="w-8 h-8 sm:w-10 sm:h-10 rounded-full mr-2 sm:mr-3 bg-white/10 p-1"
+            />
+            <span className="text-2xl sm:text-3xl font-black text-white logo-text-light">
+              Parscade
+            </span>
+          </Link>
+          <p className="text-gray-400 text-sm sm:text-base max-w-md">
+            Transform unstructured documents into structured data with our intelligent parsing platform.
+          </p>
+        </div>
 
-          {/* Links */}
+        {/* Links Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 mb-8">
           {Object.entries(footerLinks).map(([category, links]) => (
-            <div key={category} className="col-span-1">
+            <div key={category}>
               <h3 className="font-semibold mb-3 sm:mb-4 text-sm sm:text-base">{category}</h3>
               <ul className="space-y-2">
                 {links.map(({ label, href }) => (
@@ -91,8 +69,24 @@ const Footer: React.FC = () => {
           ))}
         </div>
 
+        {/* Social Links */}
+        <div className="flex justify-center sm:justify-start space-x-4 mb-8">
+          {socialLinks.map(({ icon: Icon, href, label }) => (
+            <a
+              key={label}
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-400 hover:text-white transition-colors duration-200"
+              aria-label={label}
+            >
+              <Icon className="w-5 h-5" />
+            </a>
+          ))}
+        </div>
+
         {/* Bottom */}
-        <div className="border-t border-gray-800 mt-8 sm:mt-12 pt-6 sm:pt-8 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+        <div className="border-t border-gray-800 pt-6 sm:pt-8 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
           <p className="text-gray-400 text-sm">
             © {currentYear} Parscade. All rights reserved.
           </p>
