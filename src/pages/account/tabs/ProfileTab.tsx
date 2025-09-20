@@ -207,7 +207,7 @@ const ProfileTab: React.FC = () => {
                     id="company"
                     {...register('company')}
                     placeholder="Your company name"
-                    className="pl-11"
+                    className="pl-22"
                   />
                 </div>
                 {errors.company && (
@@ -235,7 +235,7 @@ const ProfileTab: React.FC = () => {
                     id="phone"
                     {...register('phone')}
                     placeholder="+1234567890"
-                    className="pl-11"
+                    className="pl-22"
                   />
                 </div>
                 {errors.phone && (
