@@ -193,6 +193,7 @@ const ProfileTab: React.FC = () => {
                   id="username"
                   {...register('username')}
                   placeholder="Choose a username"
+                  className="px-3"
                 />
                 {errors.username && (
                   <p className="text-sm text-red-600">{errors.username.message}</p>
@@ -221,6 +222,7 @@ const ProfileTab: React.FC = () => {
                   id="role"
                   {...register('role')}
                   placeholder="Your job title"
+                  className="px-3"
                 />
                 {errors.role && (
                   <p className="text-sm text-red-600">{errors.role.message}</p>
@@ -275,25 +277,26 @@ const ProfileTab: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Email Address</Label>
-                  <Input value={user?.email || ''} disabled />
+                  <Input value={user?.email || ''} disabled className="px-3" />
                   <p className="text-xs text-gray-500">Contact support to change your email</p>
                 </div>
 
                 <div className="space-y-2">
                   <Label>User ID</Label>
-                  <Input value={user?.id || ''} disabled className="font-mono text-xs" />
+                  <Input value={user?.id || ''} disabled className="font-mono text-xs px-3" />
                 </div>
 
                 <div className="space-y-2">
                   <Label>Plan</Label>
-                  <Input value={user?.plan || 'Free'} disabled className="capitalize" />
+                  <Input value={user?.plan || 'Free'} disabled className="capitalize px-3" />
                 </div>
 
                 <div className="space-y-2">
                   <Label>Member Since</Label>
                   <Input 
                     value={user?.created_at ? new Date(user.created_at).toLocaleDateString() : ''} 
-                    disabled 
+                    disabled
+                    className="px-3"
                   />
                 </div>
               </div>
