@@ -7,6 +7,12 @@ import LoadingSpinner from '@/components/atoms/LoadingSpinner';
 import ErrorBoundary from '@/components/molecules/ErrorBoundary';
 import ProtectedRoute from '@/components/templates/ProtectedRoute';
 import { env } from '@/config/env';
+import AccountLayout from '@/pages/account/AccountLayout';
+import ProfileTab from '@/pages/account/tabs/ProfileTab';
+import SecurityTab from '@/pages/account/tabs/SecurityTab';
+import NotificationsTab from '@/pages/account/tabs/NotificationsTab';
+import IntegrationsTab from '@/pages/account/tabs/IntegrationsTab';
+import { Toaster } from '@/components/ui/toaster';
 import AccountPage from '@/features/account/pages/AccountPage';
 import { AuthProvider, useAuth } from '@/features/auth';
 import { DashboardPage } from '@/features/dashboard';
@@ -143,9 +149,14 @@ const RouteHandler: FC = () => {
         } />
         <Route path="/account" element={
           <ProtectedRoute redirectTo="/">
-            <AccountPage />
+            <AccountLayout />
           </ProtectedRoute>
-        } />
+        }>
+          <Route index element={<ProfileTab />} />
+          <Route path="security" element={<SecurityTab />} />
+          <Route path="notifications" element={<NotificationsTab />} />
+          <Route path="integrations" element={<IntegrationsTab />} />
+        </Route>
         <Route path="/billing" element={<BillingPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/about" element={<AboutPage />} />
@@ -234,6 +245,7 @@ const App: FC = () => {
         <AuthProvider>
           <Router>
             <RouteHandler />
+            <Toaster />
           </Router>
         </AuthProvider>
       </QueryProvider>
