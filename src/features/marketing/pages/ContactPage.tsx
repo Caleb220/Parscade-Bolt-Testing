@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Phone, MapPin, Send, CheckCircle } from 'lucide-react';
 import Layout from '@/shared/components/layout/templates/Layout';
-import Button from '@/shared/components/forms/Button';
-import Input from '@/shared/components/forms/Input';
+import CustomButton from '@/shared/components/forms/CustomButton';
+import Input from '@/shared/components/forms/FormFieldInput';
 
 const ContactPage: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -87,7 +87,7 @@ const ContactPage: React.FC = () => {
               variant="outline"
             >
               Send Another Message
-            </Button>
+            </CustomButton>
           </motion.div>
         </div>
       </Layout>
