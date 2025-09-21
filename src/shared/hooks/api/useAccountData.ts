@@ -20,7 +20,7 @@ import type {
   NotificationPreferencesUpdate,
   Webhook,
   ConnectedService,
-  DataSource
+  DataSource,
   CreateApiKeyRequest
 } from '@/types/api-types';
 
