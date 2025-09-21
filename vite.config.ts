@@ -29,7 +29,7 @@ export default defineConfig({
           ],
           'account': [
             'src/features/account/components/AccountLayout.tsx',
-            'src/features/account/hooks/useAccountSettings.tsx'
+            'src/features/account/hooks/useAccountSettings.ts'
           ],
           'marketing': [
             'src/features/marketing/sections/HeroSection.tsx',
