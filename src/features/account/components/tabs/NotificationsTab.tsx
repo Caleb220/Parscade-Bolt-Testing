@@ -18,7 +18,7 @@ import { Label } from '@/shared/components/ui/label';
 import { Switch } from '@/shared/components/ui/switch';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { useToast } from '@/shared/components/ui/use-toast';
-import { useNotificationPrefs, useUpdateNotificationPrefs } from '@/shared/hooks/api/useAccountData';
+import { useNotificationPreferences, useUpdateNotificationPreferences } from '@/shared/hooks/api/useAccountData';
 
 import { formatDate } from '@/shared/utils/formatters';
 import { useAccountContext } from '../AccountLayout';
@@ -26,8 +26,8 @@ import { useAccountContext } from '../AccountLayout';
 const NotificationsTab = () => {
   const { user } = useAccountContext();
   const { toast } = useToast();
-  const { data: prefs, isLoading, error, refetch } = useNotificationPrefs();
-  const updatePrefs = useUpdateNotificationPrefs();
+  const { data: prefs, isLoading, error, refetch } = useNotificationPreferences();
+  const updatePrefs = useUpdateNotificationPreferences();
 
   const {
     register,
