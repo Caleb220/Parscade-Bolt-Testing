@@ -1,0 +1,1746 @@
+openapi: 3.0.3
+info:
+  title: Parscade Backend API
+  description: 'A robust, production-ready REST API built with Fastify, TypeScript,
+    and Supabase for the Parscade document processing platform.
+
+
+    ## Authentication
+
+
+    This API uses JWT Bearer tokens for authentication. Include your token in the
+    Authorization header:
+
+
+    ```
+
+    Authorization: Bearer <your-jwt-token>
+
+    ```
+
+
+    ## Rate Limiting
+
+
+    API requests are rate limited to prevent abuse:
+
+    - **100 requests per 15 minutes** per IP address
+
+    - Rate limit headers are included in responses
+
+
+    ## Error Handling
+
+
+    All errors follow a consistent format with appropriate HTTP status codes and detailed
+    error messages.
+
+    '
+  version: 1.0.0
+  contact:
+    name: Parscade Support
+    email: admin@parscade.com
+    url: https://parscade.com/contact
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: https://parscade.com/terms
+servers:
+- url: https://api.parscade.com
+  description: Production server
+- url: https://staging-api.parscade.com
+  description: Staging server
+- url: http://localhost:8000
+  description: Development server
+security:
+- BearerAuth: []
+tags:
+- name: Health
+  description: Health check and system status endpoints
+- name: Authentication
+  description: User authentication and session management
+- name: Account
+  description: User account and profile management
+- name: API Keys
+  description: API key management for programmatic access
+- name: Uploads
+  description: File upload and storage management
+- name: Documents
+  description: Document management and processing
+- name: Jobs
+  description: Background job management and monitoring
+- name: Admin
+  description: Administrative endpoints (admin access required)
+- name: Auth
+  description: Authentication & session management
+paths:
+  /health:
+    get:
+      tags:
+      - Health
+      summary: Basic health check
+      description: Returns the current health status of the API
+      operationId: healthCheck
+      security: []
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+              example:
+                status: healthy
+                timestamp: '2024-01-15T10:30:00Z'
+                uptime: 86400
+                version: 1.0.0
+  /ready:
+    get:
+      tags:
+      - Health
+      summary: Readiness probe
+      description: Comprehensive readiness check including database connectivity
+      operationId: readinessCheck
+      security: []
+      responses:
+        '200':
+          description: Service is ready
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadinessResponse'
+        '503':
+          description: Service is not ready
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadinessResponse'
+  /live:
+    get:
+      tags:
+      - Health
+      summary: Liveness probe
+      description: Simple liveness check for Kubernetes
+      operationId: livenessCheck
+      security: []
+      responses:
+        '200':
+          description: Service is alive
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: alive
+  /v1/auth/callback:
+    post:
+      tags:
+      - Authentication
+      summary: Authentication callback
+      description: Handle authentication callback from Supabase
+      operationId: authCallback
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                access_token:
+                  type: string
+                  description: JWT access token from Supabase
+                refresh_token:
+                  type: string
+                  description: Refresh token from Supabase
+                user:
+                  type: object
+                  description: User object from Supabase
+              required:
+              - access_token
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Authentication failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/account/me:
+    get:
+      tags:
+      - Account
+      summary: Get current user profile
+      description: Retrieve the authenticated user's profile information
+      operationId: getCurrentUser
+      responses:
+        '200':
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    patch:
+      tags:
+      - Account
+      summary: Update user profile
+      description: Update the authenticated user's profile information
+      operationId: updateUserProfile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileRequest'
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    delete:
+      tags:
+      - Account
+      summary: Delete user account
+      description: Initiate deletion of the authenticated user's account
+      operationId: deleteAccount
+      responses:
+        '200':
+          description: Account deletion initiated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Account deletion initiated successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/account/sessions:
+    get:
+      tags:
+      - Account
+      summary: List user sessions
+      description: Get all active sessions for the authenticated user
+      operationId: getUserSessions
+      responses:
+        '200':
+          description: Sessions retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sessions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UserSession'
+                  pagination:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/account/sessions/{sessionId}:
+    delete:
+      tags:
+      - Account
+      summary: Revoke user session
+      description: Revoke a specific user session
+      operationId: revokeSession
+      parameters:
+      - name: sessionId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '204':
+          description: Session revoked successfully
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/account/security-events:
+    get:
+      tags:
+      - Account
+      summary: Get security events
+      description: Retrieve security events for the authenticated user
+      operationId: getSecurityEvents
+      parameters:
+      - name: limit
+        in: query
+        description: Number of events to return
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: Security events retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  events:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SecurityEvent'
+                  pagination:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/account/avatar:
+    post:
+      tags:
+      - Account
+      summary: Upload avatar
+      description: Upload a new avatar image for the user
+      operationId: uploadAvatar
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                avatar:
+                  type: string
+                  format: binary
+                  description: Avatar image file
+              required:
+              - avatar
+      responses:
+        '200':
+          description: Avatar uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  avatarUrl:
+                    type: string
+                    format: uri
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/keys:
+    get:
+      tags:
+      - API Keys
+      summary: List API keys
+      description: Get all API keys for the authenticated user
+      operationId: getApiKeys
+      responses:
+        '200':
+          description: API keys retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  keys:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ApiKey'
+                  pagination:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      tags:
+      - API Keys
+      summary: Create API key
+      description: Create a new API key for programmatic access
+      operationId: createApiKey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateApiKeyRequest'
+      responses:
+        '201':
+          description: API key created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  key:
+                    type: string
+                    description: The actual API key (only shown once)
+                  apiKey:
+                    $ref: '#/components/schemas/ApiKey'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/keys/{keyId}:
+    delete:
+      tags:
+      - API Keys
+      summary: Revoke API key
+      description: Revoke an existing API key
+      operationId: revokeApiKey
+      parameters:
+      - name: keyId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '204':
+          description: API key revoked successfully
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/uploads/sign:
+    post:
+      tags:
+      - Uploads
+      summary: Generate signed upload URL
+      description: Generate a pre-signed URL for direct document upload
+      operationId: generateSignedUploadUrl
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignedUploadRequest'
+      responses:
+        '200':
+          description: Signed URL generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignedUploadResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/uploads/{storageKey}/complete:
+    post:
+      tags:
+      - Uploads
+      summary: Complete upload
+      description: Mark upload as complete and create document record
+      operationId: completeUpload
+      parameters:
+      - name: storageKey
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteUploadRequest'
+      responses:
+        '201':
+          description: Upload completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/documents:
+    get:
+      tags:
+      - Documents
+      summary: List documents
+      description: Get paginated list of user documents
+      operationId: getDocuments
+      parameters:
+      - $ref: '#/components/parameters/PageParam'
+      - $ref: '#/components/parameters/LimitParam'
+      - name: status
+        in: query
+        description: Filter by document status
+        schema:
+          $ref: '#/components/schemas/DocumentStatus'
+      - name: search
+        in: query
+        description: Search in document names
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Documents retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  documents:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Document'
+                  pagination:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/documents/{documentId}:
+    get:
+      tags:
+      - Documents
+      summary: Get document details
+      description: Get detailed information about a specific document
+      operationId: getDocument
+      parameters:
+      - $ref: '#/components/parameters/DocumentIdParam'
+      responses:
+        '200':
+          description: Document retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    delete:
+      tags:
+      - Documents
+      summary: Delete document
+      description: Delete a document and all associated data
+      operationId: deleteDocument
+      parameters:
+      - $ref: '#/components/parameters/DocumentIdParam'
+      responses:
+        '204':
+          description: Document deleted successfully
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/documents/{documentId}/download:
+    get:
+      tags:
+      - Documents
+      summary: Download document
+      description: Get pre-signed URL for downloading the document
+      operationId: downloadDocument
+      parameters:
+      - $ref: '#/components/parameters/DocumentIdParam'
+      responses:
+        '200':
+          description: Download URL generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  downloadUrl:
+                    type: string
+                    format: uri
+                  expiresAt:
+                    type: string
+                    format: date-time
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/jobs:
+    get:
+      tags:
+      - Jobs
+      summary: List jobs
+      description: Get paginated list of user jobs
+      operationId: getJobs
+      parameters:
+      - $ref: '#/components/parameters/PageParam'
+      - $ref: '#/components/parameters/LimitParam'
+      - name: status
+        in: query
+        description: Filter by job status
+        schema:
+          $ref: '#/components/schemas/JobStatus'
+      - name: type
+        in: query
+        description: Filter by job type
+        schema:
+          $ref: '#/components/schemas/JobType'
+      responses:
+        '200':
+          description: Jobs retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jobs:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Job'
+                  pagination:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      tags:
+      - Jobs
+      summary: Create job
+      description: Create a new processing job
+      operationId: createJob
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateJobRequest'
+      responses:
+        '201':
+          description: Job created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/jobs/{jobId}:
+    get:
+      tags:
+      - Jobs
+      summary: Get job details
+      description: Get detailed information about a specific job
+      operationId: getJob
+      parameters:
+      - $ref: '#/components/parameters/JobIdParam'
+      responses:
+        '200':
+          description: Job retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    delete:
+      tags:
+      - Jobs
+      summary: Cancel job
+      description: Cancel a pending or running job
+      operationId: cancelJob
+      parameters:
+      - $ref: '#/components/parameters/JobIdParam'
+      responses:
+        '200':
+          description: Job cancelled successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Job cannot be cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/admin/users:
+    get:
+      tags:
+      - Admin
+      summary: List all users (Admin)
+      description: Get paginated list of all users (admin only)
+      operationId: adminGetUsers
+      parameters:
+      - $ref: '#/components/parameters/PageParam'
+      - $ref: '#/components/parameters/LimitParam'
+      - name: role
+        in: query
+        description: Filter by user role
+        schema:
+          $ref: '#/components/schemas/UserRole'
+      - name: search
+        in: query
+        description: Search users by email or name
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Users retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UserProfile'
+                  pagination:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /v1/admin/users/{userId}:
+    get:
+      tags:
+      - Admin
+      summary: Get user by ID (Admin)
+      description: Get detailed user information by ID (admin only)
+      operationId: adminGetUser
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: User retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    patch:
+      tags:
+      - Admin
+      summary: Update user (Admin)
+      description: Update user information (admin only)
+      operationId: adminUpdateUser
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role:
+                  $ref: '#/components/schemas/UserRole'
+                emailVerified:
+                  type: boolean
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /v1/admin/jobs:
+    get:
+      tags:
+      - Admin
+      summary: List all jobs (Admin)
+      description: Get paginated list of all jobs across users (admin only)
+      operationId: adminGetJobs
+      parameters:
+      - $ref: '#/components/parameters/PageParam'
+      - $ref: '#/components/parameters/LimitParam'
+      - name: status
+        in: query
+        description: Filter by job status
+        schema:
+          $ref: '#/components/schemas/JobStatus'
+      - name: userId
+        in: query
+        description: Filter by user ID
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Jobs retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jobs:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Job'
+                  pagination:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /v1/auth/signup:
+    post:
+      tags:
+      - Auth
+      summary: Sign up
+      description: Creates a new user via Supabase and seeds profile & notification
+        preferences.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignUpRequest'
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignUpResponse'
+        '400':
+          description: Validation failed or Supabase error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                validation:
+                  value:
+                    error: BadRequest
+                    message: Validation failed
+                    timestamp: '2025-09-21T00:00:00Z'
+        '409':
+          description: Email already registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: Conflict
+                message: Email already registered
+                timestamp: '2025-09-21T00:00:00Z'
+        '500':
+          description: Failed to create user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: InternalServerError
+                message: Internal server error
+                timestamp: '2025-09-21T00:00:00Z'
+  /v1/auth/signin:
+    post:
+      tags:
+      - Auth
+      summary: Sign in
+      description: Authenticates a user with email/password via Supabase and logs
+        a security event.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignInRequest'
+      responses:
+        '200':
+          description: Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignInResponse'
+        '400':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: BadRequest
+                message: Validation failed
+                timestamp: '2025-09-21T00:00:00Z'
+        '401':
+          description: Invalid email or password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: Unauthorized
+                message: Invalid email or password
+                timestamp: '2025-09-21T00:00:00Z'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/auth/signout:
+    post:
+      tags:
+      - Auth
+      summary: Sign out
+      description: Signs out the current user and logs a security event.
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Signed out
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+              example:
+                message: Signed out successfully
+        '401':
+          description: Invalid authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: Unauthorized
+                message: Invalid authentication
+                timestamp: '2025-09-21T00:00:00Z'
+        '400':
+          description: Supabase sign-out error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/auth/reset-password:
+    post:
+      tags:
+      - Auth
+      summary: Send password reset email
+      description: Triggers a Supabase password reset email with redirect link.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+      responses:
+        '200':
+          description: Email sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+              example:
+                message: Password reset email sent
+        '400':
+          description: Validation failed or Supabase error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/auth/password:
+    put:
+      tags:
+      - Auth
+      summary: Update password
+      description: "Updates the authenticated user\u2019s password via Supabase and\
+        \ logs a security event."
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePasswordRequest'
+      responses:
+        '200':
+          description: Password updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+              example:
+                message: Password updated successfully
+        '400':
+          description: Validation failed or Supabase error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                validation:
+                  value:
+                    error: BadRequest
+                    message: Validation failed
+                    timestamp: '2025-09-21T00:00:00Z'
+        '401':
+          description: Invalid authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: Unauthorized
+                message: Invalid authentication
+                timestamp: 2025-09-21 10:00:00+00:00
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token from Supabase authentication
+  parameters:
+    PageParam:
+      name: page
+      in: query
+      description: Page number (1-based)
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    LimitParam:
+      name: limit
+      in: query
+      description: Number of items per page
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+    DocumentIdParam:
+      name: documentId
+      in: path
+      required: true
+      description: Document UUID
+      schema:
+        type: string
+        format: uuid
+    JobIdParam:
+      name: jobId
+      in: path
+      required: true
+      description: Job UUID
+      schema:
+        type: string
+        format: uuid
+  responses:
+    BadRequest:
+      description: Bad request - invalid input
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: Unauthorized - authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Forbidden:
+      description: Forbidden - insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  schemas:
+    HealthResponse:
+      type: object
+      required:
+      - status
+      - timestamp
+      - uptime
+      - version
+      properties:
+        status:
+          type: string
+          enum:
+          - healthy
+          - unhealthy
+        timestamp:
+          type: string
+          format: date-time
+        uptime:
+          type: number
+          description: Server uptime in seconds
+        version:
+          type: string
+    ReadinessResponse:
+      type: object
+      required:
+      - status
+      - services
+      properties:
+        status:
+          type: string
+          enum:
+          - ready
+          - not_ready
+        services:
+          type: object
+          required:
+          - database
+          - storage
+          properties:
+            database:
+              type: string
+              enum:
+              - healthy
+              - unhealthy
+            storage:
+              type: string
+              enum:
+              - healthy
+              - unhealthy
+    AuthResponse:
+      type: object
+      required:
+      - user
+      - session
+      properties:
+        user:
+          $ref: '#/components/schemas/UserProfile'
+        session:
+          type: object
+          required:
+          - access_token
+          - expires_at
+          properties:
+            access_token:
+              type: string
+            refresh_token:
+              type: string
+            expires_at:
+              type: string
+              format: date-time
+    UserProfile:
+      type: object
+      required:
+      - id
+      - email
+      - role
+      - emailVerified
+      - createdAt
+      - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        fullName:
+          type: string
+          nullable: true
+        avatarUrl:
+          type: string
+          format: uri
+          nullable: true
+        timezone:
+          type: string
+          default: UTC
+        emailVerified:
+          type: boolean
+        role:
+          $ref: '#/components/schemas/UserRole'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    UserRole:
+      type: string
+      enum:
+      - admin
+      - user
+    UpdateProfileRequest:
+      type: object
+      properties:
+        fullName:
+          type: string
+          nullable: true
+        timezone:
+          type: string
+    UserSession:
+      type: object
+      required:
+      - id
+      - sessionToken
+      - lastSeen
+      - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        sessionToken:
+          type: string
+        userAgent:
+          type: string
+          nullable: true
+        ipAddress:
+          type: string
+          nullable: true
+        isCurrent:
+          type: boolean
+        lastSeen:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+    SecurityEvent:
+      type: object
+      required:
+      - id
+      - eventType
+      - description
+      - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        eventType:
+          type: string
+        description:
+          type: string
+        ipAddress:
+          type: string
+          nullable: true
+        userAgent:
+          type: string
+          nullable: true
+        metadata:
+          type: object
+          additionalProperties: true
+        createdAt:
+          type: string
+          format: date-time
+    ApiKey:
+      type: object
+      required:
+      - id
+      - name
+      - keyPreview
+      - scopes
+      - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        keyPreview:
+          type: string
+          description: Last 4 characters of the key
+        scopes:
+          type: array
+          items:
+            type: string
+        lastUsedAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+    CreateApiKeyRequest:
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        scopes:
+          type: array
+          items:
+            type: string
+            enum:
+            - read
+            - write
+            - admin
+          default:
+          - read
+    SignedUploadRequest:
+      type: object
+      required:
+      - fileName
+      - mimeType
+      - size
+      properties:
+        fileName:
+          type: string
+        mimeType:
+          type: string
+        size:
+          type: integer
+          minimum: 1
+    SignedUploadResponse:
+      type: object
+      required:
+      - uploadUrl
+      - storageKey
+      - expiresAt
+      properties:
+        uploadUrl:
+          type: string
+          format: uri
+        storageKey:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
+    CompleteUploadRequest:
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          type: string
+        metadata:
+          type: object
+          additionalProperties: true
+    Document:
+      type: object
+      required:
+      - id
+      - userId
+      - name
+      - originalName
+      - mimeType
+      - size
+      - storageKey
+      - status
+      - createdAt
+      - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        originalName:
+          type: string
+        mimeType:
+          type: string
+        size:
+          type: integer
+        storageKey:
+          type: string
+        status:
+          $ref: '#/components/schemas/DocumentStatus'
+        metadata:
+          type: object
+          additionalProperties: true
+        extractedText:
+          type: string
+          nullable: true
+        structureData:
+          type: object
+          nullable: true
+          additionalProperties: true
+        thumbnailKey:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    DocumentStatus:
+      type: string
+      enum:
+      - uploading
+      - processing
+      - completed
+      - failed
+    Job:
+      type: object
+      required:
+      - id
+      - userId
+      - type
+      - status
+      - source
+      - attempts
+      - maxAttempts
+      - progress
+      - createdAt
+      - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        documentId:
+          type: string
+          format: uuid
+          nullable: true
+        type:
+          $ref: '#/components/schemas/JobType'
+        status:
+          $ref: '#/components/schemas/JobStatus'
+        source:
+          $ref: '#/components/schemas/JobSource'
+        sourceUrl:
+          type: string
+          format: uri
+          nullable: true
+        sourceKey:
+          type: string
+          nullable: true
+        metadata:
+          type: object
+          additionalProperties: true
+        options:
+          type: object
+          additionalProperties: true
+        resultRef:
+          type: string
+          nullable: true
+        error:
+          type: string
+          nullable: true
+        attempts:
+          type: integer
+        maxAttempts:
+          type: integer
+        progress:
+          type: integer
+          minimum: 0
+          maximum: 100
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        startedAt:
+          type: string
+          format: date-time
+          nullable: true
+        completedAt:
+          type: string
+          format: date-time
+          nullable: true
+    JobType:
+      type: string
+      enum:
+      - analyze_structure
+      - extract_text
+      - parse_document
+    JobStatus:
+      type: string
+      enum:
+      - cancelled
+      - completed
+      - failed
+      - pending
+      - processing
+    JobSource:
+      type: string
+      enum:
+      - s3
+      - upload
+      - url
+    CreateJobRequest:
+      type: object
+      required:
+      - type
+      - source
+      properties:
+        type:
+          $ref: '#/components/schemas/JobType'
+        source:
+          $ref: '#/components/schemas/JobSource'
+        documentId:
+          type: string
+          format: uuid
+          description: Required when source is 'upload'
+        sourceUrl:
+          type: string
+          format: uri
+          description: Required when source is 'url'
+        sourceKey:
+          type: string
+          description: Required when source is 's3'
+        options:
+          type: object
+          additionalProperties: true
+          default: {}
+    PaginationMeta:
+      type: object
+      required:
+      - page
+      - limit
+      - total
+      - totalPages
+      - hasNext
+      - hasPrevious
+      properties:
+        page:
+          type: integer
+          minimum: 1
+        limit:
+          type: integer
+          minimum: 1
+        total:
+          type: integer
+          minimum: 0
+        totalPages:
+          type: integer
+          minimum: 0
+        hasNext:
+          type: boolean
+        hasPrevious:
+          type: boolean
+    ErrorResponse:
+      type: object
+      required:
+      - error
+      - message
+      - timestamp
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+          additionalProperties: true
+        timestamp:
+          type: string
+          format: date-time
+        requestId:
+          type: string
+          nullable: true
+    MessageResponse:
+      type: object
+      required:
+      - message
+      properties:
+        message:
+          type: string
+      additionalProperties: false
+      example:
+        message: Signed out successfully
+    SupabaseUser:
+      description: Supabase Auth user object (shape simplified; may include additional
+        properties)
+      type: object
+      required:
+      - id
+      - email
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        created_at:
+          type: string
+          format: date-time
+        email_confirmed_at:
+          type: string
+          format: date-time
+          nullable: true
+      additionalProperties: true
+      example:
+        id: d21c29dd-a07c-4f5f-b7c8-dabaca3164cc
+        email: user@example.com
+        created_at: 2025-09-20 10:00:00+00:00
+        email_confirmed_at: 2025-09-20 10:10:00+00:00
+    SupabaseSession:
+      description: Supabase Auth session (access/refresh tokens, expiry). Exact shape
+        may vary by SDK.
+      type: object
+      required:
+      - access_token
+      - token_type
+      - expires_in
+      properties:
+        access_token:
+          type: string
+        token_type:
+          type: string
+          example: bearer
+        expires_in:
+          type: integer
+          example: 3600
+        refresh_token:
+          type: string
+          nullable: true
+        user:
+          $ref: '#/components/schemas/SupabaseUser'
+      additionalProperties: true
+      example:
+        access_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        token_type: bearer
+        expires_in: 3600
+        refresh_token: rfs_abc123...
+        user:
+          id: d21c29dd-a07c-4f5f-b7c8-dabaca3164cc
+          email: user@example.com
+    SignUpRequest:
+      type: object
+      required:
+      - email
+      - password
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 255
+        password:
+          type: string
+          minLength: 8
+          maxLength: 128
+          pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$
+          description: Must contain at least one lowercase letter, one uppercase letter,
+            and one number
+        full_name:
+          type: string
+          maxLength: 100
+          nullable: true
+      additionalProperties: false
+      example:
+        email: new.user@example.com
+        password: StrongPass1
+        full_name: New User
+    SignUpResponse:
+      type: object
+      required:
+      - user
+      - session
+      - message
+      properties:
+        user:
+          $ref: '#/components/schemas/SupabaseUser'
+        session:
+          $ref: '#/components/schemas/SupabaseSession'
+        message:
+          type: string
+          example: User created successfully
+      additionalProperties: false
+    SignInRequest:
+      type: object
+      required:
+      - email
+      - password
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 255
+        password:
+          type: string
+          minLength: 8
+          maxLength: 128
+      additionalProperties: false
+      example:
+        email: user@example.com
+        password: StrongPass1
+    SignInResponse:
+      type: object
+      required:
+      - user
+      - session
+      properties:
+        user:
+          $ref: '#/components/schemas/SupabaseUser'
+        session:
+          $ref: '#/components/schemas/SupabaseSession'
+      additionalProperties: false
+    ResetPasswordRequest:
+      type: object
+      required:
+      - email
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 255
+      additionalProperties: false
+      example:
+        email: user@example.com
+    UpdatePasswordRequest:
+      type: object
+      required:
+      - password
+      properties:
+        password:
+          type: string
+          minLength: 8
+          maxLength: 128
+          pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$
+          description: Must contain at least one lowercase letter, one uppercase letter,
+            and one number
+      additionalProperties: false
+      example:
+        password: NewStrongPass1
