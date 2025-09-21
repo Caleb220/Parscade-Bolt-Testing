@@ -552,7 +552,6 @@ const ProfileTab: React.FC = () => {
                 </div>
               </div>
 
-                      value={user?.role === 'admin' ? 'Admin' : 'Beta'} 
               <div className="p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200">
                 <div className="space-y-2">
                   <Label className="flex items-center text-sm font-medium text-gray-700">
@@ -624,62 +623,6 @@ const ProfileTab: React.FC = () => {
           </motion.div>
         )}
       </div>
-    </motion.div>
-  );
-};
-
-export default ProfileTab;
-            {/* Form Errors */}
-            {updateAccount.error && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center p-3 bg-red-50 border border-red-200 rounded-lg"
-              >
-                <AlertCircle className="w-5 h-5 text-red-600 mr-2 flex-shrink-0" />
-                <span className="text-sm text-red-700">
-                  {getErrorMessage(updateAccount.error)}
-                </span>
-              </motion.div>
-            )}
-
-            {/* Success Message */}
-            {updateAccount.isSuccess && !isDirty && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center p-3 bg-green-50 border border-green-200 rounded-lg"
-              >
-                <CheckCircle className="w-5 h-5 text-green-600 mr-2 flex-shrink-0" />
-                <span className="text-sm text-green-700">
-                  Profile updated successfully
-                </span>
-              </motion.div>
-            )}
-
-            {/* Save Button - Sticky on Mobile */}
-            <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4 -mx-6 sm:static sm:bg-transparent sm:border-t-0 sm:p-0 sm:mx-0">
-              <Button
-                type="submit"
-                disabled={!isDirty || updateAccount.isPending || isSubmitting}
-                className="w-full sm:w-auto"
-              >
-                {updateAccount.isPending || isSubmitting ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                    Saving...
-                  </>
-                ) : (
-                  <>
-                    <Save className="w-4 h-4 mr-2" />
-                    Save Changes
-                  </>
-                )}
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
     </motion.div>
   );
 };
