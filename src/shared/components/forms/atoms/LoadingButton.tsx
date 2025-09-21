@@ -1,7 +1,3 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Loader2 } from 'lucide-react';
-
 /**
  * Enhanced Loading Button Component
  * 
@@ -12,6 +8,10 @@ import { Loader2 } from 'lucide-react';
  * - Clear visual feedback for user actions
  * - Supports all standard button variants
  */
+
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Loader2 } from 'lucide-react';
 
 interface LoadingButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   readonly isLoading?: boolean;

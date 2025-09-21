@@ -8,7 +8,7 @@ import {
   SecuritySettings,
   accountSettingsSchema,
   createDefaultAccountSettings,
-} from '@/shared/schemas';
+} from '@/shared/schemas/account/accountSettings';
 import {
   fetchOrCreateAccountSettings,
   updateAccountSettingsSection,

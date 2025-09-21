@@ -10,7 +10,7 @@ import { motion } from 'framer-motion';
 import { Bell, Mail, Smartphone, Webhook, Clock, Save, AlertCircle, CheckCircle } from 'lucide-react';
 
 import { getErrorMessage } from '@/lib/api';
-import { notificationSettingsSchema, type NotificationSettings } from '@/shared/schemas/schemas/account/accountSettings';
+import { notificationSettingsSchema, type NotificationSettings } from '@/shared/schemas/account/accountSettings';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Input } from '@/shared/components/ui/input';

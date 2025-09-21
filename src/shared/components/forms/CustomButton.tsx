@@ -1,13 +1,13 @@
 /**
- * Button Component
- * Reusable button with variants and loading states
+ * Custom Button Component
+ * Enhanced button with variants, loading states, and animations
  */
 
 import React, { forwardRef } from 'react';
 import { motion } from 'framer-motion';
-import LoadingSpinner from './LoadingSpinner';
+import LoadingSpinner from './atoms/LoadingSpinner';
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface CustomButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
   size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
@@ -17,7 +17,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   as?: React.ElementType;
 }
 
-const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
+const CustomButton = forwardRef<HTMLButtonElement, CustomButtonProps>(({
   children,
   variant = 'primary',
   size = 'md',
@@ -94,6 +94,6 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
   );
 });
 
-Button.displayName = 'Button';
+CustomButton.displayName = 'CustomButton';
 
-export default Button;
+export default CustomButton;

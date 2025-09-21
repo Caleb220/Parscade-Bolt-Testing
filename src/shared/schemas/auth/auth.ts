@@ -1,64 +1,122 @@
-/**
- * Authentication Schema Definitions
- * Comprehensive validation for auth flows and user data
- */
-
 import { z } from 'zod';
-import { emailSchema, uuidSchema, timestampSchema } from '@/shared/schemas/core';
 
-// User schema
-export const authUserSchema = z.object({
-  id: uuidSchema,
-  email: emailSchema,
-  user_metadata: z.object({
-    full_name: z.string().optional(),
-    avatar_url: z.string().url().optional(),
-  }).optional(),
-  email_confirmed_at: z.string().optional(),
-  created_at: timestampSchema,
-  updated_at: timestampSchema,
+import {
+  booleanSchema,
+  emailSchema,
+  userNameSchema,
+  nonEmptyTextSchema,
+  optionalEmailSchema,
+  personNameSchema,
+  passwordSchema,
+  optionalHttpsUrlSchema,
+  optionalTrimmedStringSchema,
+  uuidSchema,
+} from '@/shared/schemas/common';
+
+/**
+ * Auth provider metadata persisted with Supabase users.
+ */
+const authUserMetadataSchema = z
+  .object({
+    full_name: nonEmptyTextSchema('Full name', 120).optional(),
+    avatar_url: optionalHttpsUrlSchema,
+  })
+  .catchall(z.unknown());
+
+/**
+ * Minimal Supabase user profile schema with runtime validation and passthrough
+ * for provider-specific metadata that we do not explicitly model.
+ */
+export const authUserSchema = z
+  .object({
+    id: uuidSchema,
+    email: optionalEmailSchema,
+    user_metadata: authUserMetadataSchema,
+  })
+  .passthrough();
+
+/**
+ * Password strength metadata returned by the local validator.
+ */
+export const passwordStrengthSchema = z
+  .object({
+    score: z.number().int().min(0).max(5),
+    feedback: z.array(nonEmptyTextSchema('Password feedback message', 120)).max(10),
+    isValid: booleanSchema,
+  })
+  .strict();
+
+/**
+ * Form level validation errors surfaced in the auth experience.
+ */
+export const formErrorsSchema = z
+  .object({
+    email: optionalTrimmedStringSchema('Email error', 0, 200),
+    password: optionalTrimmedStringSchema('Password error', 0, 200),
+    fullName: optionalTrimmedStringSchema('Full name error', 0, 200),
+    username: optionalTrimmedStringSchema('Username error', 0, 200),
+    general: optionalTrimmedStringSchema('General error', 0, 200),
+  })
+  .strict();
+
+/**
+ * Runtime auth state consumed by the auth context provider.
+ */
+export const authStateSchema = z
+  .object({
+    user: authUserSchema.nullable(),
+    isAuthenticated: booleanSchema,
+    isEmailConfirmed: booleanSchema,
+    isLoading: booleanSchema,
+    error: optionalTrimmedStringSchema('Auth error message', 0, 300).nullable(),
+  })
+  .strict();
+
+const asyncVoid = z.promise(z.void());
+
+/** Auth sign-in function signature. */
+const signInFunctionSchema = z.function({
+  input: [z.union([emailSchema, userNameSchema]), passwordSchema],
+  output: asyncVoid,
 });
 
-export type User = z.infer<typeof authUserSchema>;
-
-// Form errors
-export const formErrorsSchema = z.object({
-  email: z.string().optional(),
-  password: z.string().optional(),
-  fullName: z.string().optional(),
-  username: z.string().optional(),
-  general: z.string().optional(),
+/** Auth sign-up function signature. */
+const signUpFunctionSchema = z.function({
+  input: [emailSchema, passwordSchema, personNameSchema, userNameSchema],
+  output: asyncVoid,
 });
 
-export type FormErrors = z.infer<typeof formErrorsSchema>;
-
-// Password strength
-export const passwordStrengthSchema = z.object({
-  score: z.number().min(0).max(4),
-  feedback: z.array(z.string()),
-  isValid: z.boolean(),
+/** Auth sign-out function signature. */
+const signOutFunctionSchema = z.function({
+  input: [],
+  output: asyncVoid,
 });
 
-export type PasswordStrength = z.infer<typeof passwordStrengthSchema>;
+/** Single email async function signature (resend confirmation). */
+const singleEmailAsyncFunctionSchema = z.function({
+  input: [emailSchema],
+  output: asyncVoid,
+});
 
-// Auth state
-export const authStateSchema = z.object({
-  user: authUserSchema.nullable(),
-  isAuthenticated: z.boolean(),
-  isEmailConfirmed: z.boolean(),
-  isLoading: z.boolean(),
-  error: z.string().nullable(),
+/** Clear error callback signature. */
+const clearErrorFunctionSchema = z.function({
+  input: [],
+  output: z.void(),
+});
+
+/**
+ * Complete auth context contract, including state and async handlers.
+ */
+export const authContextSchema = authStateSchema.extend({
+  signIn: signInFunctionSchema,
+  signUp: signUpFunctionSchema,
+  signOut: signOutFunctionSchema,
+  resendConfirmationEmail: singleEmailAsyncFunctionSchema,
+  clearError: clearErrorFunctionSchema,
 });
 
 export type AuthState = z.infer<typeof authStateSchema>;
-
-// Auth context
-export const authContextSchema = authStateSchema.extend({
-  signIn: z.function().args(z.string(), z.string()).returns(z.promise(z.void())),
-  signUp: z.function().args(z.string(), z.string(), z.string(), z.string()).returns(z.promise(z.void())),
-  signOut: z.function().returns(z.promise(z.void())),
-  resendConfirmationEmail: z.function().args(z.string()).returns(z.promise(z.void())),
-  clearError: z.function().returns(z.void()),
-});
-
 export type AuthContextType = z.infer<typeof authContextSchema>;
+export type PasswordStrength = z.infer<typeof passwordStrengthSchema>;
+export type FormErrors = z.infer<typeof formErrorsSchema>;
+export type User = z.infer<typeof authUserSchema>;

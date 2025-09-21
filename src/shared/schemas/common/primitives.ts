@@ -288,5 +288,3 @@ export const nonEmptyTextSchema = (label: string, max = 1000) =>
 export const optionalNonEmptyTextSchema = (label: string, max = 1000) => optionalize(nonEmptyTextSchema(label, max));
 
 export type PaginationParams = z.infer<typeof paginationParamsSchema>;
-
-

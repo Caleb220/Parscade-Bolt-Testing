@@ -4,8 +4,8 @@ import { FileText, AlertTriangle, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import { getErrorMessage } from '@/lib/api';
-import Button from '@/shared/components/forms/Button';
-import LoadingSpinner from '@/shared/components/forms/LoadingSpinner';
+import CustomButton from '@/shared/components/forms/CustomButton';
+import LoadingSpinner from '@/shared/components/forms/atoms/LoadingSpinner';
 import StatusIcon from '@/shared/components/ui/status-icon';
 import StatusBadge from '@/shared/components/ui/status-badge';
 import { formatDate, formatJobType } from '@/shared/utils/formatters';
@@ -25,9 +25,9 @@ const JobsList: React.FC = () => {
           <AlertTriangle className="w-5 h-5 mr-2" />
           <span>Failed to load jobs: {getErrorMessage(error)}</span>
         </div>
-        <Button variant="outline" onClick={() => window.location.reload()}>
+        <CustomButton variant="outline" onClick={() => window.location.reload()}>
           Retry
-        </Button>
+        </CustomButton>
       </div>
     );
   }
@@ -100,9 +100,9 @@ const JobsList: React.FC = () => {
 
       {jobsData && jobsData.pagination.hasNext && (
         <div className="p-4 border-t border-gray-200">
-          <Button variant="outline" fullWidth>
+          <CustomButton variant="outline" fullWidth>
             View All Jobs
-          </Button>
+          </CustomButton>
         </div>
       )}
     </div>

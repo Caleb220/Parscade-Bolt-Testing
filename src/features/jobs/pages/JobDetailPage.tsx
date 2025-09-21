@@ -4,9 +4,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Download, RefreshCw, XCircle, FileText, Database } from 'lucide-react';
 
 import { getErrorMessage, isApiError } from '@/lib/api';
-import Button from '@/shared/components/forms/Button';
+import CustomButton from '@/shared/components/forms/CustomButton';
 import Layout from '@/shared/components/layout/templates/Layout';
-import LoadingSpinner from '@/shared/components/forms/LoadingSpinner';
+import LoadingSpinner from '@/shared/components/forms/atoms/LoadingSpinner';
 import StatusIcon from '@/shared/components/ui/status-icon';
 import StatusBadge from '@/shared/components/ui/status-badge';
 import { formatDate, formatJobType, formatBytes } from '@/shared/utils/formatters';
@@ -68,13 +68,13 @@ const JobDetailPage: React.FC = () => {
               </span>
             </div>
             <div className="mt-4">
-              <Button
+              <CustomButton
                 variant="outline"
                 leftIcon={<ArrowLeft className="w-4 h-4" />}
                 onClick={() => navigate('/dashboard')}
               >
                 Back to Dashboard
-              </Button>
+              </CustomButton>
             </div>
           </div>
         </div>
@@ -87,14 +87,14 @@ const JobDetailPage: React.FC = () => {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <Button
+          <CustomButton
             variant="ghost"
             leftIcon={<ArrowLeft className="w-4 h-4" />}
             onClick={() => navigate('/dashboard')}
             className="mb-4"
           >
             Back to Dashboard
-          </Button>
+          </CustomButton>
           
           <div className="flex items-center justify-between">
             <div>
@@ -174,7 +174,7 @@ const JobDetailPage: React.FC = () => {
                       </div>
                     </div>
                     {document && (
-                      <Button
+                      <CustomButton
                         variant="outline"
                         size="sm"
                         leftIcon={<Download className="w-4 h-4" />}
@@ -182,7 +182,7 @@ const JobDetailPage: React.FC = () => {
                         isLoading={downloadMutation.isPending}
                       >
                         Download
-                      </Button>
+                      </CustomButton>
                     )}
                   </div>
 
@@ -274,7 +274,7 @@ const JobDetailPage: React.FC = () => {
               className="space-y-3"
             >
               {['pending', 'processing'].includes(job.status) && (
-                <Button
+                <CustomButton
                   variant="danger"
                   fullWidth
                   leftIcon={<XCircle className="w-4 h-4" />}
@@ -282,18 +282,18 @@ const JobDetailPage: React.FC = () => {
                   isLoading={cancelJobMutation.isPending}
                 >
                   Cancel Job
-                </Button>
+                </CustomButton>
               )}
 
               {job.status === 'failed' && (
-                <Button
+                <CustomButton
                   variant="outline"
                   fullWidth
                   leftIcon={<RefreshCw className="w-4 h-4" />}
                   onClick={() => refetch()}
                 >
                   Refresh Status
-                </Button>
+                </CustomButton>
               )}
             </motion.div>
           </div>

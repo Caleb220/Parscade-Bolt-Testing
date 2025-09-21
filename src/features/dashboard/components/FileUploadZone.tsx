@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Upload, FileText, AlertCircle, CheckCircle } from 'lucide-react';
 
 import { getErrorMessage } from '@/lib/api';
-import Button from '@/shared/components/forms/Button';
+import CustomButton from '@/shared/components/forms/CustomButton';
 import { formatBytes } from '@/shared/utils/formatters';
 import { useFileUpload } from '@/shared/hooks/api/useUploads';
 import { useSubmitParseJob } from '@/shared/hooks/api/useJobs';
@@ -125,9 +125,9 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
           <h3 className="text-lg font-semibold text-gray-900 mb-2">Upload Failed</h3>
           <p className="text-red-600 mb-4">{uploadProgress.error}</p>
           
-          <Button variant="outline" onClick={handleReset}>
+          <CustomButton variant="outline" onClick={handleReset}>
             Try Again
-          </Button>
+          </CustomButton>
         </div>
       )}
 
@@ -142,16 +142,16 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
           <p className="text-gray-600 mb-4">Ready to start document processing</p>
           
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button
+            <CustomButton
               onClick={handleSubmitJob}
               isLoading={isSubmittingJob}
               leftIcon={<FileText className="w-4 h-4" />}
             >
               Start Processing
-            </Button>
-            <Button variant="outline" onClick={handleReset}>
+            </CustomButton>
+            <CustomButton variant="outline" onClick={handleReset}>
               Upload Different File
-            </Button>
+            </CustomButton>
           </div>
         </div>
       )}
@@ -187,9 +187,9 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
           />
           
           <label htmlFor="file-upload">
-            <Button as="span" className="cursor-pointer">
+            <CustomButton as="span" className="cursor-pointer">
               Select File
-            </Button>
+            </CustomButton>
           </label>
           
           <p className="text-xs text-gray-500 mt-4">

@@ -8,7 +8,7 @@ export {
   notificationSettingsSchema,
   profileSettingsSchema,
   securitySettingsSchema,
-} from '../../schemas/account/accountSettings';
+} from '@/shared/schemas/account/accountSettings';
 export type {
   AccountSettings,
   AccountSettingsSection,
@@ -21,4 +21,4 @@ export type {
   QuietHoursSettings,
   SecuritySettings,
   WebhookConfig,
-} from '../../schemas/account/accountSettings';
+} from '@/shared/schemas/account/accountSettings';

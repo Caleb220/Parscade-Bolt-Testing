@@ -9,10 +9,10 @@ import {
   createDefaultAccountSettings,
   integrationSettingsSchema,
   notificationSettingsSchema,
-  optionalIsoDateTimeSchema,
   profileSettingsSchema,
   securitySettingsSchema,
-} from '@/shared/schemas';
+} from '@/shared/schemas/account/accountSettings';
+import { optionalIsoDateTimeSchema } from '@/shared/schemas/common';
 import { logger } from '@/shared/services/logger';
 
 

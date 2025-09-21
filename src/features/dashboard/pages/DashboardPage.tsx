@@ -3,7 +3,7 @@ import { Plus, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth';
-import Button from '@/shared/components/forms/Button';
+import CustomButton from '@/shared/components/forms/CustomButton';
 import Layout from '@/shared/components/layout/templates/Layout';
 import JobsList from '../components/JobsList';
 
@@ -65,12 +65,12 @@ const DashboardPage: React.FC = () => {
               <p className="text-gray-600 mt-1">Process documents with intelligent parsing</p>
             </div>
             
-            <Button 
+            <CustomButton 
               leftIcon={<Plus className="w-4 h-4" />}
               onClick={() => document.getElementById('file-upload')?.click()}
             >
               New Project
-            </Button>
+            </CustomButton>
           </div>
         </header>
 

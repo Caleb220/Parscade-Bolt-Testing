@@ -2,9 +2,9 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, User, AlertCircle, ArrowRight } from 'lucide-react';
 
-import Button from '@/shared/components/forms/Button';
-import Input from '@/shared/components/forms/Input';
-import PasswordInput from '@/shared/components/forms/PasswordInput';
+import CustomButton from '@/shared/components/forms/CustomButton';
+import FormFieldInput from '@/shared/components/forms/FormFieldInput';
+import PasswordInput from '@/shared/components/forms/atoms/PasswordInput';
 import { validatePassword } from '@/shared/utils/passwordValidation';
 
 import { useAuth } from '../context/AuthContext';
@@ -185,7 +185,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onModeChange, onSuccess }) =>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {mode === 'signup' && (
-            <Input
+            <FormFieldInput
               type="text"
               label="Full Name"
               value={formData.fullName}
@@ -198,7 +198,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onModeChange, onSuccess }) =>
           )}
 
           {mode === 'signup' && (
-            <Input
+            <FormFieldInput
               type="text"
               label="Username"
               value={formData.username}
@@ -210,7 +210,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onModeChange, onSuccess }) =>
             />
           )}
 
-          <Input
+          <FormFieldInput
             type="email"
             label="Email Address"
             value={formData.email}
@@ -276,7 +276,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onModeChange, onSuccess }) =>
             </motion.div>
           )}
 
-          <Button
+          <CustomButton
             type="submit"
             fullWidth
             isLoading={isLoading}
@@ -284,7 +284,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onModeChange, onSuccess }) =>
             rightIcon={<ArrowRight className="w-4 h-4" />}
           >
             {mode === 'signin' ? 'Sign In' : 'Create Account'}
-          </Button>
+          </CustomButton>
         </form>
 
         <div className="mt-6 text-center">

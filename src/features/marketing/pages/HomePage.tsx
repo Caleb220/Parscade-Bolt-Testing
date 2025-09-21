@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 
 import { AuthModal } from '../../auth';
 import Layout from '@/shared/components/layout/templates/Layout';
-import LoadingSpinner from '@/shared/components/forms/LoadingSpinner';
+import LoadingSpinner from '@/shared/components/forms/atoms/LoadingSpinner';
 
 import BetaCTASection from '../components/BetaCTASection';
 import FeaturesSection from '../sections/FeaturesSection';

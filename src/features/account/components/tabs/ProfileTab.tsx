@@ -11,6 +11,7 @@ import { motion } from 'framer-motion';
 import { Upload, Save, User, Building, Phone, Globe, Camera, AlertCircle, CheckCircle } from 'lucide-react';
 
 import { getErrorMessage, isApiError } from '@/lib/api';
+import { profileSchema, type ProfileFormData } from '@/lib/validation/account';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Input } from '@/shared/components/ui/input';
@@ -22,13 +23,6 @@ import { useUpdateAccount, useUploadAvatar } from '@/shared/hooks/api/useAccount
 import { formatDate } from '@/shared/utils/formatters';
 import { useAccountContext } from '../AccountLayout';
 
-// Profile form validation schema
-const profileSchema = z.object({
-  fullName: z.string().min(1, 'Name is required').max(100, 'Name too long').nullable(),
-  timezone: z.string().min(1, 'Timezone is required').max(50, 'Timezone too long'),
-});
-
-type ProfileFormData = z.infer<typeof profileSchema>;
 
 const ProfileTab: React.FC = () => {
   const { user, isLoading, error: contextError } = useAccountContext();

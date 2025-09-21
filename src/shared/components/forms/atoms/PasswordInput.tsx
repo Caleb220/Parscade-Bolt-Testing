@@ -7,7 +7,7 @@ interface PasswordInputProps extends Omit<React.InputHTMLAttributes<HTMLInputEle
   readonly error?: string;
   readonly helperText?: string;
   readonly variant?: 'default' | 'filled';
-  readonly showStrengthMeter?: boolean | undefined; // <-- add this
+  readonly showStrengthMeter?: boolean | undefined;
 }
 
 const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(

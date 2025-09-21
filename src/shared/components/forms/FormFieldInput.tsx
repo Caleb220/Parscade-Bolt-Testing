@@ -1,11 +1,11 @@
 /**
- * Input Component
- * Reusable input field with validation and icons
+ * Form Field Input Component
+ * Enhanced input field with validation, icons, and form integration
  */
 
 import React, { forwardRef } from 'react';
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface FormFieldInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
   leftIcon?: React.ReactNode;
@@ -13,7 +13,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   fullWidth?: boolean;
 }
 
-const Input = forwardRef<HTMLInputElement, InputProps>(({
+const FormFieldInput = forwardRef<HTMLInputElement, FormFieldInputProps>(({
   label,
   error,
   leftIcon,
@@ -70,6 +70,6 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
   );
 });
 
-Input.displayName = 'Input';
+FormFieldInput.displayName = 'FormFieldInput';
 
-export default Input;
+export default FormFieldInput;

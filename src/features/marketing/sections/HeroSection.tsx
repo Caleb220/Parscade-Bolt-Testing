@@ -5,7 +5,7 @@ import { ArrowRight, Play } from 'lucide-react';
 
 import { useAuth } from '@/features/auth';
 import AuthModal from '@/features/auth/components/AuthModal';
-import Button from '@/shared/components/forms/Button';
+import CustomButton from '@/shared/components/forms/CustomButton';
 
 
 const HeroSection: React.FC = () => {
@@ -90,7 +90,7 @@ const HeroSection: React.FC = () => {
               transition={{ duration: 0.6, delay: 0.5 }}
               className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
             >
-              <Button
+              <CustomButton
                 size="lg"
                 onClick={handleJoinBetaClick}
                 rightIcon={getButtonIcon()}
@@ -98,15 +98,15 @@ const HeroSection: React.FC = () => {
                 disabled={isLoading}
               >
                 {getButtonText()}
-              </Button>
-              <Button
+              </CustomButton>
+              <CustomButton
                 variant="outline"
                 size="lg"
                 leftIcon={<Play className="w-5 h-5" />}
                 className="text-base px-6 py-3 sm:px-8 sm:py-4 w-full sm:w-auto border-2 border-gray-300 hover:border-blue-600 bg-white"
               >
                 Watch Demo
-              </Button>
+              </CustomButton>
             </motion.div>
 
             <motion.div
