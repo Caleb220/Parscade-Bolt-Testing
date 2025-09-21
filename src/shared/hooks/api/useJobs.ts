@@ -41,13 +41,31 @@ export const useJob = (jobId: string) => {
 };
 
 // Job mutations
-export const useSubmitParseJob = () => {
+export const useCreateJob = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: (documentId: string) => jobsApi.submitParseJob(documentId),
+    mutationFn: (request: { type: string; source: string; documentId: string; options?: Record<string, unknown> }) => 
+      jobsApi.createJob(request),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.jobs });
+    },
+  });
+};
+
+export const useSubmitParseJob = () => {
+  const createJobMutation = useCreateJob();
+  
+  return useMutation({
+    mutationFn: (documentId: string) => 
+      createJobMutation.mutateAsync({
+        type: 'parse_document',
+        source: 'upload',
+        documentId,
+        options: {},
+      }),
+    onSuccess: () => {
+      // Job creation success is handled by createJobMutation
     },
   });
 };

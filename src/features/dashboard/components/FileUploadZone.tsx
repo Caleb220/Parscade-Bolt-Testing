@@ -17,7 +17,7 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
   const [uploadedDocumentId, setUploadedDocumentId] = useState<string | null>(null);
   
   const { uploadFile, uploadProgress, isUploading, reset } = useFileUpload();
-  const { submitParseJob, isPending: isSubmittingJob } = useSubmitParseJob();
+  const submitParseJobMutation = useSubmitParseJob();
 
   const handleFiles = useCallback(async (files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -36,14 +36,14 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
     if (!uploadedDocumentId) return;
     
     try {
-      const job = await submitParseJob.mutateAsync(uploadedDocumentId);
+      await submitParseJobMutation.mutateAsync(uploadedDocumentId);
       onJobSubmitted?.(uploadedDocumentId);
       reset();
       setUploadedDocumentId(null);
     } catch (error) {
       // Error handled by mutation
     }
-  }, [uploadedDocumentId, submitParseJob.mutateAsync, onJobSubmitted, reset]);
+  }, [uploadedDocumentId, submitParseJobMutation.mutateAsync, onJobSubmitted, reset]);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -144,7 +144,7 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <CustomButton
               onClick={handleSubmitJob}
-              isLoading={submitParseJob.isPending}
+              isLoading={submitParseJobMutation.isPending}
               leftIcon={<FileText className="w-4 h-4" />}
             >
               Start Processing
