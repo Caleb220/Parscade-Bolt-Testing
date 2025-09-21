@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { motion } from 'framer-motion';
 import { FileText, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
 
 
