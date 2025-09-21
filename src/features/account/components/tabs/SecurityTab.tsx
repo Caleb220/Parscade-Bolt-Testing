@@ -131,9 +131,9 @@ const SecurityTab: React.FC = () => {
     >
       {/* API Keys Section */}
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardHeader>
           <div>
-            <CardTitle>
+            <CardTitle className="flex items-center">
               <Key className="w-5 h-5 mr-2" />
               API Keys
             </CardTitle>
