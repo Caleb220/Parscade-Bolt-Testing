@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Upload, FileText, AlertCircle, CheckCircle } from 'lucide-react';
 
 import { Button } from '@/shared/components/ui/button';
+import { Input } from '@/shared/components/ui/input';
 import { formatBytes } from '@/shared/utils/formatters';
 import { useFileUpload } from '@/shared/hooks/api/useUploads';
 import { useSubmitParseJob } from '@/shared/hooks/api/useJobs';

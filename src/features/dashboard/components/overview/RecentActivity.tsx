@@ -6,8 +6,6 @@
 import React from 'react';
 import { FileText, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
 
-import DashboardCard from '../ui/DashboardCard';
-import EmptyState from '../ui/EmptyState';
 
 interface ActivityItem {
   id: string;

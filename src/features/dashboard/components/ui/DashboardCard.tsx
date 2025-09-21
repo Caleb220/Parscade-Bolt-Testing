@@ -5,7 +5,7 @@
 
 import React, { ReactNode } from 'react';
 import { motion } from 'framer-motion';
-import { MoreHorizontal } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';

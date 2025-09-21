@@ -4,11 +4,12 @@
  */
 
 import React from 'react';
-import { Plus, Sparkles, BarChart3 } from 'lucide-react';
+import { Sparkles, BarChart3 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth';
 import { Button } from '@/shared/components/ui/button';
+import CustomButton from '@/shared/components/forms/CustomButton';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import DashboardSection from '../components/ui/DashboardSection';
 import DashboardGrid from '../components/ui/DashboardGrid';

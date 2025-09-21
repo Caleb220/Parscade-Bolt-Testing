@@ -19,7 +19,8 @@ import {
   Shield,
   CheckCircle,
   XCircle,
-  ExternalLink
+  ExternalLink,
+  Copy
 } from 'lucide-react';
 
 import { getErrorMessage } from '@/lib/api';
@@ -35,6 +36,7 @@ import { Switch } from '@/shared/components/ui/switch';
 import { useToast } from '@/shared/components/ui/use-toast';
 import ConfirmationDialog from '@/shared/components/ui/confirmation-dialog';
 import StatusBadge from '@/shared/components/ui/status-badge';
+import { useClipboard } from '@/shared/hooks/useClipboard';
 import { formatDate } from '@/shared/utils/date';
 import { useAccountContext } from '../AccountLayout';
 import { 
@@ -54,6 +56,7 @@ import {
 const IntegrationsTab: React.FC = () => {
   const { user } = useAccountContext();
   const { toast } = useToast();
+  const { copy } = useClipboard();
   
   const { data: webhooks, isLoading: webhooksLoading, error: webhooksError } = useWebhooks();
   const { data: services, isLoading: servicesLoading, error: servicesError } = useServices();
