@@ -154,7 +154,7 @@ const DashboardPage: React.FC = () => {
                   <Zap className="w-6 h-6 text-blue-600 mr-3" />
                 </motion.div>
                 <h3 className="text-xl font-bold text-gray-900 tracking-tight">Upload & Process</h3>
-              </div>
+              </motion.div>
               <p className="text-gray-600 text-sm font-medium leading-relaxed">
                 Upload documents to extract structured data using our AI-powered parsing engine
               </p>
