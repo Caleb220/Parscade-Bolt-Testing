@@ -20,7 +20,7 @@ export const PATHS = {
 
 export const AUTH_PATHS = {
   LOGOUT_REDIRECT: PATHS.HOME,
-  RESET_PASSWORD: '/reset-password',
+  RESET_PASSWORD: '/auth/reset-password',
   AUTH_RECOVERY: '/auth/recovery',
   FORGOT_PASSWORD: '/forgot-password',
 } as const;

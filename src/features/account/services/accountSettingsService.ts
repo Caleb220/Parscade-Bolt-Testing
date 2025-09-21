@@ -4,10 +4,6 @@ import { accountApi } from '@/lib/api';
 import {
   AccountSettings,
   AccountSettingsUpdate,
-  IntegrationSettings,
-  NotificationSettings,
-  ProfileSettings,
-  SecuritySettings,
   accountSettingsSchema,
   accountSettingsUpdateSchema,
   createDefaultAccountSettings,
@@ -36,59 +32,6 @@ const accountSettingsRowSchema = z
 
 type AccountSettingsRow = z.infer<typeof accountSettingsRowSchema>;
 
-const mapRowToAccountSettings = (row: AccountSettingsRow): AccountSettings => {
-  const defaults = createDefaultAccountSettings(row.user_id);
-  const merged: AccountSettings = {
-    userId: row.user_id,
-    profile: row.profile ?? defaults.profile,
-    security: row.security ?? defaults.security,
-    notifications: row.notifications ?? defaults.notifications,
-    integrations: row.integrations ?? defaults.integrations,
-    createdAt: row.created_at ?? defaults.createdAt,
-    updatedAt: row.updated_at ?? defaults.updatedAt,
-  };
-
-  return accountSettingsSchema.parse(merged);
-};
-
-const sanitizeForInsert = (settings: AccountSettings) => {
-  const sanitized = accountSettingsSchema.parse(settings);
-  return pruneUndefined({
-    user_id: sanitized.userId,
-    profile: sanitized.profile,
-    security: sanitized.security,
-    notifications: sanitized.notifications,
-    integrations: sanitized.integrations,
-  });
-};
-
-const sanitizeForUpdate = (updates: AccountSettingsUpdate) => {
-  const sanitized = accountSettingsUpdateSchema.parse(updates);
-  return pruneUndefined({
-    profile: sanitized.profile,
-    security: sanitized.security,
-    notifications: sanitized.notifications,
-    integrations: sanitized.integrations,
-    updated_at: new Date().toISOString(),
-  });
-};
-
-const insertAccountSettings = async (settings: AccountSettings): Promise<AccountSettings> => {
-  const payload = sanitizeForInsert(settings);
-
-  try {
-    const response = await supabase.from(TABLE_NAME).insert(payload).select().single();
-    const data = ensureSingle(response, 'Insert account settings');
-    const parsedRow = accountSettingsRowSchema.parse(data);
-    return mapRowToAccountSettings(parsedRow);
-  } catch (error) {
-    if (error instanceof SupabaseServiceError && error.causeError.code === '23505') {
-      const existing = await fetchOrCreateAccountSettings(settings.userId);
-      return existing;
-    }
-    throw error;
-  }
-};
 
 export const fetchOrCreateAccountSettings = async (
   userId: string,
