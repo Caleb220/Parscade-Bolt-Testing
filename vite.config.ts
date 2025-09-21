@@ -23,9 +23,7 @@ export default defineConfig({
             'src/features/auth/components/AuthModal.tsx'
           ],
           'dashboard': [
-            'src/features/dashboard/pages/DashboardPage.tsx',
-            'src/features/dashboard/components/FileUploadZone.tsx',
-            'src/features/dashboard/components/JobsList.tsx'
+            'src/features/dashboard/pages/DashboardPage.tsx'
           ],
           'account': [
             'src/features/account/components/AccountLayout.tsx',

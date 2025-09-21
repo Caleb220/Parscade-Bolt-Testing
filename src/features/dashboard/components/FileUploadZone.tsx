@@ -2,8 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Upload, FileText, AlertCircle, CheckCircle } from 'lucide-react';
 
-import { getErrorMessage } from '@/lib/api';
-import CustomButton from '@/shared/components/forms/CustomButton';
+import { Button } from '@/shared/components/ui/button';
 import { formatBytes } from '@/shared/utils/formatters';
 import { useFileUpload } from '@/shared/hooks/api/useUploads';
 import { useSubmitParseJob } from '@/shared/hooks/api/useJobs';
@@ -149,9 +148,9 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
           <h3 className="text-lg font-semibold text-gray-900 mb-2">Upload Failed</h3>
           <p className="text-red-600 mb-4">{uploadError || 'An error occurred during upload'}</p>
           
-          <CustomButton variant="outline" onClick={handleReset}>
+          <Button variant="outline" onClick={handleReset}>
             Try Again
-          </CustomButton>
+          </Button>
         </div>
       )}
 
@@ -166,16 +165,16 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
           <p className="text-gray-600 mb-4">Ready to start document processing</p>
           
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <CustomButton
+            <Button
               onClick={handleSubmitJob}
-              isLoading={submitParseJobMutation?.isPending || false}
-              leftIcon={<FileText className="w-4 h-4" />}
+              disabled={submitParseJobMutation?.isPending || false}
             >
+              <FileText className="w-4 h-4 mr-2" />
               Start Processing
-            </CustomButton>
-            <CustomButton variant="outline" onClick={handleReset}>
+            </Button>
+            <Button variant="outline" onClick={handleReset}>
               Upload Different File
-            </CustomButton>
+            </Button>
           </div>
         </div>
       )}
@@ -211,9 +210,11 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
           />
           
           <label htmlFor="file-upload">
-            <CustomButton as="span" className="cursor-pointer">
+            <Button asChild className="cursor-pointer">
+              <span>
               Select File
-            </CustomButton>
+              </span>
+            </Button>
           </label>
           
           <p className="text-xs text-gray-500 mt-4">

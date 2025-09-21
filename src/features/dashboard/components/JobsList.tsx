@@ -3,9 +3,7 @@ import { motion } from 'framer-motion';
 import { FileText, AlertTriangle, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-import { getErrorMessage } from '@/lib/api';
-import CustomButton from '@/shared/components/forms/CustomButton';
-import LoadingSpinner from '@/shared/components/forms/atoms/LoadingSpinner';
+import { Button } from '@/shared/components/ui/button';
 import StatusIcon from '@/shared/components/ui/status-icon';
 import StatusBadge from '@/shared/components/ui/status-badge';
 import { formatJobType } from '@/shared/utils/formatters';
@@ -27,11 +25,11 @@ const JobsList: React.FC = () => {
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <div className="flex items-center text-red-600 mb-4">
           <AlertTriangle className="w-5 h-5 mr-2" />
-          <span className="text-sm">Failed to load jobs: {getErrorMessage(error)}</span>
+          <span className="text-sm">Failed to load jobs</span>
         </div>
-        <CustomButton variant="outline" size="sm" onClick={() => refetch()}>
+        <Button variant="outline" size="sm" onClick={() => refetch()}>
           Retry
-        </CustomButton>
+        </Button>
       </div>
     );
   }
@@ -49,7 +47,7 @@ const JobsList: React.FC = () => {
       <div className="divide-y divide-gray-200">
         {isLoading ? (
           <div className="p-6 text-center">
-            <LoadingSpinner size="md" className="mx-auto mb-2" />
+            <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
             <p className="text-gray-600 text-sm">Loading jobs...</p>
           </div>
         ) : !jobs || jobs.length === 0 ? (
@@ -112,9 +110,9 @@ const JobsList: React.FC = () => {
 
       {pagination?.hasNext && (
         <div className="p-4 border-t border-gray-200">
-          <CustomButton variant="outline" fullWidth>
+          <Button variant="outline" className="w-full">
             View All Jobs
-          </CustomButton>
+          </Button>
         </div>
       )}
     </div>
