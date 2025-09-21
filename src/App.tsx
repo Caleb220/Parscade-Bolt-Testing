@@ -34,6 +34,7 @@ const PublicRoute: React.FC<{ children: React.ReactNode; redirectTo?: string }> 
     );
   }
   
+  
   if (isAuthenticated) {
     return <Navigate to={redirectTo} replace />;
   }
