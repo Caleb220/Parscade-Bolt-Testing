@@ -218,11 +218,11 @@ export interface paths {
         content: {
           'application/json': {
             full_name?: string | null;
-            timezone?: string;
             username?: string | null;
             company?: string | null;
             phone?: string | null;
             locale?: string | null;
+            timezone?: string;
           };
         };
       };

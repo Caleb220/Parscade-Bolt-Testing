@@ -1229,6 +1229,17 @@ components:
         full_name:
           type: string
           nullable: true
+        username:
+          type: string
+          nullable: true
+        company:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        locale:
+          type: string
         timezone:
           type: string
         username:

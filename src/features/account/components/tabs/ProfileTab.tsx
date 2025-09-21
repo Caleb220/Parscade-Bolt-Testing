@@ -44,7 +44,6 @@ const ProfileTab: React.FC = () => {
       full_name: '',
       username: '',
       company: '',
-      role: '',
       phone: '',
       locale: 'en-US',
       timezone: 'UTC',
@@ -58,7 +57,6 @@ const ProfileTab: React.FC = () => {
         full_name: user.full_name || '',
         username: user.username || '',
         company: user.company || '',
-        role: user.role || '',
         phone: user.phone || '',
         locale: user.locale || 'en-US',
         timezone: user.timezone || 'UTC',
@@ -72,7 +70,6 @@ const ProfileTab: React.FC = () => {
         full_name: data.full_name,
         username: data.username,
         company: data.company,
-        role: data.role,
         phone: data.phone,
         locale: data.locale,
         timezone: data.timezone,
@@ -350,19 +347,6 @@ const ProfileTab: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="role">Job Title</Label>
-                <Input
-                  id="role"
-                  {...register('role')}
-                  placeholder="Your job title"
-                  className="px-3"
-                />
-                {errors.role && (
-                  <p className="text-sm text-red-600">{errors.role.message}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
                 <Label htmlFor="phone">Phone Number</Label>
                 <div className="relative">
                   <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
@@ -443,6 +427,16 @@ const ProfileTab: React.FC = () => {
                     disabled 
                     className="font-mono text-xs px-3 bg-gray-50" 
                   />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Role</Label>
+                  <Input 
+                    value={user?.role || 'user'} 
+                    disabled 
+                    className="capitalize px-3 bg-gray-50" 
+                  />
+                  <p className="text-xs text-gray-500">Contact support to change your role</p>
                 </div>
 
                       value={user?.role === 'admin' ? 'Admin' : 'Beta'} 

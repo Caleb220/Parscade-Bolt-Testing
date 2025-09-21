@@ -17,7 +17,6 @@ export const profileSchema = z.object({
   full_name: nonEmptyTextSchema('Full name', 100).nullable(),
   username: optionalTrimmedStringSchema('Username', 2, 60),
   company: optionalTrimmedStringSchema('Company', 0, 100),
-  role: optionalTrimmedStringSchema('Role', 0, 50),
   phone: phoneSchema.optional(),
   locale: optionalTrimmedStringSchema('Locale', 2, 10),
   timezone: timezoneSchema,
