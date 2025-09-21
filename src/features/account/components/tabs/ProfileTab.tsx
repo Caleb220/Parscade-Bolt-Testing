@@ -356,7 +356,6 @@ const ProfileTab: React.FC = () => {
                       Upgrade
                     </Button>
                   </div>
-                </div>
 
                 <div className="space-y-2">
                   <Label>Member Since</Label>
@@ -367,7 +366,7 @@ const ProfileTab: React.FC = () => {
                   />
                 </div>
               </div>
-
+            </div>
             {/* Form Errors */}
             {updateAccount.error && (
               <motion.div
