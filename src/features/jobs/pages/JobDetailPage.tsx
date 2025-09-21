@@ -14,11 +14,11 @@ import {
   Database
 } from 'lucide-react';
 
-import Layout from '@/components/templates/Layout';
-import Button from '@/components/atoms/Button';
-import LoadingSpinner from '@/components/atoms/LoadingSpinner';
-import { useJob, useCancelJob } from '@/hooks/api/useJobs';
-import { useDocument, useDocumentDownload } from '@/hooks/api/useDocuments';
+import Layout from '@/shared/components/layout/templates/Layout';
+import Button from '@/shared/components/forms/Button';
+import LoadingSpinner from '@/shared/components/forms/LoadingSpinner';
+import { useJob, useCancelJob } from '@/shared/hooks/api/useJobs';
+import { useDocument, useDocumentDownload } from '@/shared/hooks/api/useDocuments';
 import { getErrorMessage, isApiError } from '@/lib/api';
 
 const JobDetailPage: React.FC = () => {

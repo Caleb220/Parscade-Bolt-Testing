@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ChevronDown } from 'lucide-react';
-import Button from '../atoms/Button';
-import AuthModal from '../../features/auth/components/AuthModal';
+import Button from '../../forms/Button';
+import AuthModal from '@/features/auth/components/AuthModal';
 import UserMenu from './UserMenu';
-import { useAuth } from '../../features/auth';
+import { useAuth } from '@/features/auth';
 
 interface NavigationItem {
   label: string;

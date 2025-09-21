@@ -4,7 +4,7 @@ export {
   authUserSchema,
   formErrorsSchema,
   passwordStrengthSchema,
-} from '../../../schemas/auth/auth';
+} from '@/shared/schemas/auth/auth';
 
 export type {
   AuthContextType,
@@ -12,5 +12,5 @@ export type {
   FormErrors,
   PasswordStrength,
   User,
-} from '../../../schemas/auth/auth';
+} from '@/shared/schemas/auth/auth';
 

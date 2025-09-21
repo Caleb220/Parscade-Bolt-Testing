@@ -11,8 +11,8 @@ import {
   Users,
   Globe
 } from 'lucide-react';
-import FeatureCard from '../../../components/molecules/FeatureCard';
-import Button from '../../../components/atoms/Button';
+import FeatureCard from '@/shared/components/layout/molecules/FeatureCard';
+import Button from '@/shared/components/forms/Button';
 import { useAuth } from '../../auth';
 import { useNavigate } from 'react-router-dom';
 

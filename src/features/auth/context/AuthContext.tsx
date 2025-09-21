@@ -2,9 +2,9 @@ import React, { createContext, useContext, useReducer, useEffect, ReactNode, use
 import type { AuthState, AuthContextType, User } from '../types/authTypes';
 import { supabase } from '../../../lib/supabase';
 import type { AuthError, User as SupabaseUser } from '@supabase/supabase-js';
-import { logger } from '../../../services/logger';
-import { setupCrossTabLogoutListener } from '../../../utils/hardLogout';
-import type { TypedSupabaseUser } from '../../../types/supabase';
+import { logger } from '@/shared/services/logger';
+import { setupCrossTabLogoutListener } from '@/shared/utils/hardLogout';
+import type { TypedSupabaseUser } from '@/shared/types/supabase';
 
 import { userApi } from '@/lib/api/modules/user'
 

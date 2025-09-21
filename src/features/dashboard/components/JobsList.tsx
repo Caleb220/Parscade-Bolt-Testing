@@ -10,9 +10,9 @@ import {
   ChevronRight
 } from 'lucide-react';
 
-import LoadingSpinner from '@/components/atoms/LoadingSpinner';
-import Button from '@/components/atoms/Button';
-import { useJobs } from '@/hooks/api/useJobs';
+import LoadingSpinner from '@/shared/components/forms/LoadingSpinner';
+import Button from '@/shared/components/forms/Button';
+import { useJobs } from '@/shared/hooks/api/useJobs';
 import { getErrorMessage } from '@/lib/api';
 
 const JobsList: React.FC = () => {

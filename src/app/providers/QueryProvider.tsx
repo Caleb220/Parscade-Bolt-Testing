@@ -6,9 +6,9 @@
 import React, { ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { logger } from '@/services/logger';
+import { logger } from '@/shared/services/logger';
 import { isApiError, getRequestId } from '@/lib/api';
-import { env } from '@/config/env';
+import { env } from '@/app/config/env';
 
 /**
  * Create configured QueryClient with enterprise settings

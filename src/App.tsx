@@ -2,17 +2,17 @@ import React, { useEffect, useMemo } from 'react';
 import { BrowserRouter as Router, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 
-import { QueryProvider } from '@/providers/QueryProvider';
-import LoadingSpinner from '@/components/atoms/LoadingSpinner';
-import ErrorBoundary from '@/components/molecules/ErrorBoundary';
-import ProtectedRoute from '@/components/templates/ProtectedRoute';
-import { env } from '@/config/env';
-import AccountLayout from '@/pages/account/AccountLayout';
-import ProfileTab from '@/pages/account/tabs/ProfileTab';
-import SecurityTab from '@/pages/account/tabs/SecurityTab';
-import NotificationsTab from '@/pages/account/tabs/NotificationsTab';
-import IntegrationsTab from '@/pages/account/tabs/IntegrationsTab';
-import { Toaster } from '@/components/ui/toaster';
+import { QueryProvider } from '@/app/providers/QueryProvider';
+import LoadingSpinner from '@/shared/components/forms/LoadingSpinner';
+import ErrorBoundary from '@/shared/components/layout/molecules/ErrorBoundary';
+import ProtectedRoute from '@/shared/components/layout/templates/ProtectedRoute';
+import { env } from '@/app/config/env';
+import AccountLayout from '@/features/account/components/AccountLayout';
+import ProfileTab from '@/features/account/components/tabs/ProfileTab';
+import SecurityTab from '@/features/account/components/tabs/SecurityTab';
+import NotificationsTab from '@/features/account/components/tabs/NotificationsTab';
+import IntegrationsTab from '@/features/account/components/tabs/IntegrationsTab';
+import { Toaster } from '@/shared/components/ui/toaster';
 import { AuthProvider, useAuth } from '@/features/auth';
 import { DashboardPage } from '@/features/dashboard';
 import { JobDetailPage } from '@/features/jobs';
@@ -24,13 +24,13 @@ import HomePage from '@/features/marketing/pages/HomePage';
 import NotFoundPage from '@/features/marketing/pages/NotFoundPage';
 import PrivacyPage from '@/features/marketing/pages/PrivacyPage';
 import ProductPage from '@/features/marketing/pages/ProductPage';
-import TermsPage from '@/features/marketing/pages/TermsPage';
-import { logger } from '@/services/logger';
-import { analytics, trackPageView } from '@/utils/analytics';
-import { defaultSEO, updateSEO } from '@/utils/seo';
+import { logger } from '@/shared/services/logger';
+import { analytics, trackPageView } from '@/shared/utils/analytics';
+import { analytics, trackPageView } from '@/shared/utils/analytics';
+import { defaultSEO, updateSEO } from '@/shared/utils/seo';
 
 import type { FC } from 'react';
-import type { SeoConfig } from '@/schemas';
+import type { SeoConfig } from '@/shared/schemas';
 
 /**
  * Public Route component that redirects authenticated users

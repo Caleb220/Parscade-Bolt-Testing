@@ -1,5 +1,5 @@
 /**
- * Centralized routing paths for the application.
+ * Centralized routing configuration for the application.
  * Single source of truth for all route definitions.
  */
 
