@@ -32,9 +32,6 @@ export const formatUserAgent = (userAgent: string): string => {
 
 /**
  * Format job type for display
-
-/**
- * Format job type for display
  */
 export const formatJobType = (type: string): string => {
   switch (type) {
@@ -48,14 +45,43 @@ export const formatJobType = (type: string): string => {
       return type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
   }
 };
- */
-export const formatJobType = (type: string): string => {
-  return type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
-};
 
 /**
  * Format status for display
  */
 export const formatStatus = (status: string): string => {
   return status.charAt(0).toUpperCase() + status.slice(1);
+};
+
+/**
+ * Format date to relative time (e.g., "2 hours ago")
+ */
+export const formatRelativeTime = (date: Date | string): string => {
+  const now = new Date();
+  const targetDate = typeof date === 'string' ? new Date(date) : date;
+  const diffInSeconds = Math.floor((now.getTime() - targetDate.getTime()) / 1000);
+
+  if (diffInSeconds < 60) return 'Just now';
+  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+  if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)} days ago`;
+  
+  return targetDate.toLocaleDateString();
+};
+
+/**
+ * Format date to human readable string
+ */
+export const formatDate = (date: Date | string, options?: Intl.DateTimeFormatOptions): string => {
+  const targetDate = typeof date === 'string' ? new Date(date) : date;
+  
+  const defaultOptions: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  };
+
+  return targetDate.toLocaleDateString('en-US', { ...defaultOptions, ...options });
 };
