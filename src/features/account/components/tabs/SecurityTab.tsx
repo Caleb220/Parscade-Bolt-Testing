@@ -141,10 +141,110 @@ const SecurityTab: React.FC = () => {
               Manage your API keys for programmatic access to Parscade
             </CardDescription>
           </div>
-          <Button size="sm" onClick={() => setShowNewKeyDialog(true)}>
-            <Plus className="w-4 h-4 mr-2" />
-            New Key
-          </Button>
+          <div className="mt-4">
+            <Dialog open={showNewKeyDialog} onOpenChange={setShowNewKeyDialog}>
+              <DialogTrigger asChild>
+                <Button size="sm">
+                  <Plus className="w-4 h-4 mr-2" />
+                  New Key
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md">
+                {newKeyResult ? (
+                  <div className="space-y-4">
+                    <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                      <div className="flex items-center mb-2">
+                        <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
+                        <span className="font-medium text-green-900">API Key Created</span>
+                      </div>
+                      <p className="text-sm text-green-700 mb-3">
+                        Copy this key now - it won't be shown again for security reasons.
+                      </p>
+                      <div className="space-y-2">
+                        <Label>Key Name: {newKeyResult.name}</Label>
+                        <div className="flex items-center space-x-2">
+                          <Input
+                            value={newKeyResult.key}
+                            readOnly
+                            className="font-mono text-sm"
+                          />
+                          <Button
+                            size="sm"
+                            onClick={() => copyToClipboard(newKeyResult.key, 'API key')}
+                          >
+                            <Copy className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                    <Button
+                      onClick={() => {
+                        setNewKeyResult(null);
+                        setShowNewKeyDialog(false);
+                      }}
+                      className="w-full"
+                    >
+                      Done
+                    </Button>
+                  </div>
+                ) : (
+                  <form onSubmit={handleSubmit(onCreateApiKey)} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="key_name">Key Name</Label>
+                      <Input
+                        id="key_name"
+                        {...register('name')}
+                        placeholder="Production API, Development, etc."
+                      />
+                      {errors.name && (
+                        <p className="text-sm text-red-600">{errors.name.message}</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Scopes</Label>
+                      <div className="space-y-2">
+                        {[
+                          { value: 'read', label: 'Read', description: 'View documents and data' },
+                          { value: 'write', label: 'Write', description: 'Create and update data' },
+                          { value: 'admin', label: 'Admin', description: 'Full administrative access' },
+                        ].map((scope) => (
+                          <label key={scope.value} className="flex items-start space-x-2">
+                            <input
+                              type="checkbox"
+                              value={scope.value}
+                              {...register('scopes')}
+                              className="rounded border-gray-300 mt-1"
+                            />
+                            <div className="flex-1">
+                              <span className="text-sm font-medium">{scope.label}</span>
+                              <p className="text-xs text-gray-500">{scope.description}</p>
+                            </div>
+                          </label>
+                        ))}
+                      </div>
+                      {errors.scopes && (
+                        <p className="text-sm text-red-600">{errors.scopes.message}</p>
+                      )}
+                    </div>
+
+                    <div className="flex justify-end space-x-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setShowNewKeyDialog(false)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button type="submit" disabled={createApiKey.isPending}>
+                        {createApiKey.isPending ? 'Creating...' : 'Create Key'}
+                      </Button>
+                    </div>
+                  </form>
+                )}
+              </DialogContent>
+            </Dialog>
+          </div>
         </CardHeader>
         <CardContent>
           {/* New Key Dialog */}
