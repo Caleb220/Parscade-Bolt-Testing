@@ -80,19 +80,19 @@ const AccountLayout: React.FC = () => {
                     </div>
                   ) : user && (
                     <div className="flex items-center space-x-3">
-                      {user.avatarUrl ? (
+                      {user.avatar_url ? (
                         <img
-                          src={user.avatarUrl}
-                          alt={user.fullName || user.email}
-                          className="w-8 h-8 rounded-full object-cover"
+                          src={user.avatar_url}
+                          alt={user.full_name || user.email}
+                          className="w-8 h-8 rounded-full object-cover border-2 border-white shadow-sm"
                         />
                       ) : (
-                        <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
-                          {(user.fullName || user.email)?.charAt(0).toUpperCase()}
+                        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-bold border-2 border-white shadow-sm">
+                          {(user.full_name || user.email)?.charAt(0).toUpperCase()}
                         </div>
                       )}
                       <span className="text-sm font-medium text-gray-700">
-                        {user.fullName || user.email}
+                        {user.full_name || user.email}
                       </span>
                     </div>
                   )}

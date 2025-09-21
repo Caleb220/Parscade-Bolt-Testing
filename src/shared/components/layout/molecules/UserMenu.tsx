@@ -58,17 +58,17 @@ const UserMenu: React.FC = () => {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
       >
-        <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
-          {user.user_metadata?.avatar_url ? (
-            <img
-              src={user.user_metadata.avatar_url}
-              alt={displayName}
-              className="w-8 h-8 rounded-full object-cover"
-            />
-          ) : (
-            initials
-          )}
-        </div>
+        {user.user_metadata?.avatar_url ? (
+          <img
+            src={user.user_metadata.avatar_url}
+            alt={displayName}
+            className="w-8 h-8 rounded-full object-cover border-2 border-white shadow-sm"
+          />
+        ) : (
+          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-bold border-2 border-white shadow-sm">
+            {initials}
+          </div>
+        )}
         <span className="hidden sm:block text-sm font-medium text-gray-700">
           {displayName}
         </span>
