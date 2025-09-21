@@ -18,15 +18,15 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/components/ui/use-toast';
 
 import { useAccountContext } from '../AccountLayout';
-import { useNotificationPrefs, useUpdateNotificationPrefs } from '@/shared/hooks/hooks/api/useAccountData';
+import { useNotificationPreferences, useUpdateNotificationPreferences } from '@/shared/hooks/hooks/api/useAccountData';
 import { notificationSettingsSchema, type NotificationSettings } from '@/shared/schemas/schemas/account/accountSettings';
 import { getErrorMessage } from '@/lib/api';
 
 const NotificationsTab: React.FC = () => {
   const { user } = useAccountContext();
   const { toast } = useToast();
-  const { data: prefs, isLoading, error, refetch } = useNotificationPrefs();
-  const updatePrefs = useUpdateNotificationPrefs();
+  const { data: prefs, isLoading, error, refetch } = useNotificationPreferences();
+  const updatePrefs = useUpdateNotificationPreferences();
 
   const {
     register,
