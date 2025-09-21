@@ -1186,7 +1186,7 @@ components:
         email:
           type: string
           format: email
-        fullName:
+        full_name:
           type: string
           nullable: true
         avatarUrl:
@@ -1226,7 +1226,7 @@ components:
     UpdateProfileRequest:
       type: object
       properties:
-        fullName:
+        full_name:
           type: string
           nullable: true
         timezone:

@@ -786,7 +786,7 @@ export interface paths {
 export interface UserProfile {
   readonly id: string;
   readonly email: string;
-  readonly fullName?: string | null;
+  readonly full_name?: string | null;
   readonly avatarUrl?: string | null;
   readonly timezone: string;
   readonly emailVerified: boolean;

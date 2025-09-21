@@ -41,7 +41,7 @@ const ProfileTab: React.FC = () => {
   } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      fullName: '',
+      full_name: '',
       username: '',
       company: '',
       role: '',
@@ -55,7 +55,7 @@ const ProfileTab: React.FC = () => {
   React.useEffect(() => {
     if (user) {
       reset({
-        fullName: user.fullName || '',
+        full_name: user.full_name || '',
         username: user.username || '',
         company: user.company || '',
         role: user.role || '',
@@ -69,7 +69,7 @@ const ProfileTab: React.FC = () => {
   const onSubmit = async (data: ProfileFormData) => {
     try {
       await updateAccount.mutateAsync({
-        fullName: data.fullName,
+        full_name: data.full_name,
         username: data.username,
         company: data.company,
         role: data.role,
@@ -309,13 +309,13 @@ const ProfileTab: React.FC = () => {
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                   <Input
                     id="fullName"
-                    {...register('fullName')}
+                    {...register('full_name')}
                     placeholder="Enter your full name"
                     className="pl-8 pr-3"
                   />
                 </div>
-                {errors.fullName && (
-                  <p className="text-sm text-red-600">{errors.fullName.message}</p>
+                {errors.full_name && (
+                  <p className="text-sm text-red-600">{errors.full_name.message}</p>
                 )}
               </div>
 

@@ -9,7 +9,7 @@
 export interface User {
   readonly id: string;
   readonly email: string;
-  readonly fullName?: string;
+  readonly full_name?: string | null;
   readonly username?: string;
   readonly avatarUrl?: string;
   readonly company?: string;
