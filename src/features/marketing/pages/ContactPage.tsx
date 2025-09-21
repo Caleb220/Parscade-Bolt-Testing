@@ -255,7 +255,7 @@ const ContactPage: React.FC = () => {
                     />
                   </div>
 
-                  <Button
+                  <CustomButton
                     type="submit"
                     size="lg"
                     fullWidth
@@ -263,7 +263,7 @@ const ContactPage: React.FC = () => {
                     rightIcon={<Send className="w-4 h-4" />}
                   >
                     {isSubmitting ? 'Sending Message...' : 'Send Message'}
-                  </Button>
+                  </CustomButton>
                 </form>
 
                 <div className="mt-6 p-4 bg-blue-50 rounded-lg">

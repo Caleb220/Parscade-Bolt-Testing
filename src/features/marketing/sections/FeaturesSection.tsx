@@ -14,7 +14,7 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
 import FeatureCard from '@/shared/components/layout/molecules/FeatureCard';
-import Button from '@/shared/components/forms/Button';
+import CustomButton from '@/shared/components/forms/CustomButton';
 import { useAuth } from '../../auth';
 
 const features = [

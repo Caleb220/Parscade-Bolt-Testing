@@ -238,9 +238,9 @@ const ProductPage: React.FC = () => {
                       <div className="font-semibold text-blue-600">{useCase.volume}</div>
                     </div>
                   </div>
-                  <Button variant="outline" size="sm">
+                  <CustomButton variant="outline" size="sm">
                     Beta Access
-                  </Button>
+                  </CustomButton>
                 </div>
               </motion.div>
             ))}

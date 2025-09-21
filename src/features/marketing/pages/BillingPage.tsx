@@ -163,13 +163,13 @@ const BillingPage: React.FC = () => {
                 </ul>
 
                 <div className="mt-8">
-                  <Button
+                  <CustomButton
                     variant={plan.popular ? 'primary' : 'outline'}
                     size="lg"
                     fullWidth
                   >
                     {plan.name === 'Enterprise' ? 'Contact Us' : 'Join Beta'}
-                  </Button>
+                  </CustomButton>
                 </div>
               </motion.div>
             ))}
@@ -224,13 +224,13 @@ const BillingPage: React.FC = () => {
                   </ul>
 
                   <div className="mt-6">
-                    <Button
+                    <CustomButton
                       variant={plan.popular ? 'primary' : 'outline'}
                       size="lg"
                       fullWidth 
                     >
                       {plan.name === 'Enterprise' ? 'Contact Us' : 'Join Beta'}
-                    </Button>
+                    </CustomButton>
                   </div>
                 </motion.div>
               ))}
@@ -343,12 +343,12 @@ const BillingPage: React.FC = () => {
               Be among the first to experience the future of document processing. Help us build something amazing.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto sm:max-w-none">
-              <Button size="lg">
+              <CustomButton size="lg">
                 Join Beta Program
-              </Button>
-              <Button variant="outline" size="lg">
+              </CustomButton>
+              <CustomButton variant="outline" size="lg">
                 Learn More
-              </Button>
+              </CustomButton>
             </div>
           </motion.div>
         </div>

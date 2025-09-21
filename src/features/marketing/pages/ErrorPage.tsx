@@ -81,16 +81,16 @@ const ErrorPage: React.FC<ErrorPageProps> = ({ error, resetError }) => {
           className="space-y-4"
         >
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button
+            <CustomButton
               onClick={handleRetry}
               leftIcon={<RefreshCw className="w-4 h-4" />}
               size="lg"
             >
               Try Again
-            </Button>
+            </CustomButton>
 
             {isInRouter ? (
-              <Button
+              <CustomButton
                 as={Link}
                 to="/"
                 variant="outline"
@@ -98,16 +98,16 @@ const ErrorPage: React.FC<ErrorPageProps> = ({ error, resetError }) => {
                 size="lg"
               >
                 Go Home
-              </Button>
+              </CustomButton>
             ) : (
-              <Button
+              <CustomButton
                 onClick={() => window.location.assign('/')}
                 variant="outline"
                 leftIcon={<Home className="w-4 h-4" />}
                 size="lg"
               >
                 Go Home
-              </Button>
+              </CustomButton>
             )}
           </div>
 
@@ -115,14 +115,14 @@ const ErrorPage: React.FC<ErrorPageProps> = ({ error, resetError }) => {
             <p className="text-sm text-gray-500 mb-3">
               If this problem persists, please contact our support team.
             </p>
-            <Button
+            <CustomButton
               variant="ghost"
               size="sm"
               leftIcon={<Mail className="w-4 h-4" />}
               onClick={handleReportIssue}
             >
               Report Issue
-            </Button>
+            </CustomButton>
           </div>
         </motion.div>
 

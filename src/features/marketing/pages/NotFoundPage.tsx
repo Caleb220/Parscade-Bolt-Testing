@@ -50,37 +50,37 @@ const NotFoundPage: React.FC = () => {
             className="space-y-4"
           >
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Button
+              <CustomButton
                 as={Link}
                 to="/"
                 leftIcon={<Home className="w-4 h-4" />}
                 size="lg"
               >
                 Go Home
-              </Button>
+              </CustomButton>
               
-              <Button
+              <CustomButton
                 variant="outline"
                 onClick={() => window.history.back()}
                 leftIcon={<ArrowLeft className="w-4 h-4" />}
                 size="lg"
               >
                 Go Back
-              </Button>
+              </CustomButton>
             </div>
 
             <div className="pt-4 border-t border-gray-200">
               <p className="text-sm text-gray-500 mb-3">
                 Still having trouble? We're here to help.
               </p>
-              <Button
+              <CustomButton
                 variant="ghost"
                 size="sm"
                 leftIcon={<Mail className="w-4 h-4" />}
                 onClick={() => window.location.assign('mailto:admin@parscade.com')}
               >
                 Contact Support
-              </Button>
+              </CustomButton>
             </div>
           </motion.div>
 
