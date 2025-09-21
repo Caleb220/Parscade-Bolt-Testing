@@ -40,7 +40,6 @@ export const integrationsApi = {
       const response = await apiClient.get<GetWebhooksResponse>('/v1/integrations/webhooks');
       return response.data || [];
     } catch (error) {
-      console.warn('Webhooks endpoint not available:', error);
       return [];
     }
   },
@@ -75,7 +74,6 @@ export const integrationsApi = {
     try {
       return apiClient.get<GetServicesResponse>('/v1/integrations/services');
     } catch (error) {
-      console.warn('Services endpoint not available:', error);
       return [];
     }
   },
@@ -104,7 +102,6 @@ export const integrationsApi = {
       const response = await apiClient.get<GetDataSourcesResponse>('/v1/integrations/data-sources');
       return response.data || [];
     } catch (error) {
-      console.warn('Data sources endpoint not available:', error);
       return [];
     }
   },

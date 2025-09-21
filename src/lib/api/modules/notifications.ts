@@ -27,8 +27,6 @@ export const notificationsApi = {
     try {
       return await apiClient.get<GetNotificationPreferencesResponse>('/v1/notifications/preferences');
     } catch (error) {
-      // If endpoint doesn't exist yet, return sensible defaults
-      console.warn('Notification preferences endpoint not available, using defaults');
       return {
         channels: {
           email: true,

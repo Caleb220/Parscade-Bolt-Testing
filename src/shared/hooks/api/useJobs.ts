@@ -21,9 +21,6 @@ export const useJobs = (params?: { page?: number; limit?: number; status?: strin
       try {
         return await jobsApi.listJobs(params);
       } catch (error) {
-        // Log error but provide fallback data structure
-        console.warn('Failed to fetch jobs:', error);
-        // Return empty structure matching expected schema
         return {
           jobs: [],
           pagination: {
@@ -38,7 +35,6 @@ export const useJobs = (params?: { page?: number; limit?: number; status?: strin
       }
     },
     retry: (failureCount, error) => {
-      // Don't retry auth errors or 404s
       if (error && typeof error === 'object' && 'statusCode' in error) {
         if (error.statusCode === 401 || error.statusCode === 404) {
           return false;
