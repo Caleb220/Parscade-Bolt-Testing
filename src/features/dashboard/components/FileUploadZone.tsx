@@ -2,8 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Upload, FileText, AlertCircle, CheckCircle } from 'lucide-react';
 
-import { Button } from '@/shared/components/ui/button';
-import { Input } from '@/shared/components/ui/input';
+import CustomButton from '@/shared/components/forms/CustomButton';
 import { formatBytes } from '@/shared/utils/formatters';
 import { useFileUpload } from '@/shared/hooks/api/useUploads';
 import { useSubmitParseJob } from '@/shared/hooks/api/useJobs';
@@ -173,13 +172,13 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
               <h3 className="text-xl font-bold text-gray-900 mb-3 tracking-tight">Upload Failed</h3>
               <p className="text-red-600 mb-6 font-medium">{uploadError || 'An error occurred during upload'}</p>
               
-              <Button 
+              <CustomButton 
                 variant="outline" 
                 onClick={handleReset}
                 className="hover:shadow-sm transition-all duration-200"
               >
                 Try Again
-              </Button>
+              </CustomButton>
             </div>
           )}
 
@@ -205,22 +204,22 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
               
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                  <Button
+                  <CustomButton
                     onClick={handleSubmitJob}
                     disabled={submitParseJobMutation?.isPending || false}
                     className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all duration-200"
                   >
                     <FileText className="w-4 h-4 mr-2" />
                     Start Processing
-                  </Button>
+                  </CustomButton>
                 </motion.div>
-                <Button 
+                <CustomButton 
                   variant="outline" 
                   onClick={handleReset}
                   className="hover:shadow-sm transition-all duration-200"
                 >
                   Upload Different File
-                </Button>
+                </CustomButton>
               </div>
             </div>
           )}
@@ -261,11 +260,9 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
               
               <label htmlFor="file-upload">
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button asChild className="cursor-pointer bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all duration-200 px-8 py-3">
-                    <span>
-                      Select File
-                    </span>
-                  </Button>
+                  <CustomButton className="cursor-pointer bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all duration-200 px-8 py-3">
+                    Select File
+                  </CustomButton>
                 </motion.div>
               </label>
               

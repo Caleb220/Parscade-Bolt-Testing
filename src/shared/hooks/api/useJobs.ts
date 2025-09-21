@@ -4,7 +4,7 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { jobsApi } from '@/lib/api';
+import { jobsApi } from '@/lib/api/modules/jobs';
 import type { Job } from '@/types/api-types';
 
 // Query keys

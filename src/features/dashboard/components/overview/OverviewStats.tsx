@@ -4,9 +4,9 @@
  */
 
 import React from 'react';
+import { motion } from 'framer-motion';
 import { BarChart3, Clock, FileText, Users } from 'lucide-react';
 
-import DashboardCard from '../ui/DashboardCard';
 import DashboardGrid from '../ui/DashboardGrid';
 
 interface StatItem {

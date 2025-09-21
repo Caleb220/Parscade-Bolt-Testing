@@ -5,7 +5,7 @@
 
 import { useState, useCallback } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { uploadsApi } from '@/lib/api';
+import { uploadsApi } from '@/lib/api/modules/uploads';
 
 interface UploadProgress {
   readonly phase: 'idle' | 'signing' | 'uploading' | 'completing' | 'completed' | 'error';

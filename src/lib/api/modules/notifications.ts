@@ -1,3 +1,5 @@
+import type { NotificationPreferencesFormData } from '@/lib/validation/account';
+
 /**
  * Notifications API Module
  * Fully aligned with OpenAPI schema definitions using snake_case

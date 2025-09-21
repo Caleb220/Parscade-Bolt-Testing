@@ -4,12 +4,12 @@
  */
 
 import React from 'react';
+import { motion } from 'framer-motion';
 import { Sparkles, BarChart3, TrendingUp, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 
 import { useAuth } from '@/features/auth';
-import { Button } from '@/shared/components/ui/button';
+import CustomButton from '@/shared/components/forms/CustomButton';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import DashboardSection from '../components/ui/DashboardSection';
 import DashboardGrid from '../components/ui/DashboardGrid';

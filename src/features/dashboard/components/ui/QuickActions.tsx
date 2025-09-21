@@ -4,10 +4,10 @@
  */
 
 import React from 'react';
-import { Plus, Upload, Download, Settings } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Plus, Upload, Download, Settings } from 'lucide-react';
 
-import { Button } from '@/shared/components/ui/button';
+import CustomButton from '@/shared/components/forms/CustomButton';
 
 interface QuickActionsProps {
   onUpload?: () => void;
@@ -31,7 +31,7 @@ const QuickActions: React.FC<QuickActionsProps> = ({
     <div className={`flex items-center space-x-3 ${className}`}>
       {onUpload && (
         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-          <Button 
+          <CustomButton 
             variant="outline" 
             size="sm" 
             onClick={onUpload}
@@ -39,26 +39,26 @@ const QuickActions: React.FC<QuickActionsProps> = ({
           >
             <Upload className="w-4 h-4 mr-2" />
             Upload
-          </Button>
+          </CustomButton>
         </motion.div>
       )}
       
       {onNewProject && (
         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-          <Button 
+          <CustomButton 
             size="sm" 
             onClick={onNewProject}
             className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all duration-200 font-medium"
           >
             <Plus className="w-4 h-4 mr-2" />
             New Project
-          </Button>
+          </CustomButton>
         </motion.div>
       )}
       
       {onExport && (
         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-          <Button 
+          <CustomButton 
             variant="outline" 
             size="sm" 
             onClick={onExport}
@@ -66,20 +66,20 @@ const QuickActions: React.FC<QuickActionsProps> = ({
           >
             <Download className="w-4 h-4 mr-2" />
             Export
-          </Button>
+          </CustomButton>
         </motion.div>
       )}
       
       {onSettings && (
         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-          <Button 
+          <CustomButton 
             variant="ghost" 
             size="sm" 
             onClick={onSettings}
             className="hover:bg-gray-100/80 transition-all duration-200"
           >
             <Settings className="w-4 h-4" />
-          </Button>
+          </CustomButton>
         </motion.div>
       )}
     </div>

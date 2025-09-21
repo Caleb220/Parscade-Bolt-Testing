@@ -7,7 +7,7 @@ import React, { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { AlertTriangle } from 'lucide-react';
 
-import { Button } from '@/shared/components/ui/button';
+import CustomButton from '@/shared/components/forms/CustomButton';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 
 interface DashboardCardProps {
@@ -84,13 +84,13 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
               </motion.div>
               <p className="text-red-600 mb-4 font-medium">{error}</p>
               {onRetry && (
-                <Button 
+                <CustomButton 
                   variant="outline" 
                   onClick={onRetry}
                   className="hover:shadow-sm transition-all duration-200"
                 >
                   Retry
-                </Button>
+                </CustomButton>
               )}
             </div>
           ) : (

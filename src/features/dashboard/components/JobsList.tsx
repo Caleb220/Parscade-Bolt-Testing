@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { FileText, AlertTriangle, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-import { Button } from '@/shared/components/ui/button';
+import CustomButton from '@/shared/components/forms/CustomButton';
 import StatusIcon from '@/shared/components/ui/status-icon';
 import StatusBadge from '@/shared/components/ui/status-badge';
 import { formatJobType } from '@/shared/utils/formatters';
@@ -27,9 +27,9 @@ const JobsList: React.FC = () => {
           <AlertTriangle className="w-5 h-5 mr-2" />
           <span className="text-sm">Failed to load jobs</span>
         </div>
-        <Button variant="outline" size="sm" onClick={() => refetch()}>
+        <CustomButton variant="outline" size="sm" onClick={() => refetch()}>
           Retry
-        </Button>
+        </CustomButton>
       </div>
     );
   }
@@ -139,12 +139,12 @@ const JobsList: React.FC = () => {
 
       {pagination?.hasNext && (
         <div className="p-4 border-t border-gray-200/60">
-          <Button 
+          <CustomButton 
             variant="outline" 
             className="w-full hover:shadow-sm transition-all duration-200 font-medium"
           >
             View All Jobs
-          </Button>
+          </CustomButton>
         </div>
       )}
     </motion.div>

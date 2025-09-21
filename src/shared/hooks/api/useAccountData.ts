@@ -7,6 +7,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { accountApi } from '@/lib/api/modules/account';
 import { notificationsApi } from '@/lib/api/modules/notifications';
 import { integrationsApi } from '@/lib/api/modules/integrations';
+import type { NotificationPreferencesFormData } from '@/lib/validation/account';
 import { useToast } from '@/shared/components/ui/use-toast';
 import { getErrorMessage } from '@/lib/api';
 import type { 
@@ -20,6 +21,7 @@ import type {
   Webhook,
   ConnectedService,
   DataSource
+  CreateApiKeyRequest
 } from '@/types/api-types';
 
 

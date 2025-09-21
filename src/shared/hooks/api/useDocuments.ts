@@ -4,7 +4,7 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { documentsApi } from '@/lib/api';
+import { documentsApi } from '@/lib/api/modules/documents';
 import type { Document } from '@/types/api-types';
 
 // Query keys
