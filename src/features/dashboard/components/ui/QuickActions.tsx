@@ -5,6 +5,7 @@
 
 import React from 'react';
 import { Plus, Upload, Download, Settings } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 import { Button } from '@/shared/components/ui/button';
 
@@ -80,33 +81,6 @@ const QuickActions: React.FC<QuickActionsProps> = ({
             <Settings className="w-4 h-4" />
           </Button>
         </motion.div>
-      )}
-    </div>
-  );
-};
-          <Upload className="w-4 h-4 mr-2" />
-          Upload
-        </Button>
-      )}
-      
-      {onNewProject && (
-        <Button size="sm" onClick={onNewProject}>
-          <Plus className="w-4 h-4 mr-2" />
-          New Project
-        </Button>
-      )}
-      
-      {onExport && (
-        <Button variant="outline" size="sm" onClick={onExport}>
-          <Download className="w-4 h-4 mr-2" />
-          Export
-        </Button>
-      )}
-      
-      {onSettings && (
-        <Button variant="ghost" size="sm" onClick={onSettings}>
-          <Settings className="w-4 h-4" />
-        </Button>
       )}
     </div>
   );
