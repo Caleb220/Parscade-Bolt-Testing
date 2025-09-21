@@ -138,9 +138,9 @@ const DashboardPage: React.FC = () => {
 
       {/* Main Content Grid */}
       <DashboardSection>
-        <DashboardGrid columns={2} gap="lg">
-          {/* Upload Zone - Takes 2 columns */}
-          <div className="col-span-1">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Upload Zone */}
+          <div>
             <motion.div 
               className="mb-6"
               initial={{ opacity: 0, x: -20 }}
@@ -158,11 +158,11 @@ const DashboardPage: React.FC = () => {
             <FileUploadZone onJobSubmitted={handleJobSubmitted} />
           </div>
 
-          {/* Jobs List - Takes 1 column */}
-          <div className="col-span-1">
+          {/* Jobs List */}
+          <div>
             <JobsList />
           </div>
-        </DashboardGrid>
+        </div>
       </DashboardSection>
 
       {/* Recent Activity */}
