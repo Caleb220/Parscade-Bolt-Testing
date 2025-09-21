@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 
-import { env } from '@/config/env';
+import { env } from '@/app/config/env';
 
 /**
  * Supabase client configuration with domain-agnostic settings
