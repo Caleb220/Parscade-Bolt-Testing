@@ -4,11 +4,23 @@
  */
 
 import { z } from 'zod';
+import {
+  phoneSchema,
+  timezoneSchema,
+  nonEmptyTextSchema,
+  optionalTrimmedStringSchema,
+  emailSchema,
+} from '@/shared/schemas/common';
 
 // Profile validation matching OpenAPI UpdateProfileRequest
 export const profileSchema = z.object({
-  fullName: z.string().min(1, 'Name is required').max(100, 'Name too long').nullable(),
-  timezone: z.string().min(1, 'Timezone is required').max(50, 'Timezone too long'),
+  fullName: nonEmptyTextSchema('Full name', 100).nullable(),
+  username: optionalTrimmedStringSchema('Username', 2, 60),
+  company: optionalTrimmedStringSchema('Company', 0, 100),
+  role: optionalTrimmedStringSchema('Role', 0, 50),
+  phone: phoneSchema.optional(),
+  locale: optionalTrimmedStringSchema('Locale', 2, 10),
+  timezone: timezoneSchema,
 });
 
 // API Key validation matching OpenAPI CreateApiKeyRequest

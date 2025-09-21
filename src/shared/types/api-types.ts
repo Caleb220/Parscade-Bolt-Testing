@@ -19,6 +19,10 @@ export interface User {
   readonly timezone?: string;
   readonly plan: 'free' | 'pro' | 'enterprise';
   readonly createdAt: string;
+  readonly username?: string;
+  readonly company?: string;
+  readonly role?: string;
+  readonly phone?: string;
   readonly updatedAt: string;
 }
 

@@ -1,7 +1,7 @@
 /**
  * Profile Tab Component - Enhanced with Backend Integration
  * Comprehensive profile management with avatar upload and real-time validation
- */
+ */ 
 
 import React, { useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
@@ -38,11 +38,15 @@ const ProfileTab: React.FC = () => {
     handleSubmit,
     formState: { errors, isDirty, isSubmitting },
     reset,
-    watch,
   } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
       fullName: '',
+      username: '',
+      company: '',
+      role: '',
+      phone: '',
+      locale: 'en-US',
       timezone: 'UTC',
     },
   });
@@ -52,6 +56,11 @@ const ProfileTab: React.FC = () => {
     if (user) {
       reset({
         fullName: user.fullName || '',
+        username: user.username || '',
+        company: user.company || '',
+        role: user.role || '',
+        phone: user.phone || '',
+        locale: user.locale || 'en-US',
         timezone: user.timezone || 'UTC',
       });
     }
@@ -59,7 +68,15 @@ const ProfileTab: React.FC = () => {
 
   const onSubmit = async (data: ProfileFormData) => {
     try {
-      await updateAccount.mutateAsync(data);
+      await updateAccount.mutateAsync({
+        fullName: data.fullName,
+        username: data.username,
+        company: data.company,
+        role: data.role,
+        phone: data.phone,
+        locale: data.locale,
+        timezone: data.timezone,
+      });
       
       toast({
         title: 'Profile updated',
@@ -303,6 +320,66 @@ const ProfileTab: React.FC = () => {
               </div>
 
               <div className="space-y-2">
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  id="username"
+                  {...register('username')}
+                  placeholder="Choose a username"
+                  className="px-3"
+                />
+                {errors.username && (
+                  <p className="text-sm text-red-600">{errors.username.message}</p>
+                )}
+                <p className="text-xs text-gray-500">Used for public profile and API access</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="company">Company</Label>
+                <div className="relative">
+                  <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                  <Input
+                    id="company"
+                    {...register('company')}
+                    placeholder="Your company name"
+                    className="pl-8 pr-3"
+                  />
+                </div>
+                {errors.company && (
+                  <p className="text-sm text-red-600">{errors.company.message}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="role">Job Title</Label>
+                <Input
+                  id="role"
+                  {...register('role')}
+                  placeholder="Your job title"
+                  className="px-3"
+                />
+                {errors.role && (
+                  <p className="text-sm text-red-600">{errors.role.message}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone Number</Label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                  <Input
+                    id="phone"
+                    {...register('phone')}
+                    placeholder="+1234567890"
+                    className="pl-8 pr-3"
+                  />
+                </div>
+                {errors.phone && (
+                  <p className="text-sm text-red-600">{errors.phone.message}</p>
+                )}
+                <p className="text-xs text-gray-500">Use E.164 format (+country code)</p>
+              </div>
+
+              <div className="space-y-2">
                 <Label htmlFor="timezone">Timezone</Label>
                 <div className="relative">
                   <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
@@ -327,6 +404,26 @@ const ProfileTab: React.FC = () => {
                   <p className="text-sm text-red-600">{errors.timezone.message}</p>
                 )}
               </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="locale">Language</Label>
+                <select
+                  id="locale"
+                  {...register('locale')}
+                  className="flex h-10 w-full rounded-md border border-input bg-background py-2 px-3 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                >
+                  <option value="en-US">English (US)</option>
+                  <option value="en-GB">English (UK)</option>
+                  <option value="es-ES">Español</option>
+                  <option value="fr-FR">Français</option>
+                  <option value="de-DE">Deutsch</option>
+                  <option value="ja-JP">日本語</option>
+                  <option value="zh-CN">中文 (简体)</option>
+                </select>
+                {errors.locale && (
+                  <p className="text-sm text-red-600">{errors.locale.message}</p>
+                )}
+              </div>
             </div>
 
             {/* Read-only Information */}
@@ -349,7 +446,7 @@ const ProfileTab: React.FC = () => {
                 </div>
 
                       value={user?.role === 'admin' ? 'Admin' : 'Beta'} 
-                  <Label>Plan</Label>
+                  <Label>Plan</Label> {/* This is a read-only field, not part of the update */}
                   <div className="flex items-center space-x-2">
                     <Input value="Beta" disabled className="capitalize px-3 bg-gray-50 flex-1" />
                     <Button variant="outline" size="sm">

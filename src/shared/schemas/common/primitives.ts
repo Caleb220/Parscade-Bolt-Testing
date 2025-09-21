@@ -98,7 +98,7 @@ export const userNameSchema = z
 export const phoneSchema = z
   .string({ required_error: 'Phone number is required.' })
   .transform((value) => normalizeSpaces(value.trim()))
-
+  .max(20, 'Phone number must be 20 characters or less.');
 /** Optional phone string that normalises whitespace and blanks to undefined. */
 export const optionalPhoneSchema = optionalize(phoneSchema, (value) => {
   if (typeof value !== 'string') {
@@ -117,7 +117,7 @@ export const optionalPhoneSchema = optionalize(phoneSchema, (value) => {
 export const localeSchema = z
   .string({ required_error: 'Locale is required.' })
   .trim()
-  .min(2, 'Locale must be at least 2 characters.')
+  .min(2, 'Locale must be at least 2 characters.') // e.g., 'en'
   .max(10, 'Locale must be 10 characters or less.');
 
 /**

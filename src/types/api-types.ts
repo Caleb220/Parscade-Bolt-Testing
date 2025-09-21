@@ -219,6 +219,10 @@ export interface paths {
           'application/json': {
             fullName?: string | null;
             timezone?: string;
+            username?: string | null;
+            company?: string | null;
+            phone?: string | null;
+            locale?: string | null;
           };
         };
       };
@@ -787,6 +791,10 @@ export interface UserProfile {
   readonly timezone: string;
   readonly emailVerified: boolean;
   readonly role: UserRole;
+  readonly username?: string | null;
+  readonly company?: string | null;
+  readonly phone?: string | null;
+  readonly locale?: string | null;
   readonly createdAt: string;
   readonly updatedAt: string;
 }

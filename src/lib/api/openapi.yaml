@@ -1206,6 +1206,18 @@ components:
         updatedAt:
           type: string
           format: date-time
+        username:
+          type: string
+          nullable: true
+        company:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        locale:
+          type: string
+          nullable: true
     UserRole:
       type: string
       enum:
@@ -1218,6 +1230,17 @@ components:
           type: string
           nullable: true
         timezone:
+          type: string
+        username:
+          type: string
+          nullable: true
+        company:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        locale:
           type: string
     UserSession:
       type: object
