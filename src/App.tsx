@@ -17,7 +17,7 @@ import PrivacyPage from '@/features/marketing/pages/PrivacyPage';
 import ProductPage from '@/features/marketing/pages/ProductPage';
 import TermsPage from '@/features/marketing/pages/TermsPage';
 import { JobDetailPage } from '@/features/jobs';
-import { IntegrationsTab } from '@/features/account/components/tabs/IntegrationsTab';
+import IntegrationsTab from '@/features/account/components/tabs/IntegrationsTab';
 import { NotificationsTab } from '@/features/account/components/tabs/NotificationsTab';
 import { ProfileTab } from '@/features/account/components/tabs/ProfileTab';
 import { SecurityTab } from '@/features/account/components/tabs/SecurityTab';
