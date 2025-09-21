@@ -1,18 +1,21 @@
 /**
  * File Upload API Module
- * Auto-generated from OpenAPI spec
+ * Fully aligned with OpenAPI schema definitions
  */
 
 import { apiClient } from '../client';
-import type { paths } from '@/types/api-types';
+import type { paths, Document } from '@/types/api-types';
 
+// Extract exact types from OpenAPI paths
 type SignedUploadRequest = paths['/v1/uploads/sign']['post']['requestBody']['content']['application/json'];
 type SignedUploadResponse = paths['/v1/uploads/sign']['post']['responses']['200']['content']['application/json'];
+
 type CompleteUploadRequest = paths['/v1/uploads/{storageKey}/complete']['post']['requestBody']['content']['application/json'];
 type CompleteUploadResponse = paths['/v1/uploads/{storageKey}/complete']['post']['responses']['201']['content']['application/json'];
 
 /**
- * File upload endpoints for direct storage operations
+ * File upload endpoints
+ * All endpoints follow OpenAPI schema exactly
  */
 export const uploadsApi = {
   /**
@@ -25,14 +28,8 @@ export const uploadsApi = {
   /**
    * Complete upload and create document record
    */
-  async completeUpload(
-    storageKey: string, 
-    request: CompleteUploadRequest
-  ): Promise<CompleteUploadResponse> {
-    return apiClient.post<CompleteUploadResponse>(
-      `/v1/uploads/${storageKey}/complete`, 
-      request
-    );
+  async completeUpload(storageKey: string, request: CompleteUploadRequest): Promise<Document> {
+    return apiClient.post<CompleteUploadResponse>(`/v1/uploads/${storageKey}/complete`, request);
   },
 
   /**

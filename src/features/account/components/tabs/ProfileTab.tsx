@@ -10,7 +10,6 @@ import { motion } from 'framer-motion';
 import { Upload, Save, User, Building, Phone, Globe, Camera, AlertCircle, CheckCircle } from 'lucide-react';
 
 import { getErrorMessage, isApiError } from '@/lib/api';
-import { profileSchema, type ProfileFormData } from '@/lib/validation/account';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Input } from '@/shared/components/ui/input';
@@ -19,9 +18,16 @@ import { Skeleton } from '@/shared/components/ui/skeleton';
 import { useToast } from '@/shared/components/ui/use-toast';
 import { useUpdateAccount, useUploadAvatar } from '@/shared/hooks/api/useAccountData';
 
-import { formatUserAgent, formatDate } from '@/shared/utils/formatters';
-import { useClipboard } from '@/shared/hooks/useClipboard';
+import { formatDate } from '@/shared/utils/formatters';
 import { useAccountContext } from '../AccountLayout';
+
+// Profile form validation schema
+const profileSchema = z.object({
+  fullName: z.string().min(1, 'Name is required').max(100, 'Name too long').nullable(),
+  timezone: z.string().min(1, 'Timezone is required').max(50, 'Timezone too long'),
+});
+
+type ProfileFormData = z.infer<typeof profileSchema>;
 
 const ProfileTab: React.FC = () => {
   const { user, isLoading, error: contextError } = useAccountContext();
@@ -42,12 +48,7 @@ const ProfileTab: React.FC = () => {
   } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      full_name: '',
-      username: '',
-      company: '',
-      role: '',
-      phone: '',
-      locale: 'en-US',
+      fullName: '',
       timezone: 'UTC',
     },
   });
@@ -56,12 +57,7 @@ const ProfileTab: React.FC = () => {
   React.useEffect(() => {
     if (user) {
       reset({
-        full_name: user.fullName || '',
-        username: user.username || '',
-        company: user.company || '',
-        role: user.role || '',
-        phone: user.phone || '',
-        locale: user.locale || 'en-US',
+        fullName: user.fullName || '',
         timezone: user.timezone || 'UTC',
       });
     }
@@ -297,79 +293,19 @@ const ProfileTab: React.FC = () => {
             {/* Basic Information */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="full_name">Full Name</Label>
+                <Label htmlFor="fullName">Full Name</Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                   <Input
-                    id="full_name"
-                    {...register('full_name')}
+                    id="fullName"
+                    {...register('fullName')}
                     placeholder="Enter your full name"
                     className="pl-8 pr-3"
                   />
                 </div>
-                {errors.full_name && (
-                  <p className="text-sm text-red-600">{errors.full_name.message}</p>
+                {errors.fullName && (
+                  <p className="text-sm text-red-600">{errors.fullName.message}</p>
                 )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
-                <Input
-                  id="username"
-                  {...register('username')}
-                  placeholder="Choose a username"
-                  className="px-3"
-                />
-                {errors.username && (
-                  <p className="text-sm text-red-600">{errors.username.message}</p>
-                )}
-                <p className="text-xs text-gray-500">Used for public profile and API access</p>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="company">Company</Label>
-                <div className="relative">
-                  <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-                  <Input
-                    id="company"
-                    {...register('company')}
-                    placeholder="Your company name"
-                    className="pl-8 pr-3"
-                  />
-                </div>
-                {errors.company && (
-                  <p className="text-sm text-red-600">{errors.company.message}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="role">Job Title</Label>
-                <Input
-                  id="role"
-                  {...register('role')}
-                  placeholder="Your job title"
-                  className="px-3"
-                />
-                {errors.role && (
-                  <p className="text-sm text-red-600">{errors.role.message}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number</Label>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-                  <Input
-                    id="phone"
-                    {...register('phone')}
-                    placeholder="+1234567890"
-                    className="pl-8 pr-3"
-                  />
-                </div>
-                {errors.phone && (
-                  <p className="text-sm text-red-600">{errors.phone.message}</p>
-                )}
-                <p className="text-xs text-gray-500">Use E.164 format (+country code)</p>
               </div>
 
               <div className="space-y-2">
@@ -397,26 +333,6 @@ const ProfileTab: React.FC = () => {
                   <p className="text-sm text-red-600">{errors.timezone.message}</p>
                 )}
               </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="locale">Language</Label>
-                <select
-                  id="locale"
-                  {...register('locale')}
-                  className="flex h-10 w-full rounded-md border border-input bg-background py-2 px-3 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                >
-                  <option value="en-US">English (US)</option>
-                  <option value="en-GB">English (UK)</option>
-                  <option value="es-ES">Español</option>
-                  <option value="fr-FR">Français</option>
-                  <option value="de-DE">Deutsch</option>
-                  <option value="ja-JP">日本語</option>
-                  <option value="zh-CN">中文 (简体)</option>
-                </select>
-                {errors.locale && (
-                  <p className="text-sm text-red-600">{errors.locale.message}</p>
-                )}
-              </div>
             </div>
 
             {/* Read-only Information */}
@@ -441,11 +357,7 @@ const ProfileTab: React.FC = () => {
                 <div className="space-y-2">
                   <Label>Plan</Label>
                   <div className="flex items-center space-x-2">
-                    <Input 
-                      value={user?.plan || 'Free'} 
-                      disabled 
-                      className="capitalize px-3 bg-gray-50 flex-1" 
-                    />
+                    <Input value="Beta" disabled className="capitalize px-3 bg-gray-50 flex-1" />
                     <Button variant="outline" size="sm">
                       Upgrade
                     </Button>
@@ -455,7 +367,7 @@ const ProfileTab: React.FC = () => {
                 <div className="space-y-2">
                   <Label>Member Since</Label>
                   <Input 
-                    value={user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : ''} 
+                    value={user?.createdAt ? formatDate(user.createdAt) : ''} 
                     disabled
                     className="px-3 bg-gray-50"
                   />

@@ -1,11 +1,11 @@
 /**
- * Documents Hooks
- * React Query hooks for document-related operations
+ * Documents API Hooks
+ * Updated to match OpenAPI schema response structure
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { documentsApi } from '@/lib/api';
-import type { Document, PaginatedResponse } from '@/shared/types/api-types';
+import type { Document } from '@/types/api-types';
 
 // Query keys
 const QUERY_KEYS = {
@@ -18,6 +18,10 @@ export const useDocuments = (params?: { page?: number; limit?: number; status?: 
   return useQuery({
     queryKey: [...QUERY_KEYS.documents, params],
     queryFn: () => documentsApi.listDocuments(params),
+    select: (data) => ({
+      documents: data.documents,
+      pagination: data.pagination,
+    }),
   });
 };
 

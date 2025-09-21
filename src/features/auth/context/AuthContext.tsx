@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { logger } from '@/shared/services/logger';
 import type { TypedSupabaseUser } from '@/shared/types/supabase';
 import { setupCrossTabLogoutListener } from '@/shared/utils/hardLogout';
+import type { AuthState, AuthContextType, User, FormErrors } from '../types/authTypes';
 
 
 
@@ -249,7 +250,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const signIn = useCallback(async (identifier: string, password: string): Promise<void> => {
     dispatch({ type: 'AUTH_START' });
     try {
-      const body =
+      const body: Parameters<typeof userApi.signIn>[0] =
         identifier.includes('@')
           ? { email: identifier.trim().toLowerCase(), password }
           : { username: identifier.trim().toLowerCase(), password };
@@ -278,10 +279,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   ): Promise<void> => {
     dispatch({ type: 'AUTH_START' });
     try {
-      const body = {
+      const body: Parameters<typeof userApi.signUp>[0] = {
         email: email.trim().toLowerCase(),
         password,
-        full_name: fullName.trim(),
+        full_name: fullName.trim() || null,
         username: username.trim().toLowerCase(),
       };
 
@@ -307,14 +308,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const signOut = useCallback(async (): Promise<void> => {
     dispatch({ type: 'AUTH_START' });
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const accessToken = session?.access_token;
+      // Call backend signout endpoint
+      await userApi.signOut();
 
-      if (accessToken) {
-        // Call protected endpoint with bearer
-        await userApi.signOut({ accessToken, retryable: false });
-      }
-
+      // Then sign out from Supabase
       await supabase.auth.signOut();
     } catch (err: any) {
       await supabase.auth.signOut();

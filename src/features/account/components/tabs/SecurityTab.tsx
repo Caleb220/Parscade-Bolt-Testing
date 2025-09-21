@@ -4,8 +4,6 @@
  */
 
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
 import { 
   Key, 
@@ -22,7 +20,6 @@ import {
 } from 'lucide-react';
 
 import { getErrorMessage } from '@/lib/api';
-import { apiKeySchema, type ApiKeyFormData } from '@/lib/validation/account';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Input } from '@/shared/components/ui/input';
@@ -56,16 +53,54 @@ const SecurityTab: React.FC = () => {
   const revokeApiKey = useRevokeApiKey();
   const revokeSession = useRevokeSession();
 
-  const [visibleKeys, setVisibleKeys] = useState<Set<string>>(new Set());
+  const [newKeyName, setNewKeyName] = useState('');
+  const [newKeyScopes, setNewKeyScopes] = useState<string[]>(['read']);
+  const [showNewKeyDialog, setShowNewKeyDialog] = useState(false);
+  const [newKeyResult, setNewKeyResult] = useState<{ key: string; name: string } | null>(null);
   const [confirmRevokeKey, setConfirmRevokeKey] = useState<string | null>(null);
   const [confirmRevokeSession, setConfirmRevokeSession] = useState<string | null>(null);
 
-  const handleRevokeApiKey = async (keyId: string, keyName: string) => {
+  const handleCreateApiKey = async () => {
+    if (!newKeyName.trim()) return;
+    
+    try {
+      const result = await createApiKey.mutateAsync({
+        name: newKeyName.trim(),
+        scopes: newKeyScopes,
+      });
+      
+      setNewKeyResult({ key: result.key, name: result.apiKey.name });
+      setNewKeyName('');
+      setNewKeyScopes(['read']);
+      
+      toast({
+        title: 'API key created',
+        description: `Your new API key "${result.apiKey.name}" has been created successfully.`,
+      });
+    } catch (error) {
+      toast({
+        title: 'Creation failed',
+        description: getErrorMessage(error),
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleRevokeApiKey = async (keyId: string) => {
     try {
       await revokeApiKey.mutateAsync(keyId);
       setConfirmRevokeKey(null);
+      
+      toast({
+        title: 'API key revoked',
+        description: 'The API key has been revoked successfully.',
+      });
     } catch (error) {
-      // Error handled by mutation
+      toast({
+        title: 'Revocation failed',
+        description: getErrorMessage(error),
+        variant: 'destructive',
+      });
     }
   };
 
@@ -73,20 +108,20 @@ const SecurityTab: React.FC = () => {
     try {
       await revokeSession.mutateAsync(sessionId);
       setConfirmRevokeSession(null);
+      
+      toast({
+        title: 'Session revoked',
+        description: 'The session has been revoked successfully.',
+      });
     } catch (error) {
-      // Error handled by mutation
+      toast({
+        title: 'Revocation failed',
+        description: getErrorMessage(error),
+        variant: 'destructive',
+      });
     }
   };
 
-  const toggleKeyVisibility = (keyId: string) => {
-    const newVisible = new Set(visibleKeys);
-    if (newVisible.has(keyId)) {
-      newVisible.delete(keyId);
-    } else {
-      newVisible.add(keyId);
-    }
-    setVisibleKeys(newVisible);
-  };
 
   return (
     <motion.div
@@ -106,12 +141,103 @@ const SecurityTab: React.FC = () => {
               Manage your API keys for programmatic access to Parscade
             </CardDescription>
           </div>
-          <Button size="sm" disabled>
+          <Button size="sm" onClick={() => setShowNewKeyDialog(true)}>
             <Plus className="w-4 h-4 mr-2" />
-            New Key (Coming Soon)
+            New Key
           </Button>
         </CardHeader>
         <CardContent>
+          {/* New Key Dialog */}
+          {showNewKeyDialog && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+                {newKeyResult ? (
+                  <div className="space-y-4">
+                    <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                      <div className="flex items-center mb-2">
+                        <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
+                        <span className="font-medium text-green-900">API Key Created</span>
+                      </div>
+                      <p className="text-sm text-green-700 mb-3">
+                        Copy this key now - it won't be shown again for security.
+                      </p>
+                      <div className="space-y-2">
+                        <Label>Key: {newKeyResult.name}</Label>
+                        <div className="flex items-center space-x-2">
+                          <Input value={newKeyResult.key} readOnly className="font-mono text-sm" />
+                          <Button size="sm" onClick={() => copy(newKeyResult.key, 'API key')}>
+                            <Copy className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                    <Button
+                      onClick={() => {
+                        setNewKeyResult(null);
+                        setShowNewKeyDialog(false);
+                      }}
+                      className="w-full"
+                    >
+                      Done
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold">Create API Key</h3>
+                    <div className="space-y-2">
+                      <Label>Key Name</Label>
+                      <Input
+                        value={newKeyName}
+                        onChange={(e) => setNewKeyName(e.target.value)}
+                        placeholder="Production API, Development, etc."
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Scopes</Label>
+                      <div className="space-y-2">
+                        {[
+                          { value: 'read', label: 'Read', description: 'View documents and data' },
+                          { value: 'write', label: 'Write', description: 'Create and update data' },
+                          { value: 'admin', label: 'Admin', description: 'Full administrative access' },
+                        ].map((scope) => (
+                          <label key={scope.value} className="flex items-start space-x-2">
+                            <input
+                              type="checkbox"
+                              checked={newKeyScopes.includes(scope.value)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setNewKeyScopes([...newKeyScopes, scope.value]);
+                                } else {
+                                  setNewKeyScopes(newKeyScopes.filter(s => s !== scope.value));
+                                }
+                              }}
+                              className="rounded border-gray-300 mt-1"
+                            />
+                            <div>
+                              <span className="text-sm font-medium">{scope.label}</span>
+                              <p className="text-xs text-gray-500">{scope.description}</p>
+                            </div>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="flex justify-end space-x-2">
+                      <Button variant="outline" onClick={() => setShowNewKeyDialog(false)}>
+                        Cancel
+                      </Button>
+                      <Button 
+                        onClick={handleCreateApiKey}
+                        disabled={!newKeyName.trim() || newKeyScopes.length === 0 || createApiKey.isPending}
+                      >
+                        {createApiKey.isPending ? 'Creating...' : 'Create Key'}
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {keysLoading ? (
             <div className="space-y-3">
               {Array.from({ length: 2 }).map((_, i) => (
@@ -152,36 +278,25 @@ const SecurityTab: React.FC = () => {
                       </div>
                     </div>
                     <div className="flex items-center space-x-4 text-sm text-gray-500">
-                      <span>Created {formatDate(key.created_at)}</span>
-                      {key.last_used_at && (
-                        <span>Last used {formatDate(key.last_used_at)}</span>
+                      <span>Created {formatDate(key.createdAt)}</span>
+                      {key.lastUsedAt && (
+                        <span>Last used {formatDate(key.lastUsedAt)}</span>
                       )}
                     </div>
-                    {key.preview && (
-                      <div className="flex items-center space-x-2 mt-2">
-                        <Input
-                          value={visibleKeys.has(key.id) ? key.preview : '•'.repeat(20)}
-                          readOnly
-                          className="font-mono text-xs flex-1"
-                        />
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => toggleKeyVisibility(key.id)}
-                        >
-                          {visibleKeys.has(key.id) ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                        </Button>
-                        {visibleKeys.has(key.id) && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => copy(key.preview!, 'API key preview')}
-                          >
-                            <Copy className="w-4 h-4" />
-                          </Button>
-                        )}
-                      </div>
-                    )}
+                    <div className="flex items-center space-x-2 mt-2">
+                      <Input
+                        value={`...${key.keyPreview}`}
+                        readOnly
+                        className="font-mono text-xs flex-1"
+                      />
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => copy(`...${key.keyPreview}`, 'API key preview')}
+                      >
+                        <Copy className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </div>
                   <Button
                     size="sm"
@@ -203,8 +318,7 @@ const SecurityTab: React.FC = () => {
         isOpen={!!confirmRevokeKey}
         onClose={() => setConfirmRevokeKey(null)}
         onConfirm={() => {
-          const key = apiKeys?.find(k => k.id === confirmRevokeKey);
-          if (key) handleRevokeApiKey(key.id, key.name);
+          if (confirmRevokeKey) handleRevokeApiKey(confirmRevokeKey);
         }}
         title="Revoke API Key"
         description="Are you sure you want to revoke this API key? This action cannot be undone."
@@ -274,16 +388,16 @@ const SecurityTab: React.FC = () => {
                         <span className="font-medium text-gray-900">
                           {formatUserAgent(session.user_agent)}
                         </span>
-                        {session.is_current && (
+                        {session.isCurrent && (
                           <StatusBadge status="active" className="text-xs" />
                         )}
                       </div>
                       <div className="text-sm text-gray-500">
-                        {session.ip_address} • Last seen {formatDate(session.last_seen)}
+                        {session.ipAddress || 'Unknown IP'} • Last seen {formatDate(session.lastSeen)}
                       </div>
                     </div>
                   </div>
-                  {!session.is_current && (
+                  {!session.isCurrent && (
                     <Button
                       size="sm"
                       variant="outline"
@@ -338,12 +452,12 @@ const SecurityTab: React.FC = () => {
                   </div>
                   <div className="flex-1">
                     <p className="text-sm font-medium text-gray-900 capitalize">
-                      {event.event_type.replace(/_/g, ' ')}
+                      {event.eventType.replace(/_/g, ' ')}
                     </p>
                     <p className="text-sm text-gray-600">{event.description}</p>
                     <div className="flex items-center space-x-2 mt-1 text-xs text-gray-500">
-                      <span>{formatDate(event.created_at)}</span>
-                      {event.ip_address && <span>• {event.ip_address}</span>}
+                      <span>{formatDate(event.createdAt)}</span>
+                      {event.ipAddress && <span>• {event.ipAddress}</span>}
                     </div>
                   </div>
                 </div>

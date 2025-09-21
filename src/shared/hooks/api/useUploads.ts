@@ -1,14 +1,22 @@
 /**
- * Upload Hooks
- * React hooks for file upload operations
+ * File Upload Hooks
+ * Updated to match OpenAPI schema response structure
  */
 
 import { useState, useCallback } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { uploadsApi } from '@/lib/api';
-import type { UploadProgress } from '@/shared/types';
+
+interface UploadProgress {
+  readonly phase: 'idle' | 'signing' | 'uploading' | 'completing' | 'completed' | 'error';
+  readonly progress: number;
+  readonly bytesUploaded?: number;
+  readonly totalBytes?: number;
+  readonly error?: string;
+}
 
 export const useFileUpload = () => {
+  const queryClient = useQueryClient();
   const [uploadProgress, setUploadProgress] = useState<UploadProgress>({
     phase: 'idle',
     progress: 0,

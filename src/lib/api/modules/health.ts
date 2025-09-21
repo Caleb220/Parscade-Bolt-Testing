@@ -1,16 +1,18 @@
 /**
- * Health API Module
- * Auto-generated from OpenAPI spec
+ * Health Check API Module
+ * Fully aligned with OpenAPI schema definitions
  */
 
 import { apiClient } from '../client';
 import type { paths } from '@/types/api-types';
 
+// Extract exact types from OpenAPI paths
 type HealthResponse = paths['/health']['get']['responses']['200']['content']['application/json'];
 type ReadinessResponse = paths['/ready']['get']['responses']['200']['content']['application/json'];
 
 /**
- * Health endpoints for monitoring API status
+ * Health check endpoints
+ * All endpoints follow OpenAPI schema exactly
  */
 export const healthApi = {
   /**

@@ -1,89 +1,64 @@
 /**
- * Auth & Account API (frontend SDK)
- * Typed from OpenAPI `paths`, using your apiClient.
+ * User Authentication API Module
+ * Fully aligned with OpenAPI schema definitions
  */
 
 import { apiClient } from '../client';
 import type { paths } from '@/types/api-types';
-import { RequestOptions } from '../client'
 
-type WithAuth = { accessToken?: string; retryable?: boolean };
+// Extract exact types from OpenAPI paths
+type SignUpRequest = paths['/v1/auth/signup']['post']['requestBody']['content']['application/json'];
+type SignUpResponse = paths['/v1/auth/signup']['post']['responses']['201']['content']['application/json'];
 
-/** Small helper to build per-call options with optional bearer */
-function withAuth(opts?: WithAuth): RequestOptions {
-  const headers: HeadersInit | undefined = opts?.accessToken
-    ? { Authorization: `Bearer ${opts.accessToken}` }
-    : undefined;
+type SignInRequest = paths['/v1/auth/signin']['post']['requestBody']['content']['application/json'];
+type SignInResponse = paths['/v1/auth/signin']['post']['responses']['200']['content']['application/json'];
 
-  return { ...(headers ? { headers } : {}), retryable: opts?.retryable ?? false };
-}
+type SignOutResponse = paths['/v1/auth/signout']['post']['responses']['200']['content']['application/json'];
 
-/* =========================
- *  Type aliases from OpenAPI
- * ========================= */
+type ResetPasswordRequest = paths['/v1/auth/reset-password']['post']['requestBody']['content']['application/json'];
+type ResetPasswordResponse = paths['/v1/auth/reset-password']['post']['responses']['200']['content']['application/json'];
 
-// /v1/auth/signup
-type SignUpReq =
-  paths['/v1/auth/signup']['post']['requestBody']['content']['application/json'];
-type SignUpRes =
-  paths['/v1/auth/signup']['post']['responses']['201']['content']['application/json'];
-
-// /v1/auth/signin
-type SignInReq =
-  paths['/v1/auth/signin']['post']['requestBody']['content']['application/json'];
-type SignInRes =
-  paths['/v1/auth/signin']['post']['responses']['200']['content']['application/json'];
-
-// /v1/auth/signout (protected)
-type SignOutRes =
-  paths['/v1/auth/signout']['post']['responses']['200']['content']['application/json'];
-
-// /v1/auth/reset-password
-type ResetPasswordReq =
-  paths['/v1/auth/reset-password']['post']['requestBody']['content']['application/json'];
-type ResetPasswordRes =
-  paths['/v1/auth/reset-password']['post']['responses']['200']['content']['application/json'];
-
-
-/* =========================
- *  Public API
- * ========================= */
-
+/**
+ * User authentication API endpoints
+ * All endpoints follow OpenAPI schema exactly
+ */
 export const userApi = {
   /**
-   * Sign up with email/password (+ optional full_name & username).
-   * Backend may return `session === null` if email confirmations are enabled.
+   * Sign up with email/password and optional profile data
+   * Backend handles email confirmation if enabled
    */
-  async signUp(body: SignUpReq) {
-    return apiClient.post<SignUpRes>('/v1/auth/signup', body, {
+  async signUp(body: SignUpRequest): Promise<SignUpResponse> {
+    return apiClient.post<SignUpResponse>('/v1/auth/signup', body, {
       retryable: false,
     });
   },
 
   /**
-   * Sign in with email or username + password.
-   * If using username, the backend resolves username -> email.
-   * Returns `{ user, session }` on success.
+   * Sign in with email or username + password
+   * Backend resolves username to email internally
    */
-  async signIn(body: SignInReq) {
-    return apiClient.post<SignInRes>('/v1/auth/signin', body, {
+  async signIn(body: SignInRequest): Promise<SignInResponse> {
+    return apiClient.post<SignInResponse>('/v1/auth/signin', body, {
       retryable: false,
     });
   },
 
   /**
-   * Sign out (requires bearer token).
-   * Pass `accessToken` if your apiClient doesn't inject it automatically.
+   * Sign out current session
+   * Requires valid bearer token
    */
-  async signOut(opts?: WithAuth) {
-    return apiClient.post<SignOutRes>('/v1/auth/signout', {}, withAuth(opts));
+  async signOut(): Promise<SignOutResponse> {
+    return apiClient.post<SignOutResponse>('/v1/auth/signout', {}, {
+      retryable: false,
+    });
   },
 
   /**
-   * Request password reset email (public).
+   * Request password reset email
+   * Public endpoint, no authentication required
    */
-  async resetPassword(body: ResetPasswordReq) {
-    return apiClient.post<ResetPasswordRes>('/v1/auth/reset-password', body, {
+  async resetPassword(body: ResetPasswordRequest): Promise<ResetPasswordResponse> {
+    return apiClient.post<ResetPasswordResponse>('/v1/auth/reset-password', body, {
       retryable: false,
     });
   },

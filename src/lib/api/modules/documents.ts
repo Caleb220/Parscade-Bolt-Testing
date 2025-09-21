@@ -1,32 +1,36 @@
 /**
  * Documents API Module
- * Auto-generated from OpenAPI spec
+ * Fully aligned with OpenAPI schema definitions
  */
 
 import { apiClient } from '../client';
-import type { paths } from '@/types/api-types';
+import type { paths, Document, PaginationMetadata } from '@/types/api-types';
 
-type DocumentListParams = paths['/v1/documents']['get']['parameters']['query'];
-type DocumentList = paths['/v1/documents']['get']['responses']['200']['content']['application/json'];
-type Document = paths['/v1/documents/{documentId}']['get']['responses']['200']['content']['application/json'];
-type DownloadResponse = paths['/v1/documents/{documentId}/download']['get']['responses']['200']['content']['application/json'];
+// Extract exact types from OpenAPI paths
+type GetDocumentsParams = paths['/v1/documents']['get']['parameters']['query'];
+type GetDocumentsResponse = paths['/v1/documents']['get']['responses']['200']['content']['application/json'];
+
+type GetDocumentResponse = paths['/v1/documents/{documentId}']['get']['responses']['200']['content']['application/json'];
+
+type GetDownloadResponse = paths['/v1/documents/{documentId}/download']['get']['responses']['200']['content']['application/json'];
 
 /**
  * Document management endpoints
+ * All endpoints follow OpenAPI schema exactly
  */
 export const documentsApi = {
   /**
    * List user documents with pagination and filtering
    */
-  async listDocuments(params?: DocumentListParams): Promise<DocumentList> {
-    return apiClient.get<DocumentList>('/v1/documents', params);
+  async listDocuments(params?: GetDocumentsParams): Promise<GetDocumentsResponse> {
+    return apiClient.get<GetDocumentsResponse>('/v1/documents', params);
   },
 
   /**
    * Get document details by ID
    */
   async getDocument(documentId: string): Promise<Document> {
-    return apiClient.get<Document>(`/v1/documents/${documentId}`);
+    return apiClient.get<GetDocumentResponse>(`/v1/documents/${documentId}`);
   },
 
   /**
@@ -41,7 +45,7 @@ export const documentsApi = {
   /**
    * Generate download URL for document
    */
-  async getDownloadUrl(documentId: string): Promise<DownloadResponse> {
-    return apiClient.get<DownloadResponse>(`/v1/documents/${documentId}/download`);
+  async getDownloadUrl(documentId: string): Promise<GetDownloadResponse> {
+    return apiClient.get<GetDownloadResponse>(`/v1/documents/${documentId}/download`);
   },
 } as const;
