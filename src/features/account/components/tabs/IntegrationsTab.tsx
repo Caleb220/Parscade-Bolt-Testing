@@ -13,16 +13,8 @@ import {
   Trash2, 
   TestTube, 
   Database,
-  CheckCircle,
-  XCircle,
-  AlertTriangle,
-  Eye,
-  EyeOff,
-  Copy,
-  ExternalLink,
   RefreshCw,
   AlertCircle as AlertIcon,
-  Activity
 } from 'lucide-react';
 
 import { getErrorMessage } from '@/lib/api';
@@ -32,10 +24,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/sha
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Badge } from '@/shared/components/ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/shared/components/ui/dialog';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { Switch } from '@/shared/components/ui/switch';
 import { useToast } from '@/shared/components/ui/use-toast';
+import ConfirmationDialog from '@/shared/components/ui/confirmation-dialog';
+import StatusBadge from '@/shared/components/ui/status-badge';
+import { formatDate } from '@/shared/utils';
 import { 
   useWebhooks, 
   useCreateWebhook, 
@@ -67,69 +61,9 @@ const IntegrationsTab: React.FC = () => {
   const deleteDataSource = useDeleteDataSource();
   const testDataSource = useTestDataSource();
 
-  const [showNewWebhookDialog, setShowNewWebhookDialog] = useState(false);
-  const [showNewDataSourceDialog, setShowNewDataSourceDialog] = useState(false);
-  const [newWebhookSecret, setNewWebhookSecret] = useState<string | null>(null);
   const [testResults, setTestResults] = useState<Record<string, any>>({});
   const [confirmDeleteWebhook, setConfirmDeleteWebhook] = useState<string | null>(null);
   const [confirmDeleteDataSource, setConfirmDeleteDataSource] = useState<string | null>(null);
-
-  const {
-    register: registerWebhook,
-    handleSubmit: handleWebhookSubmit,
-    formState: { errors: webhookErrors },
-    reset: resetWebhook,
-    watch: watchWebhook,
-  } = useForm<WebhookFormData>({
-    resolver: zodResolver(webhookSchema),
-    defaultValues: {
-      url: '',
-      events: ['job.completed'],
-      active: true,
-    },
-  });
-
-  const {
-    register: registerDataSource,
-    handleSubmit: handleDataSourceSubmit,
-    formState: { errors: dataSourceErrors },
-    reset: resetDataSource,
-    watch: watchDataSource,
-  } = useForm<DataSourceFormData>({
-    resolver: zodResolver(dataSourceSchema),
-    defaultValues: {
-      name: '',
-      type: 's3',
-      config: {
-        bucket: '',
-        region: '',
-        access_key: '',
-        secret_key: '',
-        path_prefix: '',
-      },
-    },
-  });
-
-  const watchedDataSourceType = watchDataSource('type');
-
-  const onCreateWebhook = async (data: WebhookFormData) => {
-    try {
-      const result = await createWebhook.mutateAsync(data);
-      setNewWebhookSecret(result.secret);
-      resetWebhook();
-      
-      toast({
-        title: 'Webhook created',
-        description: `Your webhook "${data.url}" has been created successfully.`,
-      });
-    } catch (error) {
-      toast({
-        title: 'Creation failed',
-        description: getErrorMessage(error),
-        variant: 'destructive',
-      });
-    }
-  };
 
   const onTestWebhook = async (webhookId: string, webhookUrl: string) => {
     try {
@@ -154,36 +88,8 @@ const IntegrationsTab: React.FC = () => {
     try {
       await deleteWebhook.mutateAsync(webhookId);
       setConfirmDeleteWebhook(null);
-      
-      toast({
-        title: 'Webhook deleted',
-        description: `Webhook "${webhookUrl}" has been deleted successfully.`,
-      });
     } catch (error) {
-      toast({
-        title: 'Deletion failed',
-        description: getErrorMessage(error),
-        variant: 'destructive',
-      });
-    }
-  };
-
-  const onCreateDataSource = async (data: DataSourceFormData) => {
-    try {
-      await createDataSource.mutateAsync(data);
-      resetDataSource();
-      setShowNewDataSourceDialog(false);
-      
-      toast({
-        title: 'Data source added',
-        description: `Data source "${data.name}" has been configured successfully.`,
-      });
-    } catch (error) {
-      toast({
-        title: 'Creation failed',
-        description: getErrorMessage(error),
-        variant: 'destructive',
-      });
+      // Error handled by mutation
     }
   };
 
@@ -191,17 +97,8 @@ const IntegrationsTab: React.FC = () => {
     try {
       await deleteDataSource.mutateAsync(sourceId);
       setConfirmDeleteDataSource(null);
-      
-      toast({
-        title: 'Data source deleted',
-        description: `Data source "${sourceName}" has been deleted successfully.`,
-      });
     } catch (error) {
-      toast({
-        title: 'Deletion failed',
-        description: getErrorMessage(error),
-        variant: 'destructive',
-      });
+      // Error handled by mutation
     }
   };
 
@@ -218,22 +115,6 @@ const IntegrationsTab: React.FC = () => {
       toast({
         title: 'Test failed',
         description: getErrorMessage(error),
-        variant: 'destructive',
-      });
-    }
-  };
-
-  const copyToClipboard = async (text: string, description: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      toast({
-        title: 'Copied',
-        description: `${description} copied to clipboard.`,
-      });
-    } catch (error) {
-      toast({
-        title: 'Copy failed',
-        description: 'Unable to copy to clipboard. Please copy manually.',
         variant: 'destructive',
       });
     }
@@ -257,119 +138,10 @@ const IntegrationsTab: React.FC = () => {
               Configure webhooks to receive real-time notifications about events
             </CardDescription>
           </div>
-          <Dialog open={showNewWebhookDialog} onOpenChange={setShowNewWebhookDialog}>
-            <DialogTrigger asChild>
-              <Button size="sm">
-                <Plus className="w-4 h-4 mr-2" />
-                Add Webhook
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Create Webhook</DialogTitle>
-                <DialogDescription>
-                  Add a new webhook endpoint to receive notifications
-                </DialogDescription>
-              </DialogHeader>
-              
-              {newWebhookSecret ? (
-                <div className="space-y-4">
-                  <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                    <div className="flex items-center mb-2">
-                      <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
-                      <span className="font-medium text-green-900">Webhook Created</span>
-                    </div>
-                    <p className="text-sm text-green-700 mb-3">
-                      Save this webhook secret - it won't be shown again for security.
-                    </p>
-                    <div className="space-y-2">
-                      <Label>Webhook Secret</Label>
-                      <div className="flex items-center space-x-2">
-                        <Input value={newWebhookSecret} readOnly className="font-mono text-sm" />
-                        <Button
-                          size="sm"
-                          onClick={() => copyToClipboard(newWebhookSecret, 'Webhook secret')}
-                        >
-                          <Copy className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                  <Button
-                    onClick={() => {
-                      setNewWebhookSecret(null);
-                      setShowNewWebhookDialog(false);
-                    }}
-                    className="w-full"
-                  >
-                    Done
-                  </Button>
-                </div>
-              ) : (
-                <form onSubmit={handleWebhookSubmit(onCreateWebhook)} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="webhook_url">Webhook URL</Label>
-                    <Input
-                      id="webhook_url"
-                      {...registerWebhook('url')}
-                      placeholder="https://your-app.com/webhook"
-                    />
-                    {webhookErrors.url && (
-                      <p className="text-sm text-red-600">{webhookErrors.url.message}</p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Events to Subscribe</Label>
-                    <div className="grid grid-cols-2 gap-2">
-                      {[
-                        'job.completed',
-                        'job.failed', 
-                        'document.processed',
-                        'account.updated',
-                        'billing.invoice',
-                        'security.alert'
-                      ].map((event) => (
-                        <label key={event} className="flex items-center space-x-2">
-                          <input
-                            type="checkbox"
-                            value={event}
-                            {...registerWebhook('events')}
-                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                          />
-                          <span className="text-sm">{event}</span>
-                        </label>
-                      ))}
-                    </div>
-                    {webhookErrors.events && (
-                      <p className="text-sm text-red-600">{webhookErrors.events.message}</p>
-                    )}
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    <Switch
-                      checked={watchWebhook('active')}
-                      onCheckedChange={(checked) => setValue('active', checked)}
-                    />
-                    <Label>Active</Label>
-                  </div>
-
-                  <div className="flex justify-end space-x-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setShowNewWebhookDialog(false)}
-                    >
-                      Cancel
-                    </Button>
-                    <Button type="submit" disabled={createWebhook.isPending}>
-                      {createWebhook.isPending ? 'Creating...' : 'Create Webhook'}
-                    </Button>
-                  </div>
-                </form>
-              )}
-            </DialogContent>
-          </Dialog>
+          <Button size="sm" disabled>
+            <Plus className="w-4 h-4 mr-2" />
+            Add Webhook (Coming Soon)
+          </Button>
         </CardHeader>
         <CardContent>
           {webhooksLoading ? (
@@ -403,9 +175,7 @@ const IntegrationsTab: React.FC = () => {
                     <div className="flex-1">
                       <div className="flex items-center space-x-2 mb-1">
                         <h4 className="font-medium text-gray-900 truncate">{webhook.url}</h4>
-                        <Badge variant={webhook.active ? 'default' : 'secondary'}>
-                          {webhook.active ? 'Active' : 'Inactive'}
-                        </Badge>
+                        <StatusBadge status={webhook.active ? 'active' : 'inactive'} />
                         {webhook.secret_set && (
                           <Badge variant="outline" className="text-xs">
                             <Shield className="w-3 h-3 mr-1" />
@@ -421,7 +191,7 @@ const IntegrationsTab: React.FC = () => {
                         ))}
                       </div>
                       <div className="text-sm text-gray-500">
-                        Created {new Date(webhook.created_at).toLocaleDateString()}
+                        Created {formatDate(webhook.created_at)}
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -434,37 +204,13 @@ const IntegrationsTab: React.FC = () => {
                         <TestTube className="w-4 h-4 mr-1" />
                         {testWebhook.isPending ? 'Testing...' : 'Test'}
                       </Button>
-                      <Dialog open={confirmDeleteWebhook === webhook.id} onOpenChange={(open) => !open && setConfirmDeleteWebhook(null)}>
-                        <DialogTrigger asChild>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => setConfirmDeleteWebhook(webhook.id)}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>Delete Webhook</DialogTitle>
-                            <DialogDescription>
-                              Are you sure you want to delete this webhook? This action cannot be undone.
-                            </DialogDescription>
-                          </DialogHeader>
-                          <div className="flex justify-end space-x-2">
-                            <Button variant="outline" onClick={() => setConfirmDeleteWebhook(null)}>
-                              Cancel
-                            </Button>
-                            <Button 
-                              variant="destructive" 
-                              onClick={() => onDeleteWebhook(webhook.id, webhook.url)}
-                              disabled={deleteWebhook.isPending}
-                            >
-                              {deleteWebhook.isPending ? 'Deleting...' : 'Delete'}
-                            </Button>
-                          </div>
-                        </DialogContent>
-                      </Dialog>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setConfirmDeleteWebhook(webhook.id)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
                     </div>
                   </div>
 
@@ -480,11 +226,6 @@ const IntegrationsTab: React.FC = () => {
                       }`}
                     >
                       <div className="flex items-center space-x-2">
-                        {testResults[webhook.id].status === 200 ? (
-                          <CheckCircle className="w-4 h-4" />
-                        ) : (
-                          <XCircle className="w-4 h-4" />
-                        )}
                         <span>
                           Status: {testResults[webhook.id].status} • 
                           Latency: {testResults[webhook.id].latency}ms
@@ -503,6 +244,35 @@ const IntegrationsTab: React.FC = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Confirmation Dialogs */}
+      <ConfirmationDialog
+        isOpen={!!confirmDeleteWebhook}
+        onClose={() => setConfirmDeleteWebhook(null)}
+        onConfirm={() => {
+          const webhook = webhooks?.find(w => w.id === confirmDeleteWebhook);
+          if (webhook) onDeleteWebhook(webhook.id, webhook.url);
+        }}
+        title="Delete Webhook"
+        description="Are you sure you want to delete this webhook? This action cannot be undone."
+        confirmText="Delete"
+        variant="destructive"
+        isLoading={deleteWebhook.isPending}
+      />
+
+      <ConfirmationDialog
+        isOpen={!!confirmDeleteDataSource}
+        onClose={() => setConfirmDeleteDataSource(null)}
+        onConfirm={() => {
+          const source = dataSources?.find(s => s.id === confirmDeleteDataSource);
+          if (source) onDeleteDataSource(source.id, source.name);
+        }}
+        title="Delete Data Source"
+        description="Are you sure you want to delete this data source? This will stop automated processing."
+        confirmText="Delete"
+        variant="destructive"
+        isLoading={deleteDataSource.isPending}
+      />
 
       {/* Connected Services */}
       <Card>
@@ -544,7 +314,7 @@ const IntegrationsTab: React.FC = () => {
                       <div className="text-sm text-gray-500">{service.description}</div>
                       {service.connected && service.last_sync && (
                         <div className="text-xs text-gray-400">
-                          Last sync: {new Date(service.last_sync).toLocaleDateString()}
+                          Last sync: {formatDate(service.last_sync)}
                         </div>
                       )}
                     </div>
@@ -552,7 +322,7 @@ const IntegrationsTab: React.FC = () => {
                   <div className="flex items-center space-x-2">
                     {service.connected ? (
                       <>
-                        <Badge variant="default" className="text-xs">Connected</Badge>
+                        <StatusBadge status="active" className="text-xs" />
                         <Button 
                           size="sm" 
                           variant="outline"
@@ -596,159 +366,10 @@ const IntegrationsTab: React.FC = () => {
               Configure data sources for automated document processing
             </CardDescription>
           </div>
-          <Dialog open={showNewDataSourceDialog} onOpenChange={setShowNewDataSourceDialog}>
-            <DialogTrigger asChild>
-              <Button size="sm">
-                <Plus className="w-4 h-4 mr-2" />
-                Add Source
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-lg">
-              <DialogHeader>
-                <DialogTitle>Add Data Source</DialogTitle>
-                <DialogDescription>
-                  Connect a new data source for automated processing
-                </DialogDescription>
-              </DialogHeader>
-              
-              <form onSubmit={handleDataSourceSubmit(onCreateDataSource)} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="ds_name">Source Name</Label>
-                  <Input
-                    id="ds_name"
-                    {...registerDataSource('name')}
-                    placeholder="My S3 Bucket"
-                  />
-                  {dataSourceErrors.name && (
-                    <p className="text-sm text-red-600">{dataSourceErrors.name.message}</p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="ds_type">Type</Label>
-                  <select
-                    id="ds_type"
-                    {...registerDataSource('type')}
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                  >
-                    <option value="s3">Amazon S3</option>
-                    <option value="gcs">Google Cloud Storage</option>
-                    <option value="azure">Azure Blob Storage</option>
-                    <option value="supabase">Supabase Storage</option>
-                  </select>
-                  {dataSourceErrors.type && (
-                    <p className="text-sm text-red-600">{dataSourceErrors.type.message}</p>
-                  )}
-                </div>
-
-                {/* Dynamic Configuration Fields */}
-                {watchedDataSourceType && (
-                  <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
-                    <h4 className="font-medium text-gray-900">Configuration</h4>
-                    
-                    {watchedDataSourceType === 's3' && (
-                      <div className="grid grid-cols-2 gap-3">
-                        <Input
-                          {...registerDataSource('config.bucket')}
-                          placeholder="Bucket name"
-                        />
-                        <Input
-                          {...registerDataSource('config.region')}
-                          placeholder="Region (e.g., us-east-1)"
-                        />
-                        <Input
-                          {...registerDataSource('config.access_key')}
-                          placeholder="Access key ID"
-                        />
-                        <Input
-                          type="password"
-                          {...registerDataSource('config.secret_key')}
-                          placeholder="Secret access key"
-                        />
-                        <div className="col-span-2">
-                          <Input
-                            {...registerDataSource('config.path_prefix')}
-                            placeholder="Path prefix (optional)"
-                          />
-                        </div>
-                      </div>
-                    )}
-
-                    {watchedDataSourceType === 'gcs' && (
-                      <div className="space-y-3">
-                        <Input
-                          {...registerDataSource('config.bucket')}
-                          placeholder="Bucket name"
-                        />
-                        <Input
-                          {...registerDataSource('config.project_id')}
-                          placeholder="Project ID"
-                        />
-                        <div>
-                          <Label>Service Account JSON</Label>
-                          <textarea
-                            {...registerDataSource('config.service_account')}
-                            placeholder="Paste service account JSON key"
-                            rows={3}
-                            className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none"
-                          />
-                        </div>
-                      </div>
-                    )}
-
-                    {watchedDataSourceType === 'azure' && (
-                      <div className="space-y-3">
-                        <Input
-                          {...registerDataSource('config.account_name')}
-                          placeholder="Storage account name"
-                        />
-                        <Input
-                          {...registerDataSource('config.container')}
-                          placeholder="Container name"
-                        />
-                        <Input
-                          type="password"
-                          {...registerDataSource('config.account_key')}
-                          placeholder="Account key"
-                        />
-                      </div>
-                    )}
-
-                    {watchedDataSourceType === 'supabase' && (
-                      <div className="space-y-3">
-                        <Input
-                          {...registerDataSource('config.project_url')}
-                          placeholder="Project URL"
-                        />
-                        <Input
-                          {...registerDataSource('config.bucket')}
-                          placeholder="Bucket name"
-                        />
-                        <Input
-                          type="password"
-                          {...registerDataSource('config.service_key')}
-                          placeholder="Service role key"
-                        />
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                <div className="flex justify-end space-x-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setShowNewDataSourceDialog(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button type="submit" disabled={createDataSource.isPending}>
-                    {createDataSource.isPending ? 'Adding...' : 'Add Source'}
-                  </Button>
-                </div>
-              </form>
-            </DialogContent>
-          </Dialog>
+          <Button size="sm" disabled>
+            <Plus className="w-4 h-4 mr-2" />
+            Add Source (Coming Soon)
+          </Button>
         </CardHeader>
         <CardContent>
           {dataSourcesLoading ? (
@@ -782,17 +403,12 @@ const IntegrationsTab: React.FC = () => {
                     <div>
                       <div className="flex items-center space-x-2">
                         <span className="font-medium text-gray-900">{source.name}</span>
-                        <Badge 
-                          variant={source.status === 'active' ? 'default' : source.status === 'error' ? 'destructive' : 'secondary'}
-                          className="text-xs"
-                        >
-                          {source.status}
-                        </Badge>
+                        <StatusBadge status={source.status as any} className="text-xs" />
                       </div>
                       <div className="text-sm text-gray-500 capitalize">{source.type}</div>
                       {source.last_sync && (
                         <div className="text-xs text-gray-400">
-                          Last sync: {new Date(source.last_sync).toLocaleDateString()}
+                          Last sync: {formatDate(source.last_sync)}
                         </div>
                       )}
                     </div>
@@ -807,37 +423,13 @@ const IntegrationsTab: React.FC = () => {
                       <TestTube className="w-4 h-4 mr-1" />
                       Test
                     </Button>
-                    <Dialog open={confirmDeleteDataSource === source.id} onOpenChange={(open) => !open && setConfirmDeleteDataSource(null)}>
-                      <DialogTrigger asChild>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => setConfirmDeleteDataSource(source.id)}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Delete Data Source</DialogTitle>
-                          <DialogDescription>
-                            Are you sure you want to delete "{source.name}"? This will stop automated processing from this source.
-                          </DialogDescription>
-                        </DialogHeader>
-                        <div className="flex justify-end space-x-2">
-                          <Button variant="outline" onClick={() => setConfirmDeleteDataSource(null)}>
-                            Cancel
-                          </Button>
-                          <Button 
-                            variant="destructive" 
-                            onClick={() => onDeleteDataSource(source.id, source.name)}
-                            disabled={deleteDataSource.isPending}
-                          >
-                            {deleteDataSource.isPending ? 'Deleting...' : 'Delete'}
-                          </Button>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setConfirmDeleteDataSource(source.id)}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
                   </div>
                 </div>
               ))}

@@ -1,10 +1,12 @@
 import React, { useCallback, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Upload, FileText, AlertCircle, CheckCircle, X } from 'lucide-react';
+import { Upload, FileText, AlertCircle, CheckCircle } from 'lucide-react';
 
 import { getErrorMessage } from '@/lib/api';
 import Button from '@/shared/components/forms/Button';
+import { formatBytes } from '@/shared/utils';
 import { useFileUpload } from '@/shared/hooks/api/useUploads';
+import { useSubmitParseJob } from '@/shared/hooks/api/useJobs';
 
 interface FileUploadZoneProps {
   onJobSubmitted?: (jobId: string) => void;
@@ -107,8 +109,7 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
 
           {uploadProgress.bytesUploaded && uploadProgress.totalBytes && (
             <p className="text-sm text-gray-500">
-              {(uploadProgress.bytesUploaded / 1024 / 1024).toFixed(1)} MB of{' '}
-              {(uploadProgress.totalBytes / 1024 / 1024).toFixed(1)} MB
+              {formatBytes(uploadProgress.bytesUploaded)} of {formatBytes(uploadProgress.totalBytes)}
             </p>
           )}
         </div>

@@ -1,24 +1,17 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useParams, useNavigate } from 'react-router-dom';
-import { 
-  ArrowLeft, 
-  Clock, 
-  CheckCircle, 
-  XCircle, 
-  AlertTriangle,
-  Download,
-  RefreshCw,
-  Trash2,
-  FileText,
-  Database
-} from 'lucide-react';
+import { ArrowLeft, Download, RefreshCw, XCircle, FileText, Database } from 'lucide-react';
 
 import { getErrorMessage, isApiError } from '@/lib/api';
 import Button from '@/shared/components/forms/Button';
 import Layout from '@/shared/components/layout/templates/Layout';
 import LoadingSpinner from '@/shared/components/forms/LoadingSpinner';
+import StatusIcon from '@/shared/components/ui/status-icon';
+import StatusBadge from '@/shared/components/ui/status-badge';
+import { formatDate, formatJobType, formatBytes } from '@/shared/utils';
 import { useJob, useCancelJob } from '@/shared/hooks/api/useJobs';
+import { useDocument, useDocumentDownload } from '@/shared/hooks/api/useDocuments';
 
 const JobDetailPage: React.FC = () => {
   const { jobId } = useParams<{ jobId: string }>();
@@ -50,38 +43,6 @@ const JobDetailPage: React.FC = () => {
     }
   };
 
-  const getStatusIcon = () => {
-    if (!job) return <Clock className="w-5 h-5" />;
-    
-    switch (job.status) {
-      case 'completed':
-        return <CheckCircle className="w-5 h-5 text-green-600" />;
-      case 'failed':
-      case 'cancelled':
-        return <XCircle className="w-5 h-5 text-red-600" />;
-      case 'processing':
-        return <RefreshCw className="w-5 h-5 text-blue-600 animate-spin" />;
-      default:
-        return <Clock className="w-5 h-5 text-yellow-600" />;
-    }
-  };
-
-  const getStatusColor = () => {
-    if (!job) return 'bg-gray-100 text-gray-800';
-    
-    switch (job.status) {
-      case 'completed':
-        return 'bg-green-100 text-green-800';
-      case 'failed':
-      case 'cancelled':
-        return 'bg-red-100 text-red-800';
-      case 'processing':
-        return 'bg-blue-100 text-blue-800';
-      default:
-        return 'bg-yellow-100 text-yellow-800';
-    }
-  };
-
   if (isLoading) {
     return (
       <Layout>
@@ -101,7 +62,7 @@ const JobDetailPage: React.FC = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="bg-red-50 border border-red-200 rounded-lg p-6">
             <div className="flex items-center">
-              <AlertTriangle className="w-5 h-5 text-red-600 mr-2" />
+              <StatusIcon status="failed" className="mr-2" />
               <span className="text-red-800">
                 {error ? getErrorMessage(error) : 'Job not found'}
               </span>
@@ -144,10 +105,10 @@ const JobDetailPage: React.FC = () => {
             </div>
             
             <div className="flex items-center space-x-3">
-              <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor()}`}>
-                {getStatusIcon()}
-                <span className="ml-2 capitalize">{job.status}</span>
-              </span>
+              <div className="flex items-center space-x-2">
+                <StatusIcon status={job.status as any} />
+                <StatusBadge status={job.status as any} />
+              </div>
             </div>
           </div>
         </div>
@@ -228,7 +189,7 @@ const JobDetailPage: React.FC = () => {
                   <div className="text-sm text-gray-600">
                     <p><strong>Result Reference:</strong> {job.resultRef}</p>
                     {job.completedAt && (
-                      <p><strong>Completed:</strong> {new Date(job.completedAt).toLocaleString()}</p>
+                      <p><strong>Completed:</strong> {formatDate(job.completedAt)}</p>
                     )}
                   </div>
                 </div>
@@ -255,7 +216,7 @@ const JobDetailPage: React.FC = () => {
                 
                 <div>
                   <dt className="text-gray-600">Type</dt>
-                  <dd className="text-gray-900 capitalize">{job.type.replace('_', ' ')}</dd>
+                  <dd className="text-gray-900">{formatJobType(job.type)}</dd>
                 </div>
                 
                 <div>
@@ -265,13 +226,13 @@ const JobDetailPage: React.FC = () => {
                 
                 <div>
                   <dt className="text-gray-600">Created</dt>
-                  <dd className="text-gray-900">{new Date(job.createdAt).toLocaleString()}</dd>
+                  <dd className="text-gray-900">{formatDate(job.createdAt)}</dd>
                 </div>
                 
                 {job.startedAt && (
                   <div>
                     <dt className="text-gray-600">Started</dt>
-                    <dd className="text-gray-900">{new Date(job.startedAt).toLocaleString()}</dd>
+                    <dd className="text-gray-900">{formatDate(job.startedAt)}</dd>
                   </div>
                 )}
                 
@@ -298,7 +259,7 @@ const JobDetailPage: React.FC = () => {
                     <p className="font-medium text-gray-900">{document.name}</p>
                     <p className="text-sm text-gray-600">{document.originalName}</p>
                     <p className="text-sm text-gray-500">
-                      {(document.size / 1024 / 1024).toFixed(2)} MB • {document.mimeType}
+                      {formatBytes(document.size)} • {document.mimeType}
                     </p>
                   </div>
                 </div>

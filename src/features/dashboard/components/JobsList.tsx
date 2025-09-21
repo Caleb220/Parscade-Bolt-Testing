@@ -1,18 +1,14 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { 
-  FileText, 
-  Clock, 
-  CheckCircle, 
-  XCircle, 
-  AlertTriangle,
-  ChevronRight
-} from 'lucide-react';
+import { FileText, AlertTriangle, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import { getErrorMessage } from '@/lib/api';
 import Button from '@/shared/components/forms/Button';
 import LoadingSpinner from '@/shared/components/forms/LoadingSpinner';
+import StatusIcon from '@/shared/components/ui/status-icon';
+import StatusBadge from '@/shared/components/ui/status-badge';
+import { formatDate, formatJobType } from '@/shared/utils';
 import { useJobs } from '@/shared/hooks/api/useJobs';
 
 const JobsList: React.FC = () => {
@@ -21,34 +17,6 @@ const JobsList: React.FC = () => {
     page: 1, 
     limit: 10 
   });
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return <CheckCircle className="w-4 h-4 text-green-600" />;
-      case 'failed':
-      case 'cancelled':
-        return <XCircle className="w-4 h-4 text-red-600" />;
-      case 'processing':
-        return <Clock className="w-4 h-4 text-blue-600" />;
-      default:
-        return <Clock className="w-4 h-4 text-yellow-600" />;
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return 'bg-green-100 text-green-800';
-      case 'failed':
-      case 'cancelled':
-        return 'bg-red-100 text-red-800';
-      case 'processing':
-        return 'bg-blue-100 text-blue-800';
-      default:
-        return 'bg-yellow-100 text-yellow-800';
-    }
-  };
 
   if (error) {
     return (
@@ -96,15 +64,15 @@ const JobsList: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-start space-x-3 flex-1">
                   <div className="flex-shrink-0 mt-1">
-                    {getStatusIcon(job.status)}
+                    <StatusIcon status={job.status as any} size="sm" />
                   </div>
                   
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-gray-900 truncate">
-                      {job.type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                      {formatJobType(job.type)}
                     </p>
                     <p className="text-sm text-gray-600 truncate">
-                      Created {new Date(job.createdAt).toLocaleDateString()}
+                      Created {formatDate(job.createdAt)}
                     </p>
                     {job.status === 'processing' && (
                       <div className="flex items-center mt-1">
@@ -121,9 +89,7 @@ const JobsList: React.FC = () => {
                 </div>
 
                 <div className="flex items-center space-x-3">
-                  <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(job.status)}`}>
-                    {job.status}
-                  </span>
+                  <StatusBadge status={job.status as any} className="text-xs" />
                   <ChevronRight className="w-4 h-4 text-gray-400" />
                 </div>
               </div>

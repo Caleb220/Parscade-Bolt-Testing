@@ -17,8 +17,6 @@ import {
   Smartphone, 
   Monitor,
   Shield,
-  AlertTriangle,
-  CheckCircle,
   RefreshCw,
   AlertCircle as AlertIcon
 } from 'lucide-react';
@@ -30,9 +28,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/sha
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Badge } from '@/shared/components/ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/shared/components/ui/dialog';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { useToast } from '@/shared/components/ui/use-toast';
+import ConfirmationDialog from '@/shared/components/ui/confirmation-dialog';
+import StatusBadge from '@/shared/components/ui/status-badge';
+import { useClipboard, formatUserAgent, formatDate } from '@/shared/utils';
 import { 
   useApiKeys, 
   useCreateApiKey, 
@@ -44,7 +44,7 @@ import {
 
 const SecurityTab: React.FC = () => {
   const { user } = useAccountContext();
-  const { toast } = useToast();
+  const { copy } = useClipboard();
   
   const { data: apiKeys, isLoading: keysLoading, error: keysError, refetch: refetchKeys } = useApiKeys();
   const { data: sessions, isLoading: sessionsLoading, error: sessionsError } = useSessions();
@@ -54,62 +54,16 @@ const SecurityTab: React.FC = () => {
   const revokeApiKey = useRevokeApiKey();
   const revokeSession = useRevokeSession();
 
-  const [showNewKeyDialog, setShowNewKeyDialog] = useState(false);
-  const [newKeyResult, setNewKeyResult] = useState<{ key: string; name: string } | null>(null);
   const [visibleKeys, setVisibleKeys] = useState<Set<string>>(new Set());
   const [confirmRevokeKey, setConfirmRevokeKey] = useState<string | null>(null);
   const [confirmRevokeSession, setConfirmRevokeSession] = useState<string | null>(null);
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-    watch,
-  } = useForm<ApiKeyFormData>({
-    resolver: zodResolver(apiKeySchema),
-    defaultValues: {
-      name: '',
-      scopes: ['read'],
-    },
-  });
-
-  const watchedScopes = watch('scopes');
-
-  const onCreateApiKey = async (data: ApiKeyFormData) => {
-    try {
-      const result = await createApiKey.mutateAsync(data);
-      setNewKeyResult({ key: result.key, name: result.name });
-      reset();
-      
-      toast({
-        title: 'API key created',
-        description: `Your new API key "${result.name}" has been created successfully.`,
-      });
-    } catch (error) {
-      toast({
-        title: 'Creation failed',
-        description: getErrorMessage(error),
-        variant: 'destructive',
-      });
-    }
-  };
 
   const handleRevokeApiKey = async (keyId: string, keyName: string) => {
     try {
       await revokeApiKey.mutateAsync(keyId);
       setConfirmRevokeKey(null);
-      
-      toast({
-        title: 'API key revoked',
-        description: `API key "${keyName}" has been revoked successfully.`,
-      });
     } catch (error) {
-      toast({
-        title: 'Revocation failed',
-        description: getErrorMessage(error),
-        variant: 'destructive',
-      });
+      // Error handled by mutation
     }
   };
 
@@ -117,33 +71,8 @@ const SecurityTab: React.FC = () => {
     try {
       await revokeSession.mutateAsync(sessionId);
       setConfirmRevokeSession(null);
-      
-      toast({
-        title: 'Session revoked',
-        description: 'The session has been revoked successfully.',
-      });
     } catch (error) {
-      toast({
-        title: 'Revocation failed',
-        description: getErrorMessage(error),
-        variant: 'destructive',
-      });
-    }
-  };
-
-  const copyToClipboard = async (text: string, description: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      toast({
-        title: 'Copied',
-        description: `${description} copied to clipboard.`,
-      });
-    } catch (error) {
-      toast({
-        title: 'Copy failed',
-        description: 'Unable to copy to clipboard. Please copy manually.',
-        variant: 'destructive',
-      });
+      // Error handled by mutation
     }
   };
 
@@ -155,15 +84,6 @@ const SecurityTab: React.FC = () => {
       newVisible.add(keyId);
     }
     setVisibleKeys(newVisible);
-  };
-
-  const formatUserAgent = (userAgent: string): string => {
-    if (userAgent.includes('Chrome')) return 'Chrome';
-    if (userAgent.includes('Firefox')) return 'Firefox';
-    if (userAgent.includes('Safari') && !userAgent.includes('Chrome')) return 'Safari';
-    if (userAgent.includes('Edge')) return 'Edge';
-    if (userAgent.includes('Mobile')) return 'Mobile Browser';
-    return 'Unknown Browser';
   };
 
   return (
@@ -184,115 +104,10 @@ const SecurityTab: React.FC = () => {
               Manage your API keys for programmatic access to Parscade
             </CardDescription>
           </div>
-          <Dialog open={showNewKeyDialog} onOpenChange={setShowNewKeyDialog}>
-            <DialogTrigger asChild>
-              <Button size="sm">
-                <Plus className="w-4 h-4 mr-2" />
-                New Key
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-md">
-              <DialogHeader>
-                <DialogTitle>Create API Key</DialogTitle>
-                <DialogDescription>
-                  Create a new API key for accessing Parscade programmatically
-                </DialogDescription>
-              </DialogHeader>
-              
-              {newKeyResult ? (
-                <div className="space-y-4">
-                  <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                    <div className="flex items-center mb-2">
-                      <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
-                      <span className="font-medium text-green-900">API Key Created</span>
-                    </div>
-                    <p className="text-sm text-green-700 mb-3">
-                      Copy this key now - it won't be shown again for security reasons.
-                    </p>
-                    <div className="space-y-2">
-                      <Label>Key Name: {newKeyResult.name}</Label>
-                      <div className="flex items-center space-x-2">
-                        <Input 
-                          value={newKeyResult.key} 
-                          readOnly 
-                          className="font-mono text-sm" 
-                        />
-                        <Button
-                          size="sm"
-                          onClick={() => copyToClipboard(newKeyResult.key, 'API key')}
-                        >
-                          <Copy className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                  <Button
-                    onClick={() => {
-                      setNewKeyResult(null);
-                      setShowNewKeyDialog(false);
-                    }}
-                    className="w-full"
-                  >
-                    Done
-                  </Button>
-                </div>
-              ) : (
-                <form onSubmit={handleSubmit(onCreateApiKey)} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="key_name">Key Name</Label>
-                    <Input
-                      id="key_name"
-                      {...register('name')}
-                      placeholder="Production API, Development, etc."
-                    />
-                    {errors.name && (
-                      <p className="text-sm text-red-600">{errors.name.message}</p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Scopes</Label>
-                    <div className="space-y-2">
-                      {[
-                        { value: 'read', label: 'Read', description: 'View documents and data' },
-                        { value: 'write', label: 'Write', description: 'Create and update data' },
-                        { value: 'admin', label: 'Admin', description: 'Full administrative access' },
-                      ].map((scope) => (
-                        <label key={scope.value} className="flex items-start space-x-2">
-                          <input
-                            type="checkbox"
-                            value={scope.value}
-                            {...register('scopes')}
-                            className="rounded border-gray-300 mt-1"
-                          />
-                          <div className="flex-1">
-                            <span className="text-sm font-medium">{scope.label}</span>
-                            <p className="text-xs text-gray-500">{scope.description}</p>
-                          </div>
-                        </label>
-                      ))}
-                    </div>
-                    {errors.scopes && (
-                      <p className="text-sm text-red-600">{errors.scopes.message}</p>
-                    )}
-                  </div>
-
-                  <div className="flex justify-end space-x-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setShowNewKeyDialog(false)}
-                    >
-                      Cancel
-                    </Button>
-                    <Button type="submit" disabled={createApiKey.isPending}>
-                      {createApiKey.isPending ? 'Creating...' : 'Create Key'}
-                    </Button>
-                  </div>
-                </form>
-              )}
-            </DialogContent>
-          </Dialog>
+          <Button size="sm" disabled>
+            <Plus className="w-4 h-4 mr-2" />
+            New Key (Coming Soon)
+          </Button>
         </CardHeader>
         <CardContent>
           {keysLoading ? (
@@ -335,9 +150,9 @@ const SecurityTab: React.FC = () => {
                       </div>
                     </div>
                     <div className="flex items-center space-x-4 text-sm text-gray-500">
-                      <span>Created {new Date(key.created_at).toLocaleDateString()}</span>
+                      <span>Created {formatDate(key.created_at)}</span>
                       {key.last_used_at && (
-                        <span>Last used {new Date(key.last_used_at).toLocaleDateString()}</span>
+                        <span>Last used {formatDate(key.last_used_at)}</span>
                       )}
                     </div>
                     {key.preview && (
@@ -358,7 +173,7 @@ const SecurityTab: React.FC = () => {
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => copyToClipboard(key.preview!, 'API key preview')}
+                            onClick={() => copy(key.preview!, 'API key preview')}
                           >
                             <Copy className="w-4 h-4" />
                           </Button>
@@ -366,44 +181,48 @@ const SecurityTab: React.FC = () => {
                       </div>
                     )}
                   </div>
-                  <Dialog open={confirmRevokeKey === key.id} onOpenChange={(open) => !open && setConfirmRevokeKey(null)}>
-                    <DialogTrigger asChild>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => setConfirmRevokeKey(key.id)}
-                        disabled={revokeApiKey.isPending}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Revoke API Key</DialogTitle>
-                        <DialogDescription>
-                          Are you sure you want to revoke the API key "{key.name}"? This action cannot be undone.
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="flex justify-end space-x-2">
-                        <Button variant="outline" onClick={() => setConfirmRevokeKey(null)}>
-                          Cancel
-                        </Button>
-                        <Button 
-                          variant="destructive" 
-                          onClick={() => handleRevokeApiKey(key.id, key.name)}
-                          disabled={revokeApiKey.isPending}
-                        >
-                          {revokeApiKey.isPending ? 'Revoking...' : 'Revoke Key'}
-                        </Button>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setConfirmRevokeKey(key.id)}
+                    disabled={revokeApiKey.isPending}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
                 </div>
               ))}
             </div>
           )}
         </CardContent>
       </Card>
+
+      {/* Confirmation Dialogs */}
+      <ConfirmationDialog
+        isOpen={!!confirmRevokeKey}
+        onClose={() => setConfirmRevokeKey(null)}
+        onConfirm={() => {
+          const key = apiKeys?.find(k => k.id === confirmRevokeKey);
+          if (key) handleRevokeApiKey(key.id, key.name);
+        }}
+        title="Revoke API Key"
+        description="Are you sure you want to revoke this API key? This action cannot be undone."
+        confirmText="Revoke Key"
+        variant="destructive"
+        isLoading={revokeApiKey.isPending}
+      />
+
+      <ConfirmationDialog
+        isOpen={!!confirmRevokeSession}
+        onClose={() => setConfirmRevokeSession(null)}
+        onConfirm={() => {
+          if (confirmRevokeSession) handleRevokeSession(confirmRevokeSession);
+        }}
+        title="Revoke Session"
+        description="Are you sure you want to revoke this session? The user will be signed out from that device."
+        confirmText="Revoke Session"
+        variant="destructive"
+        isLoading={revokeSession.isPending}
+      />
 
       {/* Active Sessions */}
       <Card>
@@ -454,47 +273,23 @@ const SecurityTab: React.FC = () => {
                           {formatUserAgent(session.user_agent)}
                         </span>
                         {session.is_current && (
-                          <Badge variant="default" className="text-xs">Current</Badge>
+                          <StatusBadge status="active" className="text-xs" />
                         )}
                       </div>
                       <div className="text-sm text-gray-500">
-                        {session.ip_address} • Last seen {new Date(session.last_seen).toLocaleString()}
+                        {session.ip_address} • Last seen {formatDate(session.last_seen)}
                       </div>
                     </div>
                   </div>
                   {!session.is_current && (
-                    <Dialog open={confirmRevokeSession === session.id} onOpenChange={(open) => !open && setConfirmRevokeSession(null)}>
-                      <DialogTrigger asChild>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => setConfirmRevokeSession(session.id)}
-                          disabled={revokeSession.isPending}
-                        >
-                          Revoke
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Revoke Session</DialogTitle>
-                          <DialogDescription>
-                            Are you sure you want to revoke this session? The user will be signed out from that device.
-                          </DialogDescription>
-                        </DialogHeader>
-                        <div className="flex justify-end space-x-2">
-                          <Button variant="outline" onClick={() => setConfirmRevokeSession(null)}>
-                            Cancel
-                          </Button>
-                          <Button 
-                            variant="destructive" 
-                            onClick={() => handleRevokeSession(session.id)}
-                            disabled={revokeSession.isPending}
-                          >
-                            {revokeSession.isPending ? 'Revoking...' : 'Revoke Session'}
-                          </Button>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setConfirmRevokeSession(session.id)}
+                      disabled={revokeSession.isPending}
+                    >
+                      Revoke
+                    </Button>
                   )}
                 </div>
               ))}
@@ -545,7 +340,7 @@ const SecurityTab: React.FC = () => {
                     </p>
                     <p className="text-sm text-gray-600">{event.description}</p>
                     <div className="flex items-center space-x-2 mt-1 text-xs text-gray-500">
-                      <span>{new Date(event.created_at).toLocaleString()}</span>
+                      <span>{formatDate(event.created_at)}</span>
                       {event.ip_address && <span>• {event.ip_address}</span>}
                     </div>
                   </div>
