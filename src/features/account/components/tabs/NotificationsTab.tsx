@@ -35,7 +35,6 @@ const NotificationsTab: React.FC = () => {
     reset,
     watch,
     setValue,
-    trigger,
   } = useForm<NotificationPreferencesFormData>({
     resolver: zodResolver(notificationPreferencesSchema),
     defaultValues: {
@@ -64,23 +63,9 @@ const NotificationsTab: React.FC = () => {
   React.useEffect(() => {
     if (prefs) {
       reset({
-        channels: prefs.channels || {
-          email: true,
-          in_app: true,
-          webhook: false,
-        },
-        categories: prefs.categories || {
-          product: 'immediate',
-          billing: 'immediate',
-          incidents: 'immediate',
-          jobs: 'immediate',
-          digest: 'daily',
-        },
-        dnd_settings: prefs.dnd_settings || {
-          start: '22:00',
-          end: '08:00',
-          timezone: 'UTC',
-        },
+        channels: prefs.channels,
+        categories: prefs.categories,
+        dnd_settings: prefs.dnd_settings,
         webhook_url: prefs.webhook_url || '',
       });
     }
@@ -88,43 +73,11 @@ const NotificationsTab: React.FC = () => {
 
   const watchedChannels = watch('channels');
   const watchedDndSettings = watch('dnd_settings');
-  const watchedCategories = watch('categories');
-  const watchedWebhookUrl = watch('webhook_url');
 
-  // Handle switch changes with proper form state updates
-  const handleChannelChange = async (channel: 'email' | 'in_app' | 'webhook', checked: boolean) => {
-    setValue(`channels.${channel}`, checked, { shouldDirty: true });
-    await trigger(`channels.${channel}`);
-  };
-
-  // Handle category changes with proper form state updates
-  const handleCategoryChange = async (category: keyof typeof watchedCategories, value: 'off' | 'immediate' | 'daily') => {
-    setValue(`categories.${category}`, value, { shouldDirty: true });
-    await trigger(`categories.${category}`);
-  };
-
-  // Handle DND changes with proper form state updates
-  const handleDndChange = async (field: 'start' | 'end' | 'timezone', value: string) => {
-    setValue(`dnd_settings.${field}`, value, { shouldDirty: true });
-    await trigger(`dnd_settings.${field}`);
-  };
-
-  // Handle webhook URL changes
-  const handleWebhookUrlChange = async (value: string) => {
-    setValue('webhook_url', value, { shouldDirty: true });
-    await trigger('webhook_url');
-  };
 
   const onSubmit = async (data: NotificationPreferencesFormData) => {
     try {
-      // Clean up webhook_url if webhook channel is disabled
-      const cleanedData = {
-        ...data,
-        webhook_url: data.channels?.webhook ? data.webhook_url : null,
-        dnd_settings: data.dnd_settings?.start && data.dnd_settings?.end ? data.dnd_settings : null,
-      };
-
-      await updatePrefs.mutateAsync(cleanedData);
+      await updatePrefs.mutateAsync(data);
       
       toast({
         title: 'Preferences saved',
@@ -210,7 +163,7 @@ const NotificationsTab: React.FC = () => {
               </div>
               <Switch
                 checked={watchedChannels?.email || false}
-                onCheckedChange={(checked) => handleChannelChange('email', checked)}
+                onCheckedChange={(checked) => setValue('channels.email', checked, { shouldDirty: true })}
               />
             </div>
 
@@ -224,7 +177,7 @@ const NotificationsTab: React.FC = () => {
               </div>
               <Switch
                 checked={watchedChannels?.in_app || false}
-                onCheckedChange={(checked) => handleChannelChange('in_app', checked)}
+                onCheckedChange={(checked) => setValue('channels.in_app', checked, { shouldDirty: true })}
               />
             </div>
 
@@ -238,7 +191,7 @@ const NotificationsTab: React.FC = () => {
               </div>
               <Switch
                 checked={watchedChannels?.webhook || false}
-                onCheckedChange={(checked) => handleChannelChange('webhook', checked)}
+                onCheckedChange={(checked) => setValue('channels.webhook', checked, { shouldDirty: true })}
               />
             </div>
 
@@ -252,13 +205,9 @@ const NotificationsTab: React.FC = () => {
                 <Label htmlFor="webhook_url">Webhook URL</Label>
                 <Input
                   id="webhook_url"
-                  value={watchedWebhookUrl || ''}
+                  {...register('webhook_url')}
                   placeholder="https://your-app.com/webhooks/notifications"
                   className="px-3"
-                  onChange={(e) => {
-                    setValue('webhook_url', e.target.value, { shouldDirty: true });
-                    trigger('webhook_url');
-                  }}
                 />
                 {errors.webhook_url && (
                   <p className="text-sm text-red-600">{errors.webhook_url.message}</p>
@@ -298,8 +247,7 @@ const NotificationsTab: React.FC = () => {
                       <input
                         type="radio"
                         value={frequency}
-                        checked={watchedCategories?.[key] === frequency}
-                        onChange={() => handleCategoryChange(key, frequency)}
+                        {...register(`categories.${key}`)}
                         className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                       />
                       <span className="text-sm capitalize whitespace-nowrap">{frequency}</span>
@@ -329,8 +277,7 @@ const NotificationsTab: React.FC = () => {
                 <Input
                   id="dnd_start"
                   type="time"
-                  value={watchedDndSettings?.start || '22:00'}
-                  onChange={(e) => handleDndChange('start', e.target.value)}
+                  {...register('dnd_settings.start')}
                   className="px-3"
                 />
                 {errors.dnd_settings?.start && (
@@ -343,8 +290,7 @@ const NotificationsTab: React.FC = () => {
                 <Input
                   id="dnd_end"
                   type="time"
-                  value={watchedDndSettings?.end || '08:00'}
-                  onChange={(e) => handleDndChange('end', e.target.value)}
+                  {...register('dnd_settings.end')}
                   className="px-3"
                 />
                 {errors.dnd_settings?.end && (
@@ -356,8 +302,7 @@ const NotificationsTab: React.FC = () => {
                 <Label htmlFor="dnd_timezone">Timezone</Label>
                 <select
                   id="dnd_timezone"
-                  value={watchedDndSettings?.timezone || 'UTC'}
-                  onChange={(e) => handleDndChange('timezone', e.target.value)}
+                  {...register('dnd_settings.timezone')}
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 >
                   <option value="UTC">UTC</option>

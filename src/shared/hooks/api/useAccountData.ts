@@ -300,20 +300,33 @@ export const useUpdateNotificationPreferences = () => {
   const { toast } = useToast();
   
   return useMutation({
-    mutationFn: (data: NotificationPreferencesUpdate) => notificationsApi.updatePreferences(data),
+    mutationFn: (data: NotificationPreferencesFormData) => {
+      // Transform form data to match backend schema
+      const backendData: NotificationPreferencesUpdate = {
+        channels: data.channels,
+        categories: data.categories,
+        dnd_settings: data.dnd_settings,
+        webhook_url: data.channels?.webhook ? data.webhook_url || null : null,
+      };
+      return notificationsApi.updatePreferences(backendData);
+    },
     onMutate: async (newData) => {
       await queryClient.cancelQueries({ queryKey: QUERY_KEYS.notificationPreferences });
       
       const previousData = queryClient.getQueryData<NotificationPreferences>(QUERY_KEYS.notificationPreferences);
       
       if (previousData) {
+        // Transform form data for optimistic update
+        const optimisticData: NotificationPreferences = {
+          channels: newData.channels || previousData.channels,
+          categories: newData.categories || previousData.categories,
+          dnd_settings: newData.dnd_settings || previousData.dnd_settings,
+          webhook_url: newData.channels?.webhook ? (newData.webhook_url || null) : null,
+        };
+        
         queryClient.setQueryData<NotificationPreferences>(QUERY_KEYS.notificationPreferences, {
           ...previousData,
-          ...newData,
-          // Merge nested objects properly
-          channels: newData.channels ? { ...previousData.channels, ...newData.channels } : previousData.channels,
-          categories: newData.categories ? { ...previousData.categories, ...newData.categories } : previousData.categories,
-          dnd_settings: newData.dnd_settings !== undefined ? newData.dnd_settings : previousData.dnd_settings,
+          ...optimisticData,
         });
       }
       

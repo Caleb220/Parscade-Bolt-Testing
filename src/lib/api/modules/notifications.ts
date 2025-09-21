@@ -56,22 +56,6 @@ export const notificationsApi = {
    * Update notification preferences
    */
   async updatePreferences(updates: NotificationPreferencesUpdate): Promise<NotificationPreferences> {
-    try {
-      return await apiClient.put<UpdateNotificationPreferencesResponse>('/v1/notifications/preferences', updates);
-    } catch (error) {
-      // For now, simulate successful update by returning merged data
-      console.warn('Notification preferences update endpoint not available, simulating success');
-      
-      // Get current preferences
-      const current = await this.getPreferences();
-      
-      // Merge updates with current preferences
-      return {
-        channels: updates.channels ? { ...current.channels, ...updates.channels } : current.channels,
-        categories: updates.categories ? { ...current.categories, ...updates.categories } : current.categories,
-        dnd_settings: updates.dnd_settings !== undefined ? updates.dnd_settings : current.dnd_settings,
-        webhook_url: updates.webhook_url !== undefined ? updates.webhook_url : current.webhook_url,
-      };
-    }
+    return await apiClient.put<UpdateNotificationPreferencesResponse>('/v1/notifications/preferences', updates);
   },
 } as const;
