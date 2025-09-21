@@ -271,14 +271,16 @@ const SecurityTab: React.FC = () => {
                   className="flex items-center justify-between p-4 border border-gray-200 rounded-lg"
                 >
                   <div className="flex-1">
-                    <div className="flex items-center space-x-3 mb-3">
-                      <h4 className="font-bold text-lg text-gray-900">{key?.name || 'Unnamed Key'}</h4>
-                      <div className="flex space-x-2">
+                    <div className="flex items-start justify-between mb-3">
+                      <div>
+                        <h4 className="font-bold text-lg text-gray-900 mb-2">{key?.name || 'Unnamed Key'}</h4>
+                        <div className="flex space-x-2">
                         {(key?.scopes || []).map((scope) => (
-                          <Badge key={scope} variant="outline" className="text-xs border border-gray-300 px-2 py-1">
+                            <Badge key={scope} variant="outline" className="text-xs border border-gray-300 px-2 py-1 bg-gray-50">
                             {scope}
                           </Badge>
                         ))}
+                        </div>
                       </div>
                     </div>
                     <div className="flex items-center space-x-4 text-sm text-gray-500">
@@ -293,12 +295,13 @@ const SecurityTab: React.FC = () => {
                         readOnly
                         className="font-mono text-xs flex-1"
                       />
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-2 h-10">
                         <Button
                           size="sm"
                           variant="outline"
                           onClick={() => copy(key?.preview ? `...${key.preview}` : '', 'API key preview')}
                           disabled={!key?.preview}
+                          className="h-8"
                         >
                           <Copy className="w-4 h-4" />
                         </Button>
@@ -307,6 +310,7 @@ const SecurityTab: React.FC = () => {
                           variant="outline"
                           onClick={() => setConfirmRevokeKey(key?.id || '')}
                           disabled={revokeApiKey.isPending}
+                          className="h-8"
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
