@@ -6,6 +6,7 @@
 import React, { useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { motion } from 'framer-motion';
 import { Upload, Save, User, Building, Phone, Globe, Camera, AlertCircle, CheckCircle } from 'lucide-react';
 
