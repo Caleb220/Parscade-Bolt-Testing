@@ -30,7 +30,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   const { user } = useAuth();
 
   return (
-    <header className="bg-white border-b border-gray-200 shadow-sm">
+    <header className="bg-white/95 backdrop-blur-xl border-b border-gray-200/60 shadow-sm sticky top-0 z-30">
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Left Section */}
@@ -39,7 +39,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             <Button
               variant="ghost"
               size="sm"
-              className="lg:hidden"
+              className="lg:hidden hover:bg-gray-100/80 transition-colors duration-200"
               onClick={onMenuToggle}
             >
               <Menu className="w-5 h-5" />
@@ -49,17 +49,17 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             <div className="hidden sm:block">
               {title ? (
                 <div>
-                  <h1 className="text-xl font-semibold text-gray-900">{title}</h1>
+                  <h1 className="text-xl font-bold text-gray-900 tracking-tight">{title}</h1>
                   {subtitle && (
-                    <p className="text-sm text-gray-600">{subtitle}</p>
+                    <p className="text-sm text-gray-600 font-medium">{subtitle}</p>
                   )}
                 </div>
               ) : (
                 <div>
-                  <h1 className="text-xl font-semibold text-gray-900">
+                  <h1 className="text-xl font-bold text-gray-900 tracking-tight">
                     Welcome back{user?.user_metadata?.full_name ? `, ${user.user_metadata.full_name.split(' ')[0]}` : ''}
                   </h1>
-                  <p className="text-sm text-gray-600">Process documents with intelligent parsing</p>
+                  <p className="text-sm text-gray-600 font-medium">Process documents with intelligent parsing</p>
                 </div>
               )}
             </div>
@@ -73,15 +73,19 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <Input
                   placeholder="Search documents..."
-                  className="pl-10 w-64"
+                  className="pl-10 w-64 bg-gray-50/80 border-gray-200/60 focus:bg-white focus:border-blue-300 transition-all duration-200"
                 />
               </div>
             </div>
 
             {/* Notifications */}
-            <Button variant="ghost" size="sm" className="relative">
+            <Button variant="ghost" size="sm" className="relative hover:bg-gray-100/80 transition-colors duration-200">
               <Bell className="w-5 h-5" />
-              <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+              <motion.span 
+                className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              />
             </Button>
 
             {/* Custom Actions */}

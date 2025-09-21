@@ -60,43 +60,69 @@ const RecentActivity: React.FC = () => {
   };
 
   return (
-    <DashboardCard
-      title="Recent Activity"
-      description="Latest updates from your document processing"
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: 0.3 }}
+      className="bg-gradient-to-br from-white to-gray-50/30 rounded-2xl border border-gray-200/60 shadow-premium hover:shadow-premium-lg transition-all duration-300"
     >
+      <div className="p-6 border-b border-gray-200/60 bg-gradient-to-r from-purple-50/30 to-pink-50/30">
+        <h2 className="text-lg font-bold text-gray-900 tracking-tight">Recent Activity</h2>
+        <p className="text-gray-600 text-sm mt-1 font-medium">Latest updates from your document processing</p>
+      </div>
+      
+      <div className="p-6">
       {activities.length === 0 ? (
-        <EmptyState
-          icon={<Clock className="w-8 h-8 text-gray-400" />}
-          title="No recent activity"
-          description="Your recent document processing activity will appear here."
-        />
+          <div className="text-center py-8">
+            <motion.div
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200/50 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm"
+            >
+              <Clock className="w-8 h-8 text-gray-400" />
+            </motion.div>
+            <h3 className="text-lg font-bold text-gray-900 mb-2 tracking-tight">No recent activity</h3>
+            <p className="text-gray-600 font-medium">Your recent document processing activity will appear here.</p>
+          </div>
       ) : (
         <div className="space-y-4">
           {activities.map((activity) => (
-            <div
+              <motion.div
               key={activity.id}
-              className="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3, delay: 0.1 }}
+                whileHover={{ 
+                  x: 4,
+                  backgroundColor: "rgba(59, 130, 246, 0.02)",
+                  transition: { duration: 0.2 }
+                }}
+                className="flex items-start space-x-4 p-4 rounded-xl transition-all duration-200 hover:shadow-sm group cursor-pointer"
             >
-              <div className="flex-shrink-0 mt-1">
+                <motion.div 
+                  className="flex-shrink-0 mt-1 w-8 h-8 bg-gradient-to-br from-gray-100 to-gray-200/50 rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-all duration-200"
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                >
                 {getActivityIcon(activity.type)}
-              </div>
+                </motion.div>
               
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900">
+                  <p className="text-sm font-bold text-gray-900 group-hover:text-blue-700 transition-colors duration-200">
                   {activity.title}
                 </p>
-                <p className="text-sm text-gray-600 truncate">
+                  <p className="text-sm text-gray-600 truncate font-medium">
                   {activity.description}
                 </p>
-                <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-gray-500 mt-1 font-medium">
                   {activity.timestamp}
                 </p>
               </div>
-            </div>
+              </motion.div>
           ))}
         </div>
       )}
-    </DashboardCard>
+      </div>
+    </motion.div>
   );
 };
 

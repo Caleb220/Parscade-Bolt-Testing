@@ -55,11 +55,11 @@ const DashboardSidebar: React.FC = () => {
   };
 
   return (
-    <aside className={`hidden lg:flex flex-col bg-white border-r border-gray-200 transition-all duration-300 ${
+    <aside className={`hidden lg:flex flex-col bg-white/95 backdrop-blur-xl border-r border-gray-200/60 shadow-premium transition-all duration-300 ${
       isCollapsed ? 'w-16' : 'w-64'
     }`}>
       {/* Logo */}
-      <div className="p-6 border-b border-gray-200">
+      <div className="p-6 border-b border-gray-200/60">
         <div className="flex items-center justify-between">
           {!isCollapsed && (
             <motion.div
@@ -71,15 +71,15 @@ const DashboardSidebar: React.FC = () => {
               <img
                 src="/main-logo.png"
                 alt="Parscade"
-                className="w-8 h-8 rounded-full mr-3"
+                className="w-8 h-8 rounded-full mr-3 shadow-sm"
               />
-              <span className="text-xl font-bold text-gray-900">Parscade</span>
+              <span className="text-xl font-black text-gray-900 tracking-tight">Parscade</span>
             </motion.div>
           )}
           
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="p-1 rounded-md hover:bg-gray-100 transition-colors"
+            className="p-1.5 rounded-lg hover:bg-gray-100/80 transition-all duration-200 hover:shadow-sm"
           >
             {isCollapsed ? (
               <ChevronRight className="w-4 h-4 text-gray-600" />
@@ -97,15 +97,15 @@ const DashboardSidebar: React.FC = () => {
             key={item.href}
             to={item.href}
             className={({ isActive: linkIsActive }) =>
-              `flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
+              `flex items-center px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group ${
                 isActive(item.href) || linkIsActive
-                  ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                  : 'text-gray-700 hover:bg-gray-100'
+                  ? 'bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 shadow-sm border border-blue-200/60'
+                  : 'text-gray-700 hover:bg-gray-50/80 hover:shadow-sm hover:scale-[1.02]'
               }`
             }
             title={isCollapsed ? item.label : undefined}
           >
-            <item.icon className={`w-5 h-5 ${isCollapsed ? '' : 'mr-3'} flex-shrink-0`} />
+            <item.icon className={`w-5 h-5 ${isCollapsed ? '' : 'mr-3'} flex-shrink-0 transition-transform duration-200 group-hover:scale-110`} />
             
             <AnimatePresence>
               {!isCollapsed && (
@@ -117,9 +117,12 @@ const DashboardSidebar: React.FC = () => {
                 >
                   <span>{item.label}</span>
                   {item.badge && (
-                    <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                    <motion.span 
+                      className="bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800 text-xs px-2 py-1 rounded-full font-medium shadow-sm"
+                      whileHover={{ scale: 1.05 }}
+                    >
                       {item.badge}
-                    </span>
+                    </motion.span>
                   )}
                 </motion.div>
               )}
@@ -129,9 +132,9 @@ const DashboardSidebar: React.FC = () => {
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-gray-200">
+      <div className="p-4 border-t border-gray-200/60">
         {!isCollapsed && (
-          <div className="text-xs text-gray-500">
+          <div className="text-xs text-gray-500 font-medium">
             <p>Parscade Beta v1.0</p>
             <p>© 2025 All rights reserved</p>
           </div>

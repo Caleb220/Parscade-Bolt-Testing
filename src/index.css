@@ -131,6 +131,41 @@
     display: none;
   }
   
+  /* Premium glass morphism effects */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .glass-dark {
+    background: rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(10px);
+  }
+  
+  /* Premium shadows */
+  .shadow-premium {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+  }
+  
+  .shadow-premium-lg {
+    box-shadow: 0 20px 64px rgba(0, 0, 0, 0.12), 0 8px 32px rgba(0, 0, 0, 0.08);
+  }
+  
+  /* Elegant gradients */
+  .gradient-premium {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+  
+  .gradient-card {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  }
+  
+  /* Premium borders */
+  .border-premium {
+    border: 1px solid rgba(0, 0, 0, 0.08);
+  }
+  
   /* Aspect ratio utilities */
   .aspect-golden {
     aspect-ratio: 1.618 / 1;

@@ -39,16 +39,17 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
+      whileHover={{ y: -2, transition: { duration: 0.2 } }}
     >
-      <Card className={`h-full ${className}`}>
+      <Card className={`h-full shadow-premium hover:shadow-premium-lg transition-all duration-300 border-gray-200/60 bg-white/95 backdrop-blur-sm ${className}`}>
         <CardHeader className="pb-4">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-lg font-semibold text-gray-900">
+              <CardTitle className="text-lg font-bold text-gray-900 tracking-tight">
                 {title}
               </CardTitle>
               {description && (
-                <CardDescription className="mt-1">
+                <CardDescription className="mt-1 font-medium">
                   {description}
                 </CardDescription>
               )}
@@ -65,14 +66,29 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
         <CardContent className="pt-0">
           {loading ? (
             <div className="flex items-center justify-center py-8">
-              <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mr-3" />
+              <motion.div 
+                className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full mr-3"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              />
               <span className="text-gray-600">Loading...</span>
             </div>
           ) : error ? (
-            <div className="text-center py-8">
-              <p className="text-red-600 mb-4">{error}</p>
+            <div className="text-center py-8 px-4">
+              <motion.div
+                initial={{ scale: 0.9 }}
+                animate={{ scale: 1 }}
+                className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-3"
+              >
+                <AlertTriangle className="w-6 h-6 text-red-500" />
+              </motion.div>
+              <p className="text-red-600 mb-4 font-medium">{error}</p>
               {onRetry && (
-                <Button variant="outline" onClick={onRetry}>
+                <Button 
+                  variant="outline" 
+                  onClick={onRetry}
+                  className="hover:shadow-sm transition-all duration-200"
+                >
                   Retry
                 </Button>
               )}

@@ -53,27 +53,50 @@ const DEFAULT_STATS: StatItem[] = [
  */
 const OverviewStats: React.FC = () => {
   return (
-    <DashboardGrid columns={4} gap="md">
+    <DashboardGrid columns={4} gap="lg">
       {DEFAULT_STATS.map((stat, index) => (
-        <div
+        <motion.div
           key={stat.title}
-          className="relative overflow-hidden rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition-transform hover:-translate-y-1 hover:shadow-md"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: index * 0.1 }}
+          whileHover={{ 
+            y: -8, 
+            scale: 1.02,
+            transition: { duration: 0.2 }
+          }}
+          className="relative overflow-hidden rounded-2xl border border-gray-200/60 bg-gradient-to-br from-white to-gray-50/30 p-6 shadow-premium hover:shadow-premium-lg transition-all duration-300 group cursor-pointer"
         >
+          {/* Background Pattern */}
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          
+          {/* Content */}
+          <div className="relative z-10">
           <div className="flex items-center justify-between">
-            <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-gray-100 text-gray-600">
+              <motion.div 
+                className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 text-blue-600 shadow-sm group-hover:shadow-md transition-all duration-300"
+                whileHover={{ rotate: 5, scale: 1.1 }}
+              >
               {stat.icon}
-            </div>
-            <span className="text-sm font-semibold text-blue-600">{stat.accentLabel}</span>
+              </motion.div>
+              <span className="text-sm font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full">{stat.accentLabel}</span>
           </div>
           
-          <div className="mt-6">
-            <div className="text-sm font-medium text-gray-500">{stat.title}</div>
-            <div className="mt-1 text-3xl font-semibold text-gray-900 tracking-tight">
+            <div className="mt-6 space-y-2">
+              <div className="text-sm font-bold text-gray-500 uppercase tracking-wide">{stat.title}</div>
+              <div className="text-3xl font-black text-gray-900 tracking-tight">
               {stat.value}
             </div>
-            <div className="mt-2 text-sm text-gray-500">{stat.subtitle}</div>
+              <div className="text-sm text-gray-600 font-medium leading-relaxed">{stat.subtitle}</div>
           </div>
-        </div>
+          </div>
+          
+          {/* Hover Accent */}
+          <motion.div
+            className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            layoutId={`accent-${stat.title}`}
+          />
+        </motion.div>
       ))}
     </DashboardGrid>
   );

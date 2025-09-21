@@ -32,7 +32,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 }) => {
   return (
     <Layout>
-      <div className="bg-gray-50 min-h-screen">
+      <div className="bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 min-h-screen">
         <div className="flex h-screen">
           {/* Sidebar - Hidden on mobile, shown on desktop */}
           <DashboardSidebar />
