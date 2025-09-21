@@ -5,6 +5,7 @@
 
 import React, { ReactNode } from 'react';
 import { motion } from 'framer-motion';
+import { ParscadeLogo } from '@/shared/components/brand';
 
 import Layout from '@/shared/components/layout/templates/Layout';
 import DashboardHeader from './DashboardHeader';
@@ -32,13 +33,19 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 }) => {
   return (
     <Layout>
-      <div className="bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 min-h-screen">
+      <div className="bg-gradient-to-br from-purple-50/30 via-cyan-50/20 to-white min-h-screen relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-purple-200 to-transparent rounded-full blur-3xl" />
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-cyan-200 to-transparent rounded-full blur-3xl" />
+        </div>
+        
         <div className="flex h-screen">
           {/* Sidebar - Hidden on mobile, shown on desktop */}
           <DashboardSidebar />
 
           {/* Main Content Area */}
-          <div className="flex-1 flex flex-col overflow-hidden">
+          <div className="flex-1 flex flex-col overflow-hidden relative z-10">
             {/* Header */}
             <DashboardHeader 
               title={title}

@@ -17,6 +17,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 
+import { ParscadeLogo } from '@/shared/components/brand';
 import { useAuth } from '@/features/auth';
 
 interface NavigationItem {
@@ -55,36 +56,30 @@ const DashboardSidebar: React.FC = () => {
   };
 
   return (
-    <aside className={`hidden lg:flex flex-col bg-white/95 backdrop-blur-xl border-r border-gray-200/60 shadow-premium transition-all duration-300 ${
+    <aside className={`hidden lg:flex flex-col bg-white/95 backdrop-blur-xl border-r border-purple-200/30 shadow-parscade transition-all duration-300 ${
       isCollapsed ? 'w-16' : 'w-64'
     }`}>
       {/* Logo */}
-      <div className="p-6 border-b border-gray-200/60">
+      <div className="p-6 border-b border-purple-200/30">
         <div className="flex items-center justify-between">
           {!isCollapsed && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="flex items-center"
             >
-              <img
-                src="/main-logo.png"
-                alt="Parscade"
-                className="w-8 h-8 rounded-full mr-3 shadow-sm"
-              />
-              <span className="text-xl font-black text-gray-900 tracking-tight">Parscade</span>
+              <ParscadeLogo size="md" variant="gradient" animated />
             </motion.div>
           )}
           
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="p-1.5 rounded-lg hover:bg-gray-100/80 transition-all duration-200 hover:shadow-sm"
+            className="p-1.5 rounded-lg hover:bg-purple-50/80 transition-all duration-200 hover:shadow-sm"
           >
             {isCollapsed ? (
-              <ChevronRight className="w-4 h-4 text-gray-600" />
+              <ChevronRight className="w-4 h-4 text-purple-600" />
             ) : (
-              <ChevronLeft className="w-4 h-4 text-gray-600" />
+              <ChevronLeft className="w-4 h-4 text-purple-600" />
             )}
           </button>
         </div>
@@ -99,13 +94,18 @@ const DashboardSidebar: React.FC = () => {
             className={({ isActive: linkIsActive }) =>
               `flex items-center px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group ${
                 isActive(item.href) || linkIsActive
-                  ? 'bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 shadow-sm border border-blue-200/60'
-                  : 'text-gray-700 hover:bg-gray-50/80 hover:shadow-sm hover:scale-[1.02]'
+                  ? 'bg-gradient-to-r from-purple-50 to-cyan-50 text-purple-700 shadow-parscade border border-purple-200/60'
+                  : 'text-gray-700 hover:bg-purple-50/50 hover:shadow-sm hover:scale-[1.02]'
               }`
             }
             title={isCollapsed ? item.label : undefined}
           >
-            <item.icon className={`w-5 h-5 ${isCollapsed ? '' : 'mr-3'} flex-shrink-0 transition-transform duration-200 group-hover:scale-110`} />
+            <motion.div
+              whileHover={{ scale: 1.1, rotate: 2 }}
+              transition={{ duration: 0.2 }}
+            >
+              <item.icon className={`w-5 h-5 ${isCollapsed ? '' : 'mr-3'} flex-shrink-0`} />
+            </motion.div>
             
             <AnimatePresence>
               {!isCollapsed && (
@@ -118,7 +118,7 @@ const DashboardSidebar: React.FC = () => {
                   <span>{item.label}</span>
                   {item.badge && (
                     <motion.span 
-                      className="bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800 text-xs px-2 py-1 rounded-full font-medium shadow-sm"
+                      className="bg-gradient-to-r from-purple-100 to-cyan-100 text-purple-800 text-xs px-2 py-1 rounded-full font-bold shadow-sm"
                       whileHover={{ scale: 1.05 }}
                     >
                       {item.badge}
@@ -132,9 +132,9 @@ const DashboardSidebar: React.FC = () => {
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-gray-200/60">
+      <div className="p-4 border-t border-purple-200/30">
         {!isCollapsed && (
-          <div className="text-xs text-gray-500 font-medium">
+          <div className="text-xs text-purple-600/70 font-bold">
             <p>Parscade Beta v1.0</p>
             <p>© 2025 All rights reserved</p>
           </div>

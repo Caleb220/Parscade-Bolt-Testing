@@ -5,11 +5,11 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, BarChart3, TrendingUp, Zap } from 'lucide-react';
+import { Sparkles, BarChart3, TrendingUp, Zap, Crown, Target } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth';
-import CustomButton from '@/shared/components/forms/CustomButton';
+import { ParscadeButton, ParscadeCard, ParscadeLogo } from '@/shared/components/brand';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import DashboardSection from '../components/ui/DashboardSection';
 import DashboardGrid from '../components/ui/DashboardGrid';
@@ -52,10 +52,10 @@ const DashboardPage: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="bg-gradient-to-br from-white to-blue-50/30 rounded-2xl p-8 shadow-premium border border-gray-200/60 text-center"
+            className="bg-gradient-to-br from-white to-purple-50/30 rounded-2xl p-8 shadow-parscade border border-purple-200/60 text-center"
           >
             <motion.div 
-              className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-100 to-indigo-100 shadow-lg"
+              className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-100 to-cyan-100 shadow-parscade"
               animate={{ scale: [1, 1.05, 1] }}
               transition={{ duration: 2, repeat: Infinity }}
             >
@@ -68,14 +68,14 @@ const DashboardPage: React.FC = () => {
               Confirm Your Email Address
             </h1>
 
-            <p className="text-gray-600 mb-6 font-medium leading-relaxed">
+            <p className="text-purple-600 mb-6 font-bold leading-relaxed">
               We've sent a confirmation email to <strong>{user?.email}</strong>. Please check your inbox and click the confirmation link to access your dashboard.
             </p>
 
-            <div className="mt-8 border-t border-gray-200/60 pt-6">
-              <p className="text-sm text-gray-500 font-medium">
+            <div className="mt-8 border-t border-purple-200/30 pt-6">
+              <p className="text-sm text-purple-500 font-bold">
                 Need help?{' '}
-                <a href="mailto:admin@parscade.com" className="text-blue-600 hover:text-blue-700">
+                <a href="mailto:admin@parscade.com" className="text-purple-600 hover:text-purple-700">
                   Contact Support
                 </a>
               </p>
@@ -103,19 +103,19 @@ const DashboardPage: React.FC = () => {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="mb-8 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 rounded-2xl p-6 text-white shadow-premium-lg relative overflow-hidden"
+        className="mb-8 bg-gradient-to-r from-purple-600 via-cyan-500 to-purple-600 rounded-2xl p-6 text-white shadow-parscade-lg relative overflow-hidden"
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/90 to-purple-600/90" />
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-600/90 to-cyan-500/90" />
         <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16" />
         <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-12 -translate-x-12" />
         
         <div className="relative z-10 flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-black tracking-tight mb-2">
-              Welcome to Parscade Beta
+              Welcome to Parscade
             </h2>
             <p className="text-blue-100 font-medium">
-              Transform your documents into structured data with AI-powered parsing
+              Transform documents into structured data with intelligent processing
             </p>
           </div>
           <motion.div
@@ -123,15 +123,15 @@ const DashboardPage: React.FC = () => {
             transition={{ duration: 4, repeat: Infinity }}
             className="hidden sm:block"
           >
-            <Sparkles className="w-12 h-12 text-yellow-300" />
+            <Crown className="w-12 h-12 text-yellow-300" />
           </motion.div>
         </div>
       </motion.div>
 
       {/* Statistics Overview */}
       <DashboardSection
-        title="Overview"
-        description="Your account statistics and beta program status"
+        title="Intelligence Dashboard"
+        description="Your transformation metrics and processing insights"
       >
         <OverviewStats />
       </DashboardSection>
@@ -152,12 +152,12 @@ const DashboardPage: React.FC = () => {
                   animate={{ rotate: [0, 5, -5, 0] }}
                   transition={{ duration: 3, repeat: Infinity }}
                 >
-                  <Zap className="w-6 h-6 text-blue-600 mr-3" />
+                  <Target className="w-6 h-6 text-purple-600 mr-3" />
                 </motion.div>
-                <h3 className="text-xl font-bold text-gray-900 tracking-tight">Upload & Process</h3>
+                <h3 className="text-xl font-black text-gray-900 tracking-tight">Document Transformation</h3>
               </div>
-              <p className="text-gray-600 text-sm font-medium leading-relaxed">
-                Upload documents to extract structured data using our AI-powered parsing engine
+              <p className="text-purple-600 text-sm font-bold leading-relaxed">
+                Upload documents to transform them into structured data using intelligent processing
               </p>
             </motion.div>
             <FileUploadZone onJobSubmitted={handleJobSubmitted} />
@@ -176,28 +176,28 @@ const DashboardPage: React.FC = () => {
           <RecentActivity />
           
           {/* Placeholder for future widgets */}
-          <motion.div 
+          <ParscadeCard
+            variant="glass"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.4 }}
-            whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
-            className="bg-gradient-to-br from-white to-indigo-50/30 rounded-2xl border-2 border-dashed border-indigo-200/60 p-8 text-center shadow-premium hover:shadow-premium-lg transition-all duration-300 group cursor-pointer"
+            className="border-2 border-dashed border-purple-200/60 p-8 text-center group cursor-pointer"
           >
             <motion.div 
-              className="text-indigo-400 mb-4"
+              className="text-purple-400 mb-4"
               whileHover={{ scale: 1.1, rotate: 5 }}
               transition={{ duration: 0.2 }}
             >
-              <TrendingUp className="w-12 h-12 mx-auto" />
+              <BarChart3 className="w-12 h-12 mx-auto" />
             </motion.div>
-            <h3 className="text-xl font-bold text-gray-900 mb-3 tracking-tight group-hover:text-indigo-700 transition-colors duration-200">
-              Analytics Dashboard
+            <h3 className="text-xl font-black text-gray-900 mb-3 tracking-tight group-hover:text-purple-700 transition-colors duration-200">
+              Intelligence Analytics
             </h3>
-            <p className="text-gray-600 text-sm font-medium leading-relaxed">
-              Advanced analytics and insights coming soon in the next beta release.
+            <p className="text-purple-600 text-sm font-bold leading-relaxed">
+              Advanced processing insights and transformation analytics coming soon.
             </p>
             <motion.div
-              className="mt-4 inline-flex items-center text-indigo-600 text-sm font-bold"
+              className="mt-4 inline-flex items-center text-purple-600 text-sm font-black"
               whileHover={{ x: 4 }}
               transition={{ duration: 0.2 }}
             >
@@ -210,7 +210,7 @@ const DashboardPage: React.FC = () => {
                 →
               </motion.span>
             </motion.div>
-          </motion.div>
+          </ParscadeCard>
         </DashboardGrid>
       </DashboardSection>
     </DashboardLayout>

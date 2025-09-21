@@ -1,11 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FileText, AlertTriangle, ChevronRight } from 'lucide-react';
+import { FileText, AlertTriangle, ChevronRight, Zap, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-import CustomButton from '@/shared/components/forms/CustomButton';
-import StatusIcon from '@/shared/components/ui/status-icon';
-import StatusBadge from '@/shared/components/ui/status-badge';
+import { ParscadeButton, ParscadeCard, ParscadeStatusBadge } from '@/shared/components/brand';
 import { formatJobType } from '@/shared/utils/formatters';
 import { formatDate } from '@/shared/utils/date';
 import { useJobs } from '@/shared/hooks/api/useJobs';
@@ -22,15 +20,15 @@ const JobsList: React.FC = () => {
 
   if (error) {
     return (
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <ParscadeCard className="p-6">
         <div className="flex items-center text-red-600 mb-4">
           <AlertTriangle className="w-5 h-5 mr-2" />
           <span className="text-sm">Failed to load jobs</span>
         </div>
-        <CustomButton variant="outline" size="sm" onClick={() => refetch()}>
+        <ParscadeButton variant="outline" size="sm" onClick={() => refetch()}>
           Retry
-        </CustomButton>
-      </div>
+        </ParscadeButton>
+      </ParscadeCard>
     );
   }
 
@@ -38,42 +36,52 @@ const JobsList: React.FC = () => {
   const pagination = jobsData?.pagination;
 
   return (
-    <motion.div
+    <ParscadeCard
+      variant="gradient"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.2 }}
-      className="bg-gradient-to-br from-white to-gray-50/30 rounded-2xl border border-gray-200/60 shadow-premium hover:shadow-premium-lg transition-all duration-300"
     >
-      <div className="p-6 border-b border-gray-200/60 bg-gradient-to-r from-blue-50/30 to-indigo-50/30">
-        <h2 className="text-lg font-bold text-gray-900 tracking-tight">Recent Jobs</h2>
-        <p className="text-gray-600 text-sm mt-1 font-medium">Track your document processing jobs</p>
+      <div className="p-6 border-b border-purple-200/30 bg-gradient-to-r from-purple-50/30 to-cyan-50/30">
+        <div className="flex items-center">
+          <motion.div
+            animate={{ rotate: [0, 5, -5, 0] }}
+            transition={{ duration: 3, repeat: Infinity }}
+          >
+            <Zap className="w-6 h-6 text-purple-600 mr-3" />
+          </motion.div>
+          <div>
+            <h2 className="text-lg font-black text-gray-900 tracking-tight">Transformation Jobs</h2>
+            <p className="text-purple-600 text-sm mt-1 font-bold">Track your document processing pipeline</p>
+          </div>
+        </div>
       </div>
 
-      <div className="divide-y divide-gray-200/60">
+      <div className="divide-y divide-purple-200/30">
         {isLoading ? (
           <div className="p-6 text-center">
             <motion.div 
-              className="w-8 h-8 border-3 border-blue-600 border-t-transparent rounded-full mx-auto mb-3"
+              className="w-8 h-8 border-3 border-purple-600 border-t-transparent rounded-full mx-auto mb-3"
               animate={{ rotate: 360 }}
               transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
             />
-            <p className="text-gray-600 text-sm font-medium">Loading jobs...</p>
+            <p className="text-purple-600 text-sm font-bold">Loading transformation jobs...</p>
           </div>
         ) : !jobs || jobs.length === 0 ? (
           <div className="p-6 text-center">
             <motion.div
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
-              className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200/50 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm"
+              className="w-16 h-16 bg-gradient-to-br from-purple-100 to-cyan-100 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-parscade"
             >
-              <FileText className="w-8 h-8 text-gray-400" />
+              <Sparkles className="w-8 h-8 text-purple-500" />
             </motion.div>
-            <h3 className="text-lg font-bold text-gray-900 mb-3 tracking-tight">No processing jobs yet</h3>
-            <p className="text-gray-600 mb-4 font-medium leading-relaxed">
-              Document processing jobs will appear here once you upload and process your first document.
+            <h3 className="text-lg font-black text-gray-900 mb-3 tracking-tight">No transformations yet</h3>
+            <p className="text-purple-600 mb-4 font-bold leading-relaxed">
+              Your document transformation jobs will appear here once you begin processing.
             </p>
-            <p className="text-sm text-gray-500 font-medium">
-              Use the upload zone on the left to get started with document processing.
+            <p className="text-sm text-purple-500 font-bold">
+              Use the upload zone to start transforming documents into structured data.
             </p>
           </div>
         ) : (
@@ -85,7 +93,7 @@ const JobsList: React.FC = () => {
               transition={{ delay: index * 0.05 }}
               whileHover={{ 
                 x: 4,
-                backgroundColor: "rgba(59, 130, 246, 0.02)",
+                backgroundColor: "rgba(124, 109, 242, 0.02)",
                 transition: { duration: 0.2 }
               }}
               className="p-5 cursor-pointer transition-all duration-200 hover:shadow-sm group"
@@ -98,37 +106,36 @@ const JobsList: React.FC = () => {
                     whileHover={{ scale: 1.1 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <StatusIcon status={(job?.status as any) || 'pending'} size="sm" />
+                    <ParscadeStatusBadge status={(job?.status as any) || 'pending'} size="sm" />
                   </motion.div>
                   
                   <div className="flex-1 min-w-0">
-                    <p className="font-bold text-gray-900 truncate group-hover:text-blue-700 transition-colors duration-200">
+                    <p className="font-black text-gray-900 truncate group-hover:text-purple-700 transition-colors duration-200">
                       {job?.type ? formatJobType(job.type) : 'Processing Job'}
                     </p>
-                    <p className="text-sm text-gray-600 truncate font-medium">
+                    <p className="text-sm text-purple-600/70 truncate font-bold">
                       Created {job?.createdAt ? formatDate(job.createdAt) : 'Unknown'}
                     </p>
                     {job?.status === 'processing' && (
                       <div className="flex items-center mt-1">
-                        <div className="w-24 bg-gray-200 rounded-full h-2 mr-2 shadow-inner">
+                        <div className="w-24 bg-purple-100 rounded-full h-2 mr-2 shadow-inner">
                           <div 
-                            className="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 rounded-full transition-all duration-500 shadow-sm"
+                            className="bg-gradient-to-r from-purple-600 to-cyan-500 h-2 rounded-full transition-all duration-500 shadow-parscade"
                             style={{ width: `${job?.progress || 0}%` }}
                           />
                         </div>
-                        <span className="text-xs text-gray-500 font-medium">{job?.progress || 0}%</span>
+                        <span className="text-xs text-purple-500 font-bold">{job?.progress || 0}%</span>
                       </div>
                     )}
                   </div>
                 </div>
 
                 <div className="flex items-center space-x-3">
-                  <StatusBadge status={(job?.status as any) || 'pending'} className="text-xs" />
                   <motion.div
                     whileHover={{ x: 2 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-200" />
+                    <ChevronRight className="w-4 h-4 text-purple-400 group-hover:text-purple-600 transition-colors duration-200" />
                   </motion.div>
                 </div>
               </div>
@@ -138,16 +145,16 @@ const JobsList: React.FC = () => {
       </div>
 
       {pagination?.hasNext && (
-        <div className="p-4 border-t border-gray-200/60">
-          <CustomButton 
+        <div className="p-4 border-t border-purple-200/30">
+          <ParscadeButton 
             variant="outline" 
-            className="w-full hover:shadow-sm transition-all duration-200 font-medium"
+            className="w-full font-bold"
           >
             View All Jobs
-          </CustomButton>
+          </ParscadeButton>
         </div>
       )}
-    </motion.div>
+    </ParscadeCard>
   );
 };
 

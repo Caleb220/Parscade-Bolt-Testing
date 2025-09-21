@@ -55,6 +55,31 @@ export default {
           800: '#6b21a8',
           900: '#581c87',
         },
+        // Parscade Brand Colors
+        'parscade-purple': {
+          50: '#f0f4ff',
+          100: '#e0e9ff',
+          200: '#c7d6fe',
+          300: '#a5b8fc',
+          400: '#8b93f8',
+          500: '#7c6df2',
+          600: '#6d4de8',
+          700: '#5d3dd4',
+          800: '#4d32b0',
+          900: '#412a8f',
+        },
+        'parscade-cyan': {
+          50: '#f0fdff',
+          100: '#ccf7fe',
+          200: '#99effd',
+          300: '#66e2fa',
+          400: '#33cef5',
+          500: '#00b8f0',
+          600: '#0093c4',
+          700: '#006e98',
+          800: '#004a6c',
+          900: '#002540',
+        },
       },
       animation: {
         blob: 'blob 7s infinite',
@@ -62,6 +87,8 @@ export default {
         'slide-up': 'slideUp 0.3s ease-out',
         'float': 'float 3s ease-in-out infinite',
         'glow': 'glow 2s ease-in-out infinite alternate',
+        'parscade-pulse': 'parscadePulse 3s ease-in-out infinite',
+        'parscade-float': 'parscadeFloat 4s ease-in-out infinite',
       },
       keyframes: {
         blob: {
@@ -94,6 +121,22 @@ export default {
           '0%': { boxShadow: '0 0 20px rgba(59, 130, 246, 0.3)' },
           '100%': { boxShadow: '0 0 30px rgba(59, 130, 246, 0.6)' },
         },
+        parscadePulse: {
+          '0%, 100%': { 
+            boxShadow: '0 0 20px rgba(124, 109, 242, 0.3)',
+            transform: 'scale(1)'
+          },
+          '50%': { 
+            boxShadow: '0 0 40px rgba(124, 109, 242, 0.5)',
+            transform: 'scale(1.02)'
+          },
+        },
+        parscadeFloat: {
+          '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+          '25%': { transform: 'translateY(-8px) rotate(1deg)' },
+          '50%': { transform: 'translateY(-4px) rotate(0deg)' },
+          '75%': { transform: 'translateY(-12px) rotate(-1deg)' },
+        },
       },
       spacing: {
         '18': '4.5rem',
@@ -111,6 +154,11 @@ export default {
         'xl': '16px',
         '2xl': '24px',
         '3xl': '40px',
+      },
+      boxShadow: {
+        'parscade': '0 8px 32px rgba(124, 109, 242, 0.15), 0 1px 2px rgba(0, 0, 0, 0.1)',
+        'parscade-lg': '0 20px 64px rgba(124, 109, 242, 0.2), 0 8px 32px rgba(0, 0, 0, 0.1)',
+        'parscade-glow': '0 0 32px rgba(124, 109, 242, 0.4), 0 8px 32px rgba(0, 0, 0, 0.1)',
       },
       typography: {
         DEFAULT: {
