@@ -14,5 +14,5 @@ export * from './zodError';
 export { formatBytes, formatJobType, formatUserAgent } from './formatters';
 export { debounce, throttle } from './performance';
 export { copyToClipboard } from './clipboard';
-export { formatDateTime, formatRelativeTime } from './date';
+export { formatDate, formatRelativeTime } from './date';
 export { useClipboard } from '@/shared/hooks/useClipboard'
