@@ -134,8 +134,6 @@ const JobsList: React.FC = () => {
                         )}
                       </div>
                     </div>
-                  </div>
-                </div>
 
                     <motion.div
                       whileHover={{ x: 2 }}
@@ -161,27 +159,6 @@ const JobsList: React.FC = () => {
           </div>
         )}
       </motion.div>
-    </ParscadeCard>
-  );
-};
-
-export default JobsList;
-              </div>
-            </motion.div>
-          ))
-        )}
-      </div>
-
-      {pagination?.hasNext && (
-        <div className="p-4 border-t border-slate-200">
-          <ParscadeButton 
-            variant="outline" 
-            className="w-full"
-          >
-            View All Jobs
-          </ParscadeButton>
-        </div>
-      )}
     </ParscadeCard>
   );
 };
