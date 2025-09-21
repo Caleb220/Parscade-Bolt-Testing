@@ -15,4 +15,4 @@ export { formatBytes, formatJobType, formatUserAgent } from './formatters';
 export { debounce, throttle } from './performance';
 export { copyToClipboard } from './clipboard';
 export { formatDate, formatRelativeTime } from './date';
-export { useClipboard } from '@shared/hooks/useClipboard'
+export { useClipboard } from '@/shared/hooks/useClipboard'
