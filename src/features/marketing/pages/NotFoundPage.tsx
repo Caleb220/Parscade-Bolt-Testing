@@ -2,8 +2,8 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Home, ArrowLeft, Mail } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import Button from '../../../components/atoms/Button';
-import Layout from '../../../components/templates/Layout';
+import Button from '@/shared/components/forms/Button';
+import Layout from '@/shared/components/layout/templates/Layout';
 
 const NotFoundPage: React.FC = () => {
   return (

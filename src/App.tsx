@@ -26,7 +26,6 @@ import PrivacyPage from '@/features/marketing/pages/PrivacyPage';
 import ProductPage from '@/features/marketing/pages/ProductPage';
 import { logger } from '@/shared/services/logger';
 import { analytics, trackPageView } from '@/shared/utils/analytics';
-import { analytics, trackPageView } from '@/shared/utils/analytics';
 import { defaultSEO, updateSEO } from '@/shared/utils/seo';
 
 import type { FC } from 'react';

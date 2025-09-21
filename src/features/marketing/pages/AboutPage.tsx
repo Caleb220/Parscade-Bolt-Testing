@@ -2,8 +2,8 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Target, Users, Lightbulb, Rocket } from 'lucide-react';
-import Layout from '../../../components/templates/Layout';
-import Button from '../../../components/atoms/Button';
+import Layout from '@/shared/components/layout/templates/Layout';
+import Button from '@/shared/components/forms/Button';
 import { useAuth } from '../../auth';
 import BetaCTASection from '../components/BetaCTASection';
 

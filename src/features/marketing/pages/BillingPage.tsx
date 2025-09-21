@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { CreditCard, Check, Zap, Star, Shield } from 'lucide-react';
-import Layout from '../../../components/templates/Layout';
-import Button from '../../../components/atoms/Button';
+import Layout from '@/shared/components/layout/templates/Layout';
+import Button from '@/shared/components/forms/Button';
 
 const BillingPage: React.FC = () => {
   const [isAnnual, setIsAnnual] = useState(false);

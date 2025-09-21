@@ -12,8 +12,8 @@ import {
   optionalIsoDateTimeSchema,
   profileSettingsSchema,
   securitySettingsSchema,
-} from '../../../schemas';
-import { logger } from '../../../services/logger';
+} from '@/shared/schemas';
+import { logger } from '@/shared/services/logger';
 
 
 const supabaseTimestampSchema = optionalIsoDateTimeSchema.nullish();

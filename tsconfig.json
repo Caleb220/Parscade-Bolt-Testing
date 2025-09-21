@@ -10,13 +10,8 @@
       "@/*": ["src/*"],
       "@/app/*": ["src/app/*"],
       "@/shared/*": ["src/shared/*"],
-      "@/components/*": ["src/components/*"],
-      "@/components/ui/*": ["src/components/ui/*"],
       "@/features/*": ["src/features/*"],
-      "@/services/*": ["src/services/*"],
-      "@/utils/*": ["src/utils/*"],
-      "@/types/*": ["src/types/*"],
-      "@/schemas/*": ["src/schemas/*"]
+      "@/lib/*": ["src/lib/*"]
     }
   }
 }

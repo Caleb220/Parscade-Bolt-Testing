@@ -10,8 +10,8 @@ import {
   Code,
   BarChart3
 } from 'lucide-react';
-import Layout from '../../../components/templates/Layout';
-import Button from '../../../components/atoms/Button';
+import Layout from '@/shared/components/layout/templates/Layout';
+import Button from '@/shared/components/forms/Button';
 import { useAuth } from '../../auth';
 import { useNavigate } from 'react-router-dom';
 import BetaCTASection from '../components/BetaCTASection';

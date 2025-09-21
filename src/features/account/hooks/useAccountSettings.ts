@@ -8,7 +8,7 @@ import {
   SecuritySettings,
   accountSettingsSchema,
   createDefaultAccountSettings,
-} from '../../../schemas';
+} from '@/shared/schemas';
 import {
   fetchOrCreateAccountSettings,
   updateAccountSettingsSection,
@@ -32,8 +32,8 @@ interface UseAccountSettingsResult {
   saveIntegrations: (integrations: IntegrationSettings) => Promise<AccountSettings>;
 }
 
-import { formatErrorForUser } from '../../../utils/zodError';
-import { logger } from '../../../services/logger';
+import { formatErrorForUser } from '@/shared/utils/zodError';
+import { logger } from '@/shared/services/logger';
 
 export const useAccountSettings = ({ userId, email, fullName }: UseAccountSettingsOptions): UseAccountSettingsResult => {
   const [settings, setSettings] = useState<AccountSettings | null>(null);

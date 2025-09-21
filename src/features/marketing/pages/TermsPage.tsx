@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { FileText, AlertTriangle, CheckCircle, Users } from 'lucide-react';
-import Layout from '../../../components/templates/Layout';
+import Layout from '@/shared/components/layout/templates/Layout';
 
 const TermsPage: React.FC = () => {
   const highlights = [

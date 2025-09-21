@@ -20,11 +20,11 @@ import {
   Mail
 } from 'lucide-react';
 
-import Button from '@/components/atoms/Button';
-import Input from '@/components/atoms/Input';
-import LoadingButton from '@/components/atoms/LoadingButton';
-import LoadingSpinner from '@/components/atoms/LoadingSpinner';
-import PasswordInput from '@/components/atoms/PasswordInput';
+import Button from '@/shared/components/forms/Button';
+import Input from '@/shared/components/forms/Input';
+import LoadingButton from '@/shared/components/forms/LoadingButton';
+import LoadingSpinner from '@/shared/components/forms/LoadingSpinner';
+import PasswordInput from '@/shared/components/forms/PasswordInput';
 import { useAuth } from '@/features/auth';
 import { useAccountSettings } from '@/features/account/hooks/useAccountSettings';
 
@@ -35,7 +35,7 @@ import type {
   ProfileSettings,
   SecuritySettings,
   WebhookConfig,
-} from '@/schemas';
+} from '@/shared/schemas';
 
 /**
  * Account Settings Panel Component
