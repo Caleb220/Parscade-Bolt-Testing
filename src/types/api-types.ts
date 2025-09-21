@@ -217,7 +217,7 @@ export interface paths {
       requestBody: {
         content: {
           'application/json': {
-            fullName?: string | null;
+            full_name?: string | null;
             timezone?: string;
             username?: string | null;
             company?: string | null;
