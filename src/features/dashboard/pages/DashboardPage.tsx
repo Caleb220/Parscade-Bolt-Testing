@@ -130,6 +130,7 @@ const DashboardPage: React.FC = () => {
 
       {/* Statistics Overview */}
       <DashboardSection
+        className="mb-8"
         title="Overview"
         description="Your processing metrics and insights"
       >
@@ -137,8 +138,8 @@ const DashboardPage: React.FC = () => {
       </DashboardSection>
 
       {/* Main Content Grid */}
-      <DashboardSection>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+      <DashboardSection className="mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-stretch">
           {/* Upload Zone */}
           <div>
             <motion.div 
@@ -166,7 +167,7 @@ const DashboardPage: React.FC = () => {
       </DashboardSection>
 
       {/* Recent Activity */}
-      <DashboardSection>
+      <DashboardSection className="mb-8">
         <DashboardGrid columns={2} gap="lg">
           <RecentActivity />
           

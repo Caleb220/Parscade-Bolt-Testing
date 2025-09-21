@@ -106,12 +106,12 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="relative overflow-hidden"
+      className="relative overflow-hidden h-full"
     >
       <ParscadeCard 
         variant={dragActive ? 'gradient' : 'default'}
         hover={!isUploading}
-        className={`border-2 transition-all duration-300 p-8 ${
+        className={`border-2 transition-all duration-300 p-8 h-full flex flex-col ${
           dragActive 
             ? 'border-blue-400 scale-[1.01]' 
             : 'border-dashed border-slate-300 hover:border-blue-300'
@@ -233,7 +233,7 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
         {/* Upload Zone */}
         {!isUploading && !uploadedDocumentId && currentPhase !== 'error' && (
           <div
-            className={`text-center transition-all duration-300 ${
+            className={`text-center transition-all duration-300 flex-1 flex flex-col justify-center ${
               dragActive ? 'scale-105' : ''
             }`}
           >
