@@ -1,6 +1,6 @@
 /**
- * Dashboard Header Component
- * Top navigation bar with title, actions, and user menu
+ * Dashboard Header Component - Professional Blue Theme
+ * Clean header with search, notifications, and user context
  */
 
 import React, { ReactNode } from 'react';
@@ -20,7 +20,7 @@ interface DashboardHeaderProps {
 }
 
 /**
- * Dashboard header with responsive design and user context
+ * Professional dashboard header with refined blue theme
  */
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   title,
@@ -31,7 +31,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   const { user } = useAuth();
 
   return (
-    <header className="bg-white/95 backdrop-blur-xl border-b border-purple-200/30 shadow-parscade sticky top-0 z-30">
+    <header className="bg-white/95 backdrop-blur-sm border-b border-slate-200 shadow-sm sticky top-0 z-30">
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Left Section */}
@@ -50,17 +50,17 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             <div className="hidden sm:block">
               {title ? (
                 <div>
-                  <h1 className="text-xl font-black text-gray-900 tracking-tight">{title}</h1>
+                  <h1 className="text-xl font-semibold text-gray-900">{title}</h1>
                   {subtitle && (
-                    <p className="text-sm text-purple-600/70 font-bold">{subtitle}</p>
+                    <p className="text-sm text-blue-600">{subtitle}</p>
                   )}
                 </div>
               ) : (
                 <div>
-                  <h1 className="text-xl font-black text-gray-900 tracking-tight">
+                  <h1 className="text-xl font-semibold text-gray-900">
                     Welcome back{user?.user_metadata?.full_name ? `, ${user.user_metadata.full_name.split(' ')[0]}` : ''}
                   </h1>
-                  <p className="text-sm text-purple-600/70 font-bold">Transform documents into structured data</p>
+                  <p className="text-sm text-blue-600">Transform documents into structured data</p>
                 </div>
               )}
             </div>
@@ -71,10 +71,10 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             {/* Search - Hidden on mobile */}
             <div className="hidden md:block">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-purple-400" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <Input
                   placeholder="Search documents..."
-                  className="pl-10 w-64 bg-purple-50/50 border-purple-200/60 focus:bg-white focus:border-purple-400 transition-all duration-200 rounded-xl"
+                  className="pl-10 w-64 bg-slate-50 border-slate-200 focus:bg-white focus:border-blue-300 transition-all duration-200 rounded-lg"
                 />
               </div>
             </div>
@@ -83,7 +83,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             <ParscadeButton variant="ghost" size="sm" className="relative">
               <Bell className="w-5 h-5" />
               <motion.span 
-                className="absolute -top-1 -right-1 w-2 h-2 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full"
+                className="absolute -top-1 -right-1 w-2 h-2 bg-blue-500 rounded-full"
                 animate={{ scale: [1, 1.2, 1] }}
                 transition={{ duration: 2, repeat: Infinity }}
               />

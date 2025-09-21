@@ -56,29 +56,17 @@ export default {
           900: '#581c87',
         },
         // Parscade Brand Colors
-        'parscade-purple': {
-          50: '#f0f4ff',
-          100: '#e0e9ff',
-          200: '#c7d6fe',
-          300: '#a5b8fc',
-          400: '#8b93f8',
-          500: '#7c6df2',
-          600: '#6d4de8',
-          700: '#5d3dd4',
-          800: '#4d32b0',
-          900: '#412a8f',
-        },
-        'parscade-cyan': {
-          50: '#f0fdff',
-          100: '#ccf7fe',
-          200: '#99effd',
-          300: '#66e2fa',
-          400: '#33cef5',
-          500: '#00b8f0',
-          600: '#0093c4',
-          700: '#006e98',
-          800: '#004a6c',
-          900: '#002540',
+        slate: {
+          50: '#f8fafc',
+          100: '#f1f5f9',
+          200: '#e2e8f0',
+          300: '#cbd5e1',
+          400: '#94a3b8',
+          500: '#64748b',
+          600: '#475569',
+          700: '#334155',
+          800: '#1e293b',
+          900: '#0f172a',
         },
       },
       animation: {
@@ -123,11 +111,11 @@ export default {
         },
         parscadePulse: {
           '0%, 100%': { 
-            boxShadow: '0 0 20px rgba(124, 109, 242, 0.3)',
+            boxShadow: '0 0 20px rgba(14, 165, 233, 0.2)',
             transform: 'scale(1)'
           },
           '50%': { 
-            boxShadow: '0 0 40px rgba(124, 109, 242, 0.5)',
+            boxShadow: '0 0 30px rgba(14, 165, 233, 0.3)',
             transform: 'scale(1.02)'
           },
         },
@@ -156,9 +144,9 @@ export default {
         '3xl': '40px',
       },
       boxShadow: {
-        'parscade': '0 8px 32px rgba(124, 109, 242, 0.15), 0 1px 2px rgba(0, 0, 0, 0.1)',
-        'parscade-lg': '0 20px 64px rgba(124, 109, 242, 0.2), 0 8px 32px rgba(0, 0, 0, 0.1)',
-        'parscade-glow': '0 0 32px rgba(124, 109, 242, 0.4), 0 8px 32px rgba(0, 0, 0, 0.1)',
+        'parscade': '0 4px 20px rgba(14, 165, 233, 0.08), 0 1px 3px rgba(0, 0, 0, 0.1)',
+        'parscade-lg': '0 10px 40px rgba(14, 165, 233, 0.12), 0 4px 6px rgba(0, 0, 0, 0.05)',
+        'parscade-glow': '0 0 20px rgba(14, 165, 233, 0.2)',
       },
       typography: {
         DEFAULT: {

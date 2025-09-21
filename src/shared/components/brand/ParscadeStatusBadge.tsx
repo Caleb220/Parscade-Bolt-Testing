@@ -1,6 +1,6 @@
 /**
- * Parscade Status Badge Component
- * Branded status indicators with unique styling
+ * Parscade Status Badge Component - Professional Blue Theme
+ * Clean status indicators with refined styling
  */
 
 import React from 'react';
@@ -16,7 +16,7 @@ interface ParscadeStatusBadgeProps {
 }
 
 /**
- * Branded status badge with Parscade design language
+ * Professional status badge with refined blue theme
  */
 const ParscadeStatusBadge: React.FC<ParscadeStatusBadgeProps> = ({
   status,
@@ -39,37 +39,37 @@ const ParscadeStatusBadge: React.FC<ParscadeStatusBadgeProps> = ({
 
   const statusConfig = {
     pending: {
-      gradient: 'from-amber-100 to-orange-100',
+      gradient: 'from-amber-100 to-amber-200',
       text: 'text-amber-800',
       border: 'border-amber-200',
       icon: Clock,
       label: 'Pending',
     },
     processing: {
-      gradient: 'from-purple-100 to-cyan-100',
-      text: 'text-purple-800',
-      border: 'border-purple-200',
+      gradient: 'from-blue-100 to-blue-200',
+      text: 'text-blue-800',
+      border: 'border-blue-200',
       icon: Zap,
       label: 'Processing',
     },
     completed: {
-      gradient: 'from-green-100 to-emerald-100',
-      text: 'text-green-800',
-      border: 'border-green-200',
+      gradient: 'from-emerald-100 to-emerald-200',
+      text: 'text-emerald-800',
+      border: 'border-emerald-200',
       icon: CheckCircle,
       label: 'Completed',
     },
     failed: {
-      gradient: 'from-red-100 to-pink-100',
+      gradient: 'from-red-100 to-red-200',
       text: 'text-red-800',
       border: 'border-red-200',
       icon: XCircle,
       label: 'Failed',
     },
     cancelled: {
-      gradient: 'from-gray-100 to-slate-100',
-      text: 'text-gray-800',
-      border: 'border-gray-200',
+      gradient: 'from-slate-100 to-slate-200',
+      text: 'text-slate-800',
+      border: 'border-slate-200',
       icon: XCircle,
       label: 'Cancelled',
     },
@@ -99,7 +99,7 @@ const ParscadeStatusBadge: React.FC<ParscadeStatusBadgeProps> = ({
         ${config.text}
         border ${config.border}
         rounded-full
-        font-bold
+        font-medium
         shadow-sm
         ${className}
       `}

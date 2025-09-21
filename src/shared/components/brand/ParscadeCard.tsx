@@ -1,6 +1,6 @@
 /**
- * Parscade Branded Card Component
- * Custom card with Parscade design system
+ * Parscade Branded Card Component - Refined Blue Theme
+ * Professional card with subtle effects and clean styling
  */
 
 import React, { ReactNode } from 'react';
@@ -9,14 +9,14 @@ import { parscadeAnimations } from '@/shared/design/theme';
 
 interface ParscadeCardProps {
   children: ReactNode;
-  variant?: 'default' | 'elevated' | 'glass' | 'gradient' | 'glow';
+  variant?: 'default' | 'elevated' | 'glass' | 'gradient';
   hover?: boolean;
   className?: string;
   onClick?: () => void;
 }
 
 /**
- * Branded card component with Parscade visual identity
+ * Branded card component with refined Parscade visual identity
  */
 const ParscadeCard: React.FC<ParscadeCardProps> = ({
   children,
@@ -26,20 +26,19 @@ const ParscadeCard: React.FC<ParscadeCardProps> = ({
   onClick,
 }) => {
   const variantClasses = {
-    default: 'bg-white/95 backdrop-blur-xl border border-gray-200/60 shadow-parscade',
-    elevated: 'bg-white/95 backdrop-blur-xl border border-gray-200/60 shadow-parscade-lg',
-    glass: 'bg-white/80 backdrop-blur-2xl border border-white/20 shadow-parscade',
-    gradient: 'bg-gradient-to-br from-white to-purple-50/30 border border-purple-200/60 shadow-parscade',
-    glow: 'bg-white/95 backdrop-blur-xl border border-purple-200/60 shadow-parscade-glow',
+    default: 'bg-white border border-slate-200 shadow-sm',
+    elevated: 'bg-white border border-slate-200 shadow-parscade',
+    glass: 'bg-white/90 backdrop-blur-sm border border-slate-200/60 shadow-parscade',
+    gradient: 'bg-gradient-to-br from-white to-blue-50/50 border border-blue-200/40 shadow-parscade',
   };
 
   const hoverAnimation = hover ? {
     whileHover: { 
-      y: -4,
-      scale: 1.02,
-      transition: { duration: 0.2, ease: [0.34, 1.56, 0.64, 1] }
+      y: -2,
+      scale: 1.01,
+      transition: { duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }
     },
-    whileTap: onClick ? { scale: 0.98 } : {}
+    whileTap: onClick ? { scale: 0.99 } : {}
   } : {};
 
   return (
@@ -48,8 +47,8 @@ const ParscadeCard: React.FC<ParscadeCardProps> = ({
       {...hoverAnimation}
       className={`
         ${variantClasses[variant]}
-        rounded-2xl
-        transition-all duration-300
+        rounded-xl
+        transition-all duration-200
         ${onClick ? 'cursor-pointer' : ''}
         ${hover ? 'hover:shadow-parscade-lg' : ''}
         ${className}

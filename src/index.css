@@ -75,25 +75,25 @@
   
   /* Parscade Brand Styles */
   .parscade-gradient-text {
-    @apply text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-cyan-500;
+    @apply text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-500;
   }
   
   .parscade-gradient-bg {
-    background: linear-gradient(135deg, #7c6df2 0%, #00b8f0 100%);
+    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
   }
   
   .parscade-glass {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(124, 109, 242, 0.1);
+    border: 1px solid rgba(14, 165, 233, 0.1);
   }
   
   .parscade-glow {
-    box-shadow: 0 0 32px rgba(124, 109, 242, 0.3);
+    box-shadow: 0 0 20px rgba(14, 165, 233, 0.2);
   }
   
   .parscade-glow-hover:hover {
-    box-shadow: 0 0 48px rgba(124, 109, 242, 0.5);
+    box-shadow: 0 0 30px rgba(14, 165, 233, 0.3);
   }
   
   /* Logo image optimization */

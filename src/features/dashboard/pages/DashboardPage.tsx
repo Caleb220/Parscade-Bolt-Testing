@@ -1,15 +1,16 @@
 /**
- * Dashboard Overview Page
- * Main dashboard page with modular layout and components
+ * Dashboard Overview Page - Professional Foundation
+ * Scalable dashboard with modular architecture and refined blue theme
  */
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, BarChart3, TrendingUp, Zap, Crown, Target } from 'lucide-react';
+import { Crown, Target, TrendingUp, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth';
-import { ParscadeButton, ParscadeCard, ParscadeLogo } from '@/shared/components/brand';
+import { ParscadeButton, ParscadeCard } from '@/shared/components/brand';
+import FeatureGate from '@/shared/components/layout/FeatureGate';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import DashboardSection from '../components/ui/DashboardSection';
 import DashboardGrid from '../components/ui/DashboardGrid';
@@ -20,7 +21,7 @@ import FileUploadZone from '../components/FileUploadZone';
 import JobsList from '../components/JobsList';
 
 /**
- * Main dashboard overview page with modular components
+ * Main dashboard overview page with scalable modular architecture
  */
 const DashboardPage: React.FC = () => {
   const { isEmailConfirmed, user } = useAuth();
@@ -52,10 +53,10 @@ const DashboardPage: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="bg-gradient-to-br from-white to-purple-50/30 rounded-2xl p-8 shadow-parscade border border-purple-200/60 text-center"
+            className="bg-gradient-to-br from-white to-blue-50/30 rounded-2xl p-8 shadow-parscade border border-blue-200/40 text-center"
           >
             <motion.div 
-              className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-100 to-cyan-100 shadow-parscade"
+              className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-100 to-blue-200 shadow-parscade"
               animate={{ scale: [1, 1.05, 1] }}
               transition={{ duration: 2, repeat: Infinity }}
             >
@@ -64,18 +65,18 @@ const DashboardPage: React.FC = () => {
               </svg>
             </motion.div>
 
-            <h1 className="text-3xl font-black text-gray-900 mb-4 tracking-tight">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">
               Confirm Your Email Address
             </h1>
 
-            <p className="text-purple-600 mb-6 font-bold leading-relaxed">
+            <p className="text-slate-600 mb-6 leading-relaxed">
               We've sent a confirmation email to <strong>{user?.email}</strong>. Please check your inbox and click the confirmation link to access your dashboard.
             </p>
 
-            <div className="mt-8 border-t border-purple-200/30 pt-6">
-              <p className="text-sm text-purple-500 font-bold">
+            <div className="mt-8 border-t border-blue-200/30 pt-6">
+              <p className="text-sm text-slate-500">
                 Need help?{' '}
-                <a href="mailto:admin@parscade.com" className="text-purple-600 hover:text-purple-700">
+                <a href="mailto:admin@parscade.com" className="text-blue-600 hover:text-blue-700">
                   Contact Support
                 </a>
               </p>
@@ -88,7 +89,7 @@ const DashboardPage: React.FC = () => {
 
   return (
     <DashboardLayout
-      title="Dashboard Overview"
+      title="Dashboard"
       subtitle="Monitor your document processing and analytics"
       actions={
         <QuickActions
@@ -103,35 +104,34 @@ const DashboardPage: React.FC = () => {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="mb-8 bg-gradient-to-r from-purple-600 via-cyan-500 to-purple-600 rounded-2xl p-6 text-white shadow-parscade-lg relative overflow-hidden"
+        className="mb-8 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl p-6 text-white shadow-parscade-lg relative overflow-hidden"
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-600/90 to-cyan-500/90" />
         <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16" />
         <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-12 -translate-x-12" />
         
         <div className="relative z-10 flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-black tracking-tight mb-2">
+            <h2 className="text-xl font-bold mb-2">
               Welcome to Parscade
             </h2>
-            <p className="text-blue-100 font-medium">
+            <p className="text-blue-100">
               Transform documents into structured data with intelligent processing
             </p>
           </div>
           <motion.div
-            animate={{ rotate: [0, 10, -10, 0] }}
+            animate={{ rotate: [0, 5, -5, 0] }}
             transition={{ duration: 4, repeat: Infinity }}
             className="hidden sm:block"
           >
-            <Crown className="w-12 h-12 text-yellow-300" />
+            <Crown className="w-10 h-10 text-blue-200" />
           </motion.div>
         </div>
       </motion.div>
 
       {/* Statistics Overview */}
       <DashboardSection
-        title="Intelligence Dashboard"
-        description="Your transformation metrics and processing insights"
+        title="Overview"
+        description="Your processing metrics and insights"
       >
         <OverviewStats />
       </DashboardSection>
@@ -148,16 +148,11 @@ const DashboardPage: React.FC = () => {
               transition={{ duration: 0.5, delay: 0.2 }}
             >
               <div className="flex items-center mb-4">
-                <motion.div
-                  animate={{ rotate: [0, 5, -5, 0] }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                >
-                  <Target className="w-6 h-6 text-purple-600 mr-3" />
-                </motion.div>
-                <h3 className="text-xl font-black text-gray-900 tracking-tight">Document Transformation</h3>
+                <Target className="w-5 h-5 text-blue-600 mr-3" />
+                <h3 className="text-lg font-semibold text-gray-900">Document Processing</h3>
               </div>
-              <p className="text-purple-600 text-sm font-bold leading-relaxed">
-                Upload documents to transform them into structured data using intelligent processing
+              <p className="text-slate-600 text-sm">
+                Upload documents to transform them into structured data
               </p>
             </motion.div>
             <FileUploadZone onJobSubmitted={handleJobSubmitted} />
@@ -175,42 +170,44 @@ const DashboardPage: React.FC = () => {
         <DashboardGrid columns={2} gap="lg">
           <RecentActivity />
           
-          {/* Placeholder for future widgets */}
-          <ParscadeCard
-            variant="glass"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.4 }}
-            className="border-2 border-dashed border-purple-200/60 p-8 text-center group cursor-pointer"
-          >
-            <motion.div 
-              className="text-purple-400 mb-4"
-              whileHover={{ scale: 1.1, rotate: 5 }}
-              transition={{ duration: 0.2 }}
+          {/* Analytics Preview - Feature Gated */}
+          <FeatureGate featureId="analytics">
+            <ParscadeCard
+              variant="gradient"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.4 }}
+              className="p-6 text-center group cursor-pointer"
             >
-              <BarChart3 className="w-12 h-12 mx-auto" />
-            </motion.div>
-            <h3 className="text-xl font-black text-gray-900 mb-3 tracking-tight group-hover:text-purple-700 transition-colors duration-200">
-              Intelligence Analytics
-            </h3>
-            <p className="text-purple-600 text-sm font-bold leading-relaxed">
-              Advanced processing insights and transformation analytics coming soon.
-            </p>
-            <motion.div
-              className="mt-4 inline-flex items-center text-purple-600 text-sm font-black"
-              whileHover={{ x: 4 }}
-              transition={{ duration: 0.2 }}
-            >
-              Coming Soon
-              <motion.span
-                animate={{ x: [0, 4, 0] }}
-                transition={{ duration: 1.5, repeat: Infinity }}
-                className="ml-1"
+              <motion.div 
+                className="text-blue-500 mb-4"
+                whileHover={{ scale: 1.1 }}
+                transition={{ duration: 0.2 }}
               >
-                →
-              </motion.span>
-            </motion.div>
-          </ParscadeCard>
+                <TrendingUp className="w-10 h-10 mx-auto" />
+              </motion.div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3 group-hover:text-blue-700 transition-colors duration-200">
+                Advanced Analytics
+              </h3>
+              <p className="text-slate-600 text-sm leading-relaxed">
+                Detailed processing insights and performance analytics.
+              </p>
+              <motion.div
+                className="mt-4 inline-flex items-center text-blue-600 text-sm font-medium"
+                whileHover={{ x: 2 }}
+                transition={{ duration: 0.2 }}
+              >
+                View Analytics
+                <motion.span
+                  animate={{ x: [0, 2, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                  className="ml-1"
+                >
+                  →
+                </motion.span>
+              </motion.div>
+            </ParscadeCard>
+          </FeatureGate>
         </DashboardGrid>
       </DashboardSection>
     </DashboardLayout>

@@ -1,6 +1,6 @@
 /**
- * Parscade Logo Component
- * Branded logo with animation and responsive sizing
+ * Parscade Logo Component - Refined Blue Theme
+ * Professional logo with subtle animations and responsive sizing
  */
 
 import React from 'react';
@@ -14,7 +14,7 @@ interface ParscadeLogoProps {
 }
 
 /**
- * Official Parscade logo component with brand consistency
+ * Official Parscade logo component with refined blue branding
  */
 const ParscadeLogo: React.FC<ParscadeLogoProps> = ({
   size = 'md',
@@ -25,8 +25,8 @@ const ParscadeLogo: React.FC<ParscadeLogoProps> = ({
   const sizeClasses = {
     sm: 'w-6 h-6',
     md: 'w-8 h-8',
-    lg: 'w-12 h-12',
-    xl: 'w-16 h-16',
+    lg: 'w-10 h-10',
+    xl: 'w-12 h-12',
   };
 
   const textSizeClasses = {
@@ -40,14 +40,13 @@ const ParscadeLogo: React.FC<ParscadeLogoProps> = ({
     default: 'text-gray-900',
     white: 'text-white',
     dark: 'text-gray-900',
-    gradient: 'text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-cyan-500',
+    gradient: 'text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-500',
   };
 
   const logoAnimation = animated ? {
     whileHover: { 
       scale: 1.05,
-      rotate: [0, -2, 2, 0],
-      transition: { duration: 0.3 }
+      transition: { duration: 0.2 }
     },
     whileTap: { scale: 0.95 }
   } : {};
@@ -59,12 +58,12 @@ const ParscadeLogo: React.FC<ParscadeLogoProps> = ({
     >
       {/* Logo Icon */}
       <motion.div
-        className={`${sizeClasses[size]} rounded-full bg-gradient-to-br from-purple-600 to-cyan-500 flex items-center justify-center shadow-lg mr-2`}
+        className={`${sizeClasses[size]} rounded-xl bg-gradient-to-br from-blue-600 to-blue-500 flex items-center justify-center shadow-lg mr-3`}
         animate={animated ? {
           boxShadow: [
-            '0 4px 20px rgba(124, 109, 242, 0.3)',
-            '0 8px 32px rgba(124, 109, 242, 0.4)',
-            '0 4px 20px rgba(124, 109, 242, 0.3)'
+            '0 4px 20px rgba(14, 165, 233, 0.2)',
+            '0 6px 25px rgba(14, 165, 233, 0.3)',
+            '0 4px 20px rgba(14, 165, 233, 0.2)'
           ]
         } : {}}
         transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
@@ -102,16 +101,8 @@ const ParscadeLogo: React.FC<ParscadeLogoProps> = ({
 
       {/* Logo Text */}
       <motion.span
-        className={`${textSizeClasses[size]} font-black tracking-tight ${variantClasses[variant]}`}
-        style={{ fontFamily: 'Poppins, Inter, system-ui, sans-serif' }}
-        animate={animated ? {
-          textShadow: [
-            '0 0 0px rgba(124, 109, 242, 0)',
-            '0 0 8px rgba(124, 109, 242, 0.3)',
-            '0 0 0px rgba(124, 109, 242, 0)'
-          ]
-        } : {}}
-        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+        className={`${textSizeClasses[size]} font-bold tracking-tight ${variantClasses[variant]}`}
+        style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
       >
         Parscade
       </motion.span>

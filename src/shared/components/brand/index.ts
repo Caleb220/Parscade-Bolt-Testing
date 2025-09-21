@@ -7,7 +7,6 @@ export { default as ParscadeLogo } from './ParscadeLogo';
 export { default as ParscadeCard } from './ParscadeCard';
 export { default as ParscadeButton } from './ParscadeButton';
 export { default as ParscadeStatusBadge } from './ParscadeStatusBadge';
-export { default as ProcessingPipeline } from './ProcessingPipeline';
 
 // Theme exports
 export { parscadeTheme, parscadeGradients, parscadeVariants, parscadeAnimations } from '@/shared/design/theme';
