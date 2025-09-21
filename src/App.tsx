@@ -1,27 +1,10 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, Suspense } from 'react';
 import { BrowserRouter as Router, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import type { FC } from 'react';
 
 import { QueryProvider } from '@/app/providers/QueryProvider';
-import AccountLayout from '@/features/account/components/AccountLayout';
-import { AuthProvider, useAuth } from '@/features/auth';
-import { DashboardPage } from '@/features/dashboard';
-import JobsList from '@/features/dashboard/components/JobsList';
-import AboutPage from '@/features/marketing/pages/AboutPage';
-import BillingPage from '@/features/marketing/pages/BillingPage';
-import ContactPage from '@/features/marketing/pages/ContactPage';
-import ErrorPage from '@/features/marketing/pages/ErrorPage';
-import HomePage from '@/features/marketing/pages/HomePage';
-import NotFoundPage from '@/features/marketing/pages/NotFoundPage';
-import PrivacyPage from '@/features/marketing/pages/PrivacyPage';
-import ProductPage from '@/features/marketing/pages/ProductPage';
-import TermsPage from '@/features/marketing/pages/TermsPage';
-import { JobDetailPage } from '@/features/jobs';
-import IntegrationsTab from '@/features/account/components/tabs/IntegrationsTab';
-import NotificationsTab from '@/features/account/components/tabs/NotificationsTab';
-import ProfileTab from '@/features/account/components/tabs/ProfileTab';
-import SecurityTab from '@/features/account/components/tabs/SecurityTab';
+import { AuthProvider, useAuth, LoginSupportPage } from '@/features/auth';
 import ErrorBoundary from '@/shared/components/layout/molecules/ErrorBoundary';
 import ProtectedRoute from '@/shared/components/layout/templates/ProtectedRoute';
 import LoadingSpinner from '@/shared/components/forms/atoms/LoadingSpinner';
@@ -33,31 +16,23 @@ import { defaultSEO, updateSEO } from '@/shared/utils/seo';
 
 import type { SeoConfig } from '@/shared/schemas';
 
-/**
- * Public Route component that redirects authenticated users
- * ENHANCED: Checks for recovery mode to prevent dashboard redirects during password reset
- */
-const PublicRoute: React.FC<{ children: React.ReactNode; redirectTo?: string }> = ({ 
-  children, 
-  redirectTo = '/dashboard' 
-}) => {
-  const { isAuthenticated, isLoading } = useAuth();
-  
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <LoadingSpinner size="lg" />
-      </div>
-    );
-  }
-  
-  if (isAuthenticated) {
-    return <Navigate to={redirectTo} replace />;
-  }
-  
-  return <>{children}</>;
-};
+// Lazy load page components for better performance
+const HomePage = React.lazy(() => import('@/features/marketing/pages/HomePage'));
+const ProductPage = React.lazy(() => import('@/features/marketing/pages/ProductPage'));
+const DashboardPage = React.lazy(() => import('@/features/dashboard/pages/DashboardPage'));
+const JobDetailPage = React.lazy(() => import('@/features/jobs/pages/JobDetailPage'));
+const AccountLayout = React.lazy(() => import('@/features/account/components/AccountLayout'));
+const BillingPage = React.lazy(() => import('@/features/marketing/pages/BillingPage'));
+const ContactPage = React.lazy(() => import('@/features/marketing/pages/ContactPage'));
+const AboutPage = React.lazy(() => import('@/features/marketing/pages/AboutPage'));
+const PrivacyPage = React.lazy(() => import('@/features/marketing/pages/PrivacyPage'));
+const TermsPage = React.lazy(() => import('@/features/marketing/pages/TermsPage'));
+const NotFoundPage = React.lazy(() => import('@/features/marketing/pages/NotFoundPage'));
+const ErrorPage = React.lazy(() => import('@/features/marketing/pages/ErrorPage'));
 
+// Lazy load account tabs
+const ProfileTab = React.lazy(() => import('@/features/account/components/tabs/ProfileTab'));
+const SecurityTab = React.lazy(() => import('@/features/account/components/tabs/SecurityTab'));
 /**
  * Component to handle route changes and analytics.
  * Manages SEO updates and page view tracking for different routes.
@@ -134,33 +109,83 @@ const RouteHandler: FC = () => {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/product" element={<ProductPage />} />
+        <Route path="/" element={
+          <Suspense fallback={<RouteLoadingFallback />}>
+            <HomePage />
+          </Suspense>
+        } />
+        <Route path="/product" element={
+          <Suspense fallback={<RouteLoadingFallback />}>
+            <ProductPage />
+          </Suspense>
+        } />
         <Route path="/dashboard" element={
           <ProtectedRoute redirectTo="/">
-            <DashboardPage />
+            <Suspense fallback={<RouteLoadingFallback />}>
+              <DashboardPage />
+            </Suspense>
           </ProtectedRoute>
         } />
         <Route path="/jobs/:jobId" element={
           <ProtectedRoute redirectTo="/">
-            <JobDetailPage />
+            <Suspense fallback={<RouteLoadingFallback />}>
+              <JobDetailPage />
+            </Suspense>
           </ProtectedRoute>
         } />
         <Route path="/account" element={
           <ProtectedRoute redirectTo="/">
-            <AccountLayout />
+            <Suspense fallback={<RouteLoadingFallback />}>
+              <AccountLayout />
+            </Suspense>
           </ProtectedRoute>
         }>
-          <Route index element={<ProfileTab />} />
-          <Route path="security" element={<SecurityTab />} />
-          <Route path="notifications" element={<NotificationsTab />} />
-          <Route path="integrations" element={<IntegrationsTab />} />
+          <Route index element={
+            <Suspense fallback={<LoadingSpinner size="lg" className="mx-auto" />}>
+              <ProfileTab />
+            </Suspense>
+          } />
+          <Route path="security" element={
+            <Suspense fallback={<LoadingSpinner size="lg" className="mx-auto" />}>
+              <SecurityTab />
+            </Suspense>
+          } />
+          <Route path="notifications" element={
+            <Suspense fallback={<LoadingSpinner size="lg" className="mx-auto" />}>
+              <NotificationsTab />
+            </Suspense>
+          } />
+          <Route path="integrations" element={
+            <Suspense fallback={<LoadingSpinner size="lg" className="mx-auto" />}>
+              <IntegrationsTab />
+            </Suspense>
+          } />
         </Route>
-        <Route path="/billing" element={<BillingPage />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="/privacy" element={<PrivacyPage />} />
-        <Route path="/terms" element={<TermsPage />} />
+        <Route path="/billing" element={
+          <Suspense fallback={<RouteLoadingFallback />}>
+            <BillingPage />
+          </Suspense>
+        } />
+        <Route path="/contact" element={
+          <Suspense fallback={<RouteLoadingFallback />}>
+            <ContactPage />
+          </Suspense>
+        } />
+        <Route path="/about" element={
+          <Suspense fallback={<RouteLoadingFallback />}>
+            <AboutPage />
+          </Suspense>
+        } />
+        <Route path="/privacy" element={
+          <Suspense fallback={<RouteLoadingFallback />}>
+            <PrivacyPage />
+          </Suspense>
+        } />
+        <Route path="/terms" element={
+          <Suspense fallback={<RouteLoadingFallback />}>
+            <TermsPage />
+          </Suspense>
+        } />
         
         {/* DEPRECATED ROUTES - Redirect to login with support message */}
         <Route path="/reset-password" element={<Navigate to="/login-support" replace />} />
@@ -168,12 +193,26 @@ const RouteHandler: FC = () => {
         <Route path="/forgot-password" element={<Navigate to="/login-support" replace />} />
         <Route path="/login-support" element={
           <PublicRoute>
-            <LoginSupportPage />
+            <Suspense fallback={<RouteLoadingFallback />}>
+              <LoginSupportPage />
+            </Suspense>
           </PublicRoute>
         } />
-        <Route path="/404" element={<NotFoundPage />} />
-        <Route path="/error" element={<ErrorPage />} />
-        <Route path="*" element={<NotFoundPage />} />
+        <Route path="/404" element={
+          <Suspense fallback={<RouteLoadingFallback />}>
+            <NotFoundPage />
+          </Suspense>
+        } />
+        <Route path="/error" element={
+          <Suspense fallback={<RouteLoadingFallback />}>
+            <ErrorPage />
+          </Suspense>
+        } />
+        <Route path="*" element={
+          <Suspense fallback={<RouteLoadingFallback />}>
+            <NotFoundPage />
+          </Suspense>
+        } />
       </Routes>
     </AnimatePresence>
   );
