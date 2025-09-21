@@ -10,7 +10,7 @@ import { motion } from 'framer-motion';
 import { Bell, Mail, Smartphone, Webhook, Clock, Save, AlertCircle, CheckCircle } from 'lucide-react';
 
 import { getErrorMessage } from '@/lib/api';
-import { notificationPrefsSchema, type NotificationPrefsFormData } from '@/lib/validation/account';
+import { notificationSettingsSchema, type NotificationSettings } from '@/shared/schemas/schemas/account/accountSettings';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Input } from '@/shared/components/ui/input';
@@ -36,8 +36,8 @@ const NotificationsTab = () => {
     reset,
     watch,
     setValue,
-  } = useForm<NotificationPrefsFormData>({
-    resolver: zodResolver(notificationPrefsSchema),
+  } = useForm<NotificationSettings>({
+    resolver: zodResolver(notificationSettingsSchema),
     defaultValues: {
       channels: { email: true, in_app: true, webhook: false },
       categories: {
@@ -76,7 +76,7 @@ const NotificationsTab = () => {
   const watchedCategories = watch('categories');
   const watchedDnd = watch('dnd');
 
-  const onSubmit = async (data: NotificationPrefsFormData) => {
+  const onSubmit = async (data: NotificationSettings) => {
     try {
       // Clean up webhook_url if webhook channel is disabled
       const cleanedData = {

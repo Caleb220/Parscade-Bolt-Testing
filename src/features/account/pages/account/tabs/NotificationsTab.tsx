@@ -18,8 +18,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/components/ui/use-toast';
 
 import { useAccountContext } from '../AccountLayout';
-import { useNotificationPrefs, useUpdateNotificationPrefs } from '@/hooks/api/useAccountData';
-import { notificationPrefsSchema, type NotificationPrefsFormData } from '@/lib/validation/account';
+import { useNotificationPrefs, useUpdateNotificationPrefs } from '@/shared/hooks/hooks/api/useAccountData';
+import { notificationSettingsSchema, type NotificationSettings } from '@/shared/schemas/schemas/account/accountSettings';
 import { getErrorMessage } from '@/lib/api';
 
 const NotificationsTab: React.FC = () => {
@@ -35,8 +35,8 @@ const NotificationsTab: React.FC = () => {
     reset,
     watch,
     setValue,
-  } = useForm<NotificationPrefsFormData>({
-    resolver: zodResolver(notificationPrefsSchema),
+  } = useForm<NotificationSettings>({
+    resolver: zodResolver(notificationSettingsSchema),
     defaultValues: {
       channels: { email: true, in_app: true, webhook: false },
       categories: {
@@ -75,7 +75,7 @@ const NotificationsTab: React.FC = () => {
   const watchedCategories = watch('categories');
   const watchedDnd = watch('dnd');
 
-  const onSubmit = async (data: NotificationPrefsFormData) => {
+  const onSubmit = async (data: NotificationSettings) => {
     try {
       // Clean up webhook_url if webhook channel is disabled
       const cleanedData = {
