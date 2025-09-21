@@ -5,7 +5,7 @@
 
 import { supabase } from '@/lib/supabase';
 import { env } from '@/app/config/env';
-import { logger } from '@/services/logger';
+import { logger } from '@/shared/services/logger';
 
 import type { paths } from '@/types/api-types';
 import { ApiError } from './errors';
