@@ -21,6 +21,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onModeChange, onSuccess }) =>
     email: '',
     password: '',
     fullName: '',
+    username: '',
   });
 
   const [formErrors, setFormErrors] = useState<FormErrors>({});
@@ -78,6 +79,15 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onModeChange, onSuccess }) =>
       }
     }
 
+    // Username name validation for signup
+    if (mode === 'signup') {
+      if (!formData.username.trim()) {
+        errors.username = 'Username is required';
+      } else if (formData.username.trim().length < 2) {
+        errors.username = 'Username must be at least 2 characters';
+      }
+    }
+
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   }, [formData, mode]);
@@ -101,7 +111,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onModeChange, onSuccess }) =>
       if (mode === 'signin') {
         await signIn(formData.email.trim(), formData.password);
       } else {
-        await signUp(formData.email.trim(), formData.password, formData.fullName.trim());
+        await signUp(formData.email.trim(), formData.password, formData.fullName.trim(), formData.username.trim());
       }
 
       // Reset attempt count on success
@@ -144,6 +154,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onModeChange, onSuccess }) =>
   const handleEmailChange = useCallback(handleInputChange('email'), [handleInputChange]);
   const handlePasswordChange = useCallback(handleInputChange('password'), [handleInputChange]);
   const handleFullNameChange = useCallback(handleInputChange('fullName'), [handleInputChange]);
+  const handleUsernameChange = useCallback(handleInputChange('username'), [handleInputChange]);
 
   // Memoized mode change handlers
   const handleModeToggle = useCallback(() => {
@@ -180,6 +191,19 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onModeChange, onSuccess }) =>
               error={formErrors.fullName}
               leftIcon={<User className="w-5 h-5" />}
               placeholder="Enter your full name"
+              required
+            />
+          )}
+
+          {mode === 'signup' && (
+            <Input
+              type="text"
+              label="Username"
+              value={formData.username}
+              onChange={handleUsernameChange}
+              error={formErrors.username}
+              leftIcon={<User className="w-5 h-5" />}
+              placeholder="Enter a username"
               required
             />
           )}

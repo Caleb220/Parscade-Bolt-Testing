@@ -18,7 +18,7 @@ type ErrorResponse = paths['/health']['get']['responses']['503']['content']['app
 /**
  * Request options for API calls
  */
-interface RequestOptions {
+export interface RequestOptions {
   readonly timeout?: number;
   readonly retryable?: boolean;
   readonly retryAttempts?: number;
@@ -351,6 +351,19 @@ class ApiClient {
   ): Promise<T> {
     const response = await this.executeRequest(url, {
       method: 'PATCH',
+      body: body ? JSON.stringify(body) : undefined,
+    }, options);
+
+    return this.parseResponse<T>(response);
+  }
+
+  async put<T>(
+    url: string,
+    body?: unknown,
+    options?: RequestOptions
+  ): Promise<T> {
+    const response = await this.executeRequest(url, {
+      method: 'PUT',
       body: body ? JSON.stringify(body) : undefined,
     }, options);
 

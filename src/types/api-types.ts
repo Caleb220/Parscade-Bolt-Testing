@@ -976,6 +976,128 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/auth/signup": {
+    parameters: { query?: never; header?: never; path?: never; cookie?: never };
+    get?: never; put?: never; delete?: never; options?: never; head?: never; patch?: never; trace?: never;
+
+    /**
+     * Sign up
+     * @description Create a new user. May return `session: null` if email confirmations are enabled.
+     */
+    post: {
+        parameters: { query?: never; header?: never; path?: never; cookie?: never };
+        requestBody: {
+        content: {
+            "application/json": components["schemas"]["SignUpRequest"];
+        };
+        };
+        responses: {
+        /** @description User created */
+        201: {
+            headers: { [name: string]: unknown };
+            content: { "application/json": components["schemas"]["AuthResponse"] };
+        };
+        /** @description Bad request (validation) */
+        400: {
+            headers: { [name: string]: unknown };
+            content: { "application/json": components["schemas"]["ErrorResponse"] };
+        };
+        /** @description Email or username conflict */
+        409: {
+            headers: { [name: string]: unknown };
+            content: { "application/json": components["schemas"]["ErrorResponse"] };
+        };
+        };
+    };
+    },
+
+    "/v1/auth/signin": {
+    parameters: { query?: never; header?: never; path?: never; cookie?: never };
+    get?: never; put?: never; delete?: never; options?: never; head?: never; patch?: never; trace?: never;
+
+    /**
+     * Sign in
+     * @description Authenticate with email **or** username + password. Returns user + session.
+     */
+    post: {
+        parameters: { query?: never; header?: never; path?: never; cookie?: never };
+        requestBody: {
+        content: {
+            "application/json": components["schemas"]["SignInRequest"];
+        };
+        };
+        responses: {
+        /** @description Signed in */
+        200: {
+            headers: { [name: string]: unknown };
+            content: { "application/json": components["schemas"]["AuthResponse"] };
+        };
+        /** @description Invalid credentials */
+        401: {
+            headers: { [name: string]: unknown };
+            content: { "application/json": components["schemas"]["ErrorResponse"] };
+        };
+        };
+    };
+    },
+
+    "/v1/auth/signout": {
+    parameters: { query?: never; header?: never; path?: never; cookie?: never };
+    get?: never; put?: never; delete?: never; options?: never; head?: never; patch?: never; trace?: never;
+
+    /**
+     * Sign out
+     * @description Invalidate the current session (requires Bearer token).
+     */
+    post: {
+        parameters: { query?: never; header?: never; path?: never; cookie?: never };
+        requestBody?: {
+        content: { "application/json": { } };
+        };
+        responses: {
+        /** @description Signed out */
+        200: {
+            headers: { [name: string]: unknown };
+            content: { "application/json": components["schemas"]["MessageResponse"] };
+        };
+        /** @description Not authenticated */
+        401: {
+            headers: { [name: string]: unknown };
+            content: { "application/json": components["schemas"]["ErrorResponse"] };
+        };
+        };
+    };
+    },
+
+    "/v1/auth/reset-password": {
+    parameters: { query?: never; header?: never; path?: never; cookie?: never };
+    get?: never; put?: never; delete?: never; options?: never; head?: never; patch?: never; trace?: never;
+
+    /**
+     * Request password reset
+     * @description Sends a password reset email.
+     */
+    post: {
+        parameters: { query?: never; header?: never; path?: never; cookie?: never };
+        requestBody: {
+        content: {
+            "application/json": components["schemas"]["ResetPasswordRequest"];
+        };
+        };
+        responses: {
+        /** @description Reset email sent */
+        200: {
+            headers: { [name: string]: unknown };
+            content: { "application/json": components["schemas"]["MessageResponse"] };
+        };
+        /** @description Invalid email or request */
+        400: {
+            headers: { [name: string]: unknown };
+            content: { "application/json": components["schemas"]["ErrorResponse"] };
+        };
+        };
+    };
+    },
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1011,6 +1133,52 @@ export interface components {
                 expires_at?: string;
             };
         };
+        SignUpRequest: {
+            /** Format: email */
+            email: string;
+            /** @minLength 8 @maxLength 128
+             *  @pattern ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)
+             *  Must include at least one lowercase letter, one uppercase letter, and one number.
+             */
+            password: string;
+            /** @maxLength 100 */
+            fullName?: string | null;
+            /** @minLength 3 @maxLength 32
+             *  @pattern ^[a-zA-Z0-9_]+$
+             *  Letters, numbers, underscore only. Send lowercased from the client.
+             */
+            username?: string | null;
+            };
+
+            SignInRequest: {
+            /** Format: email */
+            email?: string;
+            /** @minLength 3 @maxLength 32
+             *  @pattern ^[a-zA-Z0-9_]+$
+             */
+            username?: string;
+            /** @minLength 8 @maxLength 128 */
+            password: string;
+            // Backend requires either email OR username:
+            // anyOf: [{ required: ['email'] }, { required: ['username'] }]
+            };
+
+            ResetPasswordRequest: {
+            /** Format: email */
+            email: string;
+            };
+
+            UpdatePasswordRequest: {
+            /** @minLength 8 @maxLength 128
+             *  @pattern ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)
+             */
+            password: string;
+            };
+
+            /** Simple success message payload (used by signout, reset-password success, password update, etc.) */
+            MessageResponse: {
+            message: string;
+            };
         UserProfile: {
             /** Format: uuid */
             id: string;

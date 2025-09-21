@@ -1,10 +1,13 @@
 import React, { createContext, useContext, useReducer, useEffect, ReactNode, useCallback, useMemo, useRef } from 'react';
 import type { AuthState, AuthContextType, User } from '../types/authTypes';
 import { supabase } from '../../../lib/supabase';
-import type { AuthError, AuthApiError, User as SupabaseUser } from '@supabase/supabase-js';
+import type { AuthError, User as SupabaseUser } from '@supabase/supabase-js';
 import { logger } from '../../../services/logger';
-import { performHardLogout, setupCrossTabLogoutListener } from '../../../utils/hardLogout';
+import { setupCrossTabLogoutListener } from '../../../utils/hardLogout';
 import type { TypedSupabaseUser } from '../../../types/supabase';
+
+import { userApi } from '@/lib/api/modules/user'
+
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -12,6 +15,7 @@ type AuthAction =
   | { type: 'AUTH_START' }
   | { type: 'AUTH_SUCCESS'; payload: { readonly user: User; readonly isEmailConfirmed: boolean } }
   | { type: 'AUTH_ERROR'; payload: string }
+  | { type: 'AUTH_INFO'; payload: string }   // ⬅️ add
   | { type: 'AUTH_SIGNOUT' }
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'CLEAR_ERROR' }
@@ -30,6 +34,8 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
         isLoading: false,
         error: null,
       };
+    case 'AUTH_INFO':
+      return { ...state, isLoading: false, error: action.payload };
     case 'AUTH_ERROR':
       return {
         ...state,
@@ -58,6 +64,16 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   }
 };
 
+
+async function authHeaders(): Promise<HeadersInit> {
+  const { data: { session } } = await supabase.auth.getSession();
+  return session?.access_token
+    ? { Authorization: `Bearer ${session.access_token}` }
+    : {};
+}
+
+
+
 const initialState: AuthState = {
   user: null,
   isAuthenticated: false,
@@ -69,6 +85,17 @@ const initialState: AuthState = {
 interface AuthProviderProps {
   readonly children: ReactNode;
 }
+
+type ApiSignInResponse = {
+  user: { id: string; email: string };
+  session: { access_token: string; refresh_token: string };
+};
+
+type ApiSignUpResponse = {
+  user: { id: string; email: string } | null;
+  session: { access_token: string; refresh_token: string } | null;
+  message: string;
+};
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
@@ -219,99 +246,82 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
   }, []); // Empty dependency array - only run once on mount
 
-  const signIn = useCallback(async (email: string, password: string): Promise<void> => {
+  const signIn = useCallback(async (identifier: string, password: string): Promise<void> => {
     dispatch({ type: 'AUTH_START' });
-    
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const body =
+        identifier.includes('@')
+          ? { email: identifier.trim().toLowerCase(), password }
+          : { username: identifier.trim().toLowerCase(), password };
+
+      const { user, session } = await userApi.signIn(body);
+
+      const { error: setErr } = await supabase.auth.setSession({
+        access_token: session.access_token,
+        refresh_token: session.refresh_token,
+      });
+      if (setErr) throw setErr;
+
+      // onAuthStateChange will dispatch AUTH_SUCCESS
+    } catch (err: any) {
+      const message = err?.message || 'Invalid email/username or password';
+      dispatch({ type: 'AUTH_ERROR', payload: message });
+      throw err;
+    }
+  }, [supabase]);
+
+  const signUp = useCallback(async (
+    email: string,
+    password: string,
+    fullName: string,
+    username: string
+  ): Promise<void> => {
+    dispatch({ type: 'AUTH_START' });
+    try {
+      const body = {
         email: email.trim().toLowerCase(),
         password,
-      });
+        full_name: fullName.trim(),
+        username: username.trim().toLowerCase(),
+      };
 
-      if (error) {
-        // Immediately dispatch error state to stop loading
-        const message = getAuthErrorMessage(error);
-        dispatch({ type: 'AUTH_ERROR', payload: message });
-        throw error;
+      const { session, message } = await userApi.signUp(body);
+
+      if (session) {
+        const { error: setErr } = await supabase.auth.setSession({
+          access_token: session.access_token,
+          refresh_token: session.refresh_token,
+        });
+        if (setErr) throw setErr;
+      } else {
+        // email confirmations enabled
+        dispatch({ type: 'AUTH_INFO', payload: message || 'Check your email to confirm your account.' });
       }
-
-      // Success state will be handled by auth state change listener
-      // No need to dispatch here to avoid double state updates
-    } catch (authError) {
-      // Ensure loading state is always stopped on error
-      const message = (authError as any)?.name === 'AuthError'
-        ? getAuthErrorMessage(authError)
-        : 'An unexpected error occurred';
+    } catch (err: any) {
+      const message = err?.message || 'Unable to sign up';
       dispatch({ type: 'AUTH_ERROR', payload: message });
-      throw authError;
+      throw err;
     }
-  }, []);
-
-  const signUp = useCallback(async (email: string, password: string, fullName: string): Promise<void> => {
-    dispatch({ type: 'AUTH_START' });
-    
-    try {
-      const { data, error } = await supabase.auth.signUp({
-        email: email.trim().toLowerCase(),
-        password,
-        options: {
-          data: {
-            full_name: fullName.trim(),
-          },
-        },
-      });
-
-      if (error) {
-        // Immediately dispatch error state to stop loading
-        const message = getAuthErrorMessage(error);
-        dispatch({ type: 'AUTH_ERROR', payload: message });
-        throw error;
-      }
-
-      // Success state will be handled by auth state change listener
-      // No need to dispatch here to avoid double state updates
-    } catch (signUpError) {
-      // Ensure loading state is always stopped on error
-      const message = (signUpError as any)?.name === 'AuthError'
-        ? getAuthErrorMessage(signUpError)
-        : 'An unexpected error occurred';
-      dispatch({ type: 'AUTH_ERROR', payload: message });
-      throw signUpError;
-    }
-  }, []);
+  }, [supabase]);
 
   const signOut = useCallback(async (): Promise<void> => {
-    logger.info('Starting hard logout process', {
-      context: { feature: 'auth', action: 'signOut' },
-    });
-    
+    dispatch({ type: 'AUTH_START' });
     try {
-      // Update UI immediately for smooth user experience  
-      dispatch({ type: 'AUTH_SIGNOUT' });
-      
-      // Clear user context immediately
-      logger.clearUserContext();
-      
-      // Perform comprehensive hard logout
-      await performHardLogout();
-      
-    } catch (signOutError) {
-      logger.warn('Background signout error occurred', {
-        context: { feature: 'auth', action: 'backgroundSignout' },
-        error: signOutError instanceof Error ? signOutError : new Error(String(signOutError)),
-      });
+      const { data: { session } } = await supabase.auth.getSession();
+      const accessToken = session?.access_token;
+
+      if (accessToken) {
+        // Call protected endpoint with bearer
+        await userApi.signOut({ accessToken, retryable: false });
+      }
+
+      await supabase.auth.signOut();
+    } catch (err: any) {
+      await supabase.auth.signOut();
+      const message = err?.message || 'Signed out';
+      dispatch({ type: 'AUTH_ERROR', payload: message });
     }
-    
-    logger.info('Hard logout process completed', {
-      context: { feature: 'auth', action: 'signOutComplete' },
-    });
-    
-    // Redirect to server logout endpoint for final cleanup
-    // This will set Clear-Site-Data headers and redirect to login
-    setTimeout(() => {
-      window.location.href = '/';
-    }, 100);
-  }, []);
+  }, [supabase]);
 
   const resendConfirmationEmail = useCallback(async (email: string): Promise<void> => {
     try {

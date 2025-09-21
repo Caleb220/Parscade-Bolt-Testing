@@ -79,6 +79,19 @@ export const personNameSchema = z
   .min(2, 'Name must be at least 2 characters long.')
   .max(120, 'Name must be 120 characters or less.');
 
+
+export const passwordSchema = z
+  .string({ required_error: 'Password is required.' })
+  .trim()
+  .min(8, 'Password must be at least 8 characters long.')
+  .max(120, 'Password must be 120 characters or less.');
+
+
+export const userNameSchema = z
+  .string({ required_error: 'Username is required.' })
+  .trim()
+  .min(2, 'Username must be at least 2 characters long.')
+  .max(60, 'Username must be 60 characters or less.');
 /**
  * International phone number schema with loose punctuation support.
  */

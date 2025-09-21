@@ -3,8 +3,11 @@ import { z } from 'zod';
 import {
   booleanSchema,
   emailSchema,
+  userNameSchema,
   nonEmptyTextSchema,
   optionalEmailSchema,
+  personNameSchema,
+  passwordSchema,
   optionalHttpsUrlSchema,
   optionalTrimmedStringSchema,
   uuidSchema,
@@ -51,6 +54,7 @@ export const formErrorsSchema = z
     email: optionalTrimmedStringSchema('Email error', 0, 200),
     password: optionalTrimmedStringSchema('Password error', 0, 200),
     fullName: optionalTrimmedStringSchema('Full name error', 0, 200),
+    username: optionalTrimmedStringSchema('Username error', 0, 200),
     general: optionalTrimmedStringSchema('General error', 0, 200),
   })
   .strict();
@@ -72,13 +76,13 @@ const asyncVoid = z.promise(z.void());
 
 /** Auth sign-in function signature. */
 const signInFunctionSchema = z.function({
-  input: [emailSchema, nonEmptyTextSchema('Password', 128)],
+  input: [z.union([emailSchema, userNameSchema]), passwordSchema],
   output: asyncVoid,
 });
 
 /** Auth sign-up function signature. */
 const signUpFunctionSchema = z.function({
-  input: [emailSchema, nonEmptyTextSchema('Password', 128), nonEmptyTextSchema('Full name', 120)],
+  input: [emailSchema, passwordSchema, personNameSchema, userNameSchema],
   output: asyncVoid,
 });
 

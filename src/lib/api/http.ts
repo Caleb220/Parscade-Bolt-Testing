@@ -4,8 +4,8 @@
  */
 
 import { supabase } from '@/lib/supabase';
-import { env } from '@/lib/env';
-import { toAppError, AppError } from './errors';
+import { env } from '@/config/env';
+import { ApiError } from './errors';
 
 const TIMEOUT_MS = 15000;
 const MAX_RETRIES = 3;
@@ -52,7 +52,7 @@ export async function http<T>(
   init?: RequestInit & { retry?: boolean }
 ): Promise<T> {
   const { retry = true, ...fetchInit } = init || {};
-  let lastError: AppError | null = null;
+  let lastError: ApiError | null = null;
   const requestId = generateRequestId();
 
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
@@ -71,7 +71,7 @@ export async function http<T>(
         ...(fetchInit.headers as Record<string, string> || {}),
       };
 
-      const response = await fetch(`${env.VITE_API_BASE_URL}${path}`, {
+      const response = await fetch(`${env.api.baseUrl}${path}`, {
         ...fetchInit,
         headers,
         credentials: 'omit',
@@ -81,10 +81,10 @@ export async function http<T>(
       clearTimeout(timeout);
 
       if (!response.ok) {
-        const appError = await toAppError(response);
+        const ApiError = await isApiError(response);
         
         // Handle auth errors immediately
-        if (appError.code === 'UNAUTHORIZED') {
+        if (ApiError.code === 'UNAUTHORIZED') {
           // Try to refresh session once
           if (attempt === 1) {
             try {
@@ -93,26 +93,26 @@ export async function http<T>(
             } catch {
               // Refresh failed, redirect to login
               window.location.href = '/';
-              throw appError;
+              throw ApiError;
             }
           }
         }
 
         // Don't retry client errors (except auth and rate limit)
         if (response.status >= 400 && response.status < 500) {
-          if (!['UNAUTHORIZED', 'RATE_LIMIT'].includes(appError.code)) {
-            throw appError;
+          if (!['UNAUTHORIZED', 'RATE_LIMIT'].includes(ApiError.code)) {
+            throw ApiError;
           }
         }
 
         // Retry for server errors and retryable client errors
-        if (attempt < MAX_RETRIES && retry && appError.isRetryable()) {
-          lastError = appError;
+        if (attempt < MAX_RETRIES && retry && ApiError.isRetryable()) {
+          lastError = ApiError;
           await sleep(getRetryDelay(attempt));
           continue;
         }
 
-        throw appError;
+        throw ApiError;
       }
 
       // Handle successful responses
@@ -129,19 +129,20 @@ export async function http<T>(
       }
 
       // Unexpected content type
-      throw new AppError(
+      throw new ApiError(
         'UNKNOWN',
         `Expected JSON response, got ${contentType}`,
         response.status,
         undefined,
-        requestId
+        requestId,
+        path
       );
 
     } catch (error) {
       clearTimeout(timeout);
 
-      if (error instanceof AppError) {
-        // Don't retry AppErrors that aren't retryable
+      if (error instanceof ApiError) {
+        // Don't retry ApiErrors that aren't retryable
         if (attempt >= MAX_RETRIES || !retry || !error.isRetryable()) {
           throw error;
         }
@@ -152,12 +153,13 @@ export async function http<T>(
 
       // Handle network/timeout errors
       if (error instanceof Error) {
-        const networkError = new AppError(
+        const networkError = new ApiError(
           error.name === 'AbortError' ? 'TIMEOUT' : 'NETWORK',
           error.name === 'AbortError' ? 'Request timed out' : error.message,
           undefined,
           undefined,
-          requestId
+          requestId,
+          path
         );
 
         if (attempt >= MAX_RETRIES || !retry) {
@@ -170,12 +172,13 @@ export async function http<T>(
       }
 
       // Unknown error type
-      const unknownError = new AppError(
+      const unknownError = new ApiError(
         'UNKNOWN',
         'An unexpected error occurred',
         undefined,
         error,
-        requestId
+        requestId,
+        path
       );
 
       if (attempt >= MAX_RETRIES || !retry) {
@@ -188,7 +191,7 @@ export async function http<T>(
   }
 
   // If we get here, all retries failed
-  throw lastError || new AppError('UNKNOWN', 'Max retries exceeded', undefined, undefined, requestId);
+  throw lastError || new ApiError('UNKNOWN', 'Max retries exceeded', undefined, undefined, requestId, path);
 }
 
 /**
@@ -260,7 +263,7 @@ export async function httpUpload(
       if (xhr.status >= 200 && xhr.status < 300) {
         resolve();
       } else {
-        reject(new AppError(
+        reject(new ApiError(
           'SERVER',
           `Upload failed with status ${xhr.status}`,
           xhr.status,
@@ -271,11 +274,11 @@ export async function httpUpload(
     });
 
     xhr.addEventListener('error', () => {
-      reject(new AppError('NETWORK', 'Upload network error'));
+      reject(new ApiError('NETWORK', 'Upload network error'));
     });
 
     xhr.addEventListener('timeout', () => {
-      reject(new AppError('TIMEOUT', 'Upload timed out'));
+      reject(new ApiError('TIMEOUT', 'Upload timed out'));
     });
 
     xhr.timeout = TIMEOUT_MS;
