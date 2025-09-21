@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Play } from 'lucide-react';
 
+import { useAuth } from '@/features/auth';
+import AuthModal from '@/features/auth/components/AuthModal';
 import Button from '@/shared/components/forms/Button';
 
 
