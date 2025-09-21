@@ -271,11 +271,11 @@ const SecurityTab: React.FC = () => {
                   className="flex items-center justify-between p-4 border border-gray-200 rounded-lg"
                 >
                   <div className="flex-1">
-                    <div className="flex items-center space-x-3 mb-2">
-                      <h4 className="font-medium text-gray-900">{key?.name || 'Unnamed Key'}</h4>
-                      <div className="flex space-x-1">
+                    <div className="flex items-center space-x-3 mb-3">
+                      <h4 className="font-bold text-lg text-gray-900">{key?.name || 'Unnamed Key'}</h4>
+                      <div className="flex space-x-2">
                         {(key?.scopes || []).map((scope) => (
-                          <Badge key={scope} variant="secondary" className="text-xs">
+                          <Badge key={scope} variant="outline" className="text-xs border border-gray-300 px-2 py-1">
                             {scope}
                           </Badge>
                         ))}
@@ -287,7 +287,7 @@ const SecurityTab: React.FC = () => {
                         <span>Last used {formatDate(key.last_used_at)}</span>
                       )}
                     </div>
-                    <div className="flex items-center space-x-2 mt-2">
+                    <div className="flex items-center space-x-2 mt-3">
                       <Input
                         value={key?.preview ? `...${key.preview}` : '••••••••'}
                         readOnly
@@ -303,14 +303,17 @@ const SecurityTab: React.FC = () => {
                       </Button>
                     </div>
                   </div>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => setConfirmRevokeKey(key?.id || '')}
-                    disabled={revokeApiKey.isPending}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
+                  <div className="flex items-center ml-4">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setConfirmRevokeKey(key?.id || '')}
+                      disabled={revokeApiKey.isPending}
+                      className="flex items-center justify-center"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
