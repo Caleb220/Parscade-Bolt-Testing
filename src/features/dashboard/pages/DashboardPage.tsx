@@ -6,6 +6,7 @@
 import React from 'react';
 import { Sparkles, BarChart3, TrendingUp, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 import { useAuth } from '@/features/auth';
 import { Button } from '@/shared/components/ui/button';
@@ -85,7 +86,7 @@ const DashboardPage: React.FC = () => {
     );
   }
 
-            </motion.div>
+  return (
     <DashboardLayout
       title="Dashboard Overview"
       subtitle="Monitor your document processing and analytics"
@@ -154,7 +155,7 @@ const DashboardPage: React.FC = () => {
                   <Zap className="w-6 h-6 text-blue-600 mr-3" />
                 </motion.div>
                 <h3 className="text-xl font-bold text-gray-900 tracking-tight">Upload & Process</h3>
-              </motion.div>
+              </div>
               <p className="text-gray-600 text-sm font-medium leading-relaxed">
                 Upload documents to extract structured data using our AI-powered parsing engine
               </p>
@@ -206,7 +207,7 @@ const DashboardPage: React.FC = () => {
                 transition={{ duration: 1.5, repeat: Infinity }}
                 className="ml-1"
               >
-                
+                →
               </motion.span>
             </motion.div>
           </motion.div>
