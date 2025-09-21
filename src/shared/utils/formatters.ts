@@ -72,7 +72,7 @@ export const formatRelativeTime = (date: Date | string): string => {
 /**
  * Format date to human readable string
  */
-export const formatDateTime = (date: Date | string, options?: Intl.DateTimeFormatOptions): string => {
+export const formatDate = (date: Date | string, options?: Intl.DateTimeFormatOptions): string => {
   const targetDate = typeof date === 'string' ? new Date(date) : date;
   
   const defaultOptions: Intl.DateTimeFormatOptions = {
