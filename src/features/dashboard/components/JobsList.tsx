@@ -14,7 +14,7 @@ import { useJobs } from '@/shared/hooks/api/useJobs';
 
 const JobsList: React.FC = () => {
   const navigate = useNavigate();
-  const { data: jobsData, isLoading, error } = useJobs({ 
+  const { data: jobsData, isLoading, error, refetch } = useJobs({ 
     page: 1, 
     limit: 10 
   });
@@ -24,14 +24,18 @@ const JobsList: React.FC = () => {
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <div className="flex items-center text-red-600 mb-4">
           <AlertTriangle className="w-5 h-5 mr-2" />
-          <span>Failed to load jobs: {getErrorMessage(error)}</span>
+          <span className="text-sm">Failed to load jobs: {getErrorMessage(error)}</span>
         </div>
-        <CustomButton variant="outline" onClick={() => window.location.reload()}>
+        <CustomButton variant="outline" size="sm" onClick={() => refetch()}>
           Retry
         </CustomButton>
       </div>
     );
   }
+
+  // Ensure we have valid data structure
+  const jobs = jobsData?.jobs || [];
+  const pagination = jobsData?.pagination;
 
   return (
     <div className="bg-white rounded-lg border border-gray-200">
@@ -46,7 +50,7 @@ const JobsList: React.FC = () => {
             <LoadingSpinner size="md" className="mx-auto mb-2" />
             <p className="text-gray-600 text-sm">Loading jobs...</p>
           </div>
-        ) : !jobsData?.jobs.length ? (
+        ) : !jobs || jobs.length === 0 ? (
           <div className="p-6 text-center">
             <FileText className="w-8 h-8 text-gray-400 mx-auto mb-2" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No processing jobs yet</h3>
@@ -58,44 +62,44 @@ const JobsList: React.FC = () => {
             </p>
           </div>
         ) : (
-          jobsData.jobs.map((job, index) => (
+          jobs.map((job, index) => (
             <motion.div
-              key={job.id}
+              key={job?.id || index}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
               className="p-4 hover:bg-gray-50 cursor-pointer transition-colors duration-200"
-              onClick={() => navigate(`/jobs/${job.id}`)}
+              onClick={() => job?.id && navigate(`/jobs/${job.id}`)}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-start space-x-3 flex-1">
                   <div className="flex-shrink-0 mt-1">
-                    <StatusIcon status={job.status as any} size="sm" />
+                    <StatusIcon status={(job?.status as any) || 'pending'} size="sm" />
                   </div>
                   
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-gray-900 truncate">
-                      {formatJobType(job.type)}
+                      {job?.type ? formatJobType(job.type) : 'Processing Job'}
                     </p>
                     <p className="text-sm text-gray-600 truncate">
-                      Created {formatDate(job.createdAt)}
+                      Created {job?.createdAt ? formatDate(job.createdAt) : 'Unknown'}
                     </p>
-                    {job.status === 'processing' && (
+                    {job?.status === 'processing' && (
                       <div className="flex items-center mt-1">
                         <div className="w-24 bg-gray-200 rounded-full h-1.5 mr-2">
                           <div 
                             className="bg-blue-600 h-1.5 rounded-full transition-all duration-300"
-                            style={{ width: `${job.progress}%` }}
+                            style={{ width: `${job?.progress || 0}%` }}
                           />
                         </div>
-                        <span className="text-xs text-gray-500">{job.progress}%</span>
+                        <span className="text-xs text-gray-500">{job?.progress || 0}%</span>
                       </div>
                     )}
                   </div>
                 </div>
 
                 <div className="flex items-center space-x-3">
-                  <StatusBadge status={job.status as any} className="text-xs" />
+                  <StatusBadge status={(job?.status as any) || 'pending'} className="text-xs" />
                   <ChevronRight className="w-4 h-4 text-gray-400" />
                 </div>
               </div>
@@ -104,7 +108,7 @@ const JobsList: React.FC = () => {
         )}
       </div>
 
-      {jobsData?.pagination?.hasNext && (
+      {pagination?.hasNext && (
         <div className="p-4 border-t border-gray-200">
           <CustomButton variant="outline" fullWidth>
             View All Jobs

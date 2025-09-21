@@ -22,6 +22,10 @@ export const formatBytes = (bytes: number, decimals = 2): string => {
  * Format user agent to browser name
  */
 export const formatUserAgent = (userAgent: string): string => {
+  if (!userAgent || typeof userAgent !== 'string') {
+    return 'Unknown Browser';
+  }
+  
   if (userAgent.includes('Chrome')) return 'Chrome';
   if (userAgent.includes('Firefox')) return 'Firefox';
   if (userAgent.includes('Safari') && !userAgent.includes('Chrome')) return 'Safari';
@@ -34,6 +38,10 @@ export const formatUserAgent = (userAgent: string): string => {
  * Format job type for display
  */
 export const formatJobType = (type: string): string => {
+  if (!type || typeof type !== 'string') {
+    return 'Unknown Job';
+  }
+  
   switch (type) {
     case 'parse_document':
       return 'Parse Document';
@@ -50,6 +58,10 @@ export const formatJobType = (type: string): string => {
  * Format status for display
  */
 export const formatStatus = (status: string): string => {
+  if (!status || typeof status !== 'string') {
+    return 'Unknown';
+  }
+  
   return status.charAt(0).toUpperCase() + status.slice(1);
 };
 
@@ -57,8 +69,18 @@ export const formatStatus = (status: string): string => {
  * Format date to relative time (e.g., "2 hours ago")
  */
 export const formatRelativeTime = (date: Date | string): string => {
+  if (!date) {
+    return 'Unknown time';
+  }
+  
   const now = new Date();
   const targetDate = typeof date === 'string' ? new Date(date) : date;
+  
+  // Check for invalid date
+  if (isNaN(targetDate.getTime())) {
+    return 'Invalid date';
+  }
+  
   const diffInSeconds = Math.floor((now.getTime() - targetDate.getTime()) / 1000);
 
   if (diffInSeconds < 60) return 'Just now';
@@ -73,7 +95,16 @@ export const formatRelativeTime = (date: Date | string): string => {
  * Format date to human readable string
  */
 export const formatDate = (date: Date | string, options?: Intl.DateTimeFormatOptions): string => {
+  if (!date) {
+    return 'Unknown date';
+  }
+  
   const targetDate = typeof date === 'string' ? new Date(date) : date;
+  
+  // Check for invalid date
+  if (isNaN(targetDate.getTime())) {
+    return 'Invalid date';
+  }
   
   const defaultOptions: Intl.DateTimeFormatOptions = {
     year: 'numeric',

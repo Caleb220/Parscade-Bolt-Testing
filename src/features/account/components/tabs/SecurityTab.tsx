@@ -240,7 +240,7 @@ const SecurityTab: React.FC = () => {
             </div>
           )}
 
-          {keysLoading ? (
+          {keysLoading && !apiKeys ? (
             <div className="space-y-3">
               {Array.from({ length: 2 }).map((_, i) => (
                 <Skeleton key={i} className="h-20 w-full" />
@@ -255,7 +255,7 @@ const SecurityTab: React.FC = () => {
                 Retry
               </Button>
             </div>
-          ) : !apiKeys || apiKeys.length === 0 ? (
+          ) : !apiKeys || !Array.isArray(apiKeys) || apiKeys.length === 0 ? (
             <div className="text-center py-8">
               <Key className="w-8 h-8 text-gray-400 mx-auto mb-2" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">No API keys configured</h3>
@@ -269,16 +269,16 @@ const SecurityTab: React.FC = () => {
             </div>
           ) : (
             <div className="space-y-3">
-              {apiKeys.map((key) => (
+              {(apiKeys || []).map((key) => (
                 <div
                   key={key.id}
                   className="flex items-center justify-between p-4 border border-gray-200 rounded-lg"
                 >
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-2">
-                      <h4 className="font-medium text-gray-900">{key.name}</h4>
+                      <h4 className="font-medium text-gray-900">{key?.name || 'Unnamed Key'}</h4>
                       <div className="flex space-x-1">
-                        {key.scopes.map((scope) => (
+                        {(key?.scopes || []).map((scope) => (
                           <Badge key={scope} variant="secondary" className="text-xs">
                             {scope}
                           </Badge>
@@ -286,21 +286,22 @@ const SecurityTab: React.FC = () => {
                       </div>
                     </div>
                     <div className="flex items-center space-x-4 text-sm text-gray-500">
-                      <span>Created {formatDate(key.createdAt)}</span>
-                      {key.lastUsedAt && (
+                      <span>Created {key?.createdAt ? formatDate(key.createdAt) : 'Unknown'}</span>
+                      {key?.lastUsedAt && (
                         <span>Last used {formatDate(key.lastUsedAt)}</span>
                       )}
                     </div>
                     <div className="flex items-center space-x-2 mt-2">
                       <Input
-                        value={`...${key.keyPreview}`}
+                        value={key?.keyPreview ? `...${key.keyPreview}` : '••••••••'}
                         readOnly
                         className="font-mono text-xs flex-1"
                       />
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => copy(`...${key.keyPreview}`, 'API key preview')}
+                        onClick={() => copy(key?.keyPreview ? `...${key.keyPreview}` : '', 'API key preview')}
+                        disabled={!key?.keyPreview}
                       >
                         <Copy className="w-4 h-4" />
                       </Button>
@@ -309,7 +310,7 @@ const SecurityTab: React.FC = () => {
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => setConfirmRevokeKey(key.id)}
+                    onClick={() => setConfirmRevokeKey(key?.id || '')}
                     disabled={revokeApiKey.isPending}
                   >
                     <Trash2 className="w-4 h-4" />
@@ -360,7 +361,7 @@ const SecurityTab: React.FC = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {sessionsLoading ? (
+          {sessionsLoading && !sessions ? (
             <div className="space-y-3">
               {Array.from({ length: 3 }).map((_, i) => (
                 <Skeleton key={i} className="h-16 w-full" />
@@ -371,7 +372,7 @@ const SecurityTab: React.FC = () => {
               <AlertIcon className="w-8 h-8 text-red-400 mx-auto mb-2" />
               <p className="text-red-600">{getErrorMessage(sessionsError)}</p>
             </div>
-          ) : !sessions || sessions.length === 0 ? (
+          ) : !sessions || !Array.isArray(sessions) || sessions.length === 0 ? (
             <div className="text-center py-8">
               <Monitor className="w-8 h-8 text-gray-400 mx-auto mb-2" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">No active sessions</h3>
@@ -385,14 +386,14 @@ const SecurityTab: React.FC = () => {
             </div>
           ) : (
             <div className="space-y-3">
-              {sessions.map((session) => (
+              {(sessions || []).map((session) => (
                 <div
                   key={session.id}
                   className="flex items-center justify-between p-4 border border-gray-200 rounded-lg"
                 >
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                      {session.user_agent.includes('Mobile') ? (
+                      {session?.userAgent?.includes('Mobile') ? (
                         <Smartphone className="w-5 h-5 text-gray-600" />
                       ) : (
                         <Monitor className="w-5 h-5 text-gray-600" />
@@ -401,22 +402,22 @@ const SecurityTab: React.FC = () => {
                     <div>
                       <div className="flex items-center space-x-2">
                         <span className="font-medium text-gray-900">
-                          {formatUserAgent(session.user_agent)}
+                          {session?.userAgent ? formatUserAgent(session.userAgent) : 'Unknown Device'}
                         </span>
-                        {session.isCurrent && (
+                        {session?.isCurrent && (
                           <StatusBadge status="active" className="text-xs" />
                         )}
                       </div>
                       <div className="text-sm text-gray-500">
-                        {session.ipAddress || 'Unknown IP'} • Last seen {formatDate(session.lastSeen)}
+                        {session?.ipAddress || 'Unknown IP'} • Last seen {session?.lastSeen ? formatDate(session.lastSeen) : 'Unknown'}
                       </div>
                     </div>
                   </div>
-                  {!session.isCurrent && (
+                  {!session?.isCurrent && (
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => setConfirmRevokeSession(session.id)}
+                      onClick={() => setConfirmRevokeSession(session?.id || '')}
                       disabled={revokeSession.isPending}
                     >
                       Revoke
@@ -441,7 +442,7 @@ const SecurityTab: React.FC = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {eventsLoading ? (
+          {eventsLoading && !securityEvents ? (
             <div className="space-y-3">
               {Array.from({ length: 5 }).map((_, i) => (
                 <Skeleton key={i} className="h-12 w-full" />
@@ -452,7 +453,7 @@ const SecurityTab: React.FC = () => {
               <AlertIcon className="w-8 h-8 text-red-400 mx-auto mb-2" />
               <p className="text-red-600">{getErrorMessage(eventsError)}</p>
             </div>
-          ) : !securityEvents || securityEvents.length === 0 ? (
+          ) : !securityEvents || !Array.isArray(securityEvents) || securityEvents.length === 0 ? (
             <div className="text-center py-8">
               <Shield className="w-8 h-8 text-gray-400 mx-auto mb-2" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">No security events recorded</h3>
@@ -465,19 +466,19 @@ const SecurityTab: React.FC = () => {
             </div>
           ) : (
             <div className="space-y-3 max-h-80 overflow-y-auto">
-              {securityEvents.map((event) => (
-                <div key={event.id} className="flex items-start space-x-3 p-3 border border-gray-200 rounded-lg">
+              {(securityEvents || []).map((event) => (
+                <div key={event?.id || Math.random()} className="flex items-start space-x-3 p-3 border border-gray-200 rounded-lg">
                   <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
                     <Shield className="w-4 h-4 text-blue-600" />
                   </div>
                   <div className="flex-1">
                     <p className="text-sm font-medium text-gray-900 capitalize">
-                      {event.eventType.replace(/_/g, ' ')}
+                      {event?.eventType ? event.eventType.replace(/_/g, ' ') : 'Security Event'}
                     </p>
-                    <p className="text-sm text-gray-600">{event.description}</p>
+                    <p className="text-sm text-gray-600">{event?.description || 'No description available'}</p>
                     <div className="flex items-center space-x-2 mt-1 text-xs text-gray-500">
-                      <span>{formatDate(event.createdAt)}</span>
-                      {event.ipAddress && <span>• {event.ipAddress}</span>}
+                      <span>{event?.createdAt ? formatDate(event.createdAt) : 'Unknown time'}</span>
+                      {event?.ipAddress && <span>• {event.ipAddress}</span>}
                     </div>
                   </div>
                 </div>

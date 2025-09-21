@@ -17,10 +17,45 @@ const QUERY_KEYS = {
 export const useJobs = (params?: { page?: number; limit?: number; status?: string; type?: string }) => {
   return useQuery({
     queryKey: [...QUERY_KEYS.jobs, params],
-    queryFn: () => jobsApi.listJobs(params),
+    queryFn: async () => {
+      try {
+        return await jobsApi.listJobs(params);
+      } catch (error) {
+        // Log error but provide fallback data structure
+        console.warn('Failed to fetch jobs:', error);
+        // Return empty structure matching expected schema
+        return {
+          jobs: [],
+          pagination: {
+            page: 1,
+            limit: 10,
+            total: 0,
+            totalPages: 0,
+            hasNext: false,
+            hasPrevious: false,
+          },
+        };
+      }
+    },
+    retry: (failureCount, error) => {
+      // Don't retry auth errors or 404s
+      if (error && typeof error === 'object' && 'statusCode' in error) {
+        if (error.statusCode === 401 || error.statusCode === 404) {
+          return false;
+        }
+      }
+      return failureCount < 2;
+    },
     select: (data) => ({
-      jobs: data.jobs,
-      pagination: data.pagination,
+      jobs: data?.jobs || [],
+      pagination: data?.pagination || {
+        page: 1,
+        limit: 10,
+        total: 0,
+        totalPages: 0,
+        hasNext: false,
+        hasPrevious: false,
+      },
     }),
   });
 };

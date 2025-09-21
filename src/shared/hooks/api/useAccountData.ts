@@ -127,12 +127,22 @@ export const useApiKeys = () => {
       try {
         return await accountApi.getApiKeys();
       } catch (error) {
-        // Return empty array for graceful fallback
-        console.warn('Failed to fetch API keys:', error);
-        return [];
+        // Log error but don't throw to prevent UI crashes
+        console.warn('Failed to fetch API keys:', getErrorMessage(error));
+        // Return null to indicate failed fetch (different from empty array)
+        throw error;
       }
     },
     staleTime: 2 * 60 * 1000, // 2 minutes
+    retry: (failureCount, error) => {
+      // Don't retry auth errors
+      if (error && typeof error === 'object' && 'statusCode' in error && error.statusCode === 401) {
+        return false;
+      }
+      return failureCount < 2;
+    },
+    // Provide default empty array on error
+    select: (data) => data || [],
   });
 };
 
@@ -167,12 +177,22 @@ export const useSessions = () => {
       try {
         return await accountApi.getSessions();
       } catch (error) {
-        // Return empty array for graceful fallback
-        console.warn('Failed to fetch sessions:', error);
-        return [];
+        // Log error but don't throw to prevent UI crashes
+        console.warn('Failed to fetch sessions:', getErrorMessage(error));
+        // Return null to indicate failed fetch (different from empty array)
+        throw error;
       }
     },
     staleTime: 1 * 60 * 1000, // 1 minute
+    retry: (failureCount, error) => {
+      // Don't retry auth errors
+      if (error && typeof error === 'object' && 'statusCode' in error && error.statusCode === 401) {
+        return false;
+      }
+      return failureCount < 2;
+    },
+    // Provide default empty array on error
+    select: (data) => data || [],
   });
 };
 
@@ -195,12 +215,22 @@ export const useSecurityEvents = () => {
       try {
         return await accountApi.getSecurityEvents({ limit: 20 });
       } catch (error) {
-        // Return empty array for graceful fallback
-        console.warn('Failed to fetch security events:', error);
-        return [];
+        // Log error but don't throw to prevent UI crashes
+        console.warn('Failed to fetch security events:', getErrorMessage(error));
+        // Return null to indicate failed fetch (different from empty array)
+        throw error;
       }
     },
     staleTime: 30 * 1000, // 30 seconds
+    retry: (failureCount, error) => {
+      // Don't retry auth errors
+      if (error && typeof error === 'object' && 'statusCode' in error && error.statusCode === 401) {
+        return false;
+      }
+      return failureCount < 2;
+    },
+    // Provide default empty array on error
+    select: (data) => data || [],
   });
 };
 

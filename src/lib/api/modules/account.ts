@@ -69,8 +69,14 @@ export const accountApi = {
    * Get user sessions
    */
   async getSessions(): Promise<UserSession[]> {
-    const response = await apiClient.get<GetSessionsResponse>('/v1/account/sessions');
-    return response.sessions;
+    try {
+      const response = await apiClient.get<GetSessionsResponse>('/v1/account/sessions');
+      return response?.sessions || [];
+    } catch (error) {
+      // Return empty array for graceful fallback
+      console.warn('Sessions endpoint not available:', error);
+      return [];
+    }
   },
 
   /**
@@ -86,16 +92,28 @@ export const accountApi = {
    * Get security events
    */
   async getSecurityEvents(params?: GetSecurityEventsParams): Promise<SecurityEvent[]> {
-    const response = await apiClient.get<GetSecurityEventsResponse>('/v1/account/security-events', params);
-    return response.events;
+    try {
+      const response = await apiClient.get<GetSecurityEventsResponse>('/v1/account/security-events', params);
+      return response?.events || [];
+    } catch (error) {
+      // Return empty array for graceful fallback
+      console.warn('Security events endpoint not available:', error);
+      return [];
+    }
   },
 
   /**
    * Get API keys
    */
   async getApiKeys(): Promise<ApiKey[]> {
-    const response = await apiClient.get<GetApiKeysResponse>('/v1/keys');
-    return response.keys;
+    try {
+      const response = await apiClient.get<GetApiKeysResponse>('/v1/keys');
+      return response?.keys || [];
+    } catch (error) {
+      // Return empty array for graceful fallback
+      console.warn('API Keys endpoint not available:', error);
+      return [];
+    }
   },
 
   /**

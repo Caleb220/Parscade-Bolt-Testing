@@ -7,7 +7,16 @@
  * Format date to locale string
  */
 export const formatDate = (date: string | Date, options?: Intl.DateTimeFormatOptions): string => {
+  if (!date) {
+    return 'Unknown date';
+  }
+  
   const dateObj = typeof date === 'string' ? new Date(date) : date;
+  
+  // Check for invalid date
+  if (isNaN(dateObj.getTime())) {
+    return 'Invalid date';
+  }
   
   return dateObj.toLocaleDateString('en-US', {
     year: 'numeric',
@@ -21,7 +30,16 @@ export const formatDate = (date: string | Date, options?: Intl.DateTimeFormatOpt
  * Format date and time to locale string
  */
 export const formatDateTime = (date: string | Date, options?: Intl.DateTimeFormatOptions): string => {
+  if (!date) {
+    return 'Unknown date';
+  }
+  
   const dateObj = typeof date === 'string' ? new Date(date) : date;
+  
+  // Check for invalid date
+  if (isNaN(dateObj.getTime())) {
+    return 'Invalid date';
+  }
   
   return dateObj.toLocaleString('en-US', {
     year: 'numeric',
@@ -37,7 +55,17 @@ export const formatDateTime = (date: string | Date, options?: Intl.DateTimeForma
  * Format relative time (e.g., "2 hours ago")
  */
 export const formatRelativeTime = (date: string | Date): string => {
+  if (!date) {
+    return 'Unknown time';
+  }
+  
   const dateObj = typeof date === 'string' ? new Date(date) : date;
+  
+  // Check for invalid date
+  if (isNaN(dateObj.getTime())) {
+    return 'Invalid date';
+  }
+  
   const now = new Date();
   const diffInSeconds = Math.floor((now.getTime() - dateObj.getTime()) / 1000);
 

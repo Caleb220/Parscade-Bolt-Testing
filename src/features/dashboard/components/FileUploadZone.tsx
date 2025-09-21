@@ -20,15 +20,19 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
   const submitParseJobMutation = useSubmitParseJob();
 
   const handleFiles = useCallback(async (files: FileList | null) => {
-    if (!files || files.length === 0) return;
+    if (!files || !files.length) return;
     
     const file = files[0];
+    if (!file) return;
     
     try {
       const documentId = await uploadFile(file);
-      setUploadedDocumentId(documentId);
+      if (documentId) {
+        setUploadedDocumentId(documentId);
+      }
     } catch (error) {
       // Error is handled by the upload hook
+      console.warn('File upload failed:', getErrorMessage(error));
     }
   }, [uploadFile]);
 
@@ -36,20 +40,27 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
     if (!uploadedDocumentId) return;
     
     try {
-      await submitParseJobMutation.mutateAsync(uploadedDocumentId);
-      onJobSubmitted?.(uploadedDocumentId);
+      const result = await submitParseJobMutation.mutateAsync(uploadedDocumentId);
+      if (result?.id) {
+        onJobSubmitted?.(result.id);
+      } else {
+        onJobSubmitted?.(uploadedDocumentId);
+      }
       reset();
       setUploadedDocumentId(null);
     } catch (error) {
       // Error handled by mutation
+      console.warn('Job submission failed:', getErrorMessage(error));
     }
-  }, [uploadedDocumentId, submitParseJobMutation.mutateAsync, onJobSubmitted, reset]);
+  }, [uploadedDocumentId, submitParseJobMutation, onJobSubmitted, reset]);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    handleFiles(e.dataTransfer.files);
+    if (e.dataTransfer?.files) {
+      handleFiles(e.dataTransfer.files);
+    }
   }, [handleFiles]);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -65,13 +76,20 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
   }, []);
 
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    handleFiles(e.target.files);
+    if (e.target?.files) {
+      handleFiles(e.target.files);
+    }
   }, [handleFiles]);
 
   const handleReset = useCallback(() => {
     reset();
     setUploadedDocumentId(null);
   }, [reset]);
+
+  // Safely access upload progress properties
+  const currentPhase = uploadProgress?.phase || 'idle';
+  const currentProgress = uploadProgress?.progress || 0;
+  const uploadError = uploadProgress?.error;
 
   return (
     <motion.div
@@ -80,34 +98,34 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
       className="bg-white rounded-lg border-2 border-dashed border-gray-300 p-8"
     >
       {/* Upload Progress */}
-      {isUploading && (
+      {isUploading && currentPhase !== 'idle' && (
         <div className="text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
             <Upload className="w-8 h-8 text-blue-600" />
           </div>
           
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            {uploadProgress.phase === 'signing' && 'Preparing upload...'}
-            {uploadProgress.phase === 'uploading' && 'Uploading file...'}
-            {uploadProgress.phase === 'completing' && 'Finalizing...'}
+            {currentPhase === 'signing' && 'Preparing upload...'}
+            {currentPhase === 'uploading' && 'Uploading file...'}
+            {currentPhase === 'completing' && 'Finalizing...'}
           </h3>
           
           <div className="w-full max-w-xs mx-auto mb-4">
             <div className="flex justify-between text-sm text-gray-600 mb-1">
               <span>Progress</span>
-              <span>{uploadProgress.progress}%</span>
+              <span>{currentProgress}%</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
               <motion.div
                 className="bg-blue-600 h-2 rounded-full"
                 initial={{ width: 0 }}
-                animate={{ width: `${uploadProgress.progress}%` }}
+                animate={{ width: `${currentProgress}%` }}
                 transition={{ duration: 0.3 }}
               />
             </div>
           </div>
 
-          {uploadProgress.bytesUploaded && uploadProgress.totalBytes && (
+          {uploadProgress?.bytesUploaded && uploadProgress?.totalBytes && (
             <p className="text-sm text-gray-500">
               {formatBytes(uploadProgress.bytesUploaded)} of {formatBytes(uploadProgress.totalBytes)}
             </p>
@@ -116,14 +134,14 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
       )}
 
       {/* Upload Error */}
-      {uploadProgress.phase === 'error' && (
+      {currentPhase === 'error' && (
         <div className="text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
             <AlertCircle className="w-8 h-8 text-red-600" />
           </div>
           
           <h3 className="text-lg font-semibold text-gray-900 mb-2">Upload Failed</h3>
-          <p className="text-red-600 mb-4">{uploadProgress.error}</p>
+          <p className="text-red-600 mb-4">{uploadError || 'An error occurred during upload'}</p>
           
           <CustomButton variant="outline" onClick={handleReset}>
             Try Again
@@ -132,7 +150,7 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
       )}
 
       {/* Upload Success - Ready to Submit Job */}
-      {uploadedDocumentId && uploadProgress.phase === 'completed' && (
+      {uploadedDocumentId && currentPhase === 'completed' && (
         <div className="text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
             <CheckCircle className="w-8 h-8 text-green-600" />
@@ -144,7 +162,7 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <CustomButton
               onClick={handleSubmitJob}
-              isLoading={submitParseJobMutation.isPending}
+              isLoading={submitParseJobMutation?.isPending || false}
               leftIcon={<FileText className="w-4 h-4" />}
             >
               Start Processing
@@ -157,7 +175,7 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
       )}
 
       {/* Upload Zone */}
-      {!isUploading && !uploadedDocumentId && uploadProgress.phase !== 'error' && (
+      {!isUploading && !uploadedDocumentId && currentPhase !== 'error' && (
         <div
           className={`text-center transition-colors duration-200 ${
             dragActive ? 'border-blue-500 bg-blue-50' : 'hover:border-gray-400'
