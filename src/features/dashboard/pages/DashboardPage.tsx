@@ -138,9 +138,9 @@ const DashboardPage: React.FC = () => {
 
       {/* Main Content Grid */}
       <DashboardSection>
-        <DashboardGrid columns={3} gap="lg">
+        <DashboardGrid columns={2} gap="lg">
           {/* Upload Zone - Takes 2 columns */}
-          <div className="col-span-1 lg:col-span-2">
+          <div className="col-span-1">
             <motion.div 
               className="mb-6"
               initial={{ opacity: 0, x: -20 }}

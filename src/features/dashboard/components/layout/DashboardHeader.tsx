@@ -58,9 +58,9 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
               ) : (
                 <div>
                   <h1 className="text-xl font-semibold text-gray-900">
-                    Welcome back{user?.user_metadata?.full_name ? `, ${user.user_metadata.full_name.split(' ')[0]}` : ''}
+                    Dashboard
                   </h1>
-                  <p className="text-sm text-blue-600">Transform documents into structured data</p>
+                  <p className="text-sm text-blue-600">Monitor your document processing and analytics</p>
                 </div>
               )}
             </div>
