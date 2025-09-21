@@ -31,10 +31,11 @@ const NotificationsTab: React.FC = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors, isDirty },
+    formState: { errors, isDirty, isSubmitting },
     reset,
     watch,
     setValue,
+    trigger,
   } = useForm<NotificationPreferencesFormData>({
     resolver: zodResolver(notificationPreferencesSchema),
     defaultValues: {
@@ -87,6 +88,26 @@ const NotificationsTab: React.FC = () => {
 
   const watchedChannels = watch('channels');
   const watchedDndSettings = watch('dnd_settings');
+  const watchedCategories = watch('categories');
+  const watchedWebhookUrl = watch('webhook_url');
+
+  // Handle switch changes with proper form state updates
+  const handleChannelChange = async (channel: 'email' | 'in_app' | 'webhook', checked: boolean) => {
+    setValue(`channels.${channel}`, checked, { shouldDirty: true });
+    await trigger(`channels.${channel}`);
+  };
+
+  // Handle category changes with proper form state updates
+  const handleCategoryChange = async (category: keyof typeof watchedCategories, value: 'off' | 'immediate' | 'daily') => {
+    setValue(`categories.${category}`, value, { shouldDirty: true });
+    await trigger(`categories.${category}`);
+  };
+
+  // Handle DND changes with proper form state updates
+  const handleDndChange = async (field: 'start' | 'end' | 'timezone', value: string) => {
+    setValue(`dnd_settings.${field}`, value, { shouldDirty: true });
+    await trigger(`dnd_settings.${field}`);
+  };
 
   const onSubmit = async (data: NotificationPreferencesFormData) => {
     try {
@@ -98,8 +119,17 @@ const NotificationsTab: React.FC = () => {
       };
 
       await updatePrefs.mutateAsync(cleanedData);
+      
+      toast({
+        title: 'Preferences saved',
+        description: 'Your notification preferences have been updated successfully.',
+      });
     } catch (error) {
-      // Error handling is done in the mutation
+      toast({
+        title: 'Save failed',
+        description: getErrorMessage(error),
+        variant: 'destructive',
+      });
     }
   };
 
@@ -174,7 +204,7 @@ const NotificationsTab: React.FC = () => {
               </div>
               <Switch
                 checked={watchedChannels?.email || false}
-                onCheckedChange={(checked) => setValue('channels.email', checked)}
+                onCheckedChange={(checked) => handleChannelChange('email', checked)}
               />
             </div>
 
@@ -188,7 +218,7 @@ const NotificationsTab: React.FC = () => {
               </div>
               <Switch
                 checked={watchedChannels?.in_app || false}
-                onCheckedChange={(checked) => setValue('channels.in_app', checked)}
+                onCheckedChange={(checked) => handleChannelChange('in_app', checked)}
               />
             </div>
 
@@ -202,7 +232,7 @@ const NotificationsTab: React.FC = () => {
               </div>
               <Switch
                 checked={watchedChannels?.webhook || false}
-                onCheckedChange={(checked) => setValue('channels.webhook', checked)}
+                onCheckedChange={(checked) => handleChannelChange('webhook', checked)}
               />
             </div>
 
@@ -219,6 +249,10 @@ const NotificationsTab: React.FC = () => {
                   {...register('webhook_url')}
                   placeholder="https://your-app.com/webhooks/notifications"
                   className="px-3"
+                  onChange={(e) => {
+                    setValue('webhook_url', e.target.value, { shouldDirty: true });
+                    trigger('webhook_url');
+                  }}
                 />
                 {errors.webhook_url && (
                   <p className="text-sm text-red-600">{errors.webhook_url.message}</p>
@@ -258,7 +292,8 @@ const NotificationsTab: React.FC = () => {
                       <input
                         type="radio"
                         value={frequency}
-                        {...register(`categories.${key}`)}
+                        checked={watchedCategories?.[key] === frequency}
+                        onChange={() => handleCategoryChange(key, frequency)}
                         className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                       />
                       <span className="text-sm capitalize whitespace-nowrap">{frequency}</span>
@@ -288,7 +323,8 @@ const NotificationsTab: React.FC = () => {
                 <Input
                   id="dnd_start"
                   type="time"
-                  {...register('dnd_settings.start')}
+                  value={watchedDndSettings?.start || '22:00'}
+                  onChange={(e) => handleDndChange('start', e.target.value)}
                   className="px-3"
                 />
                 {errors.dnd_settings?.start && (
@@ -301,7 +337,8 @@ const NotificationsTab: React.FC = () => {
                 <Input
                   id="dnd_end"
                   type="time"
-                  {...register('dnd_settings.end')}
+                  value={watchedDndSettings?.end || '08:00'}
+                  onChange={(e) => handleDndChange('end', e.target.value)}
                   className="px-3"
                 />
                 {errors.dnd_settings?.end && (
@@ -313,7 +350,8 @@ const NotificationsTab: React.FC = () => {
                 <Label htmlFor="dnd_timezone">Timezone</Label>
                 <select
                   id="dnd_timezone"
-                  {...register('dnd_settings.timezone')}
+                  value={watchedDndSettings?.timezone || 'UTC'}
+                  onChange={(e) => handleDndChange('timezone', e.target.value)}
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 >
                   <option value="UTC">UTC</option>
@@ -348,9 +386,10 @@ const NotificationsTab: React.FC = () => {
             className="flex items-center p-3 bg-red-50 border border-red-200 rounded-lg"
           >
             <AlertCircle className="w-5 h-5 text-red-600 mr-2 flex-shrink-0" />
-            <span className="text-sm text-red-700">
-              {getErrorMessage(updatePrefs.error)}
-            </span>
+            <div>
+              <p className="text-sm font-medium text-red-800">Failed to save preferences</p>
+              <p className="text-sm text-red-700">{getErrorMessage(updatePrefs.error)}</p>
+            </div>
           </motion.div>
         )}
 
@@ -362,9 +401,10 @@ const NotificationsTab: React.FC = () => {
             className="flex items-center p-3 bg-green-50 border border-green-200 rounded-lg"
           >
             <CheckCircle className="w-5 h-5 text-green-600 mr-2 flex-shrink-0" />
-            <span className="text-sm text-green-700">
-              Notification preferences updated successfully
-            </span>
+            <div>
+              <p className="text-sm font-medium text-green-800">Preferences saved</p>
+              <p className="text-sm text-green-700">Your notification preferences have been updated successfully</p>
+            </div>
           </motion.div>
         )}
 
@@ -372,10 +412,10 @@ const NotificationsTab: React.FC = () => {
         <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4 -mx-6 sm:static sm:bg-transparent sm:border-t-0 sm:p-0 sm:mx-0">
           <Button
             type="submit"
-            disabled={!isDirty || updatePrefs.isPending}
+            disabled={!isDirty || updatePrefs.isPending || isSubmitting}
             className="w-full sm:w-auto"
           >
-            {updatePrefs.isPending ? (
+            {updatePrefs.isPending || isSubmitting ? (
               <>
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
                 Saving...
@@ -383,10 +423,17 @@ const NotificationsTab: React.FC = () => {
             ) : (
               <>
                 <Save className="w-4 h-4 mr-2" />
-                Save Preferences
+                {isDirty ? 'Save Changes' : 'Save Preferences'}
               </>
             )}
           </Button>
+          
+          {/* Change Indicator */}
+          {isDirty && (
+            <p className="text-sm text-blue-600 mt-2">
+              You have unsaved changes
+            </p>
+          )}
         </div>
       </form>
     </motion.div>

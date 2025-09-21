@@ -291,20 +291,11 @@ export const useUpdateNotificationPreferences = () => {
       if (context?.previousData) {
         queryClient.setQueryData(QUERY_KEYS.notificationPreferences, context.previousData);
       }
-      
-      toast({
-        title: 'Update failed',
-        description: getErrorMessage(error),
-        variant: 'destructive',
-      });
+      // Error handling moved to component level for better UX
     },
     onSuccess: (data) => {
       queryClient.setQueryData(QUERY_KEYS.notificationPreferences, data);
-      
-      toast({
-        title: 'Preferences updated',
-        description: 'Your notification preferences have been updated successfully.',
-      });
+      // Success handling moved to component level for better UX
     },
   });
 };
