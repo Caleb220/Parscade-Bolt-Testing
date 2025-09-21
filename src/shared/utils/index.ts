@@ -11,7 +11,7 @@ export * from './seo';
 export * from './zodError';
 
 // Common utility functions
-export { formatBytes, formatJobType } from './formatters';
+export { formatBytes, formatJobType, formatUserAgent } from './formatters';
 export { debounce, throttle } from './performance';
 export { copyToClipboard } from './clipboard';
 export { formatDate, formatRelativeTime } from './date';
