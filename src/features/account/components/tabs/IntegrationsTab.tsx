@@ -157,8 +157,14 @@ const IntegrationsTab: React.FC = () => {
           ) : !webhooks?.length ? (
             <div className="text-center py-8">
               <Webhook className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-              <p className="text-gray-600">No webhooks configured</p>
-              <p className="text-gray-500 text-sm">Add a webhook to receive real-time notifications</p>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No webhooks configured</h3>
+              <p className="text-gray-600 mb-4">
+                Webhooks allow you to receive real-time notifications when events occur in your account, 
+                such as completed document processing or system alerts.
+              </p>
+              <p className="text-sm text-gray-500">
+                Webhook functionality will be available in a future update.
+              </p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -367,8 +373,14 @@ const IntegrationsTab: React.FC = () => {
           ) : !dataSources?.length ? (
             <div className="text-center py-8">
               <Database className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-              <p className="text-gray-600">No data sources configured</p>
-              <p className="text-gray-500 text-sm">Add a data source to automate document processing</p>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No data sources configured</h3>
+              <p className="text-gray-600 mb-4">
+                Data sources enable automated document processing from cloud storage services like S3, 
+                Google Drive, or Dropbox. Documents uploaded to connected sources are processed automatically.
+              </p>
+              <p className="text-sm text-gray-500">
+                Data source integrations will be available in a future update.
+              </p>
             </div>
           ) : (
             <div className="space-y-3">

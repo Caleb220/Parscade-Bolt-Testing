@@ -49,8 +49,13 @@ const JobsList: React.FC = () => {
         ) : !jobsData?.jobs.length ? (
           <div className="p-6 text-center">
             <FileText className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-            <p className="text-gray-600">No jobs yet</p>
-            <p className="text-gray-500 text-sm">Upload a document to get started</p>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No processing jobs yet</h3>
+            <p className="text-gray-600 mb-4">
+              Document processing jobs will appear here once you upload and process your first document.
+            </p>
+            <p className="text-sm text-gray-500">
+              Use the upload zone on the left to get started with document processing.
+            </p>
           </div>
         ) : (
           jobsData.jobs.map((job, index) => (

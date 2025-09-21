@@ -123,7 +123,15 @@ export const useUploadAvatar = () => {
 export const useApiKeys = () => {
   return useQuery({
     queryKey: QUERY_KEYS.apiKeys,
-    queryFn: () => accountApi.getApiKeys(),
+    queryFn: async () => {
+      try {
+        return await accountApi.getApiKeys();
+      } catch (error) {
+        // Return empty array for graceful fallback
+        console.warn('Failed to fetch API keys:', error);
+        return [];
+      }
+    },
     staleTime: 2 * 60 * 1000, // 2 minutes
   });
 };
@@ -155,7 +163,15 @@ export const useRevokeApiKey = () => {
 export const useSessions = () => {
   return useQuery({
     queryKey: QUERY_KEYS.sessions,
-    queryFn: () => accountApi.getSessions(),
+    queryFn: async () => {
+      try {
+        return await accountApi.getSessions();
+      } catch (error) {
+        // Return empty array for graceful fallback
+        console.warn('Failed to fetch sessions:', error);
+        return [];
+      }
+    },
     staleTime: 1 * 60 * 1000, // 1 minute
   });
 };
@@ -175,7 +191,15 @@ export const useRevokeSession = () => {
 export const useSecurityEvents = () => {
   return useQuery({
     queryKey: QUERY_KEYS.securityEvents,
-    queryFn: () => accountApi.getSecurityEvents({ limit: 20 }),
+    queryFn: async () => {
+      try {
+        return await accountApi.getSecurityEvents({ limit: 20 });
+      } catch (error) {
+        // Return empty array for graceful fallback
+        console.warn('Failed to fetch security events:', error);
+        return [];
+      }
+    },
     staleTime: 30 * 1000, // 30 seconds
   });
 };

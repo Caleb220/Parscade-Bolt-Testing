@@ -255,11 +255,17 @@ const SecurityTab: React.FC = () => {
                 Retry
               </Button>
             </div>
-          ) : !apiKeys?.length ? (
+          ) : !apiKeys || apiKeys.length === 0 ? (
             <div className="text-center py-8">
               <Key className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-              <p className="text-gray-600">No API keys yet</p>
-              <p className="text-gray-500 text-sm">Create your first API key to get started</p>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No API keys configured</h3>
+              <p className="text-gray-600 mb-4">
+                API keys allow you to access Parscade programmatically. Create your first API key to get started with our REST API.
+              </p>
+              <Button size="sm" onClick={() => setShowNewKeyDialog(true)}>
+                <Plus className="w-4 h-4 mr-2" />
+                Create Your First API Key
+              </Button>
             </div>
           ) : (
             <div className="space-y-3">
@@ -365,10 +371,17 @@ const SecurityTab: React.FC = () => {
               <AlertIcon className="w-8 h-8 text-red-400 mx-auto mb-2" />
               <p className="text-red-600">{getErrorMessage(sessionsError)}</p>
             </div>
-          ) : !sessions?.length ? (
+          ) : !sessions || sessions.length === 0 ? (
             <div className="text-center py-8">
               <Monitor className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-              <p className="text-gray-600">No active sessions</p>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No active sessions</h3>
+              <p className="text-gray-600 mb-4">
+                Active sessions show devices and browsers that are currently signed in to your account. 
+                Your current session will appear here once additional sessions are created.
+              </p>
+              <p className="text-sm text-gray-500">
+                Sign in from another device or browser to see multiple sessions listed here.
+              </p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -439,11 +452,16 @@ const SecurityTab: React.FC = () => {
               <AlertIcon className="w-8 h-8 text-red-400 mx-auto mb-2" />
               <p className="text-red-600">{getErrorMessage(eventsError)}</p>
             </div>
-          ) : !securityEvents?.length ? (
+          ) : !securityEvents || securityEvents.length === 0 ? (
             <div className="text-center py-8">
               <Shield className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-              <p className="text-gray-600">No security events</p>
-              <p className="text-gray-500 text-sm">Security activities will appear here</p>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No security events recorded</h3>
+              <p className="text-gray-600 mb-2">
+                Security events track important account activities like sign-ins, password changes, and API key usage.
+              </p>
+              <p className="text-sm text-gray-500">
+                Recent security activities will appear here as they occur.
+              </p>
             </div>
           ) : (
             <div className="space-y-3 max-h-80 overflow-y-auto">
