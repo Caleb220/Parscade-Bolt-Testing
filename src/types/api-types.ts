@@ -787,14 +787,16 @@ export interface UserProfile {
   readonly id: string;
   readonly email: string;
   readonly full_name?: string | null;
-  readonly avatarUrl?: string | null;
-  readonly timezone: string;
-  readonly emailVerified: boolean;
-  readonly role: UserRole;
   readonly username?: string | null;
+  readonly avatarUrl?: string | null;
   readonly company?: string | null;
+  readonly role?: string | null;
   readonly phone?: string | null;
   readonly locale?: string | null;
+  readonly timezone: string;
+  readonly plan: string;
+  readonly email_verified: boolean;
+  readonly user_role: UserRole;
   readonly createdAt: string;
   readonly updatedAt: string;
 }

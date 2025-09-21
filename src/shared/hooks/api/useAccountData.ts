@@ -42,7 +42,7 @@ export const useUpdateAccount = () => {
   const { toast } = useToast();
   
   return useMutation({
-    mutationFn: (data: { fullName?: string | null; timezone?: string }) => 
+    mutationFn: (data: { full_name?: string | null; username?: string | null; company?: string | null; phone?: string | null; locale?: string | null; timezone?: string }) => 
       accountApi.updateProfile(data),
     onMutate: async (newData) => {
       // Cancel outgoing refetches

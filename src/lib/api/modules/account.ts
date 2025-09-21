@@ -12,16 +12,16 @@ type UpdateProfileRequest = paths['/v1/account/me']['patch']['requestBody']['con
 type UpdateProfileResponse = paths['/v1/account/me']['patch']['responses']['200']['content']['application/json'];
 type DeleteAccountResponse = paths['/v1/account/me']['delete']['responses']['200']['content']['application/json'];
 
-type UploadAvatarResponse = paths['/v1/account/avatar']['post']['responses']['200']['content']['application/json'];
+type UploadAvatarResponse = { avatar_url: string };
 
-type GetSessionsResponse = paths['/v1/account/sessions']['get']['responses']['200']['content']['application/json'];
+type GetSessionsResponse = { sessions: UserSession[] };
 
-type GetSecurityEventsParams = paths['/v1/account/security-events']['get']['parameters']['query'];
-type GetSecurityEventsResponse = paths['/v1/account/security-events']['get']['responses']['200']['content']['application/json'];
+type GetSecurityEventsParams = { limit?: number };
+type GetSecurityEventsResponse = { events: SecurityEvent[] };
 
-type GetApiKeysResponse = paths['/v1/keys']['get']['responses']['200']['content']['application/json'];
-type CreateApiKeyRequest = paths['/v1/keys']['post']['requestBody']['content']['application/json'];
-type CreateApiKeyResponse = paths['/v1/keys']['post']['responses']['201']['content']['application/json'];
+type GetApiKeysResponse = { keys: ApiKey[] };
+type CreateApiKeyRequest = { name: string; scopes?: string[] };
+type CreateApiKeyResponse = { key: string; apiKey: ApiKey };
 
 /**
  * Account management endpoints

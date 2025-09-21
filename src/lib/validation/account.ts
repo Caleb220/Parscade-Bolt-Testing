@@ -14,11 +14,11 @@ import {
 
 // Profile validation matching OpenAPI UpdateProfileRequest
 export const profileSchema = z.object({
-  full_name: nonEmptyTextSchema('Full name', 100).nullable(),
-  username: optionalTrimmedStringSchema('Username', 2, 60),
-  company: optionalTrimmedStringSchema('Company', 0, 100),
+  full_name: optionalTrimmedStringSchema('Full name', 1, 100),
+  username: optionalTrimmedStringSchema('Username', 3, 30),
+  company: optionalTrimmedStringSchema('Company', 1, 100),
   phone: phoneSchema.optional(),
-  locale: optionalTrimmedStringSchema('Locale', 2, 10),
+  locale: optionalTrimmedStringSchema('Locale', 2, 10).default('en-US'),
   timezone: timezoneSchema,
 });
 

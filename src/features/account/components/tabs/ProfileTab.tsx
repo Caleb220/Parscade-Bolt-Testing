@@ -7,7 +7,23 @@ import React, { useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
-import { Upload, Save, User, Building, Phone, Globe, Camera, AlertCircle, CheckCircle } from 'lucide-react';
+import { 
+  Upload, 
+  Save, 
+  User, 
+  Building, 
+  Phone, 
+  Globe, 
+  Camera, 
+  AlertCircle, 
+  CheckCircle,
+  Mail,
+  Calendar,
+  Shield,
+  Crown,
+  AtSign,
+  Briefcase
+} from 'lucide-react';
 
 import { getErrorMessage } from '@/lib/api';
 import { profileSchema, type ProfileFormData } from '@/lib/validation/account';
@@ -66,14 +82,7 @@ const ProfileTab: React.FC = () => {
 
   const onSubmit = async (data: ProfileFormData) => {
     try {
-      await updateAccount.mutateAsync({
-        full_name: data.full_name,
-        username: data.username,
-        company: data.company,
-        phone: data.phone,
-        locale: data.locale,
-        timezone: data.timezone,
-      });
+      await updateAccount.mutateAsync(data);
       
       toast({
         title: 'Profile updated',
@@ -212,16 +221,19 @@ const ProfileTab: React.FC = () => {
       animate={{ opacity: 1, y: 0 }}
       className="space-y-6"
     >
-      {/* Avatar Section */}
+      {/* Profile Header with Avatar */}
       <Card>
         <CardHeader>
-          <CardTitle>Profile Picture</CardTitle>
+          <CardTitle className="flex items-center">
+            <User className="w-5 h-5 mr-2 text-blue-600" />
+            Profile Overview
+          </CardTitle>
           <CardDescription>
-            Upload a profile picture to personalize your account
+            Manage your personal information and account preferences
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center space-x-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6 p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-100">
             <div 
               className={`relative cursor-pointer transition-all duration-200 ${
                 isDragOver ? 'ring-2 ring-blue-500 ring-offset-2' : ''
@@ -231,12 +243,12 @@ const ProfileTab: React.FC = () => {
               onDrop={handleDrop}
               onClick={() => fileInputRef.current?.click()}
             >
-              {avatarPreview || user?.avatarUrl ? (
+              {avatarPreview || user?.avatar_url ? (
                 <div className="relative">
                   <img
-                    src={avatarPreview || user?.avatarUrl}
+                    src={avatarPreview || user?.avatar_url}
                     alt="Profile"
-                    className="w-20 h-20 rounded-full object-cover"
+                    className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg"
                   />
                   {uploadAvatar.isPending && (
                     <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center">
@@ -248,13 +260,34 @@ const ProfileTab: React.FC = () => {
                   </div>
                 </div>
               ) : (
-                <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300 transition-colors duration-200">
-                  <User className="w-8 h-8 text-gray-400" />
+                <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center hover:from-blue-600 hover:to-purple-700 transition-all duration-200 border-4 border-white shadow-lg">
+                  <span className="text-white text-2xl font-bold">
+                    {user?.full_name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || 'U'}
+                  </span>
                 </div>
               )}
             </div>
             
-            <div>
+            <div className="flex-1">
+              <div className="mb-4">
+                <h3 className="text-xl font-bold text-gray-900">
+                  {user?.full_name || 'Welcome to Parscade'}
+                </h3>
+                <p className="text-gray-600">@{user?.username || 'username'}</p>
+                <div className="flex items-center mt-2 space-x-4">
+                  <div className="flex items-center text-sm text-gray-500">
+                    <Mail className="w-4 h-4 mr-1" />
+                    {user?.email}
+                  </div>
+                  {user?.email_verified && (
+                    <div className="flex items-center text-sm text-green-600">
+                      <CheckCircle className="w-4 h-4 mr-1" />
+                      Verified
+                    </div>
+                  )}
+                </div>
+              </div>
+              
               <input
                 ref={fileInputRef}
                 type="file"
@@ -266,7 +299,7 @@ const ProfileTab: React.FC = () => {
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="cursor-pointer"
+                className="cursor-pointer bg-white hover:bg-gray-50"
                 disabled={uploadAvatar.isPending}
                 onClick={() => fileInputRef.current?.click()}
               >
@@ -288,27 +321,32 @@ const ProfileTab: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Profile Information */}
+      {/* Personal Information */}
       <Card>
         <CardHeader>
-          <CardTitle>Profile Information</CardTitle>
+          <CardTitle className="flex items-center">
+            <Briefcase className="w-5 h-5 mr-2 text-blue-600" />
+            Personal Information
+          </CardTitle>
           <CardDescription>
-            Update your personal information and preferences
+            Keep your personal details up to date for a better experience
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {/* Basic Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Editable Fields */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name</Label>
+                <Label htmlFor="full_name" className="flex items-center text-sm font-medium text-gray-700">
+                  <User className="w-4 h-4 mr-2 text-gray-500" />
+                  Full Name
+                </Label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                   <Input
-                    id="fullName"
+                    id="full_name"
                     {...register('full_name')}
                     placeholder="Enter your full name"
-                    className="pl-8 pr-3"
+                    className="px-3 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
                 {errors.full_name && (
@@ -317,28 +355,33 @@ const ProfileTab: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
+                <Label htmlFor="username" className="flex items-center text-sm font-medium text-gray-700">
+                  <AtSign className="w-4 h-4 mr-2 text-gray-500" />
+                  Username
+                </Label>
                 <Input
                   id="username"
                   {...register('username')}
                   placeholder="Choose a username"
-                  className="px-3"
+                  className="px-3 focus:ring-blue-500 focus:border-blue-500"
                 />
                 {errors.username && (
                   <p className="text-sm text-red-600">{errors.username.message}</p>
                 )}
-                <p className="text-xs text-gray-500">Used for public profile and API access</p>
+                <p className="text-xs text-gray-500">Unique identifier for your account</p>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="company">Company</Label>
+                <Label htmlFor="company" className="flex items-center text-sm font-medium text-gray-700">
+                  <Building className="w-4 h-4 mr-2 text-gray-500" />
+                  Company
+                </Label>
                 <div className="relative">
-                  <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                   <Input
                     id="company"
                     {...register('company')}
                     placeholder="Your company name"
-                    className="pl-8 pr-3"
+                    className="px-3 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
                 {errors.company && (
@@ -347,30 +390,34 @@ const ProfileTab: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number</Label>
+                <Label htmlFor="phone" className="flex items-center text-sm font-medium text-gray-700">
+                  <Phone className="w-4 h-4 mr-2 text-gray-500" />
+                  Phone Number
+                </Label>
                 <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                   <Input
                     id="phone"
                     {...register('phone')}
                     placeholder="+1234567890"
-                    className="pl-8 pr-3"
+                    className="px-3 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
                 {errors.phone && (
                   <p className="text-sm text-red-600">{errors.phone.message}</p>
                 )}
-                <p className="text-xs text-gray-500">Use E.164 format (+country code)</p>
+                <p className="text-xs text-gray-500">Include country code (e.g., +1 for US)</p>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="timezone">Timezone</Label>
+                <Label htmlFor="timezone" className="flex items-center text-sm font-medium text-gray-700">
+                  <Globe className="w-4 h-4 mr-2 text-gray-500" />
+                  Timezone
+                </Label>
                 <div className="relative">
-                  <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                   <select
                     id="timezone"
                     {...register('timezone')}
-                    className="flex h-10 w-full rounded-md border border-input bg-background py-2 pl-8 pr-3 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    className="flex h-10 w-full rounded-md border border-input bg-background py-2 px-3 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                   >
                     <option value="UTC">UTC</option>
                     <option value="America/New_York">Eastern Time</option>
@@ -390,11 +437,14 @@ const ProfileTab: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="locale">Language</Label>
+                <Label htmlFor="locale" className="flex items-center text-sm font-medium text-gray-700">
+                  <Globe className="w-4 h-4 mr-2 text-gray-500" />
+                  Language & Region
+                </Label>
                 <select
                   id="locale"
                   {...register('locale')}
-                  className="flex h-10 w-full rounded-md border border-input bg-background py-2 px-3 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  className="flex h-10 w-full rounded-md border border-input bg-background py-2 px-3 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                 >
                   <option value="en-US">English (US)</option>
                   <option value="en-GB">English (UK)</option>
@@ -410,54 +460,175 @@ const ProfileTab: React.FC = () => {
               </div>
             </div>
 
-            {/* Read-only Information */}
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Account Information</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Email Address</Label>
-                  <Input value={user?.email || ''} disabled className="px-3 bg-gray-50" />
-                  <p className="text-xs text-gray-500">Contact support to change your email</p>
-                </div>
+            {/* Form Actions */}
+            <div className="flex justify-end pt-4 border-t border-gray-200">
+              <Button
+                type="submit"
+                disabled={!isDirty || updateAccount.isPending || isSubmitting}
+                className="bg-blue-600 hover:bg-blue-700 focus:ring-blue-500"
+              >
+                {updateAccount.isPending || isSubmitting ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4 mr-2" />
+                    Save Changes
+                  </>
+                )}
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
 
+      {/* Account Information - Read Only */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <Shield className="w-5 h-5 mr-2 text-blue-600" />
+            Account Information
+          </CardTitle>
+          <CardDescription>
+            View your account details and security information
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
                 <div className="space-y-2">
-                  <Label>User ID</Label>
+                  <Label className="flex items-center text-sm font-medium text-gray-700">
+                    <Mail className="w-4 h-4 mr-2 text-gray-500" />
+                    Email Address
+                  </Label>
+                  <div className="flex items-center space-x-2">
+                    <Input 
+                      value={user?.email || ''} 
+                      disabled 
+                      className="px-3 bg-gray-100 border-gray-200 text-gray-700" 
+                    />
+                    {user?.email_verified && (
+                      <div className="flex items-center text-green-600">
+                        <CheckCircle className="w-4 h-4" />
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-500">Contact support to change your email address</p>
+                </div>
+              </div>
+
+              <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="space-y-2">
+                  <Label className="flex items-center text-sm font-medium text-gray-700">
+                    <User className="w-4 h-4 mr-2 text-gray-500" />
+                    User ID
+                  </Label>
                   <Input 
                     value={user?.id || ''} 
                     disabled 
-                    className="font-mono text-xs px-3 bg-gray-50" 
+                    className="font-mono text-xs px-3 bg-gray-100 border-gray-200 text-gray-700" 
                   />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Role</Label>
-                  <Input 
-                    value={user?.role || 'user'} 
-                    disabled 
-                    className="capitalize px-3 bg-gray-50" 
-                  />
-                  <p className="text-xs text-gray-500">Contact support to change your role</p>
-                </div>
-
-                      value={user?.role === 'admin' ? 'Admin' : 'Beta'} 
-                  <Label>Plan</Label> {/* This is a read-only field, not part of the update */}
-                  <div className="flex items-center space-x-2">
-                    <Input value="Beta" disabled className="capitalize px-3 bg-gray-50 flex-1" />
-                    <Button variant="outline" size="sm">
-                      Upgrade
-                    </Button>
-                  </div>
-
-                <div className="space-y-2">
-                  <Label>Member Since</Label>
-                  <Input 
-                    value={user?.createdAt ? formatDate(user.createdAt) : ''} 
-                    disabled
-                    className="px-3 bg-gray-50"
-                  />
+                  <p className="text-xs text-gray-500">Your unique account identifier</p>
                 </div>
               </div>
             </div>
+
+            <div className="space-y-4">
+              <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="space-y-2">
+                  <Label className="flex items-center text-sm font-medium text-gray-700">
+                    <Shield className="w-4 h-4 mr-2 text-gray-500" />
+                    Account Role
+                  </Label>
+                  <Input 
+                    value={user?.user_role === 'admin' ? 'Administrator' : 'User'} 
+                    disabled 
+                    className="capitalize px-3 bg-gray-100 border-gray-200 text-gray-700" 
+                  />
+                  <p className="text-xs text-gray-500">Contact support to change your role</p>
+                </div>
+              </div>
+
+                      value={user?.role === 'admin' ? 'Admin' : 'Beta'} 
+              <div className="p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200">
+                <div className="space-y-2">
+                  <Label className="flex items-center text-sm font-medium text-gray-700">
+                    <Crown className="w-4 h-4 mr-2 text-blue-600" />
+                    Current Plan
+                  </Label>
+                  <div className="flex items-center space-x-2">
+                    <Input 
+                      value={user?.plan === 'free' ? 'Beta (Free)' : user?.plan?.toUpperCase() || 'Beta'} 
+                      disabled 
+                      className="capitalize px-3 bg-white border-blue-200 text-blue-700 font-medium flex-1" 
+                    />
+                    <Button variant="outline" size="sm" className="border-blue-300 text-blue-600 hover:bg-blue-50">
+                      Upgrade
+                    </Button>
+                  </div>
+                  <p className="text-xs text-blue-600">Enjoy early access to all beta features</p>
+                </div>
+              </div>
+
+              <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="space-y-2">
+                  <Label className="flex items-center text-sm font-medium text-gray-700">
+                    <Calendar className="w-4 h-4 mr-2 text-gray-500" />
+                    Member Since
+                  </Label>
+                  <Input 
+                    value={user?.created_at ? formatDate(user.created_at) : ''} 
+                    disabled
+                    className="px-3 bg-gray-100 border-gray-200 text-gray-700"
+                  />
+                  <p className="text-xs text-gray-500">When you joined the Parscade community</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Status Messages */}
+      <div className="space-y-4">
+        {/* Form Errors */}
+        {updateAccount.error && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center p-4 bg-red-50 border border-red-200 rounded-lg"
+          >
+            <AlertCircle className="w-5 h-5 text-red-600 mr-3 flex-shrink-0" />
+            <div>
+              <p className="text-sm font-medium text-red-800">Update Failed</p>
+              <p className="text-sm text-red-700">{getErrorMessage(updateAccount.error)}</p>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Success Message */}
+        {updateAccount.isSuccess && !isDirty && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center p-4 bg-green-50 border border-green-200 rounded-lg"
+          >
+            <CheckCircle className="w-5 h-5 text-green-600 mr-3 flex-shrink-0" />
+            <div>
+              <p className="text-sm font-medium text-green-800">Profile Updated</p>
+              <p className="text-sm text-green-700">Your profile information has been saved successfully</p>
+            </div>
+          </motion.div>
+        )}
+      </div>
+    </motion.div>
+  );
+};
+
+export default ProfileTab;
             {/* Form Errors */}
             {updateAccount.error && (
               <motion.div
