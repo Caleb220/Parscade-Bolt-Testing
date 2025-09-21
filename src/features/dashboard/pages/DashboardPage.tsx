@@ -85,7 +85,7 @@ const DashboardPage: React.FC = () => {
     );
   }
 
-  return (
+            </motion.div>
     <DashboardLayout
       title="Dashboard Overview"
       subtitle="Monitor your document processing and analytics"
@@ -208,7 +208,7 @@ const DashboardPage: React.FC = () => {
               >
                 
               </motion.span>
-            </div>
+            </motion.div>
           </motion.div>
         </DashboardGrid>
       </DashboardSection>
