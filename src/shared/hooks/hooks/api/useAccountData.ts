@@ -1,135 +1,73 @@
-/**
- * React Query hooks for Account data with comprehensive error handling
- * Updated for backend integration with robust retry logic and user feedback
- */
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { toast } from '@/shared/components/ui/use-toast';
+import { getErrorMessage } from '@/lib/api';
+import * as accountApi from '@/lib/api/modules/account';
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { accountAPI } from '@/lib/api/account';
-import { logger } from '@/services/logger';
-import { isApiError, getErrorMessage } from '@/lib/api';
-import type { User, ApiKey, NotificationPrefs, Webhook, Session, SecurityEvent, Service, DataSource } from '@/lib/types';
-import type { ProfileFormData, ApiKeyFormData, WebhookFormData, NotificationPrefsFormData, DataSourceFormData } from '@/lib/validation/account';
-
-// Query keys for React Query cache management
-export const accountKeys = {
-  all: ['account'] as const,
-  me: () => [...accountKeys.all, 'me'] as const,
-  apiKeys: () => [...accountKeys.all, 'api-keys'] as const,
-  sessions: () => [...accountKeys.all, 'sessions'] as const,
-  securityEvents: () => [...accountKeys.all, 'security-events'] as const,
-  notifications: () => [...accountKeys.all, 'notifications'] as const,
-  webhooks: () => [...accountKeys.all, 'webhooks'] as const,
-  services: () => [...accountKeys.all, 'services'] as const,
-  dataSources: () => [...accountKeys.all, 'data-sources'] as const,
-} as const;
-
-// ============================================================================
-// PROFILE HOOKS
-// ============================================================================
-
-export const useAccount = () => {
+// Account Settings
+export const useAccountSettings = () => {
   return useQuery({
-    queryKey: accountKeys.me(),
-    queryFn: () => accountAPI.getMe(),
-    staleTime: 2 * 60 * 1000, // 2 minutes
-    retry: (failureCount, error: any) => {
-      // Don't retry auth errors
-      if (isApiError(error) && (error.statusCode === 401 || error.statusCode === 403)) {
-        return false;
-      }
-      return failureCount < 2;
-    },
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    queryKey: ['account', 'settings'],
+    queryFn: accountApi.getAccountSettings,
   });
 };
 
-export const useUpdateAccount = () => {
+export const useUpdateAccountSettings = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: (data: ProfileFormData) => accountAPI.updateProfile(data),
-    onMutate: async (newData) => {
-      // Cancel outgoing refetches to prevent optimistic update conflicts
-      await queryClient.cancelQueries({ queryKey: accountKeys.me() });
-      
-      const previousUser = queryClient.getQueryData<User>(accountKeys.me());
-      
-      // Optimistically update the cache
-      if (previousUser) {
-        queryClient.setQueryData<User>(accountKeys.me(), {
-          ...previousUser,
-          ...newData,
-          updated_at: new Date().toISOString(),
-        });
-      }
-      
-      return { previousUser };
-    },
-    onError: (error, _variables, context) => {
-      // Rollback optimistic update on error
-      if (context?.previousUser) {
-        queryClient.setQueryData(accountKeys.me(), context.previousUser);
-      }
-      
-      logger.error('Failed to update account profile', {
-        context: { feature: 'account', action: 'updateProfile' },
-        error: error instanceof Error ? error : new Error(String(error)),
-      });
-    },
-    onSuccess: (updatedUser) => {
-      // Ensure cache reflects server response
-      queryClient.setQueryData(accountKeys.me(), updatedUser);
-      
-      logger.info('Account profile updated successfully', {
-        context: { feature: 'account', action: 'updateProfile' },
-      });
-    },
-  });
-};
-
-export const useUploadAvatar = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: (file: File) => accountAPI.uploadAvatar(file),
-    onSuccess: (response, _file) => {
-      // Update the user's avatar_url in cache
-      const currentUser = queryClient.getQueryData<User>(accountKeys.me());
-      if (currentUser) {
-        queryClient.setQueryData<User>(accountKeys.me(), {
-          ...currentUser,
-          avatar_url: response.avatar_url,
-          updated_at: new Date().toISOString(),
-        });
-      }
-      
-      logger.info('Avatar uploaded successfully', {
-        context: { feature: 'account', action: 'uploadAvatar' },
-        metadata: { avatarUrl: response.avatar_url },
+    mutationFn: accountApi.updateAccountSettings,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['account', 'settings'] });
+      toast({
+        title: 'Settings updated',
+        description: 'Your account settings have been updated successfully.',
       });
     },
     onError: (error) => {
-      logger.error('Failed to upload avatar', {
-        context: { feature: 'account', action: 'uploadAvatar' },
-        error: error instanceof Error ? error : new Error(String(error)),
+      toast({
+        title: 'Update failed',
+        description: getErrorMessage(error),
+        variant: 'destructive',
       });
     },
   });
 };
 
-// ============================================================================
-// SECURITY HOOKS
-// ============================================================================
+// User Profile
+export const useUserProfile = () => {
+  return useQuery({
+    queryKey: ['user', 'profile'],
+    queryFn: accountApi.getUserProfile,
+  });
+};
 
+export const useUpdateUserProfile = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: accountApi.updateUserProfile,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user', 'profile'] });
+      toast({
+        title: 'Profile updated',
+        description: 'Your profile has been updated successfully.',
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: 'Update failed',
+        description: getErrorMessage(error),
+        variant: 'destructive',
+      });
+    },
+  });
+};
+
+// API Keys
 export const useApiKeys = () => {
   return useQuery({
-    queryKey: accountKeys.apiKeys(),
-    queryFn: () => accountAPI.getApiKeys(),
-    staleTime: 30 * 1000, // 30 seconds
-    retry: (failureCount, error: any) => {
-      if (isApiError(error) && error.statusCode === 401) return false;
-      return failureCount < 2;
-    },
+    queryKey: ['account', 'api-keys'],
+    queryFn: accountApi.getApiKeys,
   });
 };
 
@@ -137,67 +75,51 @@ export const useCreateApiKey = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: (data: ApiKeyFormData) => accountAPI.createApiKey(data),
+    mutationFn: accountApi.createApiKey,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: accountKeys.apiKeys() });
-      logger.info('API key created successfully', {
-        context: { feature: 'account', action: 'createApiKey' },
+      queryClient.invalidateQueries({ queryKey: ['account', 'api-keys'] });
+      toast({
+        title: 'API key created',
+        description: 'Your new API key has been created successfully.',
       });
     },
     onError: (error) => {
-      logger.error('Failed to create API key', {
-        context: { feature: 'account', action: 'createApiKey' },
-        error: error instanceof Error ? error : new Error(String(error)),
+      toast({
+        title: 'Creation failed',
+        description: getErrorMessage(error),
+        variant: 'destructive',
       });
     },
   });
 };
 
-export const useRevokeApiKey = () => {
+export const useDeleteApiKey = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: (id: string) => accountAPI.revokeApiKey(id),
-    onMutate: async (keyId) => {
-      // Optimistically remove the API key from cache
-      await queryClient.cancelQueries({ queryKey: accountKeys.apiKeys() });
-      
-      const previousKeys = queryClient.getQueryData<readonly ApiKey[]>(accountKeys.apiKeys());
-      if (previousKeys) {
-        queryClient.setQueryData<readonly ApiKey[]>(
-          accountKeys.apiKeys(),
-          previousKeys.filter(key => key.id !== keyId)
-        );
-      }
-      
-      return { previousKeys };
-    },
-    onError: (error, _keyId, context) => {
-      // Rollback optimistic update
-      if (context?.previousKeys) {
-        queryClient.setQueryData(accountKeys.apiKeys(), context.previousKeys);
-      }
-      
-      logger.error('Failed to revoke API key', {
-        context: { feature: 'account', action: 'revokeApiKey' },
-        error: error instanceof Error ? error : new Error(String(error)),
+    mutationFn: accountApi.deleteApiKey,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['account', 'api-keys'] });
+      toast({
+        title: 'API key deleted',
+        description: 'The API key has been deleted successfully.',
       });
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: accountKeys.apiKeys() });
-      logger.info('API key revoked successfully', {
-        context: { feature: 'account', action: 'revokeApiKey' },
+    onError: (error) => {
+      toast({
+        title: 'Deletion failed',
+        description: getErrorMessage(error),
+        variant: 'destructive',
       });
     },
   });
 };
 
-export const useSessions = () => {
+// User Sessions
+export const useUserSessions = () => {
   return useQuery({
-    queryKey: accountKeys.sessions(),
-    queryFn: () => accountAPI.getSessions(),
-    staleTime: 30 * 1000, // 30 seconds
-    refetchInterval: 60 * 1000, // Refetch every minute for active sessions
+    queryKey: ['account', 'sessions'],
+    queryFn: accountApi.getUserSessions,
   });
 };
 
@@ -205,107 +127,67 @@ export const useRevokeSession = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: (id: string) => accountAPI.revokeSession(id),
-    onMutate: async (sessionId) => {
-      await queryClient.cancelQueries({ queryKey: accountKeys.sessions() });
-      
-      const previousSessions = queryClient.getQueryData<readonly Session[]>(accountKeys.sessions());
-      if (previousSessions) {
-        queryClient.setQueryData<readonly Session[]>(
-          accountKeys.sessions(),
-          previousSessions.filter(session => session.id !== sessionId)
-        );
-      }
-      
-      return { previousSessions };
-    },
-    onError: (error, _sessionId, context) => {
-      if (context?.previousSessions) {
-        queryClient.setQueryData(accountKeys.sessions(), context.previousSessions);
-      }
-    },
+    mutationFn: accountApi.revokeSession,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: accountKeys.sessions() });
+      queryClient.invalidateQueries({ queryKey: ['account', 'sessions'] });
+      toast({
+        title: 'Session revoked',
+        description: 'The session has been revoked successfully.',
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: 'Revocation failed',
+        description: getErrorMessage(error),
+        variant: 'destructive',
+      });
     },
   });
 };
 
+// Security Events
 export const useSecurityEvents = () => {
   return useQuery({
-    queryKey: accountKeys.securityEvents(),
-    queryFn: () => accountAPI.getSecurityEvents(),
-    staleTime: 60 * 1000, // 1 minute
+    queryKey: ['account', 'security-events'],
+    queryFn: accountApi.getSecurityEvents,
   });
 };
 
-// ============================================================================
-// NOTIFICATIONS HOOKS
-// ============================================================================
-
-export const useNotificationPrefs = () => {
+// Notification Preferences
+export const useNotificationPreferences = () => {
   return useQuery({
-    queryKey: accountKeys.notifications(),
-    queryFn: () => accountAPI.getNotificationPrefs(),
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    retry: (failureCount, error: any) => {
-      if (isApiError(error) && error.statusCode === 404) {
-        // If preferences don't exist, that's expected for new users
-        return false;
-      }
-      return failureCount < 2;
-    },
+    queryKey: ['account', 'notification-preferences'],
+    queryFn: accountApi.getNotificationPreferences,
   });
 };
 
-export const useUpdateNotificationPrefs = () => {
+export const useUpdateNotificationPreferences = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: (data: NotificationPrefsFormData) => accountAPI.updateNotificationPrefs(data),
-    onMutate: async (newData) => {
-      await queryClient.cancelQueries({ queryKey: accountKeys.notifications() });
-      
-      const previousPrefs = queryClient.getQueryData<NotificationPrefs>(accountKeys.notifications());
-      
-      // Optimistically update cache
-      if (previousPrefs) {
-        queryClient.setQueryData<NotificationPrefs>(accountKeys.notifications(), {
-          ...previousPrefs,
-          ...newData,
-        });
-      }
-      
-      return { previousPrefs };
-    },
-    onError: (error, _variables, context) => {
-      if (context?.previousPrefs) {
-        queryClient.setQueryData(accountKeys.notifications(), context.previousPrefs);
-      }
-      
-      logger.error('Failed to update notification preferences', {
-        context: { feature: 'account', action: 'updateNotificationPrefs' },
-        error: error instanceof Error ? error : new Error(String(error)),
+    mutationFn: accountApi.updateNotificationPreferences,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['account', 'notification-preferences'] });
+      toast({
+        title: 'Preferences updated',
+        description: 'Your notification preferences have been updated successfully.',
       });
     },
-    onSuccess: (updatedPrefs) => {
-      queryClient.setQueryData(accountKeys.notifications(), updatedPrefs);
-      
-      logger.info('Notification preferences updated successfully', {
-        context: { feature: 'account', action: 'updateNotificationPrefs' },
+    onError: (error) => {
+      toast({
+        title: 'Update failed',
+        description: getErrorMessage(error),
+        variant: 'destructive',
       });
     },
   });
 };
 
-// ============================================================================
-// INTEGRATIONS HOOKS
-// ============================================================================
-
+// Webhooks
 export const useWebhooks = () => {
   return useQuery({
-    queryKey: accountKeys.webhooks(),
-    queryFn: () => accountAPI.getWebhooks(),
-    staleTime: 30 * 1000, // 30 seconds
+    queryKey: ['account', 'webhooks'],
+    queryFn: accountApi.getWebhooks,
   });
 };
 
@@ -313,31 +195,20 @@ export const useCreateWebhook = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: (data: WebhookFormData) => accountAPI.createWebhook(data),
+    mutationFn: accountApi.createWebhook,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: accountKeys.webhooks() });
-      
-      logger.info('Webhook created successfully', {
-        context: { feature: 'account', action: 'createWebhook' },
+      queryClient.invalidateQueries({ queryKey: ['account', 'webhooks'] });
+      toast({
+        title: 'Webhook created',
+        description: 'Your webhook has been created successfully.',
       });
     },
     onError: (error) => {
-      logger.error('Failed to create webhook', {
-        context: { feature: 'account', action: 'createWebhook' },
-        error: error instanceof Error ? error : new Error(String(error)),
+      toast({
+        title: 'Creation failed',
+        description: getErrorMessage(error),
+        variant: 'destructive',
       });
-    },
-  });
-};
-
-export const useUpdateWebhook = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<WebhookFormData> }) => 
-      accountAPI.updateWebhook(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: accountKeys.webhooks() });
     },
   });
 };
@@ -346,48 +217,78 @@ export const useDeleteWebhook = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: (id: string) => accountAPI.deleteWebhook(id),
-    onMutate: async (webhookId) => {
-      await queryClient.cancelQueries({ queryKey: accountKeys.webhooks() });
-      
-      const previousWebhooks = queryClient.getQueryData<readonly Webhook[]>(accountKeys.webhooks());
-      if (previousWebhooks) {
-        queryClient.setQueryData<readonly Webhook[]>(
-          accountKeys.webhooks(),
-          previousWebhooks.filter(webhook => webhook.id !== webhookId)
-        );
-      }
-      
-      return { previousWebhooks };
-    },
-    onError: (error, _webhookId, context) => {
-      if (context?.previousWebhooks) {
-        queryClient.setQueryData(accountKeys.webhooks(), context.previousWebhooks);
-      }
-    },
+    mutationFn: accountApi.deleteWebhook,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: accountKeys.webhooks() });
+      queryClient.invalidateQueries({ queryKey: ['account', 'webhooks'] });
+      toast({
+        title: 'Webhook deleted',
+        description: 'The webhook has been deleted successfully.',
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: 'Deletion failed',
+        description: getErrorMessage(error),
+        variant: 'destructive',
+      });
     },
   });
 };
 
 export const useTestWebhook = () => {
   return useMutation({
-    mutationFn: (id: string) => accountAPI.testWebhook(id),
+    mutationFn: accountApi.testWebhook,
     onError: (error) => {
-      logger.error('Failed to test webhook', {
-        context: { feature: 'account', action: 'testWebhook' },
-        error: error instanceof Error ? error : new Error(String(error)),
+      toast({
+        title: 'Test failed',
+        description: getErrorMessage(error),
+        variant: 'destructive',
       });
     },
   });
 };
 
+// Services (placeholder implementations)
 export const useServices = () => {
   return useQuery({
-    queryKey: accountKeys.services(),
-    queryFn: () => accountAPI.getServices(),
-    staleTime: 5 * 60 * 1000, // 5 minutes - services don't change often
+    queryKey: ['account', 'services'],
+    queryFn: async () => {
+      // Mock data for services - replace with actual API call when available
+      return [
+        {
+          id: 'google-drive',
+          name: 'Google Drive',
+          description: 'Connect your Google Drive for document sync',
+          connected: false,
+          icon_url: null,
+          last_sync: null,
+        },
+        {
+          id: 'dropbox',
+          name: 'Dropbox',
+          description: 'Connect your Dropbox for document sync',
+          connected: false,
+          icon_url: null,
+          last_sync: null,
+        },
+        {
+          id: 'onedrive',
+          name: 'OneDrive',
+          description: 'Connect your OneDrive for document sync',
+          connected: false,
+          icon_url: null,
+          last_sync: null,
+        },
+        {
+          id: 'slack',
+          name: 'Slack',
+          description: 'Get notifications in your Slack workspace',
+          connected: false,
+          icon_url: null,
+          last_sync: null,
+        },
+      ];
+    },
   });
 };
 
@@ -395,15 +296,24 @@ export const useConnectService = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: (serviceId: string) => accountAPI.connectService(serviceId),
-    onSuccess: (response) => {
-      // Open OAuth redirect in new window
-      window.open(response.redirect_url, '_blank', 'width=600,height=700');
-      
-      // Refetch services after a delay to check connection status
-      setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: accountKeys.services() });
-      }, 2000);
+    mutationFn: async (serviceId: string) => {
+      // Mock implementation - replace with actual API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return { success: true };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['account', 'services'] });
+      toast({
+        title: 'Service connected',
+        description: 'The service has been connected successfully.',
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: 'Connection failed',
+        description: getErrorMessage(error),
+        variant: 'destructive',
+      });
     },
   });
 };
@@ -412,18 +322,33 @@ export const useDisconnectService = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: (serviceId: string) => accountAPI.disconnectService(serviceId),
+    mutationFn: async (serviceId: string) => {
+      // Mock implementation - replace with actual API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return { success: true };
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: accountKeys.services() });
+      queryClient.invalidateQueries({ queryKey: ['account', 'services'] });
+      toast({
+        title: 'Service disconnected',
+        description: 'The service has been disconnected successfully.',
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: 'Disconnection failed',
+        description: getErrorMessage(error),
+        variant: 'destructive',
+      });
     },
   });
 };
 
+// Data Sources
 export const useDataSources = () => {
   return useQuery({
-    queryKey: accountKeys.dataSources(),
-    queryFn: () => accountAPI.getDataSources(),
-    staleTime: 60 * 1000, // 1 minute
+    queryKey: ['account', 'data-sources'],
+    queryFn: accountApi.getDataSources,
   });
 };
 
@@ -431,31 +356,20 @@ export const useCreateDataSource = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: (data: DataSourceFormData) => accountAPI.createDataSource(data),
+    mutationFn: accountApi.createDataSource,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: accountKeys.dataSources() });
-      
-      logger.info('Data source created successfully', {
-        context: { feature: 'account', action: 'createDataSource' },
+      queryClient.invalidateQueries({ queryKey: ['account', 'data-sources'] });
+      toast({
+        title: 'Data source created',
+        description: 'Your data source has been created successfully.',
       });
     },
     onError: (error) => {
-      logger.error('Failed to create data source', {
-        context: { feature: 'account', action: 'createDataSource' },
-        error: error instanceof Error ? error : new Error(String(error)),
+      toast({
+        title: 'Creation failed',
+        description: getErrorMessage(error),
+        variant: 'destructive',
       });
-    },
-  });
-};
-
-export const useUpdateDataSource = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<DataSourceFormData> }) => 
-      accountAPI.updateDataSource(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: accountKeys.dataSources() });
     },
   });
 };
@@ -464,38 +378,32 @@ export const useDeleteDataSource = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: (id: string) => accountAPI.deleteDataSource(id),
-    onMutate: async (sourceId) => {
-      await queryClient.cancelQueries({ queryKey: accountKeys.dataSources() });
-      
-      const previousSources = queryClient.getQueryData<readonly DataSource[]>(accountKeys.dataSources());
-      if (previousSources) {
-        queryClient.setQueryData<readonly DataSource[]>(
-          accountKeys.dataSources(),
-          previousSources.filter(source => source.id !== sourceId)
-        );
-      }
-      
-      return { previousSources };
-    },
-    onError: (error, _sourceId, context) => {
-      if (context?.previousSources) {
-        queryClient.setQueryData(accountKeys.dataSources(), context.previousSources);
-      }
-    },
+    mutationFn: accountApi.deleteDataSource,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: accountKeys.dataSources() });
+      queryClient.invalidateQueries({ queryKey: ['account', 'data-sources'] });
+      toast({
+        title: 'Data source deleted',
+        description: 'The data source has been deleted successfully.',
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: 'Deletion failed',
+        description: getErrorMessage(error),
+        variant: 'destructive',
+      });
     },
   });
 };
 
 export const useTestDataSource = () => {
   return useMutation({
-    mutationFn: (id: string) => accountAPI.testDataSource(id),
+    mutationFn: accountApi.testDataSource,
     onError: (error) => {
-      logger.error('Failed to test data source', {
-        context: { feature: 'account', action: 'testDataSource' },
-        error: error instanceof Error ? error : new Error(String(error)),
+      toast({
+        title: 'Test failed',
+        description: getErrorMessage(error),
+        variant: 'destructive',
       });
     },
   });

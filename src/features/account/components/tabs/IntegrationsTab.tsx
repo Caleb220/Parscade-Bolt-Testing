@@ -15,6 +15,7 @@ import {
   Database,
   RefreshCw,
   AlertCircle as AlertIcon,
+  Shield,
 } from 'lucide-react';
 
 import { getErrorMessage } from '@/lib/api';
@@ -43,7 +44,7 @@ import {
   useCreateDataSource,
   useDeleteDataSource,
   useTestDataSource
-} from '@/shared/hooks/api/useAccountData';
+} from '@/shared/hooks/hooks/api/useAccountData';
 
 const IntegrationsTab: React.FC = () => {
   const { user } = useAccountContext();
