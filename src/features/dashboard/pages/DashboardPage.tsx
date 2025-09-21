@@ -206,7 +206,7 @@ const DashboardPage: React.FC = () => {
                 transition={{ duration: 1.5, repeat: Infinity }}
                 className="ml-1"
               >
-                →
+                
               </motion.span>
             </div>
           </motion.div>
