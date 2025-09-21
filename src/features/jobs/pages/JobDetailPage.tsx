@@ -14,6 +14,9 @@ import { formatDate } from '@/shared/utils/date';
 import { useJob, useCancelJob } from '@/shared/hooks/api/useJobs';
 import { useDocument, useDocumentDownload } from '@/shared/hooks/api/useDocuments';
 
+/**
+ * Job detail page with real-time status updates
+ */
 const JobDetailPage: React.FC = () => {
   const { jobId } = useParams<{ jobId: string }>();
   const navigate = useNavigate();

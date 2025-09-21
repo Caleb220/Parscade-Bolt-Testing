@@ -16,6 +16,9 @@ interface AuthFormProps {
   onSuccess?: () => void;
 }
 
+/**
+ * Authentication form component with validation and rate limiting
+ */
 const AuthForm: React.FC<AuthFormProps> = ({ mode, onModeChange, onSuccess }) => {
   const { signIn, signUp, isLoading, error, clearError } = useAuth();
 
@@ -29,18 +32,15 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onModeChange, onSuccess }) =>
   const [formErrors, setFormErrors] = useState<FormErrors>({});
   const [attemptCount, setAttemptCount] = useState(0);
 
-  // Rate limiting configuration
   const MAX_ATTEMPTS = 5;
-  const RATE_LIMIT_DURATION = 5 * 60 * 1000; // 5 minutes
+  const RATE_LIMIT_DURATION = 5 * 60 * 1000;
   const isRateLimited = attemptCount >= MAX_ATTEMPTS;
 
-  // Clear errors when switching modes
   useEffect(() => {
     setFormErrors({});
     clearError();
   }, [mode, clearError]);
 
-  // Reset attempt count after rate limit duration
   useEffect(() => {
     if (isRateLimited) {
       const timer = setTimeout(() => {
@@ -50,11 +50,12 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onModeChange, onSuccess }) =>
     }
   }, [isRateLimited, RATE_LIMIT_DURATION]);
 
-  // Memoized form validation to prevent unnecessary recalculations
+  /**
+   * Validate form fields based on current mode
+   */
   const validateForm = useCallback((): boolean => {
     const errors: FormErrors = {};
 
-    // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!formData.email.trim()) {
       errors.email = 'Email is required';
@@ -62,7 +63,6 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onModeChange, onSuccess }) =>
       errors.email = 'Please enter a valid email address';
     }
 
-    // Password validation
     if (!formData.password) {
       errors.password = 'Password is required';
     } else if (mode === 'signup') {
@@ -72,17 +72,13 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onModeChange, onSuccess }) =>
       }
     }
 
-    // Full name validation for signup
     if (mode === 'signup') {
       if (!formData.fullName.trim()) {
         errors.fullName = 'Full name is required';
       } else if (formData.fullName.trim().length < 2) {
         errors.fullName = 'Full name must be at least 2 characters';
       }
-    }
-
-    // Username name validation for signup
-    if (mode === 'signup') {
+      
       if (!formData.username.trim()) {
         errors.username = 'Username is required';
       } else if (formData.username.trim().length < 2) {
@@ -94,7 +90,9 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onModeChange, onSuccess }) =>
     return Object.keys(errors).length === 0;
   }, [formData, mode]);
 
-  // Memoized submit handler to prevent recreation on every render
+  /**
+   * Handle form submission with error handling
+   */
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -105,7 +103,6 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onModeChange, onSuccess }) =>
 
     if (!validateForm()) return;
 
-    // Clear any existing errors before attempting auth
     setFormErrors({});
     clearError();
 
@@ -116,14 +113,11 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onModeChange, onSuccess }) =>
         await signUp(formData.email.trim(), formData.password, formData.fullName.trim(), formData.username.trim());
       }
 
-      // Reset attempt count on success
       setAttemptCount(0);
       onSuccess?.();
     } catch (authError) {
-      // Increment attempt count on failure
       setAttemptCount((prev) => prev + 1);
 
-      // Show error message from the thrown error or auth context
       const errorMessage = (authError as Error)?.message || error || 'Authentication failed. Please review your details and try again.';
       setFormErrors((prev) => ({
         ...prev,
@@ -132,7 +126,9 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onModeChange, onSuccess }) =>
     }
   }, [formData, mode, isRateLimited, validateForm, clearError, signIn, signUp, error, onSuccess]);
 
-  // Memoized input change handlers to prevent recreation
+  /**
+   * Create input change handler for specific field
+   */
   const handleInputChange = useCallback((field: keyof typeof formData) => (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
@@ -140,12 +136,10 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onModeChange, onSuccess }) =>
     
     setFormData((prev) => ({ ...prev, [field]: value }));
 
-    // Clear field-specific error when user starts typing
     if (formErrors[field]) {
       setFormErrors((prev) => ({ ...prev, [field]: undefined }));
     }
 
-    // Clear general error
     if (formErrors.general) {
       setFormErrors((prev) => ({ ...prev, general: undefined }));
     }
@@ -158,12 +152,10 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onModeChange, onSuccess }) =>
   const handleFullNameChange = useCallback(handleInputChange('fullName'), [handleInputChange]);
   const handleUsernameChange = useCallback(handleInputChange('username'), [handleInputChange]);
 
-  // Memoized mode change handlers
   const handleModeToggle = useCallback(() => {
     onModeChange(mode === 'signin' ? 'signup' : 'signin');
   }, [mode, onModeChange]);
 
-  // Memoized form content to prevent unnecessary re-renders
   const formContent = useMemo(() => {
     return (
       <motion.div
@@ -245,7 +237,6 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onModeChange, onSuccess }) =>
             </div>
           )}
 
-          {/* Error Display */}
           <AnimatePresence>
             {(error || formErrors.general) && (
               <motion.div
@@ -262,7 +253,6 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onModeChange, onSuccess }) =>
             )}
           </AnimatePresence>
 
-          {/* Rate Limit Warning */}
           {isRateLimited && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
@@ -312,6 +302,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onModeChange, onSuccess }) =>
     handleFullNameChange,
     handleEmailChange,
     handlePasswordChange,
+    handleUsernameChange,
     handleModeToggle,
   ]);
 

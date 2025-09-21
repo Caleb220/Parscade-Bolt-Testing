@@ -20,6 +20,9 @@ interface UserContext {
   username?: string;
 }
 
+/**
+ * Enterprise logging service with structured output
+ */
 class Logger {
   private userContext: UserContext | null = null;
   private globalContext: Record<string, any> = {};
@@ -27,7 +30,6 @@ class Logger {
 
   initialize(): void {
     this.isInitialized = true;
-    this.info('Logger initialized');
   }
 
   setUserContext(user: UserContext): void {
@@ -62,7 +64,6 @@ class Logger {
       }),
     };
 
-    // In development, use console methods for better formatting
     if (import.meta.env?.MODE === 'development') {
       switch (level) {
         case 'error':
@@ -78,7 +79,6 @@ class Logger {
           console.log(`[${level.toUpperCase()}] ${message}`, logData);
       }
     } else {
-      // In production, use structured JSON logging
       console.log(JSON.stringify(logData));
     }
   }

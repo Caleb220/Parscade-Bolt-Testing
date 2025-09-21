@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, Suspense } from 'react';
 import { BrowserRouter as Router, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
-import type { FC } from 'react';
 
 import { QueryProvider } from '@/app/providers/QueryProvider';
 import { AuthProvider, useAuth, LoginSupportPage } from '@/features/auth';
@@ -10,7 +9,6 @@ import ProtectedRoute from '@/shared/components/layout/templates/ProtectedRoute'
 import LoadingSpinner from '@/shared/components/forms/atoms/LoadingSpinner';
 import { Toaster } from '@/shared/components/ui/toaster';
 import { env } from '@/app/config/env';
-import { logger } from '@/shared/services/logger';
 import { analytics, trackPageView } from '@/shared/utils/analytics';
 import { defaultSEO, updateSEO } from '@/shared/utils/seo';
 
@@ -18,7 +16,6 @@ import type { SeoConfig } from '@/shared/schemas';
 
 /**
  * Public Route component that redirects authenticated users
- * ENHANCED: Checks for recovery mode to prevent dashboard redirects during password reset
  */
 const PublicRoute: React.FC<{ children: React.ReactNode; redirectTo?: string }> = ({ 
   children, 
@@ -34,7 +31,6 @@ const PublicRoute: React.FC<{ children: React.ReactNode; redirectTo?: string }> 
     );
   }
   
-  
   if (isAuthenticated) {
     return <Navigate to={redirectTo} replace />;
   }
@@ -45,7 +41,7 @@ const PublicRoute: React.FC<{ children: React.ReactNode; redirectTo?: string }> 
 /**
  * Loading fallback component for route-level code splitting
  */
-const RouteLoadingFallback: FC = () => (
+const RouteLoadingFallback: React.FC = () => (
   <div className="min-h-screen flex items-center justify-center bg-gray-50">
     <div className="text-center">
       <LoadingSpinner size="lg" className="mx-auto mb-4" />
@@ -54,7 +50,7 @@ const RouteLoadingFallback: FC = () => (
   </div>
 );
 
-// Lazy load page components for better performance
+// Lazy-loaded page components for code splitting
 const HomePage = React.lazy(() => import('@/features/marketing/pages/HomePage'));
 const ProductPage = React.lazy(() => import('@/features/marketing/pages/ProductPage'));
 const DashboardPage = React.lazy(() => import('@/features/dashboard/pages/DashboardPage'));
@@ -68,22 +64,20 @@ const TermsPage = React.lazy(() => import('@/features/marketing/pages/TermsPage'
 const NotFoundPage = React.lazy(() => import('@/features/marketing/pages/NotFoundPage'));
 const ErrorPage = React.lazy(() => import('@/features/marketing/pages/ErrorPage'));
 
-// Lazy load account tabs
+// Lazy-loaded account tabs
 const ProfileTab = React.lazy(() => import('@/features/account/components/tabs/ProfileTab'));
 const SecurityTab = React.lazy(() => import('@/features/account/components/tabs/SecurityTab'));
 const NotificationsTab = React.lazy(() => import('@/features/account/components/tabs/NotificationsTab'));
 const IntegrationsTab = React.lazy(() => import('@/features/account/components/tabs/IntegrationsTab'));
+
 /**
  * Component to handle route changes and analytics.
  * Manages SEO updates and page view tracking for different routes.
- * 
- * ANTI-FLICKER: Detects recovery mode early to prevent home page flash
  */
-const RouteHandler: FC = () => {
+const RouteHandler: React.FC = () => {
   const location = useLocation();
   
   useEffect(() => {
-    // Define SEO configuration for each route
     const routeSEO: Record<string, Partial<SeoConfig>> = {
       '/': {
         title: 'Parscade',
@@ -104,10 +98,6 @@ const RouteHandler: FC = () => {
       '/billing': {
         title: 'Parscade',
         description: 'Choose the perfect plan for your document processing needs. Simple, transparent pricing with no hidden fees.',
-      },
-      '/login': {
-        title: 'Parscade - Sign In',
-        description: 'Sign in to your Parscade account to access your document processing dashboard.',
       },
       '/contact': {
         title: 'Parscade',
@@ -142,7 +132,6 @@ const RouteHandler: FC = () => {
       url: `${window.location.origin}${location.pathname}`,
     });
 
-    // Track page view
     trackPageView(location.pathname);
   }, [location]);
   
@@ -227,7 +216,7 @@ const RouteHandler: FC = () => {
           </Suspense>
         } />
         
-        {/* DEPRECATED ROUTES - Redirect to login with support message */}
+        {/* Deprecated routes - Redirect to support */}
         <Route path="/reset-password" element={<Navigate to="/login-support" replace />} />
         <Route path="/auth/recovery" element={<Navigate to="/login-support" replace />} />
         <Route path="/forgot-password" element={<Navigate to="/login-support" replace />} />
@@ -259,24 +248,14 @@ const RouteHandler: FC = () => {
 };
 
 /**
-
  * Main application component.
  * Sets up providers, routing, and analytics initialization.
  */
-const App: FC = () => {
+const App: React.FC = () => {
   useEffect(() => {
-    // Initialize analytics if API key is available
     if (env.analytics.key) {
       analytics.init(env.analytics.key);
     }
-    
-    // Set up global request context for Sentry
-    logger.setContext('app', {
-      version: '1.0.0',
-      environment: env.mode,
-      url: window.location.href,
-      userAgent: navigator.userAgent,
-    });
   }, []);
 
   return (

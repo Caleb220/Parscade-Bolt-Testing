@@ -12,6 +12,9 @@ import { formatJobType } from '@/shared/utils/formatters';
 import { formatDate } from '@/shared/utils/date';
 import { useJobs } from '@/shared/hooks/api/useJobs';
 
+/**
+ * Jobs list component with real-time updates
+ */
 const JobsList: React.FC = () => {
   const navigate = useNavigate();
   const { data: jobsData, isLoading, error, refetch } = useJobs({ 
@@ -33,7 +36,6 @@ const JobsList: React.FC = () => {
     );
   }
 
-  // Ensure we have valid data structure
   const jobs = jobsData?.jobs || [];
   const pagination = jobsData?.pagination;
 

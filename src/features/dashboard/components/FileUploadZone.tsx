@@ -12,6 +12,9 @@ interface FileUploadZoneProps {
   onJobSubmitted?: (jobId: string) => void;
 }
 
+/**
+ * File upload zone with drag & drop support and job submission
+ */
 const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
   const [dragActive, setDragActive] = useState(false);
   const [uploadedDocumentId, setUploadedDocumentId] = useState<string | null>(null);
@@ -19,6 +22,9 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
   const { uploadFile, uploadProgress, isUploading, reset } = useFileUpload();
   const submitParseJobMutation = useSubmitParseJob();
 
+  /**
+   * Handle file selection and upload
+   */
   const handleFiles = useCallback(async (files: FileList | null) => {
     if (!files || !files.length) return;
     
@@ -31,11 +37,13 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
         setUploadedDocumentId(documentId);
       }
     } catch (error) {
-      // Error is handled by the upload hook
-      console.warn('File upload failed:', getErrorMessage(error));
+      // Error handled by upload hook
     }
   }, [uploadFile]);
 
+  /**
+   * Submit processing job for uploaded document
+   */
   const handleSubmitJob = useCallback(async () => {
     if (!uploadedDocumentId) return;
     
@@ -50,7 +58,6 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
       setUploadedDocumentId(null);
     } catch (error) {
       // Error handled by mutation
-      console.warn('Job submission failed:', getErrorMessage(error));
     }
   }, [uploadedDocumentId, submitParseJobMutation, onJobSubmitted, reset]);
 
@@ -86,7 +93,6 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
     setUploadedDocumentId(null);
   }, [reset]);
 
-  // Safely access upload progress properties
   const currentPhase = uploadProgress?.phase || 'idle';
   const currentProgress = uploadProgress?.progress || 0;
   const uploadError = uploadProgress?.error;

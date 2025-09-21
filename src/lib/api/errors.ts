@@ -3,13 +3,6 @@
  * Centralized error definitions and utilities
  */
 
-import type { paths } from '@/types/api-types';
-
-/**
- * Extract error response type from OpenAPI paths
- */
-type ErrorResponse = paths['/health']['get']['responses']['503']['content']['application/json'];
-
 /**
  * Enterprise API Error with correlation tracking
  */
@@ -39,9 +32,12 @@ export class ApiError extends Error {
     this.endpoint = endpoint;
   }
 
+  /**
+   * Create ApiError from HTTP response
+   */
   static fromResponse(
     response: Response,
-    errorData: ErrorResponse | null,
+    errorData: any | null,
     endpoint?: string
   ): ApiError {
     const code = errorData?.error || `HTTP_${response.status}`;
@@ -52,6 +48,9 @@ export class ApiError extends Error {
     return new ApiError(message, code, response.status, details, requestId, endpoint);
   }
 
+  /**
+   * Get user-friendly error message
+   */
   getUserMessage(): string {
     switch (this.code) {
       case 'UNAUTHORIZED':
@@ -74,6 +73,9 @@ export class ApiError extends Error {
     }
   }
 
+  /**
+   * Check if error is retryable
+   */
   isRetryable(): boolean {
     return (
       this.statusCode >= 500 ||
@@ -83,6 +85,9 @@ export class ApiError extends Error {
     );
   }
 
+  /**
+   * Get retry delay for exponential backoff
+   */
   getRetryDelay(): number {
     if (this.statusCode === 429) {
       const retryAfter = this.details?.retryAfter;

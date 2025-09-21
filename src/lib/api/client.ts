@@ -1,19 +1,13 @@
 /**
  * Enterprise API Client for Parscade Backend Integration
- * Auto-generated types from OpenAPI spec with professional error handling
+ * Professional error handling with retry logic and authentication
  */
 
 import { supabase } from '@/lib/supabase';
 import { env } from '@/app/config/env';
 import { logger } from '@/shared/services/logger';
 
-import type { paths } from '@/types/api-types';
 import { ApiError } from './errors';
-
-/**
- * Extract error response type from OpenAPI paths
- */
-type ErrorResponse = paths['/health']['get']['responses']['503']['content']['application/json'];
 
 /**
  * Request options for API calls
@@ -56,10 +50,12 @@ class ApiClient {
     return `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 
-
+  /**
+   * Get authentication token with retry logic
+   */
   private async getAuthToken(): Promise<string | null> {
     const maxAttempts = 3;
-    const baseDelay = 500; // 500ms base delay
+    const baseDelay = 500;
 
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
       try {
@@ -81,28 +77,13 @@ class ApiClient {
         }
 
         if (session?.access_token) {
-          if (this.isDevelopment && attempt > 1) {
-            logger.debug(`Auth token retrieved on attempt ${attempt}`, {
-              context: { feature: 'api-client', action: 'getAuthToken' },
-            });
-          }
           return session.access_token;
         }
 
-        // No session or access token
-        if (this.isDevelopment) {
-          logger.debug(`No auth session found (attempt ${attempt}/${maxAttempts})`, {
-            context: { feature: 'api-client', action: 'getAuthToken' },
-            metadata: { hasSession: !!session, sessionKeys: session ? Object.keys(session) : [] },
-          });
-        }
-
-        // If this is the last attempt, return null
         if (attempt === maxAttempts) {
           return null;
         }
 
-        // Wait before retrying
         await this.sleep(baseDelay * attempt);
 
       } catch (error) {
@@ -123,6 +104,10 @@ class ApiClient {
 
     return null;
   }
+
+  /**
+   * Log API requests in development mode
+   */
   private logRequest(context: RequestContext, response?: Response, error?: Error): void {
     if (!this.isDevelopment) return;
 
@@ -147,6 +132,9 @@ class ApiClient {
     });
   }
 
+  /**
+   * Execute HTTP request with retry logic
+   */
   private async executeRequest(
     url: string,
     init: RequestInit,
@@ -165,7 +153,6 @@ class ApiClient {
       ...options.headers,
     };
 
-    // Only set Content-Type if not multipart/form-data
     if (!options.headers?.['Content-Type'] || options.headers['Content-Type'] !== undefined) {
       headers['Content-Type'] = 'application/json';
     }
@@ -206,32 +193,26 @@ class ApiClient {
           const errorData = await this.parseErrorResponse(response);
           const apiError = ApiError.fromResponse(response, errorData, fullUrl);
           
-          // Handle auth errors immediately
           if (response.status === 401 || response.status === 403) {
-            // Attempt to refresh session
             try {
               await supabase.auth.refreshSession();
               const newToken = await this.getAuthToken();
               if (newToken && attempt === 1) {
-                // Retry once with new token
                 headers.Authorization = `Bearer ${newToken}`;
                 continue;
               }
             } catch (refreshError) {
-              // Refresh failed, redirect to home
               window.location.href = '/';
               throw apiError;
             }
           }
 
-          // Don't retry client errors except auth and rate limiting
           if (response.status >= 400 && response.status < 500) {
             if (response.status !== 408 && response.status !== 429) {
               throw apiError;
             }
           }
 
-          // Retry for server errors and specific client errors
           if (attempt < maxAttempts && (options.retryable !== false)) {
             await this.sleep(this.getRetryDelay(attempt, apiError));
             lastError = apiError;
@@ -270,18 +251,24 @@ class ApiClient {
     throw lastError || new ApiError('Max retry attempts exceeded', 'MAX_RETRIES', 0);
   }
 
-  private async parseErrorResponse(response: Response): Promise<ErrorResponse | null> {
+  /**
+   * Parse error response from API
+   */
+  private async parseErrorResponse(response: Response): Promise<any | null> {
     try {
       const contentType = response.headers.get('content-type');
       if (contentType?.includes('application/json')) {
         return await response.json();
       }
     } catch (error) {
-      // Silently fail for error response parsing
+      // Ignore parsing errors
     }
     return null;
   }
 
+  /**
+   * Calculate retry delay with exponential backoff
+   */
   private getRetryDelay(attempt: number, error?: ApiError): number {
     if (error?.getRetryDelay) {
       return error.getRetryDelay();
@@ -291,10 +278,16 @@ class ApiClient {
     return Math.min(baseDelay * Math.pow(2, attempt - 1), 8000);
   }
 
+  /**
+   * Sleep utility for retry delays
+   */
   private sleep(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
+  /**
+   * GET request with query parameters
+   */
   async get<T>(
     url: string,
     params?: Record<string, string | number | boolean>,
@@ -323,6 +316,9 @@ class ApiClient {
     return this.parseResponse<T>(response);
   }
 
+  /**
+   * POST request with JSON or FormData body
+   */
   async post<T>(
     url: string,
     body?: unknown,
@@ -344,6 +340,9 @@ class ApiClient {
     return this.parseResponse<T>(response);
   }
 
+  /**
+   * PATCH request for partial updates
+   */
   async patch<T>(
     url: string,
     body?: unknown,
@@ -357,6 +356,9 @@ class ApiClient {
     return this.parseResponse<T>(response);
   }
 
+  /**
+   * PUT request for full updates
+   */
   async put<T>(
     url: string,
     body?: unknown,
@@ -370,6 +372,9 @@ class ApiClient {
     return this.parseResponse<T>(response);
   }
 
+  /**
+   * DELETE request
+   */
   async delete<T>(
     url: string,
     options?: RequestOptions
@@ -385,6 +390,9 @@ class ApiClient {
     return this.parseResponse<T>(response);
   }
 
+  /**
+   * Upload file with progress tracking
+   */
   async uploadFile(
     signedUrl: string,
     file: File,
@@ -405,11 +413,6 @@ class ApiClient {
 
       xhr.addEventListener('load', () => {
         if (xhr.status >= 200 && xhr.status < 300) {
-          if (this.isDevelopment) {
-            logger.debug(`File upload completed: ${file.name}`, {
-              metadata: { requestId, status: xhr.status, fileSize: file.size },
-            });
-          }
           resolve();
         } else {
           const error = new ApiError(
@@ -448,26 +451,21 @@ class ApiClient {
       xhr.setRequestHeader('Content-Type', file.type);
       xhr.setRequestHeader('X-Request-ID', requestId);
       
-      if (this.isDevelopment) {
-        logger.debug(`Starting file upload: ${file.name}`, {
-          metadata: { requestId, fileSize: file.size, mimeType: file.type },
-        });
-      }
-
       xhr.send(file);
     });
   }
 
+  /**
+   * Parse response based on content type
+   */
   private async parseResponse<T>(response: Response): Promise<T> {
     const contentType = response.headers.get('content-type');
     
-    // Handle empty responses (204 No Content)
     if (response.status === 204) {
       return null as T;
     }
 
     if (!contentType?.includes('application/json')) {
-      // Try to get text response for better error messages
       try {
         const text = await response.text();
         throw new ApiError(

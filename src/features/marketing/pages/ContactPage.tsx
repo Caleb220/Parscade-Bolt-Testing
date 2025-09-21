@@ -43,8 +43,6 @@ const ContactPage: React.FC = () => {
 
       setIsSubmitted(true);
     } catch (error) {
-      console.error('Error sending message:', error);
-      // You could add error state handling here if needed
       alert('Failed to send message. Please try again or contact us directly at admin@parscade.com');
     } finally {
       setIsSubmitting(false);

@@ -8,6 +8,9 @@ interface AnalyticsEvent {
   properties?: Record<string, any>;
 }
 
+/**
+ * Analytics service for tracking user events
+ */
 class Analytics {
   private isInitialized = false;
   private apiKey: string | null = null;
@@ -20,15 +23,9 @@ class Analytics {
   track(event: AnalyticsEvent): void {
     if (!this.isInitialized || !this.apiKey) return;
 
-    // In development, just log to console
     if (import.meta.env?.MODE === 'development') {
-      console.log('[Analytics]', event);
       return;
     }
-
-    // In production, you would send to your analytics service
-    // For now, we'll just log it
-    console.log('[Analytics]', event);
   }
 
   page(path: string, properties?: Record<string, any>): void {

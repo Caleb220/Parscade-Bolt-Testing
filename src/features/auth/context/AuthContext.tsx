@@ -8,15 +8,13 @@ import type { TypedSupabaseUser } from '@/shared/types/supabase';
 import { setupCrossTabLogoutListener } from '@/shared/utils/hardLogout';
 import type { AuthState, AuthContextType, User, FormErrors } from '../types/authTypes';
 
-
-
 const AuthContext = createContext<AuthContextType | null>(null);
 
 type AuthAction =
   | { type: 'AUTH_START' }
   | { type: 'AUTH_SUCCESS'; payload: { readonly user: User; readonly isEmailConfirmed: boolean } }
   | { type: 'AUTH_ERROR'; payload: string }
-  | { type: 'AUTH_INFO'; payload: string }   // ⬅️ add
+  | { type: 'AUTH_INFO'; payload: string }
   | { type: 'AUTH_SIGNOUT' }
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'CLEAR_ERROR' }
@@ -65,16 +63,6 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   }
 };
 
-
-async function authHeaders(): Promise<HeadersInit> {
-  const { data: { session } } = await supabase.auth.getSession();
-  return session?.access_token
-    ? { Authorization: `Bearer ${session.access_token}` }
-    : {};
-}
-
-
-
 const initialState: AuthState = {
   user: null,
   isAuthenticated: false,
@@ -87,27 +75,17 @@ interface AuthProviderProps {
   readonly children: ReactNode;
 }
 
-type ApiSignInResponse = {
-  user: { id: string; email: string };
-  session: { access_token: string; refresh_token: string };
-};
-
-type ApiSignUpResponse = {
-  user: { id: string; email: string } | null;
-  session: { access_token: string; refresh_token: string } | null;
-  message: string;
-};
-
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
   const initializationRef = useRef(false);
   const authStateChangeRef = useRef<{ unsubscribe: () => void } | null>(null);
   const crossTabCleanupRef = useRef<(() => void) | null>(null);
 
-  // Memoized auth state change handler to prevent recreation on every render
+  /**
+   * Handles Supabase auth state changes
+   */
   const handleAuthStateChange = useCallback(
     async (event: string, session: any): Promise<void> => {
-      // Prevent processing during initial load to avoid double-processing
       if (!initializationRef.current) {
         return;
       }
@@ -129,15 +107,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           },
         });
 
-        // Set user context for logging
         logger.setUserContext({
           id: typedUser.id,
           email: typedUser.email || undefined,
           username: typedUser.user_metadata?.full_name || undefined,
-        });
-        
-        logger.debug('Normal sign-in completed - ready for dashboard redirect', {
-          context: { feature: 'auth', action: 'signInComplete' },
         });
       } else if (event === 'SIGNED_OUT') {
         dispatch({ type: 'AUTH_SIGNOUT' });
@@ -158,17 +131,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     []
   );
 
-  // Initialize auth state once on mount
+  /**
+   * Initialize authentication state and listeners
+   */
   useEffect(() => {
     let isMounted = true;
 
     const initializeAuth = async () => {
       try {
-        logger.debug('Initializing auth state');
-        
         const { data: { session }, error } = await supabase.auth.getSession();
 
-        // Check if component is still mounted
         if (!isMounted) return;
 
         if (error) {
@@ -192,7 +164,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             },
           });
 
-          // Set user context for logging
           logger.setUserContext({
             id: typedUser.id,
             email: typedUser.email || undefined,
@@ -202,15 +173,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           dispatch({ type: 'SET_INITIALIZED' });
         }
 
-        // Mark initialization as complete
         initializationRef.current = true;
 
-        // Set up auth state change listener after initialization
         if (isMounted) {
           const { data: { subscription } } = supabase.auth.onAuthStateChange(handleAuthStateChange);
           authStateChangeRef.current = subscription;
           
-          // Set up cross-tab logout listener
           const crossTabCleanup = setupCrossTabLogoutListener(() => {
             logger.info('Processing cross-tab logout signal', {
               context: { feature: 'auth', action: 'crossTabLogout' }
@@ -245,8 +213,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         crossTabCleanupRef.current = null;
       }
     };
-  }, []); // Empty dependency array - only run once on mount
+  }, []);
 
+  /**
+   * Sign in with email/username and password
+   */
   const signIn = useCallback(async (identifier: string, password: string): Promise<void> => {
     dispatch({ type: 'AUTH_START' });
     try {
@@ -263,14 +234,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       });
       if (setErr) throw setErr;
 
-      // onAuthStateChange will dispatch AUTH_SUCCESS
     } catch (err: any) {
       const message = err?.message || 'Invalid email/username or password';
       dispatch({ type: 'AUTH_ERROR', payload: message });
       throw err;
     }
-  }, [supabase]);
+  }, []);
 
+  /**
+   * Sign up with email, password, and profile information
+   */
   const signUp = useCallback(async (
     email: string,
     password: string,
@@ -295,7 +268,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         });
         if (setErr) throw setErr;
       } else {
-        // email confirmations enabled
         dispatch({ type: 'AUTH_INFO', payload: message || 'Check your email to confirm your account.' });
       }
     } catch (err: any) {
@@ -303,23 +275,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       dispatch({ type: 'AUTH_ERROR', payload: message });
       throw err;
     }
-  }, [supabase]);
+  }, []);
 
+  /**
+   * Sign out current user
+   */
   const signOut = useCallback(async (): Promise<void> => {
     dispatch({ type: 'AUTH_START' });
     try {
-      // Call backend signout endpoint
       await userApi.signOut();
-
-      // Then sign out from Supabase
       await supabase.auth.signOut();
     } catch (err: any) {
       await supabase.auth.signOut();
       const message = err?.message || 'Signed out';
       dispatch({ type: 'AUTH_ERROR', payload: message });
     }
-  }, [supabase]);
+  }, []);
 
+  /**
+   * Resend email confirmation
+   */
   const resendConfirmationEmail = useCallback(async (email: string): Promise<void> => {
     try {
       const { error } = await supabase.auth.resend({
@@ -342,7 +317,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     dispatch({ type: 'CLEAR_ERROR' });
   }, []);
 
-  // Memoize the context value to prevent unnecessary re-renders
   const value: AuthContextType = useMemo(() => ({
     ...state,
     signIn,
