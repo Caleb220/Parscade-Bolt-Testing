@@ -9,8 +9,7 @@ export default tseslint.config(
   { ignores: ['dist'] },
   {
     extends: [
-      js.configs.recommended, 
-      ...tseslint.configs.recommended,
+      js.configs.recommended,
       'plugin:import/recommended',
       'plugin:import/typescript'
     ],
@@ -79,5 +78,6 @@ export default tseslint.config(
         { 'prefer': 'type-imports' }
       ],
     },
-  }
+  },
+  ...tseslint.configs.recommended
 );
