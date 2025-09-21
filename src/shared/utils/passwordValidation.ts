@@ -102,14 +102,16 @@ export const getPasswordStrengthColor = (score: number): string => {
   switch (score) {
     case 0:
     case 1:
-      return 'text-red-600';
+      return 'bg-red-500';
     case 2:
-      return 'text-yellow-600';
+      return 'bg-orange-500';
     case 3:
-      return 'text-blue-600';
+      return 'bg-yellow-500';
     case 4:
-      return 'text-green-600';
+      return 'bg-blue-500';
+    case 5:
+      return 'bg-green-500';
     default:
-      return 'text-gray-600';
+      return 'bg-gray-300';
   }
 };

@@ -227,7 +227,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onModeChange, onSuccess }) =>
             onChange={handlePasswordChange}
             error={formErrors.password}
             placeholder={mode === 'signin' ? 'Enter your password' : 'Create a strong password'}
-            showStrengthMeter={mode === 'signup'}
+            showStrengthMeter={mode === 'signup' && formData.password.length > 0}
             required
           />
 

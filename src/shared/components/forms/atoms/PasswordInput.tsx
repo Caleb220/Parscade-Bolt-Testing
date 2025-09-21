@@ -1,5 +1,6 @@
 import React, { useState, forwardRef } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
+import PasswordStrengthMeter from '../PasswordStrengthMeter';
 import type { ComponentWithRef } from '../../types/common';
 
 interface PasswordInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
@@ -7,7 +8,7 @@ interface PasswordInputProps extends Omit<React.InputHTMLAttributes<HTMLInputEle
   readonly error?: string;
   readonly helperText?: string;
   readonly variant?: 'default' | 'filled';
-  readonly showStrengthMeter?: boolean | undefined;
+  readonly showStrengthMeter?: boolean;
 }
 
 const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
@@ -96,6 +97,15 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
         
         {helperText && !error && (
           <p className="mt-1 text-sm text-gray-500">{helperText}</p>
+        )}
+        
+        {showStrengthMeter && (
+          <div className="mt-2">
+            <PasswordStrengthMeter 
+              password={String(value)} 
+              showFeedback={true}
+            />
+          </div>
         )}
       </div>
     );
