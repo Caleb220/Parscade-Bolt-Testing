@@ -18,10 +18,12 @@ import { Label } from '@/shared/components/ui/label';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { useToast } from '@/shared/components/ui/use-toast';
 import { useUpdateAccount, useUploadAvatar } from '@/shared/hooks/api/useAccountData';
+import { useAccountContext } from '@/shared/contexts/AccountContext';
 
 import { formatUserAgent, formatDate } from '@/shared/utils/formatters';
 import { useClipboard } from '@/shared/hooks/useClipboard';
-import { useAccountContext } from '../AccountLayout';
+
+const ProfileTab: React.FC = () => {
   const { user, isLoading, error: contextError } = useAccountContext();
   const { toast } = useToast();
   const updateAccount = useUpdateAccount();
