@@ -1,1 +1,1 @@
-export * from '@/schemas/schemas/common/primitives';
+export * from './primitives';
