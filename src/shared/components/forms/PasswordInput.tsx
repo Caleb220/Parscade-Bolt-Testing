@@ -5,8 +5,10 @@
 
 import React, { useState } from 'react';
 import { Eye, EyeOff, Lock } from 'lucide-react';
-import Input from './Input';
+
 import { validatePassword, getPasswordStrengthLabel, getPasswordStrengthColor } from '@/shared/utils/passwordValidation';
+
+import Input from './Input';
 
 interface PasswordInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
   label?: string;

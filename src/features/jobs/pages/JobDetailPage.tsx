@@ -1,6 +1,6 @@
 import React from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useParams, useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, 
   Clock, 
@@ -14,12 +14,11 @@ import {
   Database
 } from 'lucide-react';
 
-import Layout from '@/shared/components/layout/templates/Layout';
+import { getErrorMessage, isApiError } from '@/lib/api';
 import Button from '@/shared/components/forms/Button';
+import Layout from '@/shared/components/layout/templates/Layout';
 import LoadingSpinner from '@/shared/components/forms/LoadingSpinner';
 import { useJob, useCancelJob } from '@/shared/hooks/api/useJobs';
-import { useDocument, useDocumentDownload } from '@/shared/hooks/api/useDocuments';
-import { getErrorMessage, isApiError } from '@/lib/api';
 
 const JobDetailPage: React.FC = () => {
   const { jobId } = useParams<{ jobId: string }>();

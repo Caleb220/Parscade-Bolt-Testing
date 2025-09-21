@@ -1,9 +1,9 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Play } from 'lucide-react';
+
 import Button from '@/shared/components/forms/Button';
-import { useAuth, AuthModal } from '../../auth';
 
 
 const HeroSection: React.FC = () => {

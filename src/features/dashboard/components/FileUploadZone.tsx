@@ -2,10 +2,9 @@ import React, { useCallback, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Upload, FileText, AlertCircle, CheckCircle, X } from 'lucide-react';
 
+import { getErrorMessage } from '@/lib/api';
 import Button from '@/shared/components/forms/Button';
 import { useFileUpload } from '@/shared/hooks/api/useUploads';
-import { useSubmitParseJob } from '@/shared/hooks/api/useJobs';
-import { getErrorMessage } from '@/lib/api';
 
 interface FileUploadZoneProps {
   onJobSubmitted?: (jobId: string) => void;

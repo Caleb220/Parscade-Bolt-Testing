@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, ChevronDown } from 'lucide-react';
-import Button from '../../forms/Button';
-import AuthModal from '@/features/auth/components/AuthModal';
-import UserMenu from './UserMenu';
+
 import { useAuth } from '@/features/auth';
+import Button from '../../forms/Button';
+
+import AuthModal from '@/features/auth/components/AuthModal';
 
 interface NavigationItem {
   label: string;

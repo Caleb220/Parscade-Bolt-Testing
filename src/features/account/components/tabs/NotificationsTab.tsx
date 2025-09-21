@@ -9,6 +9,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
 import { Bell, Mail, Smartphone, Webhook, Clock, Save, AlertCircle, CheckCircle } from 'lucide-react';
 
+import { getErrorMessage } from '@/lib/api';
+import { notificationPrefsSchema, type NotificationPrefsFormData } from '@/lib/validation/account';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Input } from '@/shared/components/ui/input';
@@ -16,11 +18,7 @@ import { Label } from '@/shared/components/ui/label';
 import { Switch } from '@/shared/components/ui/switch';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { useToast } from '@/shared/components/ui/use-toast';
-
-import { useAccountContext } from '../AccountLayout';
 import { useNotificationPrefs, useUpdateNotificationPrefs } from '@/shared/hooks/api/useAccountData';
-import { notificationPrefsSchema, type NotificationPrefsFormData } from '@/lib/validation/account';
-import { getErrorMessage } from '@/lib/api';
 
 const NotificationsTab: React.FC = () => {
   const { user } = useAccountContext();

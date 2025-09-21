@@ -25,6 +25,8 @@ import {
   Activity
 } from 'lucide-react';
 
+import { getErrorMessage } from '@/lib/api';
+import { webhookSchema, dataSourceSchema, type WebhookFormData, type DataSourceFormData } from '@/lib/validation/account';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Input } from '@/shared/components/ui/input';
@@ -34,8 +36,6 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { Switch } from '@/shared/components/ui/switch';
 import { useToast } from '@/shared/components/ui/use-toast';
-
-import { useAccountContext } from '../AccountLayout';
 import { 
   useWebhooks, 
   useCreateWebhook, 
@@ -49,8 +49,6 @@ import {
   useDeleteDataSource,
   useTestDataSource
 } from '@/shared/hooks/api/useAccountData';
-import { webhookSchema, dataSourceSchema, type WebhookFormData, type DataSourceFormData } from '@/lib/validation/account';
-import { getErrorMessage } from '@/lib/api';
 
 const IntegrationsTab: React.FC = () => {
   const { user } = useAccountContext();

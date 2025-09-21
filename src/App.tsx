@@ -1,21 +1,12 @@
 import React, { useEffect, useMemo } from 'react';
 import { BrowserRouter as Router, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
+import type { FC } from 'react';
 
 import { QueryProvider } from '@/app/providers/QueryProvider';
-import LoadingSpinner from '@/shared/components/forms/LoadingSpinner';
-import ErrorBoundary from '@/shared/components/layout/molecules/ErrorBoundary';
-import ProtectedRoute from '@/shared/components/layout/templates/ProtectedRoute';
-import { env } from '@/app/config/env';
 import AccountLayout from '@/features/account/components/AccountLayout';
-import ProfileTab from '@/features/account/components/tabs/ProfileTab';
-import SecurityTab from '@/features/account/components/tabs/SecurityTab';
-import NotificationsTab from '@/features/account/components/tabs/NotificationsTab';
-import IntegrationsTab from '@/features/account/components/tabs/IntegrationsTab';
-import { Toaster } from '@/shared/components/ui/toaster';
 import { AuthProvider, useAuth } from '@/features/auth';
 import { DashboardPage } from '@/features/dashboard';
-import { JobDetailPage } from '@/features/jobs';
 import AboutPage from '@/features/marketing/pages/AboutPage';
 import BillingPage from '@/features/marketing/pages/BillingPage';
 import ContactPage from '@/features/marketing/pages/ContactPage';
@@ -25,11 +16,16 @@ import NotFoundPage from '@/features/marketing/pages/NotFoundPage';
 import PrivacyPage from '@/features/marketing/pages/PrivacyPage';
 import ProductPage from '@/features/marketing/pages/ProductPage';
 import TermsPage from '@/features/marketing/pages/TermsPage';
+import { JobDetailPage } from '@/features/jobs';
+import ErrorBoundary from '@/shared/components/layout/molecules/ErrorBoundary';
+import ProtectedRoute from '@/shared/components/layout/templates/ProtectedRoute';
+import LoadingSpinner from '@/shared/components/forms/LoadingSpinner';
+import { Toaster } from '@/shared/components/ui/toaster';
+import { env } from '@/app/config/env';
 import { logger } from '@/shared/services/logger';
 import { analytics, trackPageView } from '@/shared/utils/analytics';
 import { defaultSEO, updateSEO } from '@/shared/utils/seo';
 
-import type { FC } from 'react';
 import type { SeoConfig } from '@/shared/schemas';
 
 /**

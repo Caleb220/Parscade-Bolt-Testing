@@ -23,6 +23,8 @@ import {
   AlertCircle as AlertIcon
 } from 'lucide-react';
 
+import { getErrorMessage } from '@/lib/api';
+import { apiKeySchema, type ApiKeyFormData } from '@/lib/validation/account';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Input } from '@/shared/components/ui/input';
@@ -31,8 +33,6 @@ import { Badge } from '@/shared/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/shared/components/ui/dialog';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { useToast } from '@/shared/components/ui/use-toast';
-
-import { useAccountContext } from '../AccountLayout';
 import { 
   useApiKeys, 
   useCreateApiKey, 
@@ -41,8 +41,6 @@ import {
   useRevokeSession,
   useSecurityEvents
 } from '@/shared/hooks/api/useAccountData';
-import { apiKeySchema, type ApiKeyFormData } from '@/lib/validation/account';
-import { getErrorMessage } from '@/lib/api';
 
 const SecurityTab: React.FC = () => {
   const { user } = useAccountContext();

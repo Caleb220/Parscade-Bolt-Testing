@@ -1,12 +1,12 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Plus, Sparkles } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
-import Layout from '@/shared/components/layout/templates/Layout';
-import Button from '@/shared/components/forms/Button';
-import FileUploadZone from '../components/FileUploadZone';
-import JobsList from '../components/JobsList';
 import { useAuth } from '@/features/auth';
+import Button from '@/shared/components/forms/Button';
+import Layout from '@/shared/components/layout/templates/Layout';
+
+import FileUploadZone from '../components/FileUploadZone';
 
 const DashboardPage: React.FC = () => {
   const { isEmailConfirmed, user } = useAuth();

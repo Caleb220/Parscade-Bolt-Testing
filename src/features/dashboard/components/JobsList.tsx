@@ -1,6 +1,5 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
 import { 
   FileText, 
   Clock, 
@@ -9,11 +8,12 @@ import {
   AlertTriangle,
   ChevronRight
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
-import LoadingSpinner from '@/shared/components/forms/LoadingSpinner';
-import Button from '@/shared/components/forms/Button';
-import { useJobs } from '@/shared/hooks/api/useJobs';
 import { getErrorMessage } from '@/lib/api';
+import Button from '@/shared/components/forms/Button';
+import LoadingSpinner from '@/shared/components/forms/LoadingSpinner';
+import { useJobs } from '@/shared/hooks/api/useJobs';
 
 const JobsList: React.FC = () => {
   const navigate = useNavigate();

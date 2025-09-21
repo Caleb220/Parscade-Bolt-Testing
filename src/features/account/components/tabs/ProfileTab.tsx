@@ -9,17 +9,15 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
 import { Upload, Save, User, Building, Phone, Globe, Camera, AlertCircle, CheckCircle } from 'lucide-react';
 
+import { getErrorMessage, isApiError } from '@/lib/api';
+import { profileSchema, type ProfileFormData } from '@/lib/validation/account';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { useToast } from '@/shared/components/ui/use-toast';
-
-import { useAccountContext } from '../AccountLayout';
 import { useUpdateAccount, useUploadAvatar } from '@/shared/hooks/api/useAccountData';
-import { profileSchema, type ProfileFormData } from '@/lib/validation/account';
-import { getErrorMessage, isApiError } from '@/lib/api';
 
 const ProfileTab: React.FC = () => {
   const { user, isLoading, error: contextError } = useAccountContext();

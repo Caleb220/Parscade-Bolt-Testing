@@ -1,13 +1,15 @@
 import React, { Suspense, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import Layout from '@/shared/components/layout/templates/Layout';
-import HeroSection from '../sections/HeroSection';
-import FeaturesSection from '../sections/FeaturesSection';
+import { useLocation } from 'react-router-dom';
+
 import { AuthModal } from '../../auth';
+import Layout from '@/shared/components/layout/templates/Layout';
 import LoadingSpinner from '@/shared/components/forms/LoadingSpinner';
 
 import BetaCTASection from '../components/BetaCTASection';
+import FeaturesSection from '../sections/FeaturesSection';
+import HeroSection from '../sections/HeroSection';
+
 const PipelineCarousel = React.lazy(() => import('../components/PipelineCarousel'));
 
 const HomePage: React.FC = () => {

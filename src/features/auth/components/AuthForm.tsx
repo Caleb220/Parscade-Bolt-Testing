@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, User, AlertCircle, ArrowRight } from 'lucide-react';
+
 import Button from '@/shared/components/forms/Button';
 import Input from '@/shared/components/forms/Input';
 import PasswordInput from '@/shared/components/forms/PasswordInput';
+import { validatePassword } from '@/shared/utils/passwordValidation';
+
 import { useAuth } from '../context/AuthContext';
 import type { FormErrors } from '../types/authTypes';
-import { validatePassword } from '@/shared/utils/passwordValidation';
 
 interface AuthFormProps {
   mode: 'signin' | 'signup';
