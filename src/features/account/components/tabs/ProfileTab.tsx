@@ -1,6 +1,7 @@
 /**
  * Profile Tab Component - Enhanced with Backend Integration
  * Comprehensive profile management with avatar upload and real-time validation
+ * Updated to use snake_case field names matching OpenAPI schema
  */ 
 
 import React, { useState, useRef } from 'react';
@@ -34,10 +35,8 @@ import { Label } from '@/shared/components/ui/label';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { useToast } from '@/shared/components/ui/use-toast';
 import { useUpdateAccount, useUploadAvatar } from '@/shared/hooks/api/useAccountData';
-
 import { formatDate } from '@/shared/utils/date';
 import { useAccountContext } from '../AccountLayout';
-
 
 const ProfileTab: React.FC = () => {
   const { user, isLoading, error: contextError } = useAccountContext();
@@ -60,6 +59,7 @@ const ProfileTab: React.FC = () => {
       full_name: '',
       username: '',
       company: '',
+      role: '',
       phone: '',
       locale: 'en-US',
       timezone: 'UTC',
@@ -73,6 +73,7 @@ const ProfileTab: React.FC = () => {
         full_name: user.full_name || '',
         username: user.username || '',
         company: user.company || '',
+        role: user.role || '', // Job title field
         phone: user.phone || '',
         locale: user.locale || 'en-US',
         timezone: user.timezone || 'UTC',
@@ -82,20 +83,20 @@ const ProfileTab: React.FC = () => {
 
   const onSubmit = async (data: ProfileFormData) => {
     try {
-      await updateAccount.mutateAsync(data);
-      
-      toast({
-        title: 'Profile updated',
-        description: 'Your profile information has been updated successfully.',
-      });
+      // Convert form data to UpdateProfileRequest format
+      const updateData = {
+        full_name: data.full_name || null,
+        username: data.username || null,
+        company: data.company || null,
+        role: data.role || null, // Job title
+        phone: data.phone || null,
+        locale: data.locale || null,
+        timezone: data.timezone || null,
+      };
+
+      await updateAccount.mutateAsync(updateData);
     } catch (error) {
-      const errorMessage = getErrorMessage(error);
-      
-      toast({
-        title: 'Update failed',
-        description: errorMessage,
-        variant: 'destructive',
-      });
+      // Error handling is done in the mutation
     }
   };
 
@@ -129,20 +130,7 @@ const ProfileTab: React.FC = () => {
     // Upload to backend
     try {
       await uploadAvatar.mutateAsync(file);
-      
-      toast({
-        title: 'Avatar updated',
-        description: 'Your profile picture has been updated successfully.',
-      });
     } catch (error) {
-      const errorMessage = getErrorMessage(error);
-      
-      toast({
-        title: 'Upload failed',
-        description: errorMessage,
-        variant: 'destructive',
-      });
-      
       // Reset preview on error
       setAvatarPreview(null);
     }
@@ -386,6 +374,24 @@ const ProfileTab: React.FC = () => {
                 </div>
                 {errors.company && (
                   <p className="text-sm text-red-600">{errors.company.message}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="role" className="flex items-center text-sm font-medium text-gray-700">
+                  <Briefcase className="w-4 h-4 mr-2 text-gray-500" />
+                  Job Title
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="role"
+                    {...register('role')}
+                    placeholder="Your job title"
+                    className="px-3 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+                {errors.role && (
+                  <p className="text-sm text-red-600">{errors.role.message}</p>
                 )}
               </div>
 

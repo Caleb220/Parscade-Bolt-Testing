@@ -1,31 +1,31 @@
 /**
  * Account Management API Module
- * Fully aligned with OpenAPI schema definitions
+ * Fully aligned with OpenAPI schema definitions using snake_case
  */
 
 import { apiClient } from '../client';
-import type { paths, UserProfile, UserSession, SecurityEvent, ApiKey, PaginationMetadata } from '@/types/api-types';
+import type { 
+  paths, 
+  UserProfile, 
+  UpdateProfileRequest,
+  UserSession,
+  UserSessionListResponse,
+  SecurityEvent,
+  SecurityEventListResponse,
+  ApiKey,
+  ApiKeyListResponse,
+  ApiKeyWithSecret,
+  CreateApiKeyRequest
+} from '@/types/api-types';
 
 // Extract exact types from OpenAPI paths
 type GetProfileResponse = paths['/v1/account/me']['get']['responses']['200']['content']['application/json'];
-type UpdateProfileRequest = paths['/v1/account/me']['patch']['requestBody']['content']['application/json'];
 type UpdateProfileResponse = paths['/v1/account/me']['patch']['responses']['200']['content']['application/json'];
-type DeleteAccountResponse = paths['/v1/account/me']['delete']['responses']['200']['content']['application/json'];
-
-type UploadAvatarResponse = { avatar_url: string };
-
-type GetSessionsResponse = { sessions: UserSession[] };
-
-type GetSecurityEventsParams = { limit?: number };
-type GetSecurityEventsResponse = { events: SecurityEvent[] };
-
-type GetApiKeysResponse = { keys: ApiKey[] };
-type CreateApiKeyRequest = { name: string; scopes?: string[] };
-type CreateApiKeyResponse = { key: string; apiKey: ApiKey };
+type UploadAvatarResponse = paths['/v1/account/avatar']['post']['responses']['200']['content']['application/json'];
 
 /**
  * Account management endpoints
- * All endpoints follow OpenAPI schema exactly
+ * All endpoints follow OpenAPI schema exactly with snake_case
  */
 export const accountApi = {
   /**
@@ -43,15 +43,6 @@ export const accountApi = {
   },
 
   /**
-   * Delete user account
-   */
-  async deleteAccount(): Promise<DeleteAccountResponse> {
-    return apiClient.delete<DeleteAccountResponse>('/v1/account/me', {
-      retryable: false,
-    });
-  },
-
-  /**
    * Upload user avatar
    */
   async uploadAvatar(file: File): Promise<UploadAvatarResponse> {
@@ -66,14 +57,13 @@ export const accountApi = {
   },
 
   /**
-   * Get user sessions
+   * Get user sessions with proper data extraction
    */
   async getSessions(): Promise<UserSession[]> {
     try {
-      const response = await apiClient.get<GetSessionsResponse>('/v1/account/sessions');
-      return response?.sessions || [];
+      const response = await apiClient.get<UserSessionListResponse>('/v1/account/sessions');
+      return response.data || [];
     } catch (error) {
-      // Return empty array for graceful fallback
       console.warn('Sessions endpoint not available:', error);
       return [];
     }
@@ -89,28 +79,26 @@ export const accountApi = {
   },
 
   /**
-   * Get security events
+   * Get security events with proper data extraction
    */
-  async getSecurityEvents(params?: GetSecurityEventsParams): Promise<SecurityEvent[]> {
+  async getSecurityEvents(): Promise<SecurityEvent[]> {
     try {
-      const response = await apiClient.get<GetSecurityEventsResponse>('/v1/account/security-events', params);
-      return response?.events || [];
+      const response = await apiClient.get<SecurityEventListResponse>('/v1/account/security-events');
+      return response.data || [];
     } catch (error) {
-      // Return empty array for graceful fallback
       console.warn('Security events endpoint not available:', error);
       return [];
     }
   },
 
   /**
-   * Get API keys
+   * Get API keys with proper data extraction
    */
   async getApiKeys(): Promise<ApiKey[]> {
     try {
-      const response = await apiClient.get<GetApiKeysResponse>('/v1/keys');
-      return response?.keys || [];
+      const response = await apiClient.get<ApiKeyListResponse>('/v1/keys');
+      return response.data || [];
     } catch (error) {
-      // Return empty array for graceful fallback
       console.warn('API Keys endpoint not available:', error);
       return [];
     }
@@ -119,8 +107,8 @@ export const accountApi = {
   /**
    * Create new API key
    */
-  async createApiKey(data: CreateApiKeyRequest): Promise<CreateApiKeyResponse> {
-    return apiClient.post<CreateApiKeyResponse>('/v1/keys', data);
+  async createApiKey(data: CreateApiKeyRequest): Promise<ApiKeyWithSecret> {
+    return apiClient.post<ApiKeyWithSecret>('/v1/keys', data);
   },
 
   /**

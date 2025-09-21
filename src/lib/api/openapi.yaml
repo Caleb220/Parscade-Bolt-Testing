@@ -53,7 +53,7 @@ servers:
 - url: http://localhost:8000
   description: Development server
 security:
-- BearerAuth: []
+- bearerAuth: []
 tags:
 - name: Health
   description: Health check and system status endpoints
@@ -63,16 +63,12 @@ tags:
   description: User account and profile management
 - name: API Keys
   description: API key management for programmatic access
-- name: Uploads
-  description: File upload and storage management
-- name: Documents
-  description: Document management and processing
-- name: Jobs
-  description: Background job management and monitoring
-- name: Admin
+- name: Users
   description: Administrative endpoints (admin access required)
-- name: Auth
-  description: Authentication & session management
+- name: Notifications
+  description: Notification preferences management
+- name: Integrations
+  description: Webhook and service integration management
 paths:
   /health:
     get:
@@ -92,14 +88,24 @@ paths:
               example:
                 status: healthy
                 timestamp: '2024-01-15T10:30:00Z'
-                uptime: 86400
+                response_time_ms: 150
                 version: 1.0.0
+                checks:
+                  database: pass
+                  api: pass
+                environment: production
+        '503':
+          description: Service is unhealthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
   /ready:
     get:
       tags:
       - Health
       summary: Readiness probe
-      description: Comprehensive readiness check including database connectivity
+      description: Simple readiness check for Kubernetes
       operationId: readinessCheck
       security: []
       responses:
@@ -108,13 +114,17 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ReadinessResponse'
-        '503':
-          description: Service is not ready
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ReadinessResponse'
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ready
+                  timestamp:
+                    type: string
+                    format: date-time
+                  version:
+                    type: string
+                    example: 1.0.0
   /live:
     get:
       tags:
@@ -134,697 +144,27 @@ paths:
                   status:
                     type: string
                     example: alive
-  /v1/auth/callback:
+                  timestamp:
+                    type: string
+                    format: date-time
+  /v1/auth/signup:
     post:
       tags:
       - Authentication
-      summary: Authentication callback
-      description: Handle authentication callback from Supabase
-      operationId: authCallback
+      summary: Sign up
+      description: Creates a new user account with email/password authentication. Optionally accepts full_name and username. Creates user profile and default notification preferences.
       security: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                access_token:
-                  type: string
-                  description: JWT access token from Supabase
-                refresh_token:
-                  type: string
-                  description: Refresh token from Supabase
-                user:
-                  type: object
-                  description: User object from Supabase
-              required:
-              - access_token
-      responses:
-        '200':
-          description: Authentication successful
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthResponse'
-        '401':
-          description: Authentication failed
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  /v1/account/me:
-    get:
-      tags:
-      - Account
-      summary: Get current user profile
-      description: Retrieve the authenticated user's profile information
-      operationId: getCurrentUser
-      responses:
-        '200':
-          description: User profile retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserProfile'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-    patch:
-      tags:
-      - Account
-      summary: Update user profile
-      description: Update the authenticated user's profile information
-      operationId: updateUserProfile
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateProfileRequest'
-      responses:
-        '200':
-          description: Profile updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserProfile'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-    delete:
-      tags:
-      - Account
-      summary: Delete user account
-      description: Initiate deletion of the authenticated user's account
-      operationId: deleteAccount
-      responses:
-        '200':
-          description: Account deletion initiated
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: Account deletion initiated successfully
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-  /v1/account/sessions:
-    get:
-      tags:
-      - Account
-      summary: List user sessions
-      description: Get all active sessions for the authenticated user
-      operationId: getUserSessions
-      responses:
-        '200':
-          description: Sessions retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  sessions:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/UserSession'
-                  pagination:
-                    $ref: '#/components/schemas/PaginationMeta'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-  /v1/account/sessions/{sessionId}:
-    delete:
-      tags:
-      - Account
-      summary: Revoke user session
-      description: Revoke a specific user session
-      operationId: revokeSession
-      parameters:
-      - name: sessionId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-      responses:
-        '204':
-          description: Session revoked successfully
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-  /v1/account/security-events:
-    get:
-      tags:
-      - Account
-      summary: Get security events
-      description: Retrieve security events for the authenticated user
-      operationId: getSecurityEvents
-      parameters:
-      - name: limit
-        in: query
-        description: Number of events to return
-        schema:
-          type: integer
-          minimum: 1
-          maximum: 100
-          default: 20
-      responses:
-        '200':
-          description: Security events retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  events:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/SecurityEvent'
-                  pagination:
-                    $ref: '#/components/schemas/PaginationMeta'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-  /v1/account/avatar:
-    post:
-      tags:
-      - Account
-      summary: Upload avatar
-      description: Upload a new avatar image for the user
-      operationId: uploadAvatar
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                avatar:
-                  type: string
-                  format: binary
-                  description: Avatar image file
-              required:
-              - avatar
-      responses:
-        '200':
-          description: Avatar uploaded successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  avatarUrl:
-                    type: string
-                    format: uri
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-  /v1/keys:
-    get:
-      tags:
-      - API Keys
-      summary: List API keys
-      description: Get all API keys for the authenticated user
-      operationId: getApiKeys
-      responses:
-        '200':
-          description: API keys retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  keys:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/ApiKey'
-                  pagination:
-                    $ref: '#/components/schemas/PaginationMeta'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-    post:
-      tags:
-      - API Keys
-      summary: Create API key
-      description: Create a new API key for programmatic access
-      operationId: createApiKey
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateApiKeyRequest'
-      responses:
-        '201':
-          description: API key created successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  key:
-                    type: string
-                    description: The actual API key (only shown once)
-                  apiKey:
-                    $ref: '#/components/schemas/ApiKey'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-  /v1/keys/{keyId}:
-    delete:
-      tags:
-      - API Keys
-      summary: Revoke API key
-      description: Revoke an existing API key
-      operationId: revokeApiKey
-      parameters:
-      - name: keyId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-      responses:
-        '204':
-          description: API key revoked successfully
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-  /v1/uploads/sign:
-    post:
-      tags:
-      - Uploads
-      summary: Generate signed upload URL
-      description: Generate a pre-signed URL for direct document upload
-      operationId: generateSignedUploadUrl
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SignedUploadRequest'
-      responses:
-        '200':
-          description: Signed URL generated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SignedUploadResponse'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-  /v1/uploads/{storageKey}/complete:
-    post:
-      tags:
-      - Uploads
-      summary: Complete upload
-      description: Mark upload as complete and create document record
-      operationId: completeUpload
-      parameters:
-      - name: storageKey
-        in: path
-        required: true
-        schema:
-          type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CompleteUploadRequest'
-      responses:
-        '201':
-          description: Upload completed successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Document'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-  /v1/documents:
-    get:
-      tags:
-      - Documents
-      summary: List documents
-      description: Get paginated list of user documents
-      operationId: getDocuments
-      parameters:
-      - $ref: '#/components/parameters/PageParam'
-      - $ref: '#/components/parameters/LimitParam'
-      - name: status
-        in: query
-        description: Filter by document status
-        schema:
-          $ref: '#/components/schemas/DocumentStatus'
-      - name: search
-        in: query
-        description: Search in document names
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Documents retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  documents:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Document'
-                  pagination:
-                    $ref: '#/components/schemas/PaginationMeta'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-  /v1/documents/{documentId}:
-    get:
-      tags:
-      - Documents
-      summary: Get document details
-      description: Get detailed information about a specific document
-      operationId: getDocument
-      parameters:
-      - $ref: '#/components/parameters/DocumentIdParam'
-      responses:
-        '200':
-          description: Document retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Document'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-    delete:
-      tags:
-      - Documents
-      summary: Delete document
-      description: Delete a document and all associated data
-      operationId: deleteDocument
-      parameters:
-      - $ref: '#/components/parameters/DocumentIdParam'
-      responses:
-        '204':
-          description: Document deleted successfully
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-  /v1/documents/{documentId}/download:
-    get:
-      tags:
-      - Documents
-      summary: Download document
-      description: Get pre-signed URL for downloading the document
-      operationId: downloadDocument
-      parameters:
-      - $ref: '#/components/parameters/DocumentIdParam'
-      responses:
-        '200':
-          description: Download URL generated successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  downloadUrl:
-                    type: string
-                    format: uri
-                  expiresAt:
-                    type: string
-                    format: date-time
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-  /v1/jobs:
-    get:
-      tags:
-      - Jobs
-      summary: List jobs
-      description: Get paginated list of user jobs
-      operationId: getJobs
-      parameters:
-      - $ref: '#/components/parameters/PageParam'
-      - $ref: '#/components/parameters/LimitParam'
-      - name: status
-        in: query
-        description: Filter by job status
-        schema:
-          $ref: '#/components/schemas/JobStatus'
-      - name: type
-        in: query
-        description: Filter by job type
-        schema:
-          $ref: '#/components/schemas/JobType'
-      responses:
-        '200':
-          description: Jobs retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  jobs:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Job'
-                  pagination:
-                    $ref: '#/components/schemas/PaginationMeta'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-    post:
-      tags:
-      - Jobs
-      summary: Create job
-      description: Create a new processing job
-      operationId: createJob
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateJobRequest'
-      responses:
-        '201':
-          description: Job created successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Job'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-  /v1/jobs/{jobId}:
-    get:
-      tags:
-      - Jobs
-      summary: Get job details
-      description: Get detailed information about a specific job
-      operationId: getJob
-      parameters:
-      - $ref: '#/components/parameters/JobIdParam'
-      responses:
-        '200':
-          description: Job retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Job'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-    delete:
-      tags:
-      - Jobs
-      summary: Cancel job
-      description: Cancel a pending or running job
-      operationId: cancelJob
-      parameters:
-      - $ref: '#/components/parameters/JobIdParam'
-      responses:
-        '200':
-          description: Job cancelled successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Job'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          description: Job cannot be cancelled
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-  /v1/admin/users:
-    get:
-      tags:
-      - Admin
-      summary: List all users (Admin)
-      description: Get paginated list of all users (admin only)
-      operationId: adminGetUsers
-      parameters:
-      - $ref: '#/components/parameters/PageParam'
-      - $ref: '#/components/parameters/LimitParam'
-      - name: role
-        in: query
-        description: Filter by user role
-        schema:
-          $ref: '#/components/schemas/UserRole'
-      - name: search
-        in: query
-        description: Search users by email or name
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Users retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  users:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/UserProfile'
-                  pagination:
-                    $ref: '#/components/schemas/PaginationMeta'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-  /v1/admin/users/{userId}:
-    get:
-      tags:
-      - Admin
-      summary: Get user by ID (Admin)
-      description: Get detailed user information by ID (admin only)
-      operationId: adminGetUser
-      parameters:
-      - name: userId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-      responses:
-        '200':
-          description: User retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserProfile'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-    patch:
-      tags:
-      - Admin
-      summary: Update user (Admin)
-      description: Update user information (admin only)
-      operationId: adminUpdateUser
-      parameters:
-      - name: userId
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                role:
-                  $ref: '#/components/schemas/UserRole'
-                emailVerified:
-                  type: boolean
-      responses:
-        '200':
-          description: User updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserProfile'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-  /v1/admin/jobs:
-    get:
-      tags:
-      - Admin
-      summary: List all jobs (Admin)
-      description: Get paginated list of all jobs across users (admin only)
-      operationId: adminGetJobs
-      parameters:
-      - $ref: '#/components/parameters/PageParam'
-      - $ref: '#/components/parameters/LimitParam'
-      - name: status
-        in: query
-        description: Filter by job status
-        schema:
-          $ref: '#/components/schemas/JobStatus'
-      - name: userId
-        in: query
-        description: Filter by user ID
-        schema:
-          type: string
-          format: uuid
-      responses:
-        '200':
-          description: Jobs retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  jobs:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Job'
-                  pagination:
-                    $ref: '#/components/schemas/PaginationMeta'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-  /v1/auth/signup:
-    post:
-      tags:
-      - Auth
-      summary: Sign up
-      description: Creates a new user via Supabase and seeds profile & notification
-        preferences.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
               $ref: '#/components/schemas/SignUpRequest'
+            example:
+              email: user@example.com
+              password: SecurePass123
+              full_name: John Doe
+              username: johndoe
       responses:
         '201':
           description: User created
@@ -832,20 +172,32 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SignUpResponse'
+              example:
+                user:
+                  id: 123e4567-e89b-12d3-a456-426614174000
+                  email: user@example.com
+                  created_at: '2024-01-15T10:30:00Z'
+                session:
+                  access_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                  token_type: bearer
+                  expires_in: 3600
+                message: User created and signed in
         '400':
-          description: Validation failed or Supabase error
+          description: Validation failed - invalid email, weak password, or missing required fields
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              examples:
-                validation:
-                  value:
-                    error: BadRequest
-                    message: Validation failed
-                    timestamp: '2025-09-21T00:00:00Z'
+              example:
+                error: BadRequest
+                message: Password must contain at least one lowercase letter, one uppercase letter, and one number
+                timestamp: '2024-01-15T10:30:00Z'
+                path: /v1/auth/signup
+                validation_errors:
+                - field: password
+                  message: Password must contain at least one lowercase letter, one uppercase letter, and one number
         '409':
-          description: Email already registered
+          description: Email already registered or username already taken
           content:
             application/json:
               schema:
@@ -853,30 +205,38 @@ paths:
               example:
                 error: Conflict
                 message: Email already registered
-                timestamp: '2025-09-21T00:00:00Z'
+                timestamp: '2024-01-15T10:30:00Z'
+                path: /v1/auth/signup
         '500':
-          description: Failed to create user
+          description: Internal server error during user creation
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: InternalServerError
-                message: Internal server error
-                timestamp: '2025-09-21T00:00:00Z'
   /v1/auth/signin:
     post:
       tags:
-      - Auth
+      - Authentication
       summary: Sign in
-      description: Authenticates a user with email/password via Supabase and logs
-        a security event.
+      description: Authenticates a user with email/password or username/password. Returns JWT session tokens on success.
+      security: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/SignInRequest'
+            examples:
+              email_login:
+                summary: Login with email
+                value:
+                  email: user@example.com
+                  password: SecurePass123
+              username_login:
+                summary: Login with username
+                value:
+                  username: johndoe
+                  password: SecurePass123
       responses:
         '200':
           description: Authenticated
@@ -884,26 +244,32 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SignInResponse'
+              example:
+                user:
+                  id: 123e4567-e89b-12d3-a456-426614174000
+                  email: user@example.com
+                  created_at: '2024-01-15T10:30:00Z'
+                session:
+                  access_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                  token_type: bearer
+                  expires_in: 3600
         '400':
-          description: Validation failed
+          description: Validation failed - missing email/username or password
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: BadRequest
-                message: Validation failed
-                timestamp: '2025-09-21T00:00:00Z'
         '401':
-          description: Invalid email or password
+          description: Invalid email/username or password
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
               example:
                 error: Unauthorized
-                message: Invalid email or password
-                timestamp: '2025-09-21T00:00:00Z'
+                message: Invalid email/username or password
+                timestamp: '2024-01-15T10:30:00Z'
+                path: /v1/auth/signin
         '500':
           description: Internal error
           content:
@@ -913,9 +279,9 @@ paths:
   /v1/auth/signout:
     post:
       tags:
-      - Auth
+      - Authentication
       summary: Sign out
-      description: Signs out the current user and logs a security event.
+      description: Signs out the current user, invalidates the session, and logs a security event.
       security:
       - bearerAuth: []
       responses:
@@ -927,18 +293,14 @@ paths:
                 $ref: '#/components/schemas/MessageResponse'
               example:
                 message: Signed out successfully
-        '401':
-          description: Invalid authentication
+        '400':
+          description: Sign-out failed due to invalid session
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: Unauthorized
-                message: Invalid authentication
-                timestamp: '2025-09-21T00:00:00Z'
-        '400':
-          description: Supabase sign-out error
+        '401':
+          description: Missing or invalid authentication token
           content:
             application/json:
               schema:
@@ -952,15 +314,18 @@ paths:
   /v1/auth/reset-password:
     post:
       tags:
-      - Auth
+      - Authentication
       summary: Send password reset email
-      description: Triggers a Supabase password reset email with redirect link.
+      description: Sends a password reset email to the specified address with a secure reset link.
+      security: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/ResetPasswordRequest'
+            example:
+              email: user@example.com
       responses:
         '200':
           description: Email sent
@@ -971,7 +336,7 @@ paths:
               example:
                 message: Password reset email sent
         '400':
-          description: Validation failed or Supabase error
+          description: Invalid email format or email sending failed
           content:
             application/json:
               schema:
@@ -985,10 +350,9 @@ paths:
   /v1/auth/password:
     put:
       tags:
-      - Auth
+      - Authentication
       summary: Update password
-      description: "Updates the authenticated user\u2019s password via Supabase and\
-        \ logs a security event."
+      description: Updates the authenticated user's password. Requires strong password validation and logs a security event.
       security:
       - bearerAuth: []
       requestBody:
@@ -997,6 +361,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdatePasswordRequest'
+            example:
+              password: NewSecurePass123
       responses:
         '200':
           description: Password updated
@@ -1007,40 +373,815 @@ paths:
               example:
                 message: Password updated successfully
         '400':
-          description: Validation failed or Supabase error
+          description: Password validation failed - must contain uppercase, lowercase, and number
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              examples:
-                validation:
-                  value:
-                    error: BadRequest
-                    message: Validation failed
-                    timestamp: '2025-09-21T00:00:00Z'
+              example:
+                error: BadRequest
+                message: Password must contain at least one lowercase letter, one uppercase letter, and one number
+                timestamp: '2024-01-15T10:30:00Z'
+                path: /v1/auth/password
         '401':
           description: Invalid authentication
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: Unauthorized
-                message: Invalid authentication
-                timestamp: 2025-09-21 10:00:00+00:00
         '500':
           description: Internal error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /v1/account/me:
+    get:
+      tags:
+      - Account
+      summary: Get current user profile
+      description: Retrieve the authenticated user's complete profile information including personal details, preferences, and account status
+      operationId: getCurrentUser
+      responses:
+        '200':
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+              example:
+                id: 123e4567-e89b-12d3-a456-426614174000
+                email: user@example.com
+                full_name: John Doe
+                username: johndoe
+                avatar_url: https://example.com/avatars/user.jpg
+                company: Acme Corp
+                role: Developer
+                phone: '+1234567890'
+                locale: en-US
+                timezone: UTC
+                plan: free
+                email_verified: true
+                user_role: user
+                created_at: '2024-01-15T10:30:00Z'
+                updated_at: '2024-01-15T10:30:00Z'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags:
+      - Account
+      summary: Update user profile
+      description: Update the authenticated user's profile information. All fields are optional and only provided fields will be updated.
+      operationId: updateUserProfile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileRequest'
+            example:
+              full_name: John Smith
+              company: New Company Inc
+              phone: '+1987654321'
+              timezone: America/New_York
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          description: Username is already taken by another user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: Conflict
+                message: Username is already taken
+                timestamp: '2024-01-15T10:30:00Z'
+                path: /v1/account/me
+  /v1/account/avatar:
+    post:
+      tags:
+      - Account
+      summary: Upload avatar
+      description: Upload a new avatar image for the user. Supports JPEG, PNG, and WebP formats up to 5MB.
+      operationId: uploadAvatar
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                avatar:
+                  type: string
+                  format: binary
+                  description: Avatar image file (JPEG, PNG, WebP, max 5MB)
+              required:
+              - avatar
+      responses:
+        '200':
+          description: Avatar uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  avatar_url:
+                    type: string
+                    format: uri
+              example:
+                avatar_url: https://example.com/storage/avatars/user-123-1642248600.jpg
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/account/sessions:
+    get:
+      tags:
+      - Account
+      summary: List user sessions
+      description: Get all active and recent sessions for the authenticated user, including device information and login history
+      operationId: getUserSessions
+      responses:
+        '200':
+          description: Sessions retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UserSession'
+                  total:
+                    type: integer
+                  page:
+                    type: integer
+                  limit:
+                    type: integer
+                  total_pages:
+                    type: integer
+              example:
+                data:
+                - id: session-123
+                  user_agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+                  ip_address: 192.168.1.100
+                  is_current: true
+                  last_seen: '2024-01-15T10:30:00Z'
+                  created_at: '2024-01-15T09:00:00Z'
+                total: 1
+                page: 1
+                limit: 50
+                total_pages: 1
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/account/sessions/{sessionId}:
+    delete:
+      tags:
+      - Account
+      summary: Revoke user session
+      description: Revoke a specific user session, effectively logging out that device/browser
+      operationId: revokeSession
+      parameters:
+      - name: sessionId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: session-123
+      responses:
+        '204':
+          description: Session revoked successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /v1/account/security-events:
+    get:
+      tags:
+      - Account
+      summary: Get security events
+      description: Retrieve security audit log for the authenticated user, including login attempts, password changes, and other security-related activities
+      operationId: getSecurityEvents
+      responses:
+        '200':
+          description: Security events retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SecurityEvent'
+                  total:
+                    type: integer
+                  page:
+                    type: integer
+                  limit:
+                    type: integer
+                  total_pages:
+                    type: integer
+              example:
+                data:
+                - id: event-123
+                  event_type: login_success
+                  description: User signed in successfully
+                  ip_address: 192.168.1.100
+                  user_agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)
+                  metadata:
+                    session_id: session-123
+                  created_at: '2024-01-15T10:30:00Z'
+                total: 1
+                page: 1
+                limit: 50
+                total_pages: 1
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/keys:
+    get:
+      tags:
+      - API Keys
+      summary: List API keys
+      description: Get all API keys for the authenticated user with usage information and scopes
+      operationId: getApiKeys
+      responses:
+        '200':
+          description: API keys retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ApiKey'
+                  total:
+                    type: integer
+                  page:
+                    type: integer
+                  limit:
+                    type: integer
+                  total_pages:
+                    type: integer
+              example:
+                data:
+                - id: key-123
+                  name: Production API Key
+                  preview: pk_1234567890ab...
+                  scopes:
+                  - read
+                  - write
+                  last_used_at: '2024-01-15T10:30:00Z'
+                  created_at: '2024-01-15T09:00:00Z'
+                total: 1
+                page: 1
+                limit: 50
+                total_pages: 1
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      tags:
+      - API Keys
+      summary: Create API key
+      description: Create a new API key for programmatic access. The full key is only shown once upon creation.
+      operationId: createApiKey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateApiKeyRequest'
+            example:
+              name: Production API Key
+              scopes:
+              - read
+              - write
+      responses:
+        '201':
+          description: API key created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiKeyWithSecret'
+              example:
+                id: key-123
+                name: Production API Key
+                preview: pk_1234567890ab...
+                scopes:
+                - read
+                - write
+                created_at: '2024-01-15T10:30:00Z'
+                key: pk_1234567890abcdef1234567890abcdef1234567890abcdef
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/keys/{keyId}:
+    delete:
+      tags:
+      - API Keys
+      summary: Revoke API key
+      description: Permanently revoke an existing API key. This action cannot be undone.
+      operationId: revokeApiKey
+      parameters:
+      - name: keyId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: key-123
+      responses:
+        '204':
+          description: API key revoked successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /v1/notifications/preferences:
+    get:
+      tags:
+      - Notifications
+      summary: Get notification preferences
+      description: Get notification preferences for the authenticated user including channels, categories, and do-not-disturb settings
+      operationId: getNotificationPreferences
+      responses:
+        '200':
+          description: Notification preferences retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationPreferences'
+              example:
+                channels:
+                  email: true
+                  in_app: true
+                  webhook: false
+                categories:
+                  product: immediate
+                  billing: immediate
+                  incidents: immediate
+                  jobs: daily
+                  digest: daily
+                dnd_settings:
+                  start: '22:00'
+                  end: '08:00'
+                  timezone: America/New_York
+                webhook_url: null
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    put:
+      tags:
+      - Notifications
+      summary: Update notification preferences
+      description: Update notification preferences for the authenticated user. All fields are optional and only provided fields will be updated.
+      operationId: updateNotificationPreferences
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationPreferencesUpdate'
+            example:
+              channels:
+                email: false
+                in_app: true
+              categories:
+                jobs: immediate
+              dnd_settings:
+                start: '23:00'
+                end: '07:00'
+                timezone: America/New_York
+      responses:
+        '200':
+          description: Notification preferences updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationPreferences'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/integrations/webhooks:
+    get:
+      tags:
+      - Integrations
+      summary: List webhooks
+      description: Get all webhooks configured for the authenticated user with their event subscriptions and status
+      operationId: getWebhooks
+      responses:
+        '200':
+          description: Webhooks retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Webhook'
+                  total:
+                    type: integer
+                  page:
+                    type: integer
+                  limit:
+                    type: integer
+                  total_pages:
+                    type: integer
+              example:
+                data:
+                - id: webhook-123
+                  url: https://api.example.com/webhooks/parscade
+                  events:
+                  - job.completed
+                  - job.failed
+                  active: true
+                  secret_set: true
+                  created_at: '2024-01-15T10:30:00Z'
+                total: 1
+                page: 1
+                limit: 50
+                total_pages: 1
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      tags:
+      - Integrations
+      summary: Create webhook
+      description: Create a new webhook for receiving event notifications. A secret is automatically generated for webhook verification.
+      operationId: createWebhook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateWebhookRequest'
+            example:
+              url: https://api.example.com/webhooks/parscade
+              events:
+              - job.completed
+              - job.failed
+              active: true
+      responses:
+        '201':
+          description: Webhook created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookWithSecret'
+              example:
+                id: webhook-123
+                url: https://api.example.com/webhooks/parscade
+                events:
+                - job.completed
+                - job.failed
+                active: true
+                secret_set: true
+                created_at: '2024-01-15T10:30:00Z'
+                secret: whsec_1234567890abcdef1234567890abcdef1234567890abcdef
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/integrations/webhooks/{webhookId}/test:
+    post:
+      tags:
+      - Integrations
+      summary: Test webhook
+      description: Send a test request to the webhook URL to verify connectivity and response handling
+      operationId: testWebhook
+      parameters:
+      - name: webhookId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: webhook-123
+      responses:
+        '200':
+          description: Webhook test completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookTestResult'
+              example:
+                status: 200
+                latency: 150
+                response: OK
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /v1/integrations/services:
+    get:
+      tags:
+      - Integrations
+      summary: List connected services
+      description: Get all available third-party services and their connection status for the authenticated user
+      operationId: getConnectedServices
+      responses:
+        '200':
+          description: Connected services retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ConnectedService'
+              example:
+              - id: github
+                name: GitHub
+                description: Connect your GitHub repositories
+                icon_url: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+                connected: false
+                scopes: null
+                last_sync: null
+              - id: slack
+                name: Slack
+                description: Send notifications to Slack
+                icon_url: https://cdn.worldvectorlogo.com/logos/slack-new-logo.svg
+                connected: true
+                scopes:
+                - chat:write
+                last_sync: '2024-01-15T10:30:00Z'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/integrations/services/{serviceId}/connect:
+    post:
+      tags:
+      - Integrations
+      summary: Connect service
+      description: Initiate OAuth connection flow to a third-party service. Returns redirect URL for user authorization.
+      operationId: connectService
+      parameters:
+      - name: serviceId
+        in: path
+        required: true
+        schema:
+          type: string
+        example: github
+      responses:
+        '200':
+          description: Service connection initiated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceConnectionResponse'
+              example:
+                redirect_url: https://github.com/login/oauth/authorize?client_id=YOUR_CLIENT_ID&redirect_uri=YOUR_CALLBACK&scope=repo
+        '400':
+          description: Unsupported service ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: BadRequest
+                message: Unsupported service
+                timestamp: '2024-01-15T10:30:00Z'
+                path: /v1/integrations/services/invalid/connect
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /v1/integrations/data-sources:
+    get:
+      tags:
+      - Integrations
+      summary: List data sources
+      description: Get all configured data sources for the authenticated user including cloud storage connections
+      operationId: getDataSources
+      responses:
+        '200':
+          description: Data sources retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DataSource'
+                  total:
+                    type: integer
+                  page:
+                    type: integer
+                  limit:
+                    type: integer
+                  total_pages:
+                    type: integer
+              example:
+                data:
+                - id: ds-123
+                  name: Production S3 Bucket
+                  type: s3
+                  config:
+                    bucket: my-documents
+                    region: us-east-1
+                  status: active
+                  last_sync: '2024-01-15T10:30:00Z'
+                  created_at: '2024-01-15T09:00:00Z'
+                total: 1
+                page: 1
+                limit: 50
+                total_pages: 1
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      tags:
+      - Integrations
+      summary: Create data source
+      description: Create a new data source configuration for cloud storage or database connections
+      operationId: createDataSource
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDataSourceRequest'
+            example:
+              name: Production S3 Bucket
+              type: s3
+              config:
+                bucket: my-documents
+                region: us-east-1
+                access_key: AKIA...
+                secret_key: '...'
+      responses:
+        '201':
+          description: Data source created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataSource'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/users:
+    get:
+      tags:
+      - Users
+      summary: List all users (Admin)
+      description: Get paginated list of all users with search and filtering capabilities (admin access required)
+      operationId: getUsers
+      parameters:
+      - $ref: '#/components/parameters/PageParam'
+      - $ref: '#/components/parameters/LimitParam'
+      - name: role
+        in: query
+        description: Filter by user role
+        schema:
+          $ref: '#/components/schemas/UserRole'
+        example: user
+      - name: search
+        in: query
+        description: Search users by email or name
+        schema:
+          type: string
+          maxLength: 100
+        example: john
+      responses:
+        '200':
+          description: Users retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UserProfile'
+                  total:
+                    type: integer
+                  page:
+                    type: integer
+                  limit:
+                    type: integer
+                  total_pages:
+                    type: integer
+              example:
+                data:
+                - id: 123e4567-e89b-12d3-a456-426614174000
+                  email: user@example.com
+                  full_name: John Doe
+                  username: johndoe
+                  user_role: user
+                  created_at: '2024-01-15T10:30:00Z'
+                total: 1
+                page: 1
+                limit: 10
+                total_pages: 1
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /v1/users/{userId}:
+    get:
+      tags:
+      - Users
+      summary: Get user by ID (Admin)
+      description: Get detailed user information by ID including profile and account details (admin access required)
+      operationId: getUserById
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 123e4567-e89b-12d3-a456-426614174000
+      responses:
+        '200':
+          description: User retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags:
+      - Users
+      summary: Update user (Admin)
+      description: Update user role and other administrative properties (admin access required)
+      operationId: updateUser
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        example: 123e4567-e89b-12d3-a456-426614174000
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+            example:
+              role: admin
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '400':
+          description: Cannot change own admin role or invalid role value
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: BadRequest
+                message: Cannot change your own admin role
+                timestamp: '2024-01-15T10:30:00Z'
+                path: /v1/users/123e4567-e89b-12d3-a456-426614174000
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
 components:
   securitySchemes:
-    BearerAuth:
+    bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: JWT token from Supabase authentication
+      description: JWT token from Supabase authentication. Include in Authorization header as "Bearer <token>"
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: API key for programmatic access. Include in x-api-key header as "pk_..."
   parameters:
     PageParam:
       name: page
@@ -1050,6 +1191,7 @@ components:
         type: integer
         minimum: 1
         default: 1
+      example: 1
     LimitParam:
       name: limit
       in: query
@@ -1058,23 +1200,8 @@ components:
         type: integer
         minimum: 1
         maximum: 100
-        default: 20
-    DocumentIdParam:
-      name: documentId
-      in: path
-      required: true
-      description: Document UUID
-      schema:
-        type: string
-        format: uuid
-    JobIdParam:
-      name: jobId
-      in: path
-      required: true
-      description: Job UUID
-      schema:
-        type: string
-        format: uuid
+        default: 10
+      example: 10
   responses:
     BadRequest:
       description: Bad request - invalid input
@@ -1082,32 +1209,52 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: BadRequest
+            message: Invalid request data
+            timestamp: '2024-01-15T10:30:00Z'
+            path: /v1/example
     Unauthorized:
       description: Unauthorized - authentication required
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: Unauthorized
+            message: Authentication required
+            timestamp: '2024-01-15T10:30:00Z'
+            path: /v1/example
     Forbidden:
       description: Forbidden - insufficient permissions
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: Forbidden
+            message: Insufficient permissions
+            timestamp: '2024-01-15T10:30:00Z'
+            path: /v1/example
     NotFound:
       description: Resource not found
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: NotFound
+            message: Resource not found
+            timestamp: '2024-01-15T10:30:00Z'
+            path: /v1/example
   schemas:
     HealthResponse:
       type: object
       required:
       - status
       - timestamp
-      - uptime
       - version
+      - response_time_ms
       properties:
         status:
           type: string
@@ -1117,68 +1264,38 @@ components:
         timestamp:
           type: string
           format: date-time
-        uptime:
+        response_time_ms:
           type: number
-          description: Server uptime in seconds
+          description: Response time in milliseconds
         version:
           type: string
-    ReadinessResponse:
-      type: object
-      required:
-      - status
-      - services
-      properties:
-        status:
-          type: string
-          enum:
-          - ready
-          - not_ready
-        services:
+        checks:
           type: object
-          required:
-          - database
-          - storage
           properties:
             database:
               type: string
               enum:
-              - healthy
-              - unhealthy
-            storage:
+              - pass
+              - fail
+            api:
               type: string
               enum:
-              - healthy
-              - unhealthy
-    AuthResponse:
-      type: object
-      required:
-      - user
-      - session
-      properties:
-        user:
-          $ref: '#/components/schemas/UserProfile'
-        session:
-          type: object
-          required:
-          - access_token
-          - expires_at
-          properties:
-            access_token:
-              type: string
-            refresh_token:
-              type: string
-            expires_at:
-              type: string
-              format: date-time
+              - pass
+              - fail
+        environment:
+          type: string
+        error:
+          type: string
+          description: Error message if unhealthy
     UserProfile:
       type: object
       required:
       - id
       - email
-      - role
-      - emailVerified
-      - createdAt
-      - updatedAt
+      - user_role
+      - email_verified
+      - created_at
+      - updated_at
       properties:
         id:
           type: string
@@ -1189,152 +1306,220 @@ components:
         full_name:
           type: string
           nullable: true
-        avatarUrl:
-          type: string
-          format: uri
-          nullable: true
-        timezone:
-          type: string
-          default: UTC
-        emailVerified:
-          type: boolean
-        role:
-          $ref: '#/components/schemas/UserRole'
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
         username:
           type: string
+          nullable: true
+        avatar_url:
+          type: string
+          format: uri
           nullable: true
         company:
           type: string
           nullable: true
+        role:
+          type: string
+          nullable: true
+          description: Job title or role within company
         phone:
           type: string
           nullable: true
+          pattern: ^\+?[1-9]\d{1,14}$
         locale:
           type: string
-          nullable: true
+          default: en-US
+        timezone:
+          type: string
+          default: UTC
+        plan:
+          $ref: '#/components/schemas/UserPlan'
+        email_verified:
+          type: boolean
+        user_role:
+          $ref: '#/components/schemas/UserRole'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
     UserRole:
       type: string
       enum:
       - admin
       - user
+    UserPlan:
+      type: string
+      enum:
+      - free
+      - pro
+      - enterprise
     UpdateProfileRequest:
       type: object
       properties:
         full_name:
           type: string
+          maxLength: 100
           nullable: true
+          description: User's full name
         username:
           type: string
+          minLength: 3
+          maxLength: 32
           nullable: true
+          pattern: ^[a-zA-Z0-9_-]+$
+          description: Unique username (alphanumeric, underscore, hyphen only)
         company:
           type: string
+          maxLength: 100
           nullable: true
+          description: Company or organization name
+        role:
+          type: string
+          maxLength: 100
+          nullable: true
+          description: Job title or role within company
         phone:
           type: string
+          pattern: ^\+?[1-9]\d{1,14}$
           nullable: true
+          description: Phone number in international format
         locale:
           type: string
+          maxLength: 10
+          nullable: true
+          description: Language and region preference (e.g., en-US)
         timezone:
           type: string
-        username:
-          type: string
+          maxLength: 50
           nullable: true
-        company:
-          type: string
-          nullable: true
-        phone:
-          type: string
-          nullable: true
-        locale:
-          type: string
+          description: Timezone identifier (e.g., America/New_York)
+    UpdateUserRequest:
+      type: object
+      properties:
+        role:
+          $ref: '#/components/schemas/UserRole'
     UserSession:
       type: object
       required:
       - id
-      - sessionToken
-      - lastSeen
-      - createdAt
+      - user_agent
+      - ip_address
+      - last_seen
+      - created_at
+      - is_current
       properties:
         id:
           type: string
-          format: uuid
-        sessionToken:
+          description: Session identifier
+        user_agent:
           type: string
-        userAgent:
+          description: Browser/device user agent string
+        ip_address:
           type: string
-          nullable: true
-        ipAddress:
-          type: string
-          nullable: true
-        isCurrent:
+          description: IP address of the session
+        is_current:
           type: boolean
-        lastSeen:
+          description: Whether this is the current active session
+        last_seen:
           type: string
           format: date-time
-        createdAt:
+          description: Last activity timestamp for this session
+        created_at:
           type: string
           format: date-time
+          description: When the session was first created
     SecurityEvent:
       type: object
       required:
       - id
-      - eventType
+      - event_type
       - description
-      - createdAt
+      - created_at
       properties:
         id:
           type: string
           format: uuid
-        eventType:
+        event_type:
           type: string
+          enum:
+          - login_success
+          - login_failed
+          - logout
+          - password_change
+          - api_key_created
+          - api_key_revoked
+          - session_revoked
+          - user_role_updated
+          description: Type of security event
         description:
           type: string
-        ipAddress:
+          description: Human-readable description of the event
+        ip_address:
           type: string
           nullable: true
-        userAgent:
+          description: IP address where the event occurred
+        user_agent:
           type: string
           nullable: true
+          description: User agent string of the client
         metadata:
           type: object
           additionalProperties: true
-        createdAt:
+          description: Additional event-specific data
+        created_at:
           type: string
           format: date-time
+          description: When the event occurred
     ApiKey:
       type: object
       required:
       - id
       - name
-      - keyPreview
+      - preview
       - scopes
-      - createdAt
+      - created_at
       properties:
         id:
           type: string
           format: uuid
         name:
           type: string
-        keyPreview:
+          description: User-defined name for the API key
+        preview:
           type: string
-          description: Last 4 characters of the key
+          description: First 12 characters of the key for identification
         scopes:
           type: array
           items:
-            type: string
-        lastUsedAt:
+            $ref: '#/components/schemas/ApiKeyScope'
+          description: Permissions granted to this API key
+        last_used_at:
           type: string
           format: date-time
           nullable: true
-        createdAt:
+          description: When the API key was last used
+        created_at:
           type: string
           format: date-time
+          description: When the API key was created
+    ApiKeyWithSecret:
+      allOf:
+      - $ref: '#/components/schemas/ApiKey'
+      - type: object
+        required:
+        - key
+        properties:
+          key:
+            type: string
+            description: The actual API key (only shown once upon creation)
+            pattern: ^pk_[a-f0-9]{64}$
+    ApiKeyScope:
+      type: string
+      enum:
+      - read
+      - write
+      - admin
+      description: API key permission levels
     CreateApiKeyRequest:
       type: object
       required:
@@ -1344,255 +1529,329 @@ components:
           type: string
           minLength: 1
           maxLength: 100
+          description: Descriptive name for the API key
+        scopes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApiKeyScope'
+          default:
+          - read
+          minItems: 1
+          maxItems: 3
+          description: Permissions to grant to this API key
+    NotificationPreferences:
+      type: object
+      required:
+      - channels
+      - categories
+      properties:
+        channels:
+          type: object
+          required:
+          - email
+          - in_app
+          - webhook
+          properties:
+            email:
+              type: boolean
+              description: Receive notifications via email
+            in_app:
+              type: boolean
+              description: Receive in-app notifications
+            webhook:
+              type: boolean
+              description: Receive notifications via webhook
+        categories:
+          type: object
+          required:
+          - product
+          - billing
+          - incidents
+          - jobs
+          - digest
+          properties:
+            product:
+              $ref: '#/components/schemas/NotificationFrequency'
+              description: Product updates and announcements
+            billing:
+              $ref: '#/components/schemas/NotificationFrequency'
+              description: Billing and payment notifications
+            incidents:
+              $ref: '#/components/schemas/NotificationFrequency'
+              description: System incidents and outages
+            jobs:
+              $ref: '#/components/schemas/NotificationFrequency'
+              description: Job processing notifications
+            digest:
+              $ref: '#/components/schemas/NotificationFrequency'
+              description: Daily/weekly summary emails
+        dnd_settings:
+          type: object
+          nullable: true
+          properties:
+            start:
+              type: string
+              pattern: ^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$
+              description: Do not disturb start time (24-hour format)
+              example: '22:00'
+            end:
+              type: string
+              pattern: ^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$
+              description: Do not disturb end time (24-hour format)
+              example: '08:00'
+            timezone:
+              type: string
+              description: Timezone for do not disturb schedule
+              example: America/New_York
+        webhook_url:
+          type: string
+          format: uri
+          nullable: true
+          description: URL to receive webhook notifications
+    NotificationPreferencesUpdate:
+      type: object
+      properties:
+        channels:
+          type: object
+          properties:
+            email:
+              type: boolean
+            in_app:
+              type: boolean
+            webhook:
+              type: boolean
+        categories:
+          type: object
+          properties:
+            product:
+              $ref: '#/components/schemas/NotificationFrequency'
+            billing:
+              $ref: '#/components/schemas/NotificationFrequency'
+            incidents:
+              $ref: '#/components/schemas/NotificationFrequency'
+            jobs:
+              $ref: '#/components/schemas/NotificationFrequency'
+            digest:
+              $ref: '#/components/schemas/NotificationFrequency'
+        dnd_settings:
+          type: object
+          nullable: true
+          properties:
+            start:
+              type: string
+              pattern: ^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$
+            end:
+              type: string
+              pattern: ^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$
+            timezone:
+              type: string
+        webhook_url:
+          type: string
+          format: uri
+          nullable: true
+    NotificationFrequency:
+      type: string
+      enum:
+      - 'off'
+      - immediate
+      - daily
+      description: How frequently to receive notifications
+    Webhook:
+      type: object
+      required:
+      - id
+      - url
+      - events
+      - active
+      - created_at
+      - secret_set
+      properties:
+        id:
+          type: string
+          format: uuid
+        url:
+          type: string
+          format: uri
+          description: Webhook endpoint URL
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/WebhookEventType'
+          description: Events that trigger this webhook
+        active:
+          type: boolean
+          description: Whether the webhook is currently active
+        created_at:
+          type: string
+          format: date-time
+        secret_set:
+          type: boolean
+          description: Whether a secret is configured for webhook verification
+    WebhookWithSecret:
+      allOf:
+      - $ref: '#/components/schemas/Webhook'
+      - type: object
+        required:
+        - secret
+        properties:
+          secret:
+            type: string
+            description: The webhook secret for verifying requests (only shown once upon creation)
+            pattern: ^whsec_[a-f0-9]{64}$
+    WebhookEventType:
+      type: string
+      enum:
+      - job.completed
+      - job.failed
+      - document.processed
+      - document.failed
+      description: Types of events that can trigger webhooks
+    CreateWebhookRequest:
+      type: object
+      required:
+      - url
+      - events
+      properties:
+        url:
+          type: string
+          format: uri
+          description: Webhook endpoint URL
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/WebhookEventType'
+          minItems: 1
+          description: Events that should trigger this webhook
+        active:
+          type: boolean
+          default: true
+          description: Whether the webhook should be active immediately
+    WebhookTestResult:
+      type: object
+      required:
+      - status
+      - latency
+      properties:
+        status:
+          type: integer
+          description: HTTP status code returned by the webhook endpoint
+        latency:
+          type: integer
+          description: Response time in milliseconds
+        response:
+          type: string
+          nullable: true
+          description: Response body from the webhook endpoint (truncated)
+    ConnectedService:
+      type: object
+      required:
+      - id
+      - name
+      - description
+      - connected
+      properties:
+        id:
+          type: string
+          description: Unique service identifier
+        name:
+          type: string
+          description: Display name of the service
+        description:
+          type: string
+          description: Description of what the service integration provides
+        icon_url:
+          type: string
+          format: uri
+          nullable: true
+          description: URL to the service's icon/logo
+        connected:
+          type: boolean
+          description: Whether the user has connected this service
         scopes:
           type: array
           items:
             type: string
-            enum:
-            - read
-            - write
-            - admin
-          default:
-          - read
-    SignedUploadRequest:
+          nullable: true
+          description: OAuth scopes granted for this service
+        last_sync:
+          type: string
+          format: date-time
+          nullable: true
+          description: When data was last synchronized with this service
+    ServiceConnectionResponse:
       type: object
       required:
-      - fileName
-      - mimeType
-      - size
+      - redirect_url
       properties:
-        fileName:
-          type: string
-        mimeType:
-          type: string
-        size:
-          type: integer
-          minimum: 1
-    SignedUploadResponse:
-      type: object
-      required:
-      - uploadUrl
-      - storageKey
-      - expiresAt
-      properties:
-        uploadUrl:
+        redirect_url:
           type: string
           format: uri
-        storageKey:
-          type: string
-        expiresAt:
-          type: string
-          format: date-time
-    CompleteUploadRequest:
-      type: object
-      required:
-      - name
-      properties:
-        name:
-          type: string
-        metadata:
-          type: object
-          additionalProperties: true
-    Document:
+          description: OAuth authorization URL to redirect the user to
+    DataSource:
       type: object
       required:
       - id
-      - userId
       - name
-      - originalName
-      - mimeType
-      - size
-      - storageKey
-      - status
-      - createdAt
-      - updatedAt
-      properties:
-        id:
-          type: string
-          format: uuid
-        userId:
-          type: string
-          format: uuid
-        name:
-          type: string
-        originalName:
-          type: string
-        mimeType:
-          type: string
-        size:
-          type: integer
-        storageKey:
-          type: string
-        status:
-          $ref: '#/components/schemas/DocumentStatus'
-        metadata:
-          type: object
-          additionalProperties: true
-        extractedText:
-          type: string
-          nullable: true
-        structureData:
-          type: object
-          nullable: true
-          additionalProperties: true
-        thumbnailKey:
-          type: string
-          nullable: true
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-    DocumentStatus:
-      type: string
-      enum:
-      - uploading
-      - processing
-      - completed
-      - failed
-    Job:
-      type: object
-      required:
-      - id
-      - userId
       - type
+      - config
       - status
-      - source
-      - attempts
-      - maxAttempts
-      - progress
-      - createdAt
-      - updatedAt
+      - created_at
       properties:
         id:
           type: string
           format: uuid
-        userId:
+        name:
           type: string
-          format: uuid
-        documentId:
-          type: string
-          format: uuid
-          nullable: true
+          description: User-defined name for the data source
         type:
-          $ref: '#/components/schemas/JobType'
+          $ref: '#/components/schemas/DataSourceType'
+        config:
+          type: object
+          additionalProperties: true
+          description: Data source configuration (credentials, endpoints, etc.)
         status:
-          $ref: '#/components/schemas/JobStatus'
-        source:
-          $ref: '#/components/schemas/JobSource'
-        sourceUrl:
-          type: string
-          format: uri
-          nullable: true
-        sourceKey:
-          type: string
-          nullable: true
-        metadata:
-          type: object
-          additionalProperties: true
-        options:
-          type: object
-          additionalProperties: true
-        resultRef:
-          type: string
-          nullable: true
-        error:
-          type: string
-          nullable: true
-        attempts:
-          type: integer
-        maxAttempts:
-          type: integer
-        progress:
-          type: integer
-          minimum: 0
-          maximum: 100
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-        startedAt:
+          $ref: '#/components/schemas/DataSourceStatus'
+        last_sync:
           type: string
           format: date-time
           nullable: true
-        completedAt:
+          description: When data was last synchronized from this source
+        created_at:
           type: string
           format: date-time
-          nullable: true
-    JobType:
-      type: string
-      enum:
-      - analyze_structure
-      - extract_text
-      - parse_document
-    JobStatus:
-      type: string
-      enum:
-      - cancelled
-      - completed
-      - failed
-      - pending
-      - processing
-    JobSource:
+    DataSourceType:
       type: string
       enum:
       - s3
-      - upload
-      - url
-    CreateJobRequest:
+      - gcs
+      - azure
+      - supabase
+      description: Type of data source
+    DataSourceStatus:
+      type: string
+      enum:
+      - active
+      - error
+      - disabled
+      description: Current status of the data source
+    CreateDataSourceRequest:
       type: object
       required:
+      - name
       - type
-      - source
+      - config
       properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Descriptive name for the data source
         type:
-          $ref: '#/components/schemas/JobType'
-        source:
-          $ref: '#/components/schemas/JobSource'
-        documentId:
-          type: string
-          format: uuid
-          description: Required when source is 'upload'
-        sourceUrl:
-          type: string
-          format: uri
-          description: Required when source is 'url'
-        sourceKey:
-          type: string
-          description: Required when source is 's3'
-        options:
+          $ref: '#/components/schemas/DataSourceType'
+        config:
           type: object
           additionalProperties: true
-          default: {}
-    PaginationMeta:
-      type: object
-      required:
-      - page
-      - limit
-      - total
-      - totalPages
-      - hasNext
-      - hasPrevious
-      properties:
-        page:
-          type: integer
-          minimum: 1
-        limit:
-          type: integer
-          minimum: 1
-        total:
-          type: integer
-          minimum: 0
-        totalPages:
-          type: integer
-          minimum: 0
-        hasNext:
-          type: boolean
-        hasPrevious:
-          type: boolean
+          description: Data source configuration object
     ErrorResponse:
       type: object
       required:
@@ -1602,17 +1861,42 @@ components:
       properties:
         error:
           type: string
+          description: Error category or type
         message:
           type: string
-        details:
-          type: object
-          additionalProperties: true
+          description: Human-readable error message
         timestamp:
           type: string
           format: date-time
-        requestId:
+          description: When the error occurred
+        path:
           type: string
-          nullable: true
+          description: API endpoint where the error occurred
+        code:
+          type: string
+          description: Specific error code for programmatic handling
+        validation_errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          description: Detailed validation errors for request data
+    ValidationError:
+      type: object
+      required:
+      - field
+      - message
+      properties:
+        field:
+          type: string
+          description: Name of the field that failed validation
+        message:
+          type: string
+          description: Validation error message
+        received:
+          description: The actual value that was received
+        expected:
+          type: string
+          description: Description of what was expected
     MessageResponse:
       type: object
       required:
@@ -1620,12 +1904,9 @@ components:
       properties:
         message:
           type: string
-      additionalProperties: false
-      example:
-        message: Signed out successfully
+          description: Success or informational message
     SupabaseUser:
-      description: Supabase Auth user object (shape simplified; may include additional
-        properties)
+      description: Supabase Auth user object
       type: object
       required:
       - id
@@ -1645,14 +1926,8 @@ components:
           format: date-time
           nullable: true
       additionalProperties: true
-      example:
-        id: d21c29dd-a07c-4f5f-b7c8-dabaca3164cc
-        email: user@example.com
-        created_at: 2025-09-20 10:00:00+00:00
-        email_confirmed_at: 2025-09-20 10:10:00+00:00
     SupabaseSession:
-      description: Supabase Auth session (access/refresh tokens, expiry). Exact shape
-        may vary by SDK.
+      description: Supabase Auth session
       type: object
       required:
       - access_token
@@ -1661,26 +1936,21 @@ components:
       properties:
         access_token:
           type: string
+          description: JWT access token for API authentication
         token_type:
           type: string
-          example: bearer
+          enum:
+          - bearer
         expires_in:
           type: integer
-          example: 3600
+          description: Token expiration time in seconds
         refresh_token:
           type: string
           nullable: true
+          description: Token for refreshing the access token
         user:
           $ref: '#/components/schemas/SupabaseUser'
       additionalProperties: true
-      example:
-        access_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-        token_type: bearer
-        expires_in: 3600
-        refresh_token: rfs_abc123...
-        user:
-          id: d21c29dd-a07c-4f5f-b7c8-dabaca3164cc
-          email: user@example.com
     SignUpRequest:
       type: object
       required:
@@ -1691,55 +1961,63 @@ components:
           type: string
           format: email
           maxLength: 255
+          description: User's email address
         password:
           type: string
           minLength: 8
           maxLength: 128
           pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$
-          description: Must contain at least one lowercase letter, one uppercase letter,
-            and one number
+          description: Must contain at least one lowercase letter, one uppercase letter, and one number
         full_name:
           type: string
           maxLength: 100
           nullable: true
-      additionalProperties: false
-      example:
-        email: new.user@example.com
-        password: StrongPass1
-        full_name: New User
+          description: User's full name
+        username:
+          type: string
+          maxLength: 100
+          nullable: true
+          description: Unique username for the account
     SignUpResponse:
       type: object
       required:
       - user
-      - session
       - message
       properties:
         user:
           $ref: '#/components/schemas/SupabaseUser'
         session:
           $ref: '#/components/schemas/SupabaseSession'
+          nullable: true
+          description: Session object if email verification is disabled
         message:
           type: string
-          example: User created successfully
-      additionalProperties: false
+          description: Success message indicating next steps
     SignInRequest:
       type: object
-      required:
-      - email
-      - password
       properties:
         email:
           type: string
           format: email
           maxLength: 255
+          description: User's email address
+        username:
+          type: string
+          minLength: 3
+          maxLength: 32
+          description: User's username
         password:
           type: string
           minLength: 8
           maxLength: 128
-      additionalProperties: false
-      example:
-        email: user@example.com
-        password: StrongPass1
+          description: User's password
+      anyOf:
+      - required:
+        - email
+        - password
+      - required:
+        - username
+        - password
     SignInResponse:
       type: object
       required:
@@ -1750,7 +2028,6 @@ components:
           $ref: '#/components/schemas/SupabaseUser'
         session:
           $ref: '#/components/schemas/SupabaseSession'
-      additionalProperties: false
     ResetPasswordRequest:
       type: object
       required:
@@ -1760,9 +2037,7 @@ components:
           type: string
           format: email
           maxLength: 255
-      additionalProperties: false
-      example:
-        email: user@example.com
+          description: Email address to send password reset link to
     UpdatePasswordRequest:
       type: object
       required:
@@ -1773,8 +2048,4 @@ components:
           minLength: 8
           maxLength: 128
           pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$
-          description: Must contain at least one lowercase letter, one uppercase letter,
-            and one number
-      additionalProperties: false
-      example:
-        password: NewStrongPass1
+          description: New password meeting security requirements

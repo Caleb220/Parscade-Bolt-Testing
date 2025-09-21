@@ -1,23 +1,25 @@
 /**
- * API Type Definitions
- * Auto-generated from OpenAPI specification
+ * API Type Definitions - Auto-generated from OpenAPI Schema
  * 
- * This file contains the complete type definitions that match the backend OpenAPI schema.
- * All frontend API calls should use these types for request/response handling.
+ * IMPORTANT: This file should be auto-generated from the OpenAPI schema.
+ * For now, manually aligned with the backend schema structure.
+ * 
+ * All types use snake_case to match backend exactly.
  */
 
+// Core OpenAPI paths interface
 export interface paths {
   '/health': {
     get: {
       responses: {
         '200': {
           content: {
-            'application/json': {
-              status: 'healthy' | 'unhealthy';
-              timestamp: string;
-              uptime: number;
-              version: string;
-            };
+            'application/json': HealthResponse;
+          };
+        };
+        '503': {
+          content: {
+            'application/json': HealthResponse;
           };
         };
       };
@@ -29,56 +31,24 @@ export interface paths {
         '200': {
           content: {
             'application/json': {
-              status: 'ready' | 'not_ready';
-              services: {
-                database: 'healthy' | 'unhealthy' | 'not_configured';
-                redis: 'healthy' | 'unhealthy' | 'not_configured';
-                storage: 'healthy' | 'unhealthy' | 'not_configured';
-              };
-            };
-          };
-        };
-        '503': {
-          content: {
-            'application/json': {
-              status: 'ready' | 'not_ready';
-              services: {
-                database: 'healthy' | 'unhealthy' | 'not_configured';
-                redis: 'healthy' | 'unhealthy' | 'not_configured';
-                storage: 'healthy' | 'unhealthy' | 'not_configured';
-              };
+              status: 'ready';
+              timestamp: string;
+              version: string;
             };
           };
         };
       };
     };
   };
-  '/v1/auth/callback': {
-    post: {
-      requestBody: {
-        content: {
-          'application/json': {
-            access_token: string;
-            refresh_token?: string;
-          };
-        };
-      };
+  '/live': {
+    get: {
       responses: {
         '200': {
           content: {
             'application/json': {
-              user: UserProfile;
-              session: {
-                access_token: string;
-                refresh_token?: string;
-                expires_at: string;
-              };
+              status: 'alive';
+              timestamp: string;
             };
-          };
-        };
-        '401': {
-          content: {
-            'application/json': ErrorResponse;
           };
         };
       };
@@ -88,26 +58,13 @@ export interface paths {
     post: {
       requestBody: {
         content: {
-          'application/json': {
-            email: string;
-            password: string;
-            full_name?: string | null;
-            username?: string | null;
-          };
+          'application/json': SignUpRequest;
         };
       };
       responses: {
         '201': {
           content: {
-            'application/json': {
-              user: UserProfile | null;
-              session: {
-                access_token: string;
-                refresh_token: string;
-                expires_at: string;
-              } | null;
-              message: string;
-            };
+            'application/json': SignUpResponse;
           };
         };
         '400': {
@@ -120,6 +77,11 @@ export interface paths {
             'application/json': ErrorResponse;
           };
         };
+        '500': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
       };
     };
   };
@@ -127,27 +89,26 @@ export interface paths {
     post: {
       requestBody: {
         content: {
-          'application/json': {
-            email?: string;
-            username?: string;
-            password: string;
-          };
+          'application/json': SignInRequest;
         };
       };
       responses: {
         '200': {
           content: {
-            'application/json': {
-              user: UserProfile;
-              session: {
-                access_token: string;
-                refresh_token: string;
-                expires_at: string;
-              };
-            };
+            'application/json': SignInResponse;
+          };
+        };
+        '400': {
+          content: {
+            'application/json': ErrorResponse;
           };
         };
         '401': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+        '500': {
           content: {
             'application/json': ErrorResponse;
           };
@@ -160,12 +121,20 @@ export interface paths {
       responses: {
         '200': {
           content: {
-            'application/json': {
-              message: string;
-            };
+            'application/json': MessageResponse;
+          };
+        };
+        '400': {
+          content: {
+            'application/json': ErrorResponse;
           };
         };
         '401': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+        '500': {
           content: {
             'application/json': ErrorResponse;
           };
@@ -177,20 +146,52 @@ export interface paths {
     post: {
       requestBody: {
         content: {
-          'application/json': {
-            email: string;
-          };
+          'application/json': ResetPasswordRequest;
         };
       };
       responses: {
         '200': {
           content: {
-            'application/json': {
-              message: string;
-            };
+            'application/json': MessageResponse;
           };
         };
         '400': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+        '500': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+      };
+    };
+  };
+  '/v1/auth/password': {
+    put: {
+      requestBody: {
+        content: {
+          'application/json': UpdatePasswordRequest;
+        };
+      };
+      responses: {
+        '200': {
+          content: {
+            'application/json': MessageResponse;
+          };
+        };
+        '400': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+        '401': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+        '500': {
           content: {
             'application/json': ErrorResponse;
           };
@@ -211,19 +212,17 @@ export interface paths {
             'application/json': ErrorResponse;
           };
         };
+        '404': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
       };
     };
     patch: {
       requestBody: {
         content: {
-          'application/json': {
-            full_name?: string | null;
-            username?: string | null;
-            company?: string | null;
-            phone?: string | null;
-            locale?: string | null;
-            timezone?: string;
-          };
+          'application/json': UpdateProfileRequest;
         };
       };
       responses: {
@@ -242,18 +241,7 @@ export interface paths {
             'application/json': ErrorResponse;
           };
         };
-      };
-    };
-    delete: {
-      responses: {
-        '200': {
-          content: {
-            'application/json': {
-              message: string;
-            };
-          };
-        };
-        '401': {
+        '409': {
           content: {
             'application/json': ErrorResponse;
           };
@@ -274,7 +262,7 @@ export interface paths {
         '200': {
           content: {
             'application/json': {
-              avatarUrl: string;
+              avatar_url: string;
             };
           };
         };
@@ -296,10 +284,7 @@ export interface paths {
       responses: {
         '200': {
           content: {
-            'application/json': {
-              sessions: UserSession[];
-              pagination: PaginationMetadata;
-            };
+            'application/json': UserSessionListResponse;
           };
         };
         '401': {
@@ -336,18 +321,10 @@ export interface paths {
   };
   '/v1/account/security-events': {
     get: {
-      parameters: {
-        query?: {
-          limit?: number;
-        };
-      };
       responses: {
         '200': {
           content: {
-            'application/json': {
-              events: SecurityEvent[];
-              pagination: PaginationMetadata;
-            };
+            'application/json': SecurityEventListResponse;
           };
         };
         '401': {
@@ -363,10 +340,7 @@ export interface paths {
       responses: {
         '200': {
           content: {
-            'application/json': {
-              keys: ApiKey[];
-              pagination: PaginationMetadata;
-            };
+            'application/json': ApiKeyListResponse;
           };
         };
         '401': {
@@ -379,19 +353,13 @@ export interface paths {
     post: {
       requestBody: {
         content: {
-          'application/json': {
-            name: string;
-            scopes?: string[];
-          };
+          'application/json': CreateApiKeyRequest;
         };
       };
       responses: {
         '201': {
           content: {
-            'application/json': {
-              key: string;
-              apiKey: ApiKey;
-            };
+            'application/json': ApiKeyWithSecret;
           };
         };
         '400': {
@@ -431,25 +399,31 @@ export interface paths {
       };
     };
   };
-  '/v1/uploads/sign': {
-    post: {
+  '/v1/notifications/preferences': {
+    get: {
+      responses: {
+        '200': {
+          content: {
+            'application/json': NotificationPreferences;
+          };
+        };
+        '401': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+      };
+    };
+    put: {
       requestBody: {
         content: {
-          'application/json': {
-            fileName: string;
-            mimeType: string;
-            size: number;
-          };
+          'application/json': NotificationPreferencesUpdate;
         };
       };
       responses: {
         '200': {
           content: {
-            'application/json': {
-              uploadUrl: string;
-              storageKey: string;
-              expiresAt: string;
-            };
+            'application/json': NotificationPreferences;
           };
         };
         '400': {
@@ -465,25 +439,31 @@ export interface paths {
       };
     };
   };
-  '/v1/uploads/{storageKey}/complete': {
-    post: {
-      parameters: {
-        path: {
-          storageKey: string;
+  '/v1/integrations/webhooks': {
+    get: {
+      responses: {
+        '200': {
+          content: {
+            'application/json': WebhookListResponse;
+          };
+        };
+        '401': {
+          content: {
+            'application/json': ErrorResponse;
+          };
         };
       };
+    };
+    post: {
       requestBody: {
         content: {
-          'application/json': {
-            name: string;
-            metadata?: Record<string, unknown>;
-          };
+          'application/json': CreateWebhookRequest;
         };
       };
       responses: {
         '201': {
           content: {
-            'application/json': Document;
+            'application/json': WebhookWithSecret;
           };
         };
         '400': {
@@ -499,95 +479,17 @@ export interface paths {
       };
     };
   };
-  '/v1/documents': {
-    get: {
+  '/v1/integrations/webhooks/{webhookId}/test': {
+    post: {
       parameters: {
-        query?: {
-          page?: number;
-          limit?: number;
-          status?: DocumentStatus;
-          search?: string;
+        path: {
+          webhookId: string;
         };
       };
       responses: {
         '200': {
           content: {
-            'application/json': {
-              documents: Document[];
-              pagination: PaginationMetadata;
-            };
-          };
-        };
-        '401': {
-          content: {
-            'application/json': ErrorResponse;
-          };
-        };
-      };
-    };
-  };
-  '/v1/documents/{documentId}': {
-    get: {
-      parameters: {
-        path: {
-          documentId: string;
-        };
-      };
-      responses: {
-        '200': {
-          content: {
-            'application/json': Document;
-          };
-        };
-        '401': {
-          content: {
-            'application/json': ErrorResponse;
-          };
-        };
-        '404': {
-          content: {
-            'application/json': ErrorResponse;
-          };
-        };
-      };
-    };
-    delete: {
-      parameters: {
-        path: {
-          documentId: string;
-        };
-      };
-      responses: {
-        '204': {
-          content?: never;
-        };
-        '401': {
-          content: {
-            'application/json': ErrorResponse;
-          };
-        };
-        '404': {
-          content: {
-            'application/json': ErrorResponse;
-          };
-        };
-      };
-    };
-  };
-  '/v1/documents/{documentId}/download': {
-    get: {
-      parameters: {
-        path: {
-          documentId: string;
-        };
-      };
-      responses: {
-        '200': {
-          content: {
-            'application/json': {
-              downloadUrl: string;
-              expiresAt: string;
-            };
+            'application/json': WebhookTestResult;
           };
         };
         '401': {
@@ -603,23 +505,59 @@ export interface paths {
       };
     };
   };
-  '/v1/jobs': {
+  '/v1/integrations/services': {
     get: {
+      responses: {
+        '200': {
+          content: {
+            'application/json': ConnectedService[];
+          };
+        };
+        '401': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+      };
+    };
+  };
+  '/v1/integrations/services/{serviceId}/connect': {
+    post: {
       parameters: {
-        query?: {
-          page?: number;
-          limit?: number;
-          status?: JobStatus;
-          type?: JobType;
+        path: {
+          serviceId: string;
         };
       };
       responses: {
         '200': {
           content: {
-            'application/json': {
-              jobs: Job[];
-              pagination: PaginationMetadata;
-            };
+            'application/json': ServiceConnectionResponse;
+          };
+        };
+        '400': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+        '401': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+        '404': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+      };
+    };
+  };
+  '/v1/integrations/data-sources': {
+    get: {
+      responses: {
+        '200': {
+          content: {
+            'application/json': DataSourceListResponse;
           };
         };
         '401': {
@@ -632,20 +570,13 @@ export interface paths {
     post: {
       requestBody: {
         content: {
-          'application/json': {
-            type: JobType;
-            source: JobSource;
-            documentId?: string;
-            sourceUrl?: string;
-            sourceKey?: string;
-            options: Record<string, unknown>;
-          };
+          'application/json': CreateDataSourceRequest;
         };
       };
       responses: {
         '201': {
           content: {
-            'application/json': Job;
+            'application/json': DataSource;
           };
         };
         '400': {
@@ -661,62 +592,7 @@ export interface paths {
       };
     };
   };
-  '/v1/jobs/{jobId}': {
-    get: {
-      parameters: {
-        path: {
-          jobId: string;
-        };
-      };
-      responses: {
-        '200': {
-          content: {
-            'application/json': Job;
-          };
-        };
-        '401': {
-          content: {
-            'application/json': ErrorResponse;
-          };
-        };
-        '404': {
-          content: {
-            'application/json': ErrorResponse;
-          };
-        };
-      };
-    };
-    delete: {
-      parameters: {
-        path: {
-          jobId: string;
-        };
-      };
-      responses: {
-        '200': {
-          content: {
-            'application/json': Job;
-          };
-        };
-        '401': {
-          content: {
-            'application/json': ErrorResponse;
-          };
-        };
-        '404': {
-          content: {
-            'application/json': ErrorResponse;
-          };
-        };
-        '409': {
-          content: {
-            'application/json': ErrorResponse;
-          };
-        };
-      };
-    };
-  };
-  '/v1/admin/users': {
+  '/v1/users': {
     get: {
       parameters: {
         query?: {
@@ -729,10 +605,7 @@ export interface paths {
       responses: {
         '200': {
           content: {
-            'application/json': {
-              users: UserProfile[];
-              pagination: PaginationMetadata;
-            };
+            'application/json': UserListResponse;
           };
         };
         '401': {
@@ -748,23 +621,17 @@ export interface paths {
       };
     };
   };
-  '/v1/admin/jobs': {
+  '/v1/users/{userId}': {
     get: {
       parameters: {
-        query?: {
-          page?: number;
-          limit?: number;
-          status?: JobStatus;
-          userId?: string;
+        path: {
+          userId: string;
         };
       };
       responses: {
         '200': {
           content: {
-            'application/json': {
-              jobs: Job[];
-              pagination: PaginationMetadata;
-            };
+            'application/json': UserProfile;
           };
         };
         '401': {
@@ -777,134 +644,392 @@ export interface paths {
             'application/json': ErrorResponse;
           };
         };
+        '404': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+      };
+    };
+    patch: {
+      parameters: {
+        path: {
+          userId: string;
+        };
+      };
+      requestBody: {
+        content: {
+          'application/json': UpdateUserRequest;
+        };
+      };
+      responses: {
+        '200': {
+          content: {
+            'application/json': UserProfile;
+          };
+        };
+        '400': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+        '401': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+        '403': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+        '404': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
       };
     };
   };
 }
 
-// Core type definitions matching OpenAPI schema
+// Core type definitions matching OpenAPI schema exactly
+export interface HealthResponse {
+  readonly status: 'healthy' | 'unhealthy';
+  readonly timestamp: string;
+  readonly response_time_ms: number;
+  readonly version: string;
+  readonly checks?: {
+    readonly database: 'pass' | 'fail';
+    readonly api: 'pass' | 'fail';
+  };
+  readonly environment?: string;
+  readonly error?: string;
+}
+
 export interface UserProfile {
   readonly id: string;
   readonly email: string;
   readonly full_name?: string | null;
   readonly username?: string | null;
-  readonly avatarUrl?: string | null;
+  readonly avatar_url?: string | null;
   readonly company?: string | null;
-  readonly role?: string | null;
+  readonly role?: string | null; // Job title
   readonly phone?: string | null;
   readonly locale?: string | null;
   readonly timezone: string;
-  readonly plan: string;
+  readonly plan: UserPlan;
   readonly email_verified: boolean;
   readonly user_role: UserRole;
-  readonly createdAt: string;
-  readonly updatedAt: string;
+  readonly created_at: string;
+  readonly updated_at: string;
 }
 
 export type UserRole = 'admin' | 'user';
+export type UserPlan = 'free' | 'pro' | 'enterprise';
+
+export interface UpdateProfileRequest {
+  readonly full_name?: string | null;
+  readonly username?: string | null;
+  readonly company?: string | null;
+  readonly role?: string | null; // Job title
+  readonly phone?: string | null;
+  readonly locale?: string | null;
+  readonly timezone?: string | null;
+}
+
+export interface UpdateUserRequest {
+  readonly role?: UserRole;
+}
 
 export interface UserSession {
   readonly id: string;
-  readonly sessionToken: string;
-  readonly userAgent?: string | null;
-  readonly ipAddress?: string | null;
-  readonly isCurrent?: boolean;
-  readonly lastSeen: string;
-  readonly createdAt: string;
+  readonly user_agent: string;
+  readonly ip_address: string;
+  readonly is_current: boolean;
+  readonly last_seen: string;
+  readonly created_at: string;
 }
 
 export interface SecurityEvent {
   readonly id: string;
-  readonly eventType: string;
+  readonly event_type: SecurityEventType;
   readonly description: string;
-  readonly ipAddress?: string | null;
-  readonly userAgent?: string | null;
+  readonly ip_address?: string | null;
+  readonly user_agent?: string | null;
   readonly metadata?: Record<string, unknown>;
-  readonly createdAt: string;
+  readonly created_at: string;
 }
+
+export type SecurityEventType = 
+  | 'login_success' 
+  | 'login_failed' 
+  | 'logout' 
+  | 'password_change' 
+  | 'api_key_created' 
+  | 'api_key_revoked' 
+  | 'session_revoked' 
+  | 'user_role_updated';
 
 export interface ApiKey {
   readonly id: string;
   readonly name: string;
-  readonly keyPreview: string;
-  readonly scopes: readonly string[];
-  readonly lastUsedAt?: string | null;
-  readonly createdAt: string;
+  readonly preview: string;
+  readonly scopes: readonly ApiKeyScope[];
+  readonly last_used_at?: string | null;
+  readonly created_at: string;
 }
 
-export interface Document {
-  readonly id: string;
-  readonly userId: string;
+export interface ApiKeyWithSecret extends ApiKey {
+  readonly key: string;
+}
+
+export type ApiKeyScope = 'read' | 'write' | 'admin';
+
+export interface CreateApiKeyRequest {
   readonly name: string;
-  readonly originalName: string;
-  readonly mimeType: string;
-  readonly size: number;
-  readonly storageKey: string;
-  readonly status: DocumentStatus;
-  readonly metadata: Record<string, unknown>;
-  readonly extractedText?: string | null;
-  readonly structureData?: Record<string, unknown> | null;
-  readonly thumbnailKey?: string | null;
-  readonly createdAt: string;
-  readonly updatedAt: string;
+  readonly scopes?: readonly ApiKeyScope[];
 }
 
-export type DocumentStatus = 'uploading' | 'processing' | 'completed' | 'failed';
+export interface NotificationPreferences {
+  readonly channels: {
+    readonly email: boolean;
+    readonly in_app: boolean;
+    readonly webhook: boolean;
+  };
+  readonly categories: {
+    readonly product: NotificationFrequency;
+    readonly billing: NotificationFrequency;
+    readonly incidents: NotificationFrequency;
+    readonly jobs: NotificationFrequency;
+    readonly digest: NotificationFrequency;
+  };
+  readonly dnd_settings?: {
+    readonly start: string;
+    readonly end: string;
+    readonly timezone: string;
+  } | null;
+  readonly webhook_url?: string | null;
+}
 
-export interface Job {
+export interface NotificationPreferencesUpdate {
+  readonly channels?: {
+    readonly email?: boolean;
+    readonly in_app?: boolean;
+    readonly webhook?: boolean;
+  };
+  readonly categories?: {
+    readonly product?: NotificationFrequency;
+    readonly billing?: NotificationFrequency;
+    readonly incidents?: NotificationFrequency;
+    readonly jobs?: NotificationFrequency;
+    readonly digest?: NotificationFrequency;
+  };
+  readonly dnd_settings?: {
+    readonly start?: string;
+    readonly end?: string;
+    readonly timezone?: string;
+  } | null;
+  readonly webhook_url?: string | null;
+}
+
+export type NotificationFrequency = 'off' | 'immediate' | 'daily';
+
+export interface Webhook {
   readonly id: string;
-  readonly userId: string;
-  readonly documentId?: string | null;
-  readonly type: JobType;
-  readonly status: JobStatus;
-  readonly source: JobSource;
-  readonly sourceUrl?: string | null;
-  readonly sourceKey?: string | null;
-  readonly metadata: Record<string, unknown>;
-  readonly options: Record<string, unknown>;
-  readonly resultRef?: string | null;
-  readonly error?: string | null;
-  readonly attempts: number;
-  readonly maxAttempts: number;
-  readonly progress: number;
-  readonly createdAt: string;
-  readonly updatedAt: string;
-  readonly startedAt?: string | null;
-  readonly completedAt?: string | null;
+  readonly url: string;
+  readonly events: readonly WebhookEventType[];
+  readonly active: boolean;
+  readonly created_at: string;
+  readonly secret_set: boolean;
 }
 
-export type JobType = 'analyze_structure' | 'extract_text' | 'parse_document';
-export type JobStatus = 'cancelled' | 'completed' | 'failed' | 'pending' | 'processing';
-export type JobSource = 's3' | 'upload' | 'url';
+export interface WebhookWithSecret extends Webhook {
+  readonly secret: string;
+}
 
-export interface PaginationMetadata {
+export type WebhookEventType = 'job.completed' | 'job.failed' | 'document.processed' | 'document.failed';
+
+export interface CreateWebhookRequest {
+  readonly url: string;
+  readonly events: readonly WebhookEventType[];
+  readonly active?: boolean;
+}
+
+export interface WebhookTestResult {
+  readonly status: number;
+  readonly latency: number;
+  readonly response?: string | null;
+}
+
+export interface ConnectedService {
+  readonly id: string;
+  readonly name: string;
+  readonly description: string;
+  readonly icon_url?: string | null;
+  readonly connected: boolean;
+  readonly scopes?: readonly string[] | null;
+  readonly last_sync?: string | null;
+}
+
+export interface ServiceConnectionResponse {
+  readonly redirect_url: string;
+}
+
+export interface DataSource {
+  readonly id: string;
+  readonly name: string;
+  readonly type: DataSourceType;
+  readonly config: Record<string, unknown>;
+  readonly status: DataSourceStatus;
+  readonly last_sync?: string | null;
+  readonly created_at: string;
+}
+
+export type DataSourceType = 's3' | 'gcs' | 'azure' | 'supabase';
+export type DataSourceStatus = 'active' | 'error' | 'disabled';
+
+export interface CreateDataSourceRequest {
+  readonly name: string;
+  readonly type: DataSourceType;
+  readonly config: Record<string, unknown>;
+}
+
+// List response interfaces
+export interface UserSessionListResponse {
+  readonly data: readonly UserSession[];
+  readonly total: number;
   readonly page: number;
   readonly limit: number;
-  readonly total: number;
-  readonly totalPages: number;
-  readonly hasNext: boolean;
-  readonly hasPrevious: boolean;
+  readonly total_pages: number;
 }
 
+export interface SecurityEventListResponse {
+  readonly data: readonly SecurityEvent[];
+  readonly total: number;
+  readonly page: number;
+  readonly limit: number;
+  readonly total_pages: number;
+}
+
+export interface ApiKeyListResponse {
+  readonly data: readonly ApiKey[];
+  readonly total: number;
+  readonly page: number;
+  readonly limit: number;
+  readonly total_pages: number;
+}
+
+export interface WebhookListResponse {
+  readonly data: readonly Webhook[];
+  readonly total: number;
+  readonly page: number;
+  readonly limit: number;
+  readonly total_pages: number;
+}
+
+export interface DataSourceListResponse {
+  readonly data: readonly DataSource[];
+  readonly total: number;
+  readonly page: number;
+  readonly limit: number;
+  readonly total_pages: number;
+}
+
+export interface UserListResponse {
+  readonly data: readonly UserProfile[];
+  readonly total: number;
+  readonly page: number;
+  readonly limit: number;
+  readonly total_pages: number;
+}
+
+// Authentication types
+export interface SupabaseUser {
+  readonly id: string;
+  readonly email: string;
+  readonly created_at: string;
+  readonly email_confirmed_at?: string | null;
+  readonly [key: string]: unknown;
+}
+
+export interface SupabaseSession {
+  readonly access_token: string;
+  readonly token_type: 'bearer';
+  readonly expires_in: number;
+  readonly refresh_token?: string | null;
+  readonly user?: SupabaseUser;
+  readonly [key: string]: unknown;
+}
+
+export interface SignUpRequest {
+  readonly email: string;
+  readonly password: string;
+  readonly full_name?: string | null;
+  readonly username?: string | null;
+}
+
+export interface SignUpResponse {
+  readonly user: SupabaseUser;
+  readonly session?: SupabaseSession | null;
+  readonly message: string;
+}
+
+export interface SignInRequest {
+  readonly email?: string;
+  readonly username?: string;
+  readonly password: string;
+}
+
+export interface SignInResponse {
+  readonly user: SupabaseUser;
+  readonly session: SupabaseSession;
+}
+
+export interface ResetPasswordRequest {
+  readonly email: string;
+}
+
+export interface UpdatePasswordRequest {
+  readonly password: string;
+}
+
+// Common response types
 export interface ErrorResponse {
   readonly error: string;
   readonly message: string;
-  readonly details?: Record<string, unknown>;
   readonly timestamp: string;
-  readonly requestId?: string;
+  readonly path?: string;
+  readonly code?: string;
+  readonly validation_errors?: readonly ValidationError[];
 }
 
-// Legacy types for backward compatibility
+export interface ValidationError {
+  readonly field: string;
+  readonly message: string;
+  readonly received?: unknown;
+  readonly expected?: string;
+}
+
+export interface MessageResponse {
+  readonly message: string;
+}
+
+// Legacy compatibility types (for gradual migration)
+export type User = UserProfile;
+export type Document = any; // To be defined when document endpoints are added
+export type Job = any; // To be defined when job endpoints are added
+
+// Pagination metadata (standardized)
+export interface PaginationMetadata {
+  readonly total: number;
+  readonly page: number;
+  readonly limit: number;
+  readonly total_pages: number;
+}
+
+// Generic paginated response (for backward compatibility)
 export interface PaginatedResponse<T> {
   readonly data: readonly T[];
-  readonly pagination: {
-    readonly page: number;
-    readonly limit: number;
-    readonly total: number;
-    readonly hasNext: boolean;
-    readonly hasPrevious: boolean;
-  };
+  readonly pagination: PaginationMetadata;
 }
-
-// Type aliases for consistency
-export type User = UserProfile;
