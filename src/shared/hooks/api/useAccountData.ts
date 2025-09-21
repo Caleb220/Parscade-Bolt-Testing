@@ -269,7 +269,6 @@ export const useNotificationPreferences = () => {
 
 export const useUpdateNotificationPreferences = () => {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
   
   return useMutation({
     mutationFn: (data: NotificationPreferencesUpdate) => notificationsApi.updatePreferences(data),
@@ -291,11 +290,9 @@ export const useUpdateNotificationPreferences = () => {
       if (context?.previousData) {
         queryClient.setQueryData(QUERY_KEYS.notificationPreferences, context.previousData);
       }
-      // Error handling moved to component level for better UX
     },
     onSuccess: (data) => {
       queryClient.setQueryData(QUERY_KEYS.notificationPreferences, data);
-      // Success handling moved to component level for better UX
     },
   });
 };

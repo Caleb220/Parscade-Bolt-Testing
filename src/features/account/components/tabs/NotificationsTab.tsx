@@ -109,6 +109,12 @@ const NotificationsTab: React.FC = () => {
     await trigger(`dnd_settings.${field}`);
   };
 
+  // Handle webhook URL changes
+  const handleWebhookUrlChange = async (value: string) => {
+    setValue('webhook_url', value, { shouldDirty: true });
+    await trigger('webhook_url');
+  };
+
   const onSubmit = async (data: NotificationPreferencesFormData) => {
     try {
       // Clean up webhook_url if webhook channel is disabled
@@ -246,7 +252,8 @@ const NotificationsTab: React.FC = () => {
                 <Label htmlFor="webhook_url">Webhook URL</Label>
                 <Input
                   id="webhook_url"
-                  {...register('webhook_url')}
+                  value={watchedWebhookUrl || ''}
+                  onChange={(e) => handleWebhookUrlChange(e.target.value)}
                   placeholder="https://your-app.com/webhooks/notifications"
                   className="px-3"
                   onChange={(e) => {
