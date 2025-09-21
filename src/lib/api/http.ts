@@ -81,10 +81,17 @@ export async function http<T>(
       clearTimeout(timeout);
 
       if (!response.ok) {
-        const ApiError = await isApiError(response);
+        let responseData;
+        try {
+          responseData = await response.json();
+        } catch {
+          responseData = null;
+        }
+        
+        const apiErrorInstance = ApiError.fromResponse(response, responseData);
         
         // Handle auth errors immediately
-        if (ApiError.code === 'UNAUTHORIZED') {
+        if (apiErrorInstance.code === 'UNAUTHORIZED') {
           // Try to refresh session once
           if (attempt === 1) {
             try {
@@ -93,26 +100,26 @@ export async function http<T>(
             } catch {
               // Refresh failed, redirect to login
               window.location.href = '/';
-              throw ApiError;
+              throw apiErrorInstance;
             }
           }
         }
 
         // Don't retry client errors (except auth and rate limit)
         if (response.status >= 400 && response.status < 500) {
-          if (!['UNAUTHORIZED', 'RATE_LIMIT'].includes(ApiError.code)) {
-            throw ApiError;
+          if (!['UNAUTHORIZED', 'RATE_LIMIT'].includes(apiErrorInstance.code)) {
+            throw apiErrorInstance;
           }
         }
 
         // Retry for server errors and retryable client errors
-        if (attempt < MAX_RETRIES && retry && ApiError.isRetryable()) {
-          lastError = ApiError;
+        if (attempt < MAX_RETRIES && retry && apiErrorInstance.isRetryable()) {
+          lastError = apiErrorInstance;
           await sleep(getRetryDelay(attempt));
           continue;
         }
 
-        throw ApiError;
+        throw apiErrorInstance;
       }
 
       // Handle successful responses
