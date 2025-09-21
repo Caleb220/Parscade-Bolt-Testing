@@ -16,6 +16,18 @@ import { defaultSEO, updateSEO } from '@/shared/utils/seo';
 
 import type { SeoConfig } from '@/shared/schemas';
 
+/**
+ * Loading fallback component for route-level code splitting
+ */
+const RouteLoadingFallback: FC = () => (
+  <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="text-center">
+      <LoadingSpinner size="lg" className="mx-auto mb-4" />
+      <p className="text-gray-600 text-sm">Loading page...</p>
+    </div>
+  </div>
+);
+
 // Lazy load page components for better performance
 const HomePage = React.lazy(() => import('@/features/marketing/pages/HomePage'));
 const ProductPage = React.lazy(() => import('@/features/marketing/pages/ProductPage'));
