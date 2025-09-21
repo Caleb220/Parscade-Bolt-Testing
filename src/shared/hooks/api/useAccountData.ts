@@ -256,7 +256,34 @@ export const useSecurityEvents = () => {
 export const useNotificationPreferences = () => {
   return useQuery({
     queryKey: QUERY_KEYS.notificationPreferences,
-    queryFn: () => notificationsApi.getPreferences(),
+    queryFn: async () => {
+      try {
+        return await notificationsApi.getPreferences();
+      } catch (error) {
+        console.warn('Notification preferences endpoint not available:', error);
+        // Return default structure matching backend schema
+        return {
+          channels: {
+            email: true,
+            in_app: true,
+            webhook: false,
+          },
+          categories: {
+            product: 'immediate' as const,
+            billing: 'immediate' as const,
+            incidents: 'immediate' as const,
+            jobs: 'immediate' as const,
+            digest: 'daily' as const,
+          },
+          dnd_settings: {
+            start: '22:00',
+            end: '08:00',
+            timezone: 'UTC',
+          },
+          webhook_url: null,
+        };
+      }
+    },
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: (failureCount, error) => {
       // Don't retry auth errors
@@ -270,6 +297,7 @@ export const useNotificationPreferences = () => {
 
 export const useUpdateNotificationPreferences = () => {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
   
   return useMutation({
     mutationFn: (data: NotificationPreferencesUpdate) => notificationsApi.updatePreferences(data),
@@ -282,6 +310,10 @@ export const useUpdateNotificationPreferences = () => {
         queryClient.setQueryData<NotificationPreferences>(QUERY_KEYS.notificationPreferences, {
           ...previousData,
           ...newData,
+          // Merge nested objects properly
+          channels: newData.channels ? { ...previousData.channels, ...newData.channels } : previousData.channels,
+          categories: newData.categories ? { ...previousData.categories, ...newData.categories } : previousData.categories,
+          dnd_settings: newData.dnd_settings !== undefined ? newData.dnd_settings : previousData.dnd_settings,
         });
       }
       
@@ -291,9 +323,20 @@ export const useUpdateNotificationPreferences = () => {
       if (context?.previousData) {
         queryClient.setQueryData(QUERY_KEYS.notificationPreferences, context.previousData);
       }
+      
+      toast({
+        title: 'Update failed',
+        description: getErrorMessage(error),
+        variant: 'destructive',
+      });
     },
     onSuccess: (data) => {
       queryClient.setQueryData(QUERY_KEYS.notificationPreferences, data);
+      
+      toast({
+        title: 'Preferences updated',
+        description: 'Your notification preferences have been saved successfully.',
+      });
     },
   });
 };

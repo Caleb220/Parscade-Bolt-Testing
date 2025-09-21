@@ -57,11 +57,11 @@ export const notificationPreferencesSchema = z.object({
     webhook: z.boolean(),
   }).optional(),
   categories: z.object({
-    product: z.enum(['off', 'immediate', 'daily']),
-    billing: z.enum(['off', 'immediate', 'daily']),
-    incidents: z.enum(['off', 'immediate', 'daily']),
-    jobs: z.enum(['off', 'immediate', 'daily']),
-    digest: z.enum(['off', 'immediate', 'daily']),
+    product: z.enum(['off', 'immediate', 'daily']).optional(),
+    billing: z.enum(['off', 'immediate', 'daily']).optional(),
+    incidents: z.enum(['off', 'immediate', 'daily']).optional(),
+    jobs: z.enum(['off', 'immediate', 'daily']).optional(),
+    digest: z.enum(['off', 'immediate', 'daily']).optional(),
   }).optional(),
   dnd_settings: z.object({
     start: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Start time must be in HH:MM format'),

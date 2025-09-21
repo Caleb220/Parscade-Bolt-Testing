@@ -2,7 +2,7 @@
  * Notifications Tab Component - Enhanced with Backend Integration
  * Comprehensive notification preferences management with real-time validation
  * Updated to use snake_case field names matching OpenAPI schema
- */
+ */ 
 
 import React from 'react';
 import { useForm } from 'react-hook-form';
@@ -368,6 +368,8 @@ const NotificationsTab: React.FC = () => {
                   <option value="Europe/London">London</option>
                   <option value="Europe/Berlin">Berlin</option>
                   <option value="Asia/Tokyo">Tokyo</option>
+                  <option value="Asia/Shanghai">Shanghai</option>
+                  <option value="Australia/Sydney">Sydney</option>
                 </select>
                 {errors.dnd_settings?.timezone && (
                   <p className="text-sm text-red-600">{errors.dnd_settings.timezone.message}</p>
