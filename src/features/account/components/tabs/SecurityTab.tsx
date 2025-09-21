@@ -293,26 +293,25 @@ const SecurityTab: React.FC = () => {
                         readOnly
                         className="font-mono text-xs flex-1"
                       />
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => copy(key?.preview ? `...${key.preview}` : '', 'API key preview')}
-                        disabled={!key?.preview}
-                      >
-                        <Copy className="w-4 h-4" />
-                      </Button>
+                      <div className="flex items-center space-x-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => copy(key?.preview ? `...${key.preview}` : '', 'API key preview')}
+                          disabled={!key?.preview}
+                        >
+                          <Copy className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setConfirmRevokeKey(key?.id || '')}
+                          disabled={revokeApiKey.isPending}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-center ml-4">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setConfirmRevokeKey(key?.id || '')}
-                      disabled={revokeApiKey.isPending}
-                      className="flex items-center justify-center"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
                   </div>
                 </div>
               ))}
