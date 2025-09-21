@@ -17,6 +17,31 @@ import { defaultSEO, updateSEO } from '@/shared/utils/seo';
 import type { SeoConfig } from '@/shared/schemas';
 
 /**
+ * Public Route component that redirects authenticated users
+ * ENHANCED: Checks for recovery mode to prevent dashboard redirects during password reset
+ */
+const PublicRoute: React.FC<{ children: React.ReactNode; redirectTo?: string }> = ({ 
+  children, 
+  redirectTo = '/dashboard' 
+}) => {
+  const { isAuthenticated, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
+  
+  if (isAuthenticated) {
+    return <Navigate to={redirectTo} replace />;
+  }
+  
+  return <>{children}</>;
+};
+
+/**
  * Loading fallback component for route-level code splitting
  */
 const RouteLoadingFallback: FC = () => (
