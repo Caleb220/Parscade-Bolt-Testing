@@ -24,6 +24,7 @@ import HomePage from '@/features/marketing/pages/HomePage';
 import NotFoundPage from '@/features/marketing/pages/NotFoundPage';
 import PrivacyPage from '@/features/marketing/pages/PrivacyPage';
 import ProductPage from '@/features/marketing/pages/ProductPage';
+import TermsPage from '@/features/marketing/pages/TermsPage';
 import { logger } from '@/shared/services/logger';
 import { analytics, trackPageView } from '@/shared/utils/analytics';
 import { defaultSEO, updateSEO } from '@/shared/utils/seo';
