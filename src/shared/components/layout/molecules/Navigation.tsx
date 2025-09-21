@@ -4,7 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, ChevronDown } from 'lucide-react';
 
 import { useAuth } from '@/features/auth';
-import Button from '../../forms/Button';
+import CustomButton from '../../forms/CustomButton';
 import UserMenu from './UserMenu';
 
 import AuthModal from '@/features/auth/components/AuthModal';
@@ -143,20 +143,20 @@ const Navigation: React.FC = () => {
               <UserMenu />
             ) : (
               <>
-                <Button 
+                <CustomButton 
                   variant="ghost" 
                   size="sm"
                   onClick={() => openAuthModal('signin')}
                 >
                   Sign In
-                </Button>
-                <Button 
+                </CustomButton>
+                <CustomButton 
                   variant="primary" 
                   size="sm"
                   onClick={() => openAuthModal('signup')}
                 >
                   Join Beta
-                </Button>
+                </CustomButton>
               </>
             )}
           </div>
@@ -209,7 +209,7 @@ const Navigation: React.FC = () => {
                   </div>
                 ) : (
                   <>
-                    <Button 
+                    <CustomButton 
                       variant="ghost" 
                       size="sm" 
                       fullWidth
@@ -219,8 +219,8 @@ const Navigation: React.FC = () => {
                       }}
                     >
                       Sign In
-                    </Button>
-                    <Button 
+                    </CustomButton>
+                    <CustomButton 
                       variant="primary" 
                       size="sm" 
                       fullWidth
@@ -230,7 +230,7 @@ const Navigation: React.FC = () => {
                       }}
                     >
                       Join Beta
-                    </Button>
+                    </CustomButton>
                   </>
                 )}
               </div>

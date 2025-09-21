@@ -11,7 +11,7 @@ import {
   BarChart3
 } from 'lucide-react';
 import Layout from '@/shared/components/layout/templates/Layout';
-import Button from '@/shared/components/forms/Button';
+import CustomButton from '@/shared/components/forms/CustomButton';
 import { useAuth } from '../../auth';
 import { useNavigate } from 'react-router-dom';
 import BetaCTASection from '../components/BetaCTASection';

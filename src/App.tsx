@@ -24,7 +24,7 @@ import ProfileTab from '@/features/account/components/tabs/ProfileTab';
 import SecurityTab from '@/features/account/components/tabs/SecurityTab';
 import ErrorBoundary from '@/shared/components/layout/molecules/ErrorBoundary';
 import ProtectedRoute from '@/shared/components/layout/templates/ProtectedRoute';
-import LoadingSpinner from '@/shared/components/forms/LoadingSpinner';
+import LoadingSpinner from '@/shared/components/forms/atoms/LoadingSpinner';
 import { Toaster } from '@/shared/components/ui/toaster';
 import { env } from '@/app/config/env';
 import { logger } from '@/shared/services/logger';

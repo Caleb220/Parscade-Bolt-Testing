@@ -2,7 +2,7 @@ import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 
 import { isApiError, getErrorMessage, getRequestId } from '@/lib/api';
-import Button from '../../forms/Button';
+import CustomButton from '../../forms/CustomButton';
 
 interface Props {
   children: ReactNode;
@@ -80,20 +80,20 @@ class ErrorBoundary extends Component<Props, State> {
             )}
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Button
+              <CustomButton
                 onClick={this.handleReset}
                 leftIcon={<RefreshCw className="w-4 h-4" />}
                 variant="primary"
               >
                 Try Again
-              </Button>
+              </CustomButton>
               
-              <Button
+              <CustomButton
                 onClick={() => window.location.href = '/'}
                 variant="outline"
               >
                 Go Home
-              </Button>
+              </CustomButton>
             </div>
           </div>
         </div>
