@@ -253,7 +253,6 @@ const NotificationsTab: React.FC = () => {
                 <Input
                   id="webhook_url"
                   value={watchedWebhookUrl || ''}
-                  onChange={(e) => handleWebhookUrlChange(e.target.value)}
                   placeholder="https://your-app.com/webhooks/notifications"
                   className="px-3"
                   onChange={(e) => {
