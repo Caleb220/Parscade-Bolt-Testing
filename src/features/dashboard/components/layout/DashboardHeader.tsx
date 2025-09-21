@@ -92,8 +92,6 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             {/* Custom Actions */}
             {actions}
 
-            {/* User Menu */}
-            <UserMenu user={user} />
           </div>
         </div>
       </div>
