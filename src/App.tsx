@@ -45,6 +45,8 @@ const ErrorPage = React.lazy(() => import('@/features/marketing/pages/ErrorPage'
 // Lazy load account tabs
 const ProfileTab = React.lazy(() => import('@/features/account/components/tabs/ProfileTab'));
 const SecurityTab = React.lazy(() => import('@/features/account/components/tabs/SecurityTab'));
+const NotificationsTab = React.lazy(() => import('@/features/account/components/tabs/NotificationsTab'));
+const IntegrationsTab = React.lazy(() => import('@/features/account/components/tabs/IntegrationsTab'));
 /**
  * Component to handle route changes and analytics.
  * Manages SEO updates and page view tracking for different routes.
