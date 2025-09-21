@@ -22,6 +22,8 @@ import { useNotificationPrefs, useUpdateNotificationPrefs } from '@/shared/hooks
 
 import { formatDate } from '@/shared/utils/formatters';
 import { useAccountContext } from '../AccountLayout';
+
+const NotificationsTab = () => {
   const { user } = useAccountContext();
   const { toast } = useToast();
   const { data: prefs, isLoading, error, refetch } = useNotificationPrefs();
