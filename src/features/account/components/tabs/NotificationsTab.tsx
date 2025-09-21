@@ -18,7 +18,7 @@ import { Label } from '@/shared/components/ui/label';
 import { Switch } from '@/shared/components/ui/switch';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { useToast } from '@/shared/components/ui/use-toast';
-import { useNotificationPreferences, useUpdateNotificationPreferences } from '@/shared/hooks/api/useAccountData';
+import { useNotificationPreferences, useUpdateNotificationPreferences } from '@/shared/hooks/hooks/api/useAccountData';
 
 import { formatDate } from '@/shared/utils/formatters';
 import { useAccountContext } from '../AccountLayout';
