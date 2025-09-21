@@ -14,7 +14,7 @@ import {
 
 // Profile validation matching OpenAPI UpdateProfileRequest
 export const profileSchema = z.object({
-  fullName: nonEmptyTextSchema('Full name', 100).nullable(),
+  full_name: nonEmptyTextSchema('Full name', 100).nullable(),
   username: optionalTrimmedStringSchema('Username', 2, 60),
   company: optionalTrimmedStringSchema('Company', 0, 100),
   role: optionalTrimmedStringSchema('Role', 0, 50),
