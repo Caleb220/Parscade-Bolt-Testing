@@ -8,7 +8,8 @@ import CustomButton from '@/shared/components/forms/CustomButton';
 import LoadingSpinner from '@/shared/components/forms/atoms/LoadingSpinner';
 import StatusIcon from '@/shared/components/ui/status-icon';
 import StatusBadge from '@/shared/components/ui/status-badge';
-import { formatDate, formatJobType } from '@/shared/utils/formatters';
+import { formatJobType } from '@/shared/utils/formatters';
+import { formatDate } from '@/shared/utils/date';
 import { useJobs } from '@/shared/hooks/api/useJobs';
 
 const JobsList: React.FC = () => {
@@ -98,7 +99,7 @@ const JobsList: React.FC = () => {
         )}
       </div>
 
-      {jobsData && jobsData.pagination.hasNext && (
+      {jobsData?.pagination?.hasNext && (
         <div className="p-4 border-t border-gray-200">
           <CustomButton variant="outline" fullWidth>
             View All Jobs
