@@ -29,7 +29,8 @@ import { Switch } from '@/shared/components/ui/switch';
 import { useToast } from '@/shared/components/ui/use-toast';
 import ConfirmationDialog from '@/shared/components/ui/confirmation-dialog';
 import StatusBadge from '@/shared/components/ui/status-badge';
-import { formatDate } from '@/shared/utils';
+import { formatDate } from '@/shared/utils/formatters';
+import { useAccountContext } from '../AccountLayout';
 import { 
   useWebhooks, 
   useCreateWebhook, 

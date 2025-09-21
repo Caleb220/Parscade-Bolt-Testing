@@ -19,7 +19,9 @@ import { Skeleton } from '@/shared/components/ui/skeleton';
 import { useToast } from '@/shared/components/ui/use-toast';
 import { useUpdateAccount, useUploadAvatar } from '@/shared/hooks/api/useAccountData';
 
-const ProfileTab: React.FC = () => {
+import { formatUserAgent, formatDate } from '@/shared/utils/formatters';
+import { useClipboard } from '@/shared/hooks/useClipboard';
+import { useAccountContext } from '../AccountLayout';
   const { user, isLoading, error: contextError } = useAccountContext();
   const { toast } = useToast();
   const updateAccount = useUpdateAccount();

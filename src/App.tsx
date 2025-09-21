@@ -7,6 +7,7 @@ import { QueryProvider } from '@/app/providers/QueryProvider';
 import AccountLayout from '@/features/account/components/AccountLayout';
 import { AuthProvider, useAuth } from '@/features/auth';
 import { DashboardPage } from '@/features/dashboard';
+import JobsList from '@/features/dashboard/components/JobsList';
 import AboutPage from '@/features/marketing/pages/AboutPage';
 import BillingPage from '@/features/marketing/pages/BillingPage';
 import ContactPage from '@/features/marketing/pages/ContactPage';

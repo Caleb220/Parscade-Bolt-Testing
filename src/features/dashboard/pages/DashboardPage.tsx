@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth';
 import Button from '@/shared/components/forms/Button';
 import Layout from '@/shared/components/layout/templates/Layout';
+import JobsList from '../components/JobsList';
 
 import FileUploadZone from '../components/FileUploadZone';
 

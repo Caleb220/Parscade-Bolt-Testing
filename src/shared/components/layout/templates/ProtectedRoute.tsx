@@ -3,6 +3,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 
 import { PATHS } from '@/app/config/routes';
 import { useAuth } from '@/features/auth';
+import LoadingSpinner from '@/shared/components/forms/LoadingSpinner';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;

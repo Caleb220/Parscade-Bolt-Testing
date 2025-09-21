@@ -8,7 +8,7 @@ import Button from '@/shared/components/forms/Button';
 import LoadingSpinner from '@/shared/components/forms/LoadingSpinner';
 import StatusIcon from '@/shared/components/ui/status-icon';
 import StatusBadge from '@/shared/components/ui/status-badge';
-import { formatDate, formatJobType } from '@/shared/utils';
+import { formatDate, formatJobType } from '@/shared/utils/formatters';
 import { useJobs } from '@/shared/hooks/api/useJobs';
 
 const JobsList: React.FC = () => {

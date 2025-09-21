@@ -4,7 +4,7 @@ import { Upload, FileText, AlertCircle, CheckCircle } from 'lucide-react';
 
 import { getErrorMessage } from '@/lib/api';
 import Button from '@/shared/components/forms/Button';
-import { formatBytes } from '@/shared/utils';
+import { formatBytes } from '@/shared/utils/formatters';
 import { useFileUpload } from '@/shared/hooks/api/useUploads';
 import { useSubmitParseJob } from '@/shared/hooks/api/useJobs';
 

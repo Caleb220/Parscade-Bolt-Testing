@@ -5,6 +5,7 @@ import { Menu, X, ChevronDown } from 'lucide-react';
 
 import { useAuth } from '@/features/auth';
 import Button from '../../forms/Button';
+import UserMenu from './UserMenu';
 
 import AuthModal from '@/features/auth/components/AuthModal';
 

@@ -9,7 +9,7 @@ import Layout from '@/shared/components/layout/templates/Layout';
 import LoadingSpinner from '@/shared/components/forms/LoadingSpinner';
 import StatusIcon from '@/shared/components/ui/status-icon';
 import StatusBadge from '@/shared/components/ui/status-badge';
-import { formatDate, formatJobType, formatBytes } from '@/shared/utils';
+import { formatDate, formatJobType, formatBytes } from '@/shared/utils/formatters';
 import { useJob, useCancelJob } from '@/shared/hooks/api/useJobs';
 import { useDocument, useDocumentDownload } from '@/shared/hooks/api/useDocuments';
 
