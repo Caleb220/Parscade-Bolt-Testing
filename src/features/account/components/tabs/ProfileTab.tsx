@@ -367,7 +367,6 @@ const ProfileTab: React.FC = () => {
                   />
                 </div>
               </div>
-            </div>
 
             {/* Form Errors */}
             {updateAccount.error && (
