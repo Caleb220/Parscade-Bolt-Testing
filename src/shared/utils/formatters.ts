@@ -32,6 +32,22 @@ export const formatUserAgent = (userAgent: string): string => {
 
 /**
  * Format job type for display
+
+/**
+ * Format job type for display
+ */
+export const formatJobType = (type: string): string => {
+  switch (type) {
+    case 'parse_document':
+      return 'Parse Document';
+    case 'extract_text':
+      return 'Extract Text';
+    case 'analyze_structure':
+      return 'Analyze Structure';
+    default:
+      return type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  }
+};
  */
 export const formatJobType = (type: string): string => {
   return type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
