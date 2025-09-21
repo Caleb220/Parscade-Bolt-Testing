@@ -6,11 +6,10 @@
 import React, { useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { motion } from 'framer-motion';
 import { Upload, Save, User, Building, Phone, Globe, Camera, AlertCircle, CheckCircle } from 'lucide-react';
 
-import { getErrorMessage, isApiError } from '@/lib/api';
+import { getErrorMessage } from '@/lib/api';
 import { profileSchema, type ProfileFormData } from '@/lib/validation/account';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
@@ -20,7 +19,7 @@ import { Skeleton } from '@/shared/components/ui/skeleton';
 import { useToast } from '@/shared/components/ui/use-toast';
 import { useUpdateAccount, useUploadAvatar } from '@/shared/hooks/api/useAccountData';
 
-import { formatDate } from '@/shared/utils/formatters';
+import { formatDate } from '@/shared/utils/date';
 import { useAccountContext } from '../AccountLayout';
 
 
@@ -349,7 +348,7 @@ const ProfileTab: React.FC = () => {
                   />
                 </div>
 
-                <div className="space-y-2">
+                      value={user?.role === 'admin' ? 'Admin' : 'Beta'} 
                   <Label>Plan</Label>
                   <div className="flex items-center space-x-2">
                     <Input value="Beta" disabled className="capitalize px-3 bg-gray-50 flex-1" />

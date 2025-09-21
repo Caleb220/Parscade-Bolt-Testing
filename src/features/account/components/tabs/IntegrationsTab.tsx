@@ -4,8 +4,6 @@
  */
 
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
 import { 
   Webhook, 
@@ -19,18 +17,14 @@ import {
 } from 'lucide-react';
 
 import { getErrorMessage } from '@/lib/api';
-import { webhookSchema, dataSourceSchema, type WebhookFormData, type DataSourceFormData } from '@/lib/validation/account';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
-import { Input } from '@/shared/components/ui/input';
-import { Label } from '@/shared/components/ui/label';
 import { Badge } from '@/shared/components/ui/badge';
 import { Skeleton } from '@/shared/components/ui/skeleton';
-import { Switch } from '@/shared/components/ui/switch';
 import { useToast } from '@/shared/components/ui/use-toast';
 import ConfirmationDialog from '@/shared/components/ui/confirmation-dialog';
 import StatusBadge from '@/shared/components/ui/status-badge';
-import { formatDate } from '@/shared/utils/formatters';
+import { formatDate } from '@/shared/utils/date';
 import { useAccountContext } from '../AccountLayout';
 import { 
   useWebhooks, 
@@ -44,7 +38,7 @@ import {
   useCreateDataSource,
   useDeleteDataSource,
   useTestDataSource
-} from '@/shared/hooks/hooks/api/useAccountData';
+} from '@/shared/hooks/api/useAccountData';
 
 const IntegrationsTab: React.FC = () => {
   const { user } = useAccountContext();
@@ -86,7 +80,7 @@ const IntegrationsTab: React.FC = () => {
     }
   };
 
-  const onDeleteWebhook = async (webhookId: string, webhookUrl: string) => {
+  const onDeleteWebhook = async (webhookId: string) => {
     try {
       await deleteWebhook.mutateAsync(webhookId);
       setConfirmDeleteWebhook(null);
@@ -95,7 +89,7 @@ const IntegrationsTab: React.FC = () => {
     }
   };
 
-  const onDeleteDataSource = async (sourceId: string, sourceName: string) => {
+  const onDeleteDataSource = async (sourceId: string) => {
     try {
       await deleteDataSource.mutateAsync(sourceId);
       setConfirmDeleteDataSource(null);
@@ -252,28 +246,13 @@ const IntegrationsTab: React.FC = () => {
         isOpen={!!confirmDeleteWebhook}
         onClose={() => setConfirmDeleteWebhook(null)}
         onConfirm={() => {
-          const webhook = webhooks?.find(w => w.id === confirmDeleteWebhook);
-          if (webhook) onDeleteWebhook(webhook.id, webhook.url);
+          if (confirmDeleteWebhook) onDeleteWebhook(confirmDeleteWebhook);
         }}
         title="Delete Webhook"
         description="Are you sure you want to delete this webhook? This action cannot be undone."
         confirmText="Delete"
         variant="destructive"
         isLoading={deleteWebhook.isPending}
-      />
-
-      <ConfirmationDialog
-        isOpen={!!confirmDeleteDataSource}
-        onClose={() => setConfirmDeleteDataSource(null)}
-        onConfirm={() => {
-          const source = dataSources?.find(s => s.id === confirmDeleteDataSource);
-          if (source) onDeleteDataSource(source.id, source.name);
-        }}
-        title="Delete Data Source"
-        description="Are you sure you want to delete this data source? This will stop automated processing."
-        confirmText="Delete"
-        variant="destructive"
-        isLoading={deleteDataSource.isPending}
       />
 
       {/* Connected Services */}
@@ -439,6 +418,19 @@ const IntegrationsTab: React.FC = () => {
           )}
         </CardContent>
       </Card>
+
+      <ConfirmationDialog
+        isOpen={!!confirmDeleteDataSource}
+        onClose={() => setConfirmDeleteDataSource(null)}
+        onConfirm={() => {
+          if (confirmDeleteDataSource) onDeleteDataSource(confirmDeleteDataSource);
+        }}
+        title="Delete Data Source"
+        description="Are you sure you want to delete this data source? This will stop automated processing."
+        confirmText="Delete"
+        variant="destructive"
+        isLoading={deleteDataSource.isPending}
+      />
     </motion.div>
   );
 };

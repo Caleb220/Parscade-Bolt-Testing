@@ -155,7 +155,9 @@ const SecurityTab: React.FC = () => {
                   <div className="space-y-4">
                     <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
                       <div className="flex items-center mb-2">
-                        <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
+                        <div className="w-5 h-5 bg-green-600 rounded-full flex items-center justify-center mr-2">
+                          <div className="w-2 h-2 bg-white rounded-full" />
+                        </div>
                         <span className="font-medium text-green-900">API Key Created</span>
                       </div>
                       <p className="text-sm text-green-700 mb-3">
