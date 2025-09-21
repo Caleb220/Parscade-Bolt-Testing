@@ -80,6 +80,7 @@ const RecentActivity: React.FC = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.3 }}
+      className="h-full flex flex-col"
     >
       <div className="p-6 border-b border-slate-200">
         <div className="flex items-center">
@@ -91,9 +92,9 @@ const RecentActivity: React.FC = () => {
         </div>
       </div>
       
-      <div className="p-6">
+      <div className="flex-1 p-6">
         {activities.length === 0 ? (
-          <div className="text-center py-8">
+          <div className="text-center py-12">
             <motion.div
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
@@ -141,6 +142,15 @@ const RecentActivity: React.FC = () => {
             ))}
           </div>
         )}
+      </div>
+
+      {/* Footer for consistency */}
+      <div className="p-4 border-t border-slate-200">
+        <div className="text-center">
+          <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">
+            View All Activity
+          </button>
+        </div>
       </div>
     </ParscadeCard>
   );

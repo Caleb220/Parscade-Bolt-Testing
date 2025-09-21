@@ -61,7 +61,7 @@ const DashboardPage: React.FC = () => {
               transition={{ duration: 2, repeat: Infinity }}
             >
               <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 002 2v10a2 2 0 002 2z" />
               </svg>
             </motion.div>
 
@@ -99,118 +99,106 @@ const DashboardPage: React.FC = () => {
         />
       }
     >
-      {/* Welcome Banner */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="mb-8 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl p-6 text-white shadow-parscade-lg relative overflow-hidden"
-      >
-        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16" />
-        <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-12 -translate-x-12" />
-        
-        <div className="relative z-10 flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-bold mb-2">
-              Welcome to Parscade
-            </h2>
-            <p className="text-blue-100">
-              Transform documents into structured data with intelligent processing
-            </p>
-          </div>
-          <motion.div
-            animate={{ rotate: [0, 5, -5, 0] }}
-            transition={{ duration: 4, repeat: Infinity }}
-            className="hidden sm:block"
-          >
-            <Crown className="w-10 h-10 text-blue-200" />
-          </motion.div>
-        </div>
-      </motion.div>
-
-      {/* Statistics Overview */}
-      <DashboardSection
-        className="mb-8"
-        title="Overview"
-        description="Your processing metrics and insights"
-      >
-        <OverviewStats />
-      </DashboardSection>
-
-      {/* Main Content Grid */}
-      <DashboardSection className="mb-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-stretch">
-          {/* Upload Zone */}
-          <div>
-            <motion.div 
-              className="mb-6"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              <div className="flex items-center mb-4">
-                <Target className="w-5 h-5 text-blue-600 mr-3" />
-                <h3 className="text-lg font-semibold text-gray-900">Document Processing</h3>
-              </div>
-              <p className="text-slate-600 text-sm">
-                Upload documents to transform them into structured data
+      <div className="space-y-8">
+        {/* Welcome Banner */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl p-6 text-white shadow-parscade-lg relative overflow-hidden"
+        >
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16" />
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-12 -translate-x-12" />
+          
+          <div className="relative z-10 flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-bold mb-2">
+                Welcome to Parscade
+              </h2>
+              <p className="text-blue-100">
+                Transform documents into structured data with intelligent processing
               </p>
+            </div>
+            <motion.div
+              animate={{ rotate: [0, 5, -5, 0] }}
+              transition={{ duration: 4, repeat: Infinity }}
+              className="hidden sm:block"
+            >
+              <Crown className="w-10 h-10 text-blue-200" />
             </motion.div>
-            <FileUploadZone onJobSubmitted={handleJobSubmitted} />
           </div>
+        </motion.div>
 
-          {/* Jobs List */}
-          <div>
+        {/* Statistics Overview */}
+        <DashboardSection
+          title="Overview"
+          description="Your processing metrics and insights"
+        >
+          <OverviewStats />
+        </DashboardSection>
+
+        {/* Document Processing Section */}
+        <DashboardSection>
+          <div className="flex items-center mb-6">
+            <Target className="w-5 h-5 text-blue-600 mr-3" />
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">Document Processing</h3>
+              <p className="text-slate-600 text-sm">Upload documents to transform them into structured data</p>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+            <FileUploadZone onJobSubmitted={handleJobSubmitted} />
             <JobsList />
           </div>
-        </div>
-      </DashboardSection>
+        </DashboardSection>
 
-      {/* Recent Activity */}
-      <DashboardSection className="mb-8">
-        <DashboardGrid columns={2} gap="lg">
-          <RecentActivity />
-          
-          {/* Analytics Preview - Feature Gated */}
-          <FeatureGate featureId="analytics">
-            <ParscadeCard
-              variant="gradient"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.4 }}
-              className="p-6 text-center group cursor-pointer"
-            >
-              <motion.div 
-                className="text-blue-500 mb-4"
-                whileHover={{ scale: 1.1 }}
-                transition={{ duration: 0.2 }}
+        {/* Recent Activity Section */}
+        <DashboardSection>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <RecentActivity />
+            
+            {/* Analytics Preview - Feature Gated */}
+            <FeatureGate featureId="analytics">
+              <ParscadeCard
+                variant="gradient"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.4 }}
+                className="p-6 text-center group cursor-pointer"
               >
-                <TrendingUp className="w-10 h-10 mx-auto" />
-              </motion.div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3 group-hover:text-blue-700 transition-colors duration-200">
-                Advanced Analytics
-              </h3>
-              <p className="text-slate-600 text-sm leading-relaxed">
-                Detailed processing insights and performance analytics.
-              </p>
-              <motion.div
-                className="mt-4 inline-flex items-center text-blue-600 text-sm font-medium"
-                whileHover={{ x: 2 }}
-                transition={{ duration: 0.2 }}
-              >
-                View Analytics
-                <motion.span
-                  animate={{ x: [0, 2, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                  className="ml-1"
+                <motion.div 
+                  className="text-blue-500 mb-4"
+                  whileHover={{ scale: 1.1 }}
+                  transition={{ duration: 0.2 }}
                 >
-                  →
-                </motion.span>
-              </motion.div>
-            </ParscadeCard>
-          </FeatureGate>
-        </DashboardGrid>
-      </DashboardSection>
+                  <TrendingUp className="w-10 h-10 mx-auto" />
+                </motion.div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-3 group-hover:text-blue-700 transition-colors duration-200">
+                  Advanced Analytics
+                </h3>
+                <p className="text-slate-600 text-sm leading-relaxed">
+                  Detailed processing insights and performance analytics.
+                </p>
+                <motion.div
+                  className="mt-4 inline-flex items-center text-blue-600 text-sm font-medium"
+                  whileHover={{ x: 2 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  View Analytics
+                  <motion.span
+                    animate={{ x: [0, 2, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                    className="ml-1"
+                  >
+                    →
+                  </motion.span>
+                </motion.div>
+              </ParscadeCard>
+            </FeatureGate>
+          </div>
+        </DashboardSection>
+      </div>
     </DashboardLayout>
   );
 };

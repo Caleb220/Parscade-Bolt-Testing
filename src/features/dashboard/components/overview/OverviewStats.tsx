@@ -75,7 +75,7 @@ const OverviewStats: React.FC = () => {
   };
 
   return (
-    <DashboardGrid columns={4} gap="md">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       {DEFAULT_STATS.map((stat, index) => (
         <ParscadeCard
           key={stat.title}
@@ -119,7 +119,7 @@ const OverviewStats: React.FC = () => {
           />
         </ParscadeCard>
       ))}
-    </DashboardGrid>
+    </div>
   );
 };
 

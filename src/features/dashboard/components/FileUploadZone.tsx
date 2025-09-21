@@ -102,23 +102,23 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
   const uploadError = uploadProgress?.error;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      className="relative overflow-hidden h-full"
+    <ParscadeCard 
+      variant={dragActive ? 'gradient' : 'default'}
+      hover={!isUploading}
+      className={`border-2 transition-all duration-300 p-6 ${
+        dragActive 
+          ? 'border-blue-400 scale-[1.01]' 
+          : 'border-dashed border-slate-300 hover:border-blue-300'
+      }`}
+      onDrop={handleDrop}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
     >
-      <ParscadeCard 
-        variant={dragActive ? 'gradient' : 'default'}
-        hover={!isUploading}
-        className={`border-2 transition-all duration-300 p-8 h-full flex flex-col ${
-          dragActive 
-            ? 'border-blue-400 scale-[1.01]' 
-            : 'border-dashed border-slate-300 hover:border-blue-300'
-        }`}
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="relative overflow-hidden"
       >
         {/* Upload Progress */}
         {isUploading && currentPhase !== 'idle' && (
@@ -233,7 +233,7 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
         {/* Upload Zone */}
         {!isUploading && !uploadedDocumentId && currentPhase !== 'error' && (
           <div
-            className={`text-center transition-all duration-300 flex-1 flex flex-col justify-center ${
+            className={`text-center transition-all duration-300 py-12 ${
               dragActive ? 'scale-105' : ''
             }`}
           >
@@ -278,8 +278,8 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
             </p>
           </div>
         )}
-      </ParscadeCard>
-    </motion.div>
+      </motion.div>
+    </ParscadeCard>
   );
 };
 
