@@ -76,6 +76,7 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
       setUploadPhase('error');
       // Error handled by mutation
     }
+  }, [uploadDocument, submitParseJobMutation, onJobSubmitted]);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -105,12 +106,13 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
   }, [handleFiles]);
 
   const handleReset = useCallback(() => {
-    setUploadPhase('idle');
-    setUploadProgress(0);
-  }, []);
+    reset();
+    setUploadedDocumentId(null);
+  }, [reset]);
 
-  const isUploading = uploadDocument.isPending || uploadPhase === 'uploading';
-  const uploadError = uploadDocument.error;
+  const currentPhase = uploadProgress?.phase || 'idle';
+  const currentProgress = uploadProgress?.progress || 0;
+  const uploadError = uploadProgress?.error;
 
   return (
     <ParscadeCard 
@@ -132,7 +134,7 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
         className="relative overflow-hidden"
       >
         {/* Upload Progress */}
-        {isUploading && uploadPhase !== 'idle' && (
+        {isUploading && currentPhase !== 'idle' && (
           <div className="text-center">
             <motion.div
               className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl mb-6 shadow-parscade"
@@ -155,28 +157,36 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
             </motion.div>
             
             <h3 className="text-lg font-semibold text-gray-900 mb-3">
-              {uploadPhase === 'uploading' && 'Uploading document...'}
+              {currentPhase === 'signing' && 'Preparing upload...'}
+              {currentPhase === 'uploading' && 'Uploading document...'}
+              {currentPhase === 'completing' && 'Finalizing...'}
             </h3>
             
             <div className="w-full max-w-sm mx-auto mb-6">
               <div className="flex justify-between text-sm font-medium text-blue-700 mb-2">
                 <span>Progress</span>
-                <span>{uploadProgress}%</span>
+                <span>{currentProgress}%</span>
               </div>
               <div className="w-full bg-blue-100 rounded-full h-2 shadow-inner">
                 <motion.div
                   className="bg-gradient-to-r from-blue-600 to-blue-500 h-2 rounded-full shadow-sm"
                   initial={{ width: 0 }}
-                  animate={{ width: `${uploadProgress}%` }}
+                  animate={{ width: `${currentProgress}%` }}
                   transition={{ duration: 0.5, ease: "easeOut" }}
                 />
               </div>
             </div>
+
+            {uploadProgress?.bytesUploaded && uploadProgress?.totalBytes && (
+              <p className="text-sm text-blue-600 font-medium">
+                {formatBytes(uploadProgress.bytesUploaded)} of {formatBytes(uploadProgress.totalBytes)}
+              </p>
+            )}
           </div>
         )}
 
         {/* Upload Error */}
-        {uploadPhase === 'error' && (
+        {currentPhase === 'error' && (
           <div className="text-center">
             <motion.div 
               className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-red-100 to-red-200 rounded-xl mb-6 shadow-parscade"
@@ -188,7 +198,7 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
             </motion.div>
             
             <h3 className="text-lg font-semibold text-gray-900 mb-3">Upload Failed</h3>
-            <p className="text-red-600 mb-6">{uploadError ? getErrorMessage(uploadError) : 'An error occurred during upload'}</p>
+            <p className="text-red-600 mb-6">{uploadError || 'An error occurred during upload'}</p>
             
             <ParscadeButton 
               variant="outline" 
@@ -200,7 +210,7 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
         )}
 
         {/* Upload Success - Ready to Submit Job */}
-        {uploadPhase === 'completed' && (
+        {uploadedDocumentId && currentPhase === 'completed' && (
           <div className="text-center">
             <motion.div 
               className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-xl mb-6 shadow-parscade"
@@ -211,20 +221,30 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
               <CheckCircle className="w-8 h-8 text-emerald-600" />
             </motion.div>
             
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">Upload Complete</h3>
-            <p className="text-blue-600 mb-6">Document uploaded and processing job started automatically</p>
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">Ready to Process</h3>
+            <p className="text-blue-600 mb-6">Your document is ready for intelligent processing</p>
             
-            <ParscadeButton 
-              variant="outline" 
-              onClick={handleReset}
-            >
-              Upload Another File
-            </ParscadeButton>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <ParscadeButton
+                variant="primary"
+                onClick={handleSubmitJob}
+                disabled={submitParseJobMutation?.isPending || false}
+                rightIcon={<ArrowRight className="w-4 h-4" />}
+              >
+                Start Processing
+              </ParscadeButton>
+              <ParscadeButton 
+                variant="outline" 
+                onClick={handleReset}
+              >
+                Upload Different File
+              </ParscadeButton>
+            </div>
           </div>
         )}
 
         {/* Upload Zone */}
-        {!isUploading && uploadPhase === 'idle' && (
+        {!isUploading && !uploadedDocumentId && currentPhase !== 'error' && (
           <div
             className={`text-center transition-all duration-300 py-12 ${
               dragActive ? 'scale-105' : ''
