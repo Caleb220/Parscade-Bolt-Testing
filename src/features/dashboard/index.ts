@@ -23,3 +23,6 @@ export { default as FileUploadZone } from './components/FileUploadZone';
 export { default as JobsList } from './components/JobsList';
 export { default as OverviewStats } from './components/overview/OverviewStats';
 export { default as RecentActivity } from './components/overview/RecentActivity';
+export { default as AdvancedAnalytics } from './components/AdvancedAnalytics';
+export { default as ProjectsOverview } from './components/ProjectsOverview';
+export { default as ExportsManager } from './components/ExportsManager';

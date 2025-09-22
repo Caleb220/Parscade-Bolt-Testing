@@ -5,14 +5,14 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Upload, Download, Settings } from 'lucide-react';
+import { Plus, Upload, Download, Settings, FolderPlus } from 'lucide-react';
 
 import { ParscadeButton } from '@/shared/components/brand';
+import { useCreateProject } from '@/shared/hooks/api/useProjects';
+import { useCreateExport } from '@/shared/hooks/api/useExports';
 
 interface QuickActionsProps {
   onUpload?: () => void;
-  onNewProject?: () => void;
-  onExport?: () => void;
   onSettings?: () => void;
   className?: string;
 }
@@ -22,11 +22,37 @@ interface QuickActionsProps {
  */
 const QuickActions: React.FC<QuickActionsProps> = ({
   onUpload,
-  onNewProject,
-  onExport,
   onSettings,
   className = '',
 }) => {
+  const createProject = useCreateProject();
+  const createExport = useCreateExport();
+
+  const handleNewProject = async () => {
+    try {
+      await createProject.mutateAsync({
+        name: `Project ${new Date().toLocaleDateString()}`,
+        description: 'New project created from dashboard',
+      });
+    } catch (error) {
+      // Error handled by mutation
+    }
+  };
+
+  const handleExport = async () => {
+    try {
+      await createExport.mutateAsync({
+        type: 'documents',
+        format: 'csv',
+        filters: {
+          start_date: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // Last 30 days
+        },
+      });
+    } catch (error) {
+      // Error handled by mutation
+    }
+  };
+
   return (
     <div className={`flex items-center space-x-3 ${className}`}>
       {onUpload && (
@@ -42,32 +68,30 @@ const QuickActions: React.FC<QuickActionsProps> = ({
         </motion.div>
       )}
       
-      {onNewProject && (
-        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-          <ParscadeButton 
-            variant="primary"
-            size="sm"
-            onClick={onNewProject}
-            glow
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            New Project
-          </ParscadeButton>
-        </motion.div>
-      )}
+      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+        <ParscadeButton 
+          variant="primary"
+          size="sm"
+          onClick={handleNewProject}
+          disabled={createProject.isPending}
+          glow
+        >
+          <FolderPlus className="w-4 h-4 mr-2" />
+          {createProject.isPending ? 'Creating...' : 'New Project'}
+        </ParscadeButton>
+      </motion.div>
       
-      {onExport && (
-        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-          <ParscadeButton 
-            variant="outline" 
-            size="sm" 
-            onClick={onExport}
-          >
-            <Download className="w-4 h-4 mr-2" />
-            Export
-          </ParscadeButton>
-        </motion.div>
-      )}
+      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+        <ParscadeButton 
+          variant="outline" 
+          size="sm" 
+          onClick={handleExport}
+          disabled={createExport.isPending}
+        >
+          <Download className="w-4 h-4 mr-2" />
+          {createExport.isPending ? 'Exporting...' : 'Export Data'}
+        </ParscadeButton>
+      </motion.div>
       
       {onSettings && (
         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>

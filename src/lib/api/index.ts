@@ -14,3 +14,7 @@ export { documentsApi } from './modules/documents';
 export { uploadsApi } from './modules/uploads';
 export { jobsApi } from './modules/jobs';
 export { adminApi } from './modules/admin';
+export { dashboardApi } from './modules/dashboard';
+export { projectsApi } from './modules/projects';
+export { exportsApi } from './modules/exports';
+export { analyticsApi } from './modules/analytics';

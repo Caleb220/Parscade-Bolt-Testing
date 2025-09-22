@@ -5,12 +5,13 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Crown, Target, TrendingUp, Zap } from 'lucide-react';
+import { Crown, Target, TrendingUp, Zap, BarChart3 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth';
 import { ParscadeButton, ParscadeCard } from '@/shared/components/brand';
 import FeatureGate from '@/shared/components/layout/FeatureGate';
+import { useAnalyticsOverview } from '@/shared/hooks/api/useAnalytics';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import DashboardSection from '../components/ui/DashboardSection';
 import DashboardGrid from '../components/ui/DashboardGrid';
@@ -19,6 +20,9 @@ import OverviewStats from '../components/overview/OverviewStats';
 import RecentActivity from '../components/overview/RecentActivity';
 import FileUploadZone from '../components/FileUploadZone';
 import JobsList from '../components/JobsList';
+import AdvancedAnalytics from '../components/AdvancedAnalytics';
+import ProjectsOverview from '../components/ProjectsOverview';
+import ExportsManager from '../components/ExportsManager';
 
 /**
  * Main dashboard overview page with scalable modular architecture
@@ -33,15 +37,6 @@ const DashboardPage: React.FC = () => {
 
   const handleUploadClick = () => {
     document.getElementById('file-upload')?.click();
-  };
-
-  const handleNewProject = () => {
-    navigate('/dashboard/projects/new');
-  };
-
-  const handleExport = () => {
-    // TODO: Implement export functionality
-    console.log('Export functionality coming soon');
   };
 
   // Email confirmation required state
@@ -94,8 +89,6 @@ const DashboardPage: React.FC = () => {
       actions={
         <QuickActions
           onUpload={handleUploadClick}
-          onNewProject={handleNewProject}
-          onExport={handleExport}
         />
       }
     >
@@ -160,43 +153,19 @@ const DashboardPage: React.FC = () => {
             
             {/* Analytics Preview - Feature Gated */}
             <FeatureGate featureId="analytics">
-              <ParscadeCard
-                variant="gradient"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.4 }}
-                className="p-6 text-center group cursor-pointer"
-              >
-                <motion.div 
-                  className="text-blue-500 mb-4"
-                  whileHover={{ scale: 1.1 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <TrendingUp className="w-10 h-10 mx-auto" />
-                </motion.div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-3 group-hover:text-blue-700 transition-colors duration-200">
-                  Advanced Analytics
-                </h3>
-                <p className="text-slate-600 text-sm leading-relaxed">
-                  Detailed processing insights and performance analytics.
-                </p>
-                <motion.div
-                  className="mt-4 inline-flex items-center text-blue-600 text-sm font-medium"
-                  whileHover={{ x: 2 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  View Analytics
-                  <motion.span
-                    animate={{ x: [0, 2, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
-                    className="ml-1"
-                  >
-                    →
-                  </motion.span>
-                </motion.div>
-              </ParscadeCard>
+              <AdvancedAnalytics />
             </FeatureGate>
           </div>
+        </DashboardSection>
+
+        {/* Projects Management Section */}
+        <DashboardSection>
+          <ProjectsOverview />
+        </DashboardSection>
+
+        {/* Data Exports Section */}
+        <DashboardSection>
+          <ExportsManager />
         </DashboardSection>
       </div>
     </DashboardLayout>

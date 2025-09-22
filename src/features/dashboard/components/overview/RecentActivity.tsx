@@ -5,57 +5,40 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FileText, CheckCircle, Clock, AlertTriangle, Zap, Activity } from 'lucide-react';
+import { FileText, CheckCircle, Clock, AlertTriangle, Zap, Activity, RefreshCw } from 'lucide-react';
 
 import { ParscadeCard } from '@/shared/components/brand';
-
-interface ActivityItem {
-  id: string;
-  type: 'upload' | 'processing' | 'completed' | 'error';
-  title: string;
-  description: string;
-  timestamp: string;
-}
-
-// Mock data - replace with real data from API
-const MOCK_ACTIVITIES: ActivityItem[] = [
-  {
-    id: '1',
-    type: 'completed',
-    title: 'Document processed successfully',
-    description: 'invoice_2024_001.pdf',
-    timestamp: '2 minutes ago',
-  },
-  {
-    id: '2',
-    type: 'processing',
-    title: 'Processing document',
-    description: 'contract_draft.docx',
-    timestamp: '5 minutes ago',
-  },
-  {
-    id: '3',
-    type: 'upload',
-    title: 'Document uploaded',
-    description: 'financial_report.xlsx',
-    timestamp: '10 minutes ago',
-  },
-];
+import { Button } from '@/shared/components/ui/button';
+import { Skeleton } from '@/shared/components/ui/skeleton';
+import { useDashboardActivity } from '@/shared/hooks/api/useDashboard';
+import { formatRelativeTime } from '@/shared/utils/date';
+import type { ActivityItem } from '@/types/dashboard-types';
 
 /**
- * Professional activity feed with refined blue theme
+ * Real-time activity feed with backend integration
  */
 const RecentActivity: React.FC = () => {
-  const activities = MOCK_ACTIVITIES; // Replace with real data
+  const { data: activityData, isLoading, error, refetch } = useDashboardActivity({ 
+    page: 1, 
+    limit: 10 
+  });
 
   const getActivityIcon = (type: ActivityItem['type']) => {
     switch (type) {
-      case 'completed':
+      case 'job.completed':
+      case 'document.processed':
         return <CheckCircle className="w-4 h-4 text-emerald-600" />;
-      case 'processing':
+      case 'job.processing':
         return <Zap className="w-4 h-4 text-blue-600" />;
-      case 'error':
+      case 'job.failed':
         return <AlertTriangle className="w-4 h-4 text-red-600" />;
+      case 'job.created':
+        return <Clock className="w-4 h-4 text-yellow-600" />;
+      case 'document.uploaded':
+        return <FileText className="w-4 h-4 text-blue-600" />;
+      case 'project.created':
+      case 'project.updated':
+        return <FileText className="w-4 h-4 text-purple-600" />;
       default:
         return <FileText className="w-4 h-4 text-blue-600" />;
     }
@@ -63,16 +46,26 @@ const RecentActivity: React.FC = () => {
 
   const getActivityColor = (type: ActivityItem['type']) => {
     switch (type) {
-      case 'completed':
+      case 'job.completed':
+      case 'document.processed':
         return 'from-emerald-100 to-emerald-200';
-      case 'processing':
+      case 'job.processing':
         return 'from-blue-100 to-blue-200';
-      case 'error':
+      case 'job.failed':
         return 'from-red-100 to-red-200';
+      case 'job.created':
+        return 'from-yellow-100 to-yellow-200';
+      case 'document.uploaded':
+        return 'from-blue-100 to-blue-200';
+      case 'project.created':
+      case 'project.updated':
+        return 'from-purple-100 to-purple-200';
       default:
         return 'from-blue-100 to-blue-200';
     }
   };
+
+  const activities = activityData?.data || [];
 
   return (
     <ParscadeCard
@@ -93,7 +86,36 @@ const RecentActivity: React.FC = () => {
       </div>
       
       <div className="flex-1 p-6">
-        {activities.length === 0 ? (
+        {isLoading ? (
+          <div className="space-y-3">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="flex items-start space-x-3 p-3">
+                <Skeleton className="w-8 h-8 rounded-lg" />
+                <div className="flex-1 space-y-2">
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-3 w-1/2" />
+                  <Skeleton className="h-3 w-1/4" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : error ? (
+          <div className="text-center py-12">
+            <motion.div
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              className="w-12 h-12 bg-gradient-to-br from-red-100 to-red-200 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-parscade"
+            >
+              <AlertTriangle className="w-6 h-6 text-red-500" />
+            </motion.div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Failed to load activity</h3>
+            <p className="text-slate-600 mb-4">Unable to fetch recent activity</p>
+            <Button onClick={() => refetch()} variant="outline" size="sm">
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Retry
+            </Button>
+          </div>
+        ) : activities.length === 0 ? (
           <div className="text-center py-12">
             <motion.div
               initial={{ scale: 0.8 }}
@@ -135,7 +157,7 @@ const RecentActivity: React.FC = () => {
                     {activity.description}
                   </p>
                   <p className="text-xs text-slate-500 mt-1">
-                    {activity.timestamp}
+                    {formatRelativeTime(activity.timestamp)}
                   </p>
                 </div>
               </motion.div>
@@ -144,14 +166,15 @@ const RecentActivity: React.FC = () => {
         )}
       </div>
 
-      {/* Footer for consistency */}
-      <div className="p-4 border-t border-slate-200">
-        <div className="text-center">
-          <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">
-            View All Activity
-          </button>
+      {activityData?.total_pages && activityData.total_pages > 1 && (
+        <div className="p-4 border-t border-slate-200">
+          <div className="text-center">
+            <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">
+              View All Activity ({activityData.total} total)
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </ParscadeCard>
   );
 };

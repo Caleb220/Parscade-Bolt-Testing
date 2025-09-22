@@ -7,6 +7,10 @@ export * from './api/useAccountData';
 export * from './api/useDocuments';
 export * from './api/useJobs';
 export * from './api/useUploads';
+export * from './api/useDashboard';
+export * from './api/useProjects';
+export * from './api/useExports';
+export * from './api/useAnalytics';
 
 // Common hooks
 export { useClipboard } from './useClipboard';
