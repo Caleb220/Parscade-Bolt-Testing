@@ -17,7 +17,13 @@ import {
   CheckCircle,
   Clock,
   FolderOpen,
-  Activity
+  Activity,
+  Eye,
+  ExternalLink,
+  RefreshCw,
+  Search,
+  Filter,
+  MoreVertical
 } from 'lucide-react';
 
 import { getErrorMessage } from '@/lib/api';
@@ -30,9 +36,10 @@ import { Skeleton } from '@/shared/components/ui/skeleton';
 import { useToast } from '@/shared/components/ui/use-toast';
 import ConfirmationDialog from '@/shared/components/ui/confirmation-dialog';
 import StatusBadge from '@/shared/components/ui/status-badge';
+import StatusIcon from '@/shared/components/ui/status-icon';
 import { ParscadeCard, ParscadeButton } from '@/shared/components/brand';
 import LoadingSpinner from '@/shared/components/forms/atoms/LoadingSpinner';
-import { formatDate, formatBytes } from '@/shared/utils/formatters';
+import { formatDate, formatBytes, formatJobType } from '@/shared/utils/formatters';
 import { useProject, useUpdateProject, useDeleteProject, useAssociateDocument, useRemoveDocument } from '@/shared/hooks/api/useProjects';
 import { useDocuments } from '@/shared/hooks/api/useDocuments';
 import { useJobs } from '@/shared/hooks/api/useJobs';
@@ -58,6 +65,8 @@ const ProjectDetailPage: React.FC = () => {
   const [showAddDocumentDialog, setShowAddDocumentDialog] = useState(false);
   const [editForm, setEditForm] = useState({ name: '', description: '' });
   const [selectedDocumentId, setSelectedDocumentId] = useState('');
+  const [documentSearch, setDocumentSearch] = useState('');
+  const [jobSearch, setJobSearch] = useState('');
 
   const documents = documentsData?.documents || [];
   const jobs = jobsData?.jobs || [];
@@ -151,17 +160,30 @@ const ProjectDetailPage: React.FC = () => {
     }
   };
 
+  const filteredDocuments = documents.filter(doc =>
+    doc.name.toLowerCase().includes(documentSearch.toLowerCase()) ||
+    doc.originalName.toLowerCase().includes(documentSearch.toLowerCase())
+  );
+
+  const filteredJobs = jobs.filter(job =>
+    formatJobType(job.type).toLowerCase().includes(jobSearch.toLowerCase())
+  );
+
   if (isLoading) {
     return (
       <DashboardLayout>
-        <div className="space-y-6">
+        <div className="space-y-8">
           <div className="flex items-center space-x-4">
             <Skeleton className="h-8 w-8" />
             <Skeleton className="h-8 w-48" />
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <Skeleton className="h-64 lg:col-span-2" />
             <Skeleton className="h-64" />
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <Skeleton className="h-96" />
+            <Skeleton className="h-96" />
           </div>
         </div>
       </DashboardLayout>
@@ -236,7 +258,7 @@ const ProjectDetailPage: React.FC = () => {
         </div>
 
         {/* Project Overview */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Project Info */}
           <ParscadeCard className="lg:col-span-2 p-6">
             <div className="flex items-start justify-between mb-6">
@@ -251,6 +273,7 @@ const ProjectDetailPage: React.FC = () => {
                   )}
                 </div>
               </div>
+              
               <div className="flex items-center space-x-2">
                 <ParscadeButton
                   variant="outline"
@@ -274,7 +297,12 @@ const ProjectDetailPage: React.FC = () => {
 
             {/* Project Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-              <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200"
+              >
                 <div className="flex items-center space-x-3">
                   <FileText className="w-5 h-5 text-blue-600" />
                   <div>
@@ -282,8 +310,14 @@ const ProjectDetailPage: React.FC = () => {
                     <div className="text-sm text-blue-700">Documents</div>
                   </div>
                 </div>
-              </div>
-              <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 border border-purple-200">
+              </motion.div>
+              
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 border border-purple-200"
+              >
                 <div className="flex items-center space-x-3">
                   <Zap className="w-5 h-5 text-purple-600" />
                   <div>
@@ -291,8 +325,14 @@ const ProjectDetailPage: React.FC = () => {
                     <div className="text-sm text-purple-700">Processing Jobs</div>
                   </div>
                 </div>
-              </div>
-              <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
+              </motion.div>
+              
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border border-green-200"
+              >
                 <div className="flex items-center space-x-3">
                   <Activity className="w-5 h-5 text-green-600" />
                   <div>
@@ -302,7 +342,7 @@ const ProjectDetailPage: React.FC = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </div>
 
             {/* Project Actions */}
@@ -385,37 +425,55 @@ const ProjectDetailPage: React.FC = () => {
                 <p className="text-sm text-blue-600">Files associated with this project</p>
               </div>
             </div>
-            <ParscadeButton
-              variant="outline"
-              size="sm"
-              leftIcon={<Plus className="w-4 h-4" />}
-              onClick={() => setShowAddDocumentDialog(true)}
-            >
-              Add Document
-            </ParscadeButton>
-          </div>
-
-          {documents.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-parscade">
-                <FileText className="w-6 h-6 text-blue-500" />
+            <div className="flex items-center space-x-3">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Input
+                  placeholder="Search documents..."
+                  value={documentSearch}
+                  onChange={(e) => setDocumentSearch(e.target.value)}
+                  className="pl-10 w-64"
+                />
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No documents yet</h3>
-              <p className="text-gray-600 mb-4">
-                Add documents to this project to start organizing your processing workflows.
-              </p>
               <ParscadeButton
-                variant="primary"
+                variant="outline"
                 size="sm"
                 leftIcon={<Plus className="w-4 h-4" />}
                 onClick={() => setShowAddDocumentDialog(true)}
               >
-                Add First Document
+                Add Document
               </ParscadeButton>
+            </div>
+          </div>
+
+          {filteredDocuments.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-parscade">
+                <FileText className="w-6 h-6 text-blue-500" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                {documentSearch ? 'No matching documents' : 'No documents yet'}
+              </h3>
+              <p className="text-gray-600 mb-4">
+                {documentSearch 
+                  ? `No documents match "${documentSearch}". Try a different search term.`
+                  : 'Add documents to this project to start organizing your processing workflows.'
+                }
+              </p>
+              {!documentSearch && (
+                <ParscadeButton
+                  variant="primary"
+                  size="sm"
+                  leftIcon={<Plus className="w-4 h-4" />}
+                  onClick={() => setShowAddDocumentDialog(true)}
+                >
+                  Add First Document
+                </ParscadeButton>
+              )}
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {documents.map((document, index) => (
+              {filteredDocuments.map((document, index) => (
                 <motion.div
                   key={document.id}
                   initial={{ opacity: 0, y: 20 }}
@@ -424,7 +482,7 @@ const ProjectDetailPage: React.FC = () => {
                   className="p-4 border border-gray-200 rounded-lg hover:bg-blue-50/30 transition-all duration-200 group"
                 >
                   <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center space-x-3">
+                    <div className="flex items-center space-x-3 flex-1 min-w-0">
                       <FileText className="w-5 h-5 text-blue-600 flex-shrink-0" />
                       <div className="min-w-0 flex-1">
                         <h4 className="font-medium text-gray-900 truncate group-hover:text-blue-700 transition-colors">
@@ -436,12 +494,21 @@ const ProjectDetailPage: React.FC = () => {
                     <StatusBadge status={document.status as any} />
                   </div>
                   
-                  <div className="text-xs text-gray-500 space-y-1">
+                  <div className="text-xs text-gray-500 space-y-1 mb-3">
                     <div>{formatBytes(document.size)} • {document.mimeType}</div>
                     <div>Uploaded {formatDate(document.createdAt)}</div>
                   </div>
                   
-                  <div className="flex justify-end mt-3">
+                  <div className="flex justify-between items-center">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => navigate(`/documents/${document.id}`)}
+                      className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                    >
+                      <Eye className="w-4 h-4 mr-1" />
+                      View
+                    </Button>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -460,27 +527,43 @@ const ProjectDetailPage: React.FC = () => {
 
         {/* Processing Jobs Section */}
         <ParscadeCard className="p-6">
-          <div className="flex items-center space-x-3 mb-6">
-            <Zap className="w-5 h-5 text-blue-600" />
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900">Processing Jobs</h2>
-              <p className="text-sm text-blue-600">Document processing activities for this project</p>
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center space-x-3">
+              <Zap className="w-5 h-5 text-blue-600" />
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900">Processing Jobs</h2>
+                <p className="text-sm text-blue-600">Document processing activities for this project</p>
+              </div>
+            </div>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Input
+                placeholder="Search jobs..."
+                value={jobSearch}
+                onChange={(e) => setJobSearch(e.target.value)}
+                className="pl-10 w-64"
+              />
             </div>
           </div>
 
-          {jobs.length === 0 ? (
+          {filteredJobs.length === 0 ? (
             <div className="text-center py-12">
               <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-parscade">
                 <Zap className="w-6 h-6 text-purple-500" />
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No processing jobs</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                {jobSearch ? 'No matching jobs' : 'No processing jobs'}
+              </h3>
               <p className="text-gray-600">
-                Processing jobs for documents in this project will appear here.
+                {jobSearch 
+                  ? `No jobs match "${jobSearch}". Try a different search term.`
+                  : 'Processing jobs for documents in this project will appear here.'
+                }
               </p>
             </div>
           ) : (
             <div className="space-y-3">
-              {jobs.map((job, index) => (
+              {filteredJobs.map((job, index) => (
                 <motion.div
                   key={job.id}
                   initial={{ opacity: 0, x: -20 }}
@@ -491,17 +574,22 @@ const ProjectDetailPage: React.FC = () => {
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <StatusBadge status={job.status as any} />
+                      <StatusIcon status={job.status as any} />
                       <div>
                         <h4 className="font-medium text-gray-900 group-hover:text-blue-700 transition-colors">
-                          {job.type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                          {formatJobType(job.type)}
                         </h4>
                         <p className="text-sm text-gray-500">
                           Created {formatDate(job.createdAt)}
                         </p>
+                        {job.error && (
+                          <p className="text-sm text-red-600 mt-1 truncate max-w-md">
+                            Error: {job.error}
+                          </p>
+                        )}
                       </div>
                     </div>
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-3">
                       {job.status === 'processing' && (
                         <div className="flex items-center space-x-2">
                           <div className="w-16 bg-blue-100 rounded-full h-1.5">
@@ -513,6 +601,7 @@ const ProjectDetailPage: React.FC = () => {
                           <span className="text-xs text-blue-600 font-medium">{job.progress}%</span>
                         </div>
                       )}
+                      <StatusBadge status={job.status as any} />
                       <ArrowLeft className="w-4 h-4 text-gray-400 rotate-180 group-hover:text-blue-600 transition-colors" />
                     </div>
                   </div>
@@ -533,26 +622,49 @@ const ProjectDetailPage: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg border border-blue-200">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg border border-blue-200"
+            >
               <div className="text-2xl font-bold text-blue-900 mb-1">{project.document_count}</div>
               <div className="text-sm text-blue-700">Total Documents</div>
-            </div>
-            <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg border border-purple-200">
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg border border-purple-200"
+            >
               <div className="text-2xl font-bold text-purple-900 mb-1">{project.job_count}</div>
               <div className="text-sm text-purple-700">Processing Jobs</div>
-            </div>
-            <div className="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-lg border border-green-200">
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-lg border border-green-200"
+            >
               <div className="text-2xl font-bold text-green-900 mb-1">
                 {jobs.filter(j => j.status === 'completed').length}
               </div>
               <div className="text-sm text-green-700">Completed</div>
-            </div>
-            <div className="text-center p-4 bg-gradient-to-br from-amber-50 to-amber-100 rounded-lg border border-amber-200">
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="text-center p-4 bg-gradient-to-br from-amber-50 to-amber-100 rounded-lg border border-amber-200"
+            >
               <div className="text-2xl font-bold text-amber-900 mb-1">
                 {jobs.filter(j => ['pending', 'processing'].includes(j.status)).length}
               </div>
               <div className="text-sm text-amber-700">In Progress</div>
-            </div>
+            </motion.div>
           </div>
         </ParscadeCard>
       </div>

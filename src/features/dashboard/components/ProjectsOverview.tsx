@@ -17,7 +17,10 @@ import {
   AlertTriangle,
   RefreshCw,
   ArrowRight,
-  Eye
+  Eye,
+  Search,
+  Activity,
+  Zap
 } from 'lucide-react';
 
 import { ParscadeCard, ParscadeButton } from '@/shared/components/brand';
@@ -35,7 +38,8 @@ import {
   useDeleteProject 
 } from '@/shared/hooks/api/useProjects';
 import { formatDate } from '@/shared/utils/date';
-import type { ProjectCreateData, ProjectUpdateData } from '@/types/dashboard-types';
+import { getErrorMessage } from '@/lib/api';
+import type { ProjectCreateData } from '@/types/dashboard-types';
 
 interface ProjectsOverviewProps {
   className?: string;
@@ -56,8 +60,13 @@ const ProjectsOverview: React.FC<ProjectsOverviewProps> = ({ className = '' }) =
   const [editingProject, setEditingProject] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [formData, setFormData] = useState<ProjectCreateData>({ name: '', description: '' });
+  const [searchTerm, setSearchTerm] = useState('');
 
   const projects = projectsData?.data || [];
+  const filteredProjects = projects.filter(project =>
+    project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (project.description && project.description.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
 
   const handleCreate = async () => {
     if (!formData.name.trim()) {
@@ -70,9 +79,12 @@ const ProjectsOverview: React.FC<ProjectsOverviewProps> = ({ className = '' }) =
     }
 
     try {
-      await createProject.mutateAsync(formData);
+      const newProject = await createProject.mutateAsync(formData);
       setFormData({ name: '', description: '' });
       setShowCreateDialog(false);
+      
+      // Navigate to the new project
+      navigate(`/dashboard/projects/${newProject.id}`);
     } catch (error) {
       // Error handled by mutation
     }
@@ -139,7 +151,7 @@ const ProjectsOverview: React.FC<ProjectsOverviewProps> = ({ className = '' }) =
         <div className="text-center">
           <AlertTriangle className="w-8 h-8 text-red-600 mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-gray-900 mb-2">Failed to load projects</h3>
-          <p className="text-gray-600 mb-4">Unable to fetch project data</p>
+          <p className="text-gray-600 mb-4">{getErrorMessage(error)}</p>
           <Button onClick={() => refetch()} variant="outline" size="sm">
             <RefreshCw className="w-4 h-4 mr-2" />
             Retry
@@ -161,68 +173,80 @@ const ProjectsOverview: React.FC<ProjectsOverviewProps> = ({ className = '' }) =
           </div>
         </div>
         
-        <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-          <DialogTrigger asChild>
-            <ParscadeButton variant="primary" size="sm">
-              <FolderPlus className="w-4 h-4 mr-2" />
-              New Project
-            </ParscadeButton>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Create New Project</DialogTitle>
-              <DialogDescription>
-                Create a new project to organize your documents and processing workflows.
-              </DialogDescription>
-            </DialogHeader>
-            
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="project_name">Project Name</Label>
-                <Input
-                  id="project_name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="Enter project name"
-                />
-              </div>
+        <div className="flex items-center space-x-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Input
+              placeholder="Search projects..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 w-64"
+            />
+          </div>
+          
+          <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+            <DialogTrigger asChild>
+              <ParscadeButton variant="primary" size="sm">
+                <FolderPlus className="w-4 h-4 mr-2" />
+                New Project
+              </ParscadeButton>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Create New Project</DialogTitle>
+                <DialogDescription>
+                  Create a new project to organize your documents and processing workflows.
+                </DialogDescription>
+              </DialogHeader>
               
-              <div className="space-y-2">
-                <Label htmlFor="project_description">Description (Optional)</Label>
-                <textarea
-                  id="project_description"
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="Describe your project..."
-                  rows={3}
-                  className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none"
-                />
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="project_name">Project Name</Label>
+                  <Input
+                    id="project_name"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    placeholder="Enter project name"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="project_description">Description (Optional)</Label>
+                  <textarea
+                    id="project_description"
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    placeholder="Describe your project..."
+                    rows={3}
+                    className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none"
+                  />
+                </div>
+                
+                <div className="flex justify-end space-x-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setShowCreateDialog(false);
+                      setFormData({ name: '', description: '' });
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleCreate}
+                    disabled={createProject.isPending || !formData.name.trim()}
+                  >
+                    {createProject.isPending ? 'Creating...' : 'Create Project'}
+                  </Button>
+                </div>
               </div>
-              
-              <div className="flex justify-end space-x-2">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setShowCreateDialog(false);
-                    setFormData({ name: '', description: '' });
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={handleCreate}
-                  disabled={createProject.isPending || !formData.name.trim()}
-                >
-                  {createProject.isPending ? 'Creating...' : 'Create Project'}
-                </Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       {/* Projects List */}
-      {projects.length === 0 ? (
+      {filteredProjects.length === 0 ? (
         <div className="text-center py-12">
           <motion.div
             initial={{ scale: 0.8 }}
@@ -231,51 +255,71 @@ const ProjectsOverview: React.FC<ProjectsOverviewProps> = ({ className = '' }) =
           >
             <Folder className="w-6 h-6 text-blue-500" />
           </motion.div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No projects yet</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            {searchTerm ? 'No matching projects' : 'No projects yet'}
+          </h3>
           <p className="text-slate-600 mb-4">
-            Create your first project to organize your document processing workflows.
+            {searchTerm 
+              ? `No projects match "${searchTerm}". Try a different search term.`
+              : 'Create your first project to organize your document processing workflows.'
+            }
           </p>
-          <ParscadeButton 
-            variant="primary" 
-            size="sm"
-            onClick={() => setShowCreateDialog(true)}
-          >
-            <FolderPlus className="w-4 h-4 mr-2" />
-            Create First Project
-          </ParscadeButton>
+          {!searchTerm && (
+            <ParscadeButton 
+              variant="primary" 
+              size="sm"
+              onClick={() => setShowCreateDialog(true)}
+            >
+              <FolderPlus className="w-4 h-4 mr-2" />
+              Create First Project
+            </ParscadeButton>
+          )}
         </div>
       ) : (
         <div className="space-y-3">
-          {projects.map((project, index) => (
+          {filteredProjects.map((project, index) => (
             <motion.div
               key={project.id}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.05 }}
-              className="p-4 border border-slate-200 rounded-lg hover:bg-blue-50/30 transition-all duration-200 group"
+              className="p-4 border border-slate-200 rounded-lg hover:bg-blue-50/30 transition-all duration-200 group cursor-pointer"
+              onClick={() => navigate(`/dashboard/projects/${project.id}`)}
             >
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <div className="flex items-center space-x-3 mb-2">
                     <Folder className="w-5 h-5 text-blue-600" />
-                    <h4 
-                      className="font-medium text-gray-900 group-hover:text-blue-700 transition-colors cursor-pointer"
-                      onClick={() => navigate(`/dashboard/projects/${project.id}`)}
-                    >
+                    <h4 className="font-medium text-gray-900 group-hover:text-blue-700 transition-colors">
                       {project.name}
                     </h4>
                   </div>
                   {project.description && (
-                    <p className="text-sm text-slate-600 mb-2">{project.description}</p>
+                    <p className="text-sm text-slate-600 mb-2 line-clamp-2">{project.description}</p>
                   )}
                   <div className="flex items-center space-x-4 text-xs text-gray-500">
-                    <span>{project.document_count} documents</span>
-                    <span>{project.job_count} jobs</span>
-                    <span>Created {formatDate(project.created_at)}</span>
+                    <div className="flex items-center space-x-1">
+                      <FileText className="w-3 h-3" />
+                      <span>{project.document_count} documents</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <Zap className="w-3 h-3" />
+                      <span>{project.job_count} jobs</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <Calendar className="w-3 h-3" />
+                      <span>Created {formatDate(project.created_at)}</span>
+                    </div>
                   </div>
+                  {project.last_activity && (
+                    <div className="flex items-center space-x-1 text-xs text-green-600 mt-1">
+                      <Activity className="w-3 h-3" />
+                      <span>Last activity {formatDate(project.last_activity)}</span>
+                    </div>
+                  )}
                 </div>
                 
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2" onClick={(e) => e.stopPropagation()}>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -294,6 +338,7 @@ const ProjectsOverview: React.FC<ProjectsOverviewProps> = ({ className = '' }) =
                     variant="ghost"
                     size="sm"
                     onClick={() => setConfirmDelete(project.id)}
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
@@ -301,6 +346,13 @@ const ProjectsOverview: React.FC<ProjectsOverviewProps> = ({ className = '' }) =
               </div>
             </motion.div>
           ))}
+        </div>
+      )}
+
+      {/* Show total count if filtered */}
+      {searchTerm && filteredProjects.length > 0 && (
+        <div className="mt-4 text-center text-sm text-gray-500">
+          Showing {filteredProjects.length} of {projects.length} projects
         </div>
       )}
 
