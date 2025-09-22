@@ -8,7 +8,7 @@ import { ProtectedRoute } from '@/shared/components/layout/templates/ProtectedRo
 import { PublicAuthLayout } from '@/shared/components/layout/templates/PublicAuthLayout';
 
 // Pages
-import HomePage } from '@/features/marketing/pages/HomePage';
+import HomePage from '@/features/marketing/pages/HomePage';
 import AboutPage from '@/features/marketing/pages/AboutPage';
 import ProductPage from '@/features/marketing/pages/ProductPage';
 import BillingPage from '@/features/marketing/pages/BillingPage';
