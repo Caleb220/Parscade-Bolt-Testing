@@ -133,15 +133,18 @@ const ExportsManager: React.FC<ExportsManagerProps> = ({ className = '' }) => {
           <Download className="w-5 h-5 text-blue-600" />
           <div>
             <h2 className="text-lg font-semibold text-gray-900">Data Exports</h2>
-            <p className="text-sm text-blue-600">Export your documents and processing data</p>
+            <p className="text-sm text-blue-600 hidden sm:block">Export your documents and processing data</p>
           </div>
         </div>
         
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <ParscadeButton variant="primary" size="sm">
+            <ParscadeButton variant="primary" size="sm" className="hidden sm:flex">
               <Download className="w-4 h-4 mr-2" />
               New Export
+            </ParscadeButton>
+            <ParscadeButton variant="primary" size="sm" className="sm:hidden" aria-label="New Export">
+              <Download className="w-4 h-4" />
             </ParscadeButton>
           </DialogTrigger>
           <DialogContent>
@@ -205,19 +208,21 @@ const ExportsManager: React.FC<ExportsManagerProps> = ({ className = '' }) => {
                 </div>
               </div>
               
-              <div className="flex justify-end space-x-2">
+              <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2">
                 <Button
                   variant="outline"
                   onClick={() => {
                     setShowCreateDialog(false);
                     setExportForm({ type: 'documents', format: 'csv', filters: {} });
                   }}
+                  className="w-full sm:w-auto"
                 >
                   Cancel
                 </Button>
                 <Button
                   onClick={handleCreateExport}
                   disabled={createExport.isPending}
+                  className="w-full sm:w-auto"
                 >
                   {createExport.isPending ? 'Creating...' : 'Create Export'}
                 </Button>
@@ -258,21 +263,21 @@ const ExportsManager: React.FC<ExportsManagerProps> = ({ className = '' }) => {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.05 }}
-              className="p-4 border border-slate-200 rounded-lg"
+              className="p-3 sm:p-4 border border-slate-200 rounded-lg"
             >
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
                 <div className="flex-1">
-                  <div className="flex items-center space-x-3 mb-2">
+                  <div className="flex items-center space-x-2 sm:space-x-3 mb-2">
                     {exportItem.type === 'documents' ? (
                       <FileText className="w-5 h-5 text-blue-600" />
                     ) : (
                       <Database className="w-5 h-5 text-purple-600" />
                     )}
                     <div>
-                      <h4 className="font-medium text-gray-900">
+                      <h4 className="font-medium text-gray-900 text-sm sm:text-base">
                         {exportItem.type === 'documents' ? 'Documents' : 'Processing Jobs'} Export
                       </h4>
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-1 sm:space-x-2 flex-wrap">
                         <Badge variant="outline" className="text-xs">
                           {exportItem.format.toUpperCase()}
                         </Badge>
@@ -281,29 +286,30 @@ const ExportsManager: React.FC<ExportsManagerProps> = ({ className = '' }) => {
                     </div>
                   </div>
                   
-                  <div className="text-xs text-gray-500 space-y-1">
+                  <div className="text-xs text-gray-500 space-y-0.5 sm:space-y-1">
                     <div>Created {formatDate(exportItem.created_at)}</div>
                     {exportItem.completed_at && (
-                      <div>Completed {formatDate(exportItem.completed_at)}</div>
+                      <div className="hidden sm:block">Completed {formatDate(exportItem.completed_at)}</div>
                     )}
                     {exportItem.file_size && (
                       <div>Size: {formatBytes(exportItem.file_size)}</div>
                     )}
                     {exportItem.error_message && (
-                      <div className="text-red-600">Error: {exportItem.error_message}</div>
+                      <div className="text-red-600 truncate">Error: {exportItem.error_message}</div>
                     )}
                   </div>
                 </div>
                 
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-1 sm:space-x-2 self-end sm:self-center">
                   {exportItem.status === 'completed' && exportItem.download_url && (
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => window.open(exportItem.download_url!, '_blank')}
+                      className="text-xs sm:text-sm"
                     >
                       <ExternalLink className="w-4 h-4 mr-1" />
-                      Download
+                      <span className="hidden sm:inline">Download</span>
                     </Button>
                   )}
                   
@@ -312,6 +318,7 @@ const ExportsManager: React.FC<ExportsManagerProps> = ({ className = '' }) => {
                       variant="outline"
                       size="sm"
                       onClick={() => setConfirmCancel(exportItem.id)}
+                      className="text-xs sm:text-sm"
                     >
                       Cancel
                     </Button>

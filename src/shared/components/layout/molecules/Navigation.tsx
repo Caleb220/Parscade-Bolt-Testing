@@ -77,25 +77,25 @@ const Navigation: React.FC = () => {
               whileHover={{ scale: 1.05 }}
               transition={{ type: 'spring', stiffness: 400, damping: 10 }}
             >
-              Parscade
+                className="lg:hidden bg-white border-t border-gray-200 shadow-lg"
             </motion.div>
-          </Link>
+                <div className="px-4 py-2 space-y-1 max-h-96 overflow-y-auto">
 
-          {/* Desktop Navigation */}
+                  <div className="pt-4 pb-2 border-t border-gray-200 space-y-3">
           <div className="hidden lg:flex items-center space-x-8">
             {visibleNavigationItems.map((item) => (
-              <div key={item.label} className="relative">
+                      className={`block px-3 py-3 text-base font-medium transition-colors duration-200 rounded-lg ${
                 {item.children ? (
                   <div>
                     <button
-                      onClick={() => handleDropdownToggle(item.label)}
+                      <div className="px-3 py-3 bg-gray-50 rounded-lg">
                       className="flex items-center text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-colors duration-200"
                     >
                       {item.label}
                       <ChevronDown className="ml-1 h-4 w-4" />
                     </button>
                     <AnimatePresence>
-                      {activeDropdown === item.label && (
+                          size="md" 
                         <motion.div
                           initial={{ opacity: 0, y: -10 }}
                           animate={{ opacity: 1, y: 0 }}
@@ -144,7 +144,7 @@ const Navigation: React.FC = () => {
             ) : (
               <>
                 <CustomButton 
-                  variant="ghost" 
+                          size="md" 
                   size="sm"
                   onClick={() => openAuthModal('signin')}
                 >
