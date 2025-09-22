@@ -32,31 +32,33 @@ const ParscadeCard: React.FC<ParscadeCardProps> = ({
     gradient: 'bg-gradient-to-br from-white to-blue-50/50 border border-blue-200/40 shadow-parscade',
   };
 
-  const hoverAnimation = hover ? {
-    whileHover: { 
-      y: -2,
-      scale: 1.01,
-      transition: { duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }
-    },
-    whileTap: onClick ? { scale: 0.99 } : {}
-  } : {};
+    const hoverAnimation = hover ? {
+        whileHover: {
+            y: -2,
+            scale: 1.01,
+            transition: {duration: 0.2, ease: "easeInOut" as any}
+        },
+        whileTap: onClick ? {scale: 0.99} : {}
+    } : {};
 
   return (
-    <motion.div
-      {...parscadeAnimations.fadeInUp}
-      {...hoverAnimation}
-      className={`
-        ${variantClasses[variant]}
-        rounded-xl
-        transition-all duration-200
-        ${onClick ? 'cursor-pointer' : ''}
-        ${hover ? 'hover:shadow-parscade-lg' : ''}
-        ${className}
-      `}
-      onClick={onClick}
-    >
-      {children}
-    </motion.div>
+    <div>
+      <motion.div
+        {...parscadeAnimations.fadeInUp}
+        {...hoverAnimation}
+        className={`
+          ${variantClasses[variant]}
+          rounded-xl
+          transition-all duration-200
+          ${onClick ? 'cursor-pointer' : ''}
+          ${hover ? 'hover:shadow-parscade-lg' : ''}
+          ${className}
+        `}
+        onClick={onClick}
+      >
+        {children}
+      </motion.div>
+    </div>
   );
 };
 

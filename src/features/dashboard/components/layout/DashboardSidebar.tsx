@@ -34,7 +34,7 @@ interface NavigationItem {
   icon: React.ComponentType<{ className?: string }>;
   badge?: string;
   role?: 'admin';
-  tier?: 'pro' | 'enterprise';
+  tier?: 'free' | 'standard' | 'pro' | 'enterprise';
 }
 
 // Icon mapping for navigation items
