@@ -1,111 +1,97 @@
-/**
- * Quick Actions Component
- * Common action buttons for dashboard
- */
-
 import React from 'react';
-import { motion } from 'framer-motion';
-import { Plus, Upload, Download, Settings, FolderPlus } from 'lucide-react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from '@/shared/components/ui/toaster';
 
-import { ParscadeButton } from '@/shared/components/brand';
-import { useCreateProject } from '@/shared/hooks/api/useProjects';
-import { useCreateExport } from '@/shared/hooks/api/useExports';
+// Auth
+import { AuthProvider } from '@/features/auth/context/AuthContext';
+import { ProtectedRoute } from '@/shared/components/layout/templates/ProtectedRoute';
+import { PublicAuthLayout } from '@/shared/components/layout/templates/PublicAuthLayout';
 
-interface QuickActionsProps {
-  onUpload?: () => void;
-  onSettings?: () => void;
-  className?: string;
+// Pages
+import { HomePage } from '@/features/marketing/pages/HomePage';
+import { AboutPage } from '@/features/marketing/pages/AboutPage';
+import { ProductPage } from '@/features/marketing/pages/ProductPage';
+import { BillingPage } from '@/features/marketing/pages/BillingPage';
+import { ContactPage } from '@/features/marketing/pages/ContactPage';
+import { PrivacyPage } from '@/features/marketing/pages/PrivacyPage';
+import { TermsPage } from '@/features/marketing/pages/TermsPage';
+import { NotFoundPage } from '@/features/marketing/pages/NotFoundPage';
+import { ErrorPage } from '@/features/marketing/pages/ErrorPage';
+import { LoginSupportPage } from '@/features/auth/pages/LoginSupportPage';
+
+// Dashboard
+import { DashboardPage } from '@/features/dashboard/pages/DashboardPage';
+import { ProjectDetailPage } from '@/features/dashboard/pages/ProjectDetailPage';
+import { JobDetailPage } from '@/features/jobs/pages/JobDetailPage';
+
+// Account
+import { AccountLayout } from '@/features/account/components/AccountLayout';
+
+function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <div className="min-h-screen bg-gray-50">
+          <Routes>
+            {/* Public Marketing Routes */}
+            <Route path="/" element={<HomePage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/product" element={<ProductPage />} />
+            <Route path="/billing" element={<BillingPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/support/login" element={<LoginSupportPage />} />
+
+            {/* Auth Routes */}
+            <Route path="/auth/*" element={<PublicAuthLayout />} />
+
+            {/* Protected Dashboard Routes */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <DashboardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/projects/:projectId"
+              element={
+                <ProtectedRoute>
+                  <ProjectDetailPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/jobs/:jobId"
+              element={
+                <ProtectedRoute>
+                  <JobDetailPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Protected Account Routes */}
+            <Route
+              path="/account/*"
+              element={
+                <ProtectedRoute>
+                  <AccountLayout />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Error Routes */}
+            <Route path="/error" element={<ErrorPage />} />
+            <Route path="/404" element={<NotFoundPage />} />
+            <Route path="*" element={<Navigate to="/404" replace />} />
+          </Routes>
+        </div>
+        <Toaster />
+      </Router>
+    </AuthProvider>
+  );
 }
 
-/**
- * Reusable quick actions component for dashboard pages
- */
-const QuickActions: React.FC<QuickActionsProps> = ({
-  onUpload,
-  onSettings,
-  className = '',
-}) => {
-  const createProject = useCreateProject();
-  const createExport = useCreateExport();
-
-  const handleNewProject = async () => {
-    try {
-      await createProject.mutateAsync({
-        name: `Project ${new Date().toLocaleDateString()}`,
-        description: 'New project created from dashboard',
-      });
-    } catch (error) {
-      // Error handled by mutation
-    }
-  };
-
-  const handleExport = async () => {
-    try {
-      await createExport.mutateAsync({
-        type: 'documents',
-        format: 'csv',
-        filters: {
-          start_date: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // Last 30 days
-        },
-      });
-    } catch (error) {
-      // Error handled by mutation
-    }
-  };
-
-  return (
-    <div className={`flex items-center space-x-3 ${className}`}>
-      {onUpload && (
-        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-          <ParscadeButton 
-            variant="outline" 
-            size="sm" 
-            onClick={onUpload}
-          >
-            <Upload className="w-4 h-4 mr-2" />
-            Upload
-          </ParscadeButton>
-        </motion.div>
-      )}
-      
-      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-        <ParscadeButton 
-          variant="primary"
-          size="sm"
-          onClick={handleNewProject}
-          disabled={createProject.isPending}
-          glow
-        >
-          <FolderPlus className="w-4 h-4 mr-2" />
-          {createProject.isPending ? 'Creating...' : 'New Project'}
-        </ParscadeButton>
-      </motion.div>
-      
-      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-        <ParscadeButton 
-          variant="outline" 
-          size="sm" 
-          onClick={handleExport}
-          disabled={createExport.isPending}
-        >
-          <Download className="w-4 h-4 mr-2" />
-          {createExport.isPending ? 'Exporting...' : 'Export Data'}
-        </ParscadeButton>
-      </motion.div>
-      
-      {onSettings && (
-        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-          <ParscadeButton 
-            variant="ghost" 
-            size="sm" 
-            onClick={onSettings}
-          >
-            <Settings className="w-4 h-4" />
-          </ParscadeButton>
-        </motion.div>
-      )}
-    </div>
-  );
-};
-
-export default QuickActions;
+export default App;
