@@ -9,9 +9,23 @@ const BillingPage: React.FC = () => {
 
   const plans = [
     {
-      name: 'Starter',
-      monthlyPrice: 29,
-      annualPrice: 23, // 20% discount
+      name: 'Free',
+      monthlyPrice: null,
+      annualPrice: null,
+      period: '',
+      description: 'Test out our platform and come see if its for you',
+      features: [
+        '100 documents/month',
+        'Basic parsing features',
+        'Email support',
+        'Basic analytics',
+      ],
+      popular: false
+    },
+    {
+      name: 'Standard',
+      monthlyPrice: 20,
+      annualPrice: 16, // 20% discount
       period: '/month',
       description: 'Perfect for small teams getting started with document processing',
       features: [
@@ -19,14 +33,15 @@ const BillingPage: React.FC = () => {
         'Basic parsing features',
         'API access',
         'Email support',
-        '99.5% uptime SLA'
+        'Advanced analytics',
+        '98.2% uptime SLA'
       ],
       popular: false
     },
     {
       name: 'Professional',
-      monthlyPrice: 99,
-      annualPrice: 79, // 20% discount
+      monthlyPrice: 50,
+      annualPrice: 40, // 20% discount
       period: '/month',
       description: 'Advanced features for growing businesses and teams',
       features: [
@@ -36,7 +51,7 @@ const BillingPage: React.FC = () => {
         'Priority support',
         '99.9% uptime SLA',
         'Team collaboration',
-        'Advanced analytics'
+        'Advanced Analytics'
       ],
       popular: true
     },
