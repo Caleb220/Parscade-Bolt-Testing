@@ -136,7 +136,7 @@ const DashboardPage: React.FC = () => {
             <Target className="w-5 h-5 text-blue-600 mr-3" />
             <div>
               <h3 className="text-lg font-semibold text-gray-900">Document Processing</h3>
-              <p className="text-slate-600 text-sm">Upload documents to transform them into structured data</p>
+              <p className="text-slate-600 text-sm hidden sm:block">Upload documents to transform them into structured data</p>
             </div>
           </div>
           

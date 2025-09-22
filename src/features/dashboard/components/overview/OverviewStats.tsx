@@ -101,7 +101,7 @@ const OverviewStats: React.FC = () => {
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
       {statItems.map((stat, index) => (
         <ParscadeCard
           key={stat.title}
@@ -109,11 +109,11 @@ const OverviewStats: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: index * 0.1 }}
-          className="p-6 group cursor-pointer"
+          className="p-4 sm:p-6 group cursor-pointer"
         >
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
             <motion.div 
-              className={`flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-${stat.color}-100 to-${stat.color}-200 text-${stat.color}-600 shadow-sm group-hover:shadow-md transition-all duration-300`}
+              className={`flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-lg bg-gradient-to-br from-${stat.color}-100 to-${stat.color}-200 text-${stat.color}-600 shadow-sm group-hover:shadow-md transition-all duration-300`}
               whileHover={{ 
                 scale: 1.1,
                 boxShadow: `0 0 20px rgba(59, 130, 246, 0.3)`
@@ -122,19 +122,20 @@ const OverviewStats: React.FC = () => {
               {stat.icon}
             </motion.div>
             <motion.span 
-              className={`text-xs font-medium px-2 py-1 rounded-full border flex items-center space-x-1 text-${stat.color}-600 bg-white border-${stat.color}-200`}
+              className={`text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full border flex items-center space-x-1 text-${stat.color}-600 bg-white border-${stat.color}-200`}
               whileHover={{ scale: 1.05 }}
             >
-              <span>{stat.accentLabel}</span>
+              <span className="hidden sm:inline">{stat.accentLabel}</span>
+              <span className="sm:hidden text-xs">{stat.accentLabel.split(' ')[0]}</span>
             </motion.span>
           </div>
           
           <div className="space-y-1">
-            <div className="text-xs font-medium text-slate-500 uppercase tracking-wide">{stat.title}</div>
+            <div className="text-xs font-medium text-slate-500 uppercase tracking-wide truncate">{stat.title}</div>
             <div className="text-2xl font-bold text-gray-900">
               {stat.value}
             </div>
-            <div className="text-sm text-slate-600">{stat.subtitle}</div>
+            <div className="text-xs sm:text-sm text-slate-600 line-clamp-2">{stat.subtitle}</div>
           </div>
           
           {/* Hover Accent */}

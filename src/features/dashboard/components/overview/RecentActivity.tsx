@@ -80,7 +80,7 @@ const RecentActivity: React.FC = () => {
           <Activity className="w-5 h-5 text-blue-600 mr-3" />
           <div>
             <h2 className="text-lg font-semibold text-gray-900">Recent Activity</h2>
-            <p className="text-blue-600 text-sm mt-1">Latest processing updates</p>
+              <p className="text-blue-600 text-sm mt-1 hidden sm:block">Latest processing updates</p>
           </div>
         </div>
       </div>
@@ -118,7 +118,7 @@ const RecentActivity: React.FC = () => {
         ) : activities.length === 0 ? (
           <div className="text-center py-12">
             <motion.div
-              initial={{ scale: 0.8 }}
+                <div key={i} className="flex items-start space-x-2 sm:space-x-3 p-2 sm:p-3">
               animate={{ scale: 1 }}
               className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-parscade"
             >
@@ -134,7 +134,7 @@ const RecentActivity: React.FC = () => {
                 key={activity.id}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.3, delay: index * 0.1 }}
+              <p className="text-slate-600 text-sm">Your document processing activity will appear here.</p>
                 whileHover={{ 
                   x: 2,
                   backgroundColor: "rgba(14, 165, 233, 0.02)",
@@ -149,20 +149,20 @@ const RecentActivity: React.FC = () => {
                   {getActivityIcon(activity.type)}
                 </motion.div>
                 
-                <div className="flex-1 min-w-0">
+                  className="flex items-start space-x-2 sm:space-x-3 p-2 sm:p-3 rounded-lg transition-all duration-200 hover:shadow-sm group cursor-pointer"
                   <p className="text-sm font-medium text-gray-900 group-hover:text-blue-700 transition-colors duration-200">
                     {activity.title}
-                  </p>
+                    className={`flex-shrink-0 mt-0.5 sm:mt-1 w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br ${getActivityColor(activity.type)} rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-all duration-200`}
                   <p className="text-sm text-slate-600 truncate">
                     {activity.description}
                   </p>
                   <p className="text-xs text-slate-500 mt-1">
                     {formatRelativeTime(activity.timestamp)}
                   </p>
-                </div>
+                    <p className="text-sm font-medium text-gray-900 group-hover:text-blue-700 transition-colors duration-200 truncate">
               </motion.div>
             ))}
-          </div>
+                    <p className="text-xs sm:text-sm text-slate-600 truncate">
         )}
       </div>
 
@@ -180,3 +180,4 @@ const RecentActivity: React.FC = () => {
 };
 
 export default RecentActivity;
+              <button className="text-xs sm:text-sm text-blue-600 hover:text-blue-700 font-medium">

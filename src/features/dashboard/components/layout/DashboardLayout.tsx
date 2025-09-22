@@ -31,6 +31,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   actions,
   className = '',
 }) => {
+  const [sidebarOpen, setSidebarOpen] = React.useState(false);
+
   return (
     <Layout>
       <div className="bg-gradient-to-br from-purple-50/30 via-cyan-50/20 to-white min-h-screen relative overflow-hidden">
@@ -42,7 +44,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         
         <div className="flex h-screen">
           {/* Sidebar - Hidden on mobile, shown on desktop */}
-          <DashboardSidebar />
+          <DashboardSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
           {/* Main Content Area */}
           <div className="flex-1 flex flex-col overflow-hidden relative z-10">
@@ -51,6 +53,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               title={title}
               subtitle={subtitle}
               actions={actions}
+              onMenuToggle={() => setSidebarOpen(true)}
             />
 
             {/* Content */}

@@ -269,8 +269,19 @@ const JobsPage: React.FC = () => {
             leftIcon={<RefreshCw className="w-4 h-4" />}
             onClick={() => refetch()}
             disabled={isLoading}
+            className="hidden sm:flex"
           >
             Refresh
+          </ParscadeButton>
+          <ParscadeButton
+            variant="ghost"
+            size="sm"
+            onClick={() => refetch()}
+            disabled={isLoading}
+            className="sm:hidden"
+            aria-label="Refresh"
+          >
+            <RefreshCw className="w-4 h-4" />
           </ParscadeButton>
           <ParscadeButton
             variant="primary"
@@ -278,25 +289,36 @@ const JobsPage: React.FC = () => {
             leftIcon={<Plus className="w-4 h-4" />}
             onClick={() => setShowCreateDialog(true)}
             glow
+            className="hidden sm:flex"
           >
             New Job
+          </ParscadeButton>
+          <ParscadeButton
+            variant="primary"
+            size="sm"
+            onClick={() => setShowCreateDialog(true)}
+            glow
+            className="sm:hidden"
+            aria-label="New Job"
+          >
+            <Plus className="w-4 h-4" />
           </ParscadeButton>
         </div>
       }
     >
       <div className="space-y-6">
         {/* Statistics Overview */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 border border-blue-200"
+            className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-blue-200"
           >
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2 sm:space-x-3">
               <Activity className="w-5 h-5 text-blue-600" />
               <div>
-                <div className="text-2xl font-bold text-blue-900">{stats.total}</div>
-                <div className="text-sm text-blue-700">Total Jobs</div>
+                <div className="text-xl sm:text-2xl font-bold text-blue-900">{stats.total}</div>
+                <div className="text-xs sm:text-sm text-blue-700">Total Jobs</div>
               </div>
             </div>
           </motion.div>
@@ -305,13 +327,13 @@ const JobsPage: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl p-4 border border-amber-200"
+            className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-amber-200"
           >
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2 sm:space-x-3">
               <Clock className="w-5 h-5 text-amber-600" />
               <div>
-                <div className="text-2xl font-bold text-amber-900">{stats.pending}</div>
-                <div className="text-sm text-amber-700">Pending</div>
+                <div className="text-xl sm:text-2xl font-bold text-amber-900">{stats.pending}</div>
+                <div className="text-xs sm:text-sm text-amber-700">Pending</div>
               </div>
             </div>
           </motion.div>
@@ -320,13 +342,13 @@ const JobsPage: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4 border border-purple-200"
+            className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-purple-200"
           >
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2 sm:space-x-3">
               <Zap className="w-5 h-5 text-purple-600" />
               <div>
-                <div className="text-2xl font-bold text-purple-900">{stats.processing}</div>
-                <div className="text-sm text-purple-700">Processing</div>
+                <div className="text-xl sm:text-2xl font-bold text-purple-900">{stats.processing}</div>
+                <div className="text-xs sm:text-sm text-purple-700">Processing</div>
               </div>
             </div>
           </motion.div>
@@ -335,13 +357,13 @@ const JobsPage: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-4 border border-emerald-200"
+            className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-emerald-200"
           >
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2 sm:space-x-3">
               <CheckCircle className="w-5 h-5 text-emerald-600" />
               <div>
-                <div className="text-2xl font-bold text-emerald-900">{stats.completed}</div>
-                <div className="text-sm text-emerald-700">Completed</div>
+                <div className="text-xl sm:text-2xl font-bold text-emerald-900">{stats.completed}</div>
+                <div className="text-xs sm:text-sm text-emerald-700">Completed</div>
               </div>
             </div>
           </motion.div>
@@ -350,13 +372,13 @@ const JobsPage: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-4 border border-red-200"
+            className="bg-gradient-to-br from-red-50 to-red-100 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-red-200 col-span-2 sm:col-span-1"
           >
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2 sm:space-x-3">
               <XCircle className="w-5 h-5 text-red-600" />
               <div>
-                <div className="text-2xl font-bold text-red-900">{stats.failed}</div>
-                <div className="text-sm text-red-700">Failed</div>
+                <div className="text-xl sm:text-2xl font-bold text-red-900">{stats.failed}</div>
+                <div className="text-xs sm:text-sm text-red-700">Failed</div>
               </div>
             </div>
           </motion.div>
@@ -367,7 +389,7 @@ const JobsPage: React.FC = () => {
           <div className="space-y-4">
             {/* Search and Quick Filters */}
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0 lg:space-x-4">
-              <div className="flex-1 max-w-md">
+              <div className="flex-1 max-w-full lg:max-w-md">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <Input
@@ -379,15 +401,15 @@ const JobsPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center justify-between sm:justify-end space-x-2 sm:space-x-3">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setShowFilters(!showFilters)}
-                  className="flex items-center"
+                  className="flex items-center flex-1 sm:flex-none justify-center"
                 >
                   <Filter className="w-4 h-4 mr-2" />
-                  Filters
+                  <span className="hidden sm:inline">Filters</span>
                   <ChevronDown className={`w-4 h-4 ml-2 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
                 </Button>
 
@@ -396,8 +418,10 @@ const JobsPage: React.FC = () => {
                     variant="ghost"
                     size="sm"
                     onClick={clearFilters}
+                    className="flex-1 sm:flex-none justify-center"
                   >
-                    Clear Filters
+                    <span className="hidden sm:inline">Clear Filters</span>
+                    <span className="sm:hidden">Clear</span>
                   </Button>
                 )}
               </div>
@@ -409,7 +433,7 @@ const JobsPage: React.FC = () => {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-gray-200"
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-4 border-t border-gray-200"
               >
                 <div className="space-y-2">
                   <Label>Status</Label>
@@ -575,20 +599,20 @@ const JobsPage: React.FC = () => {
             <div>
               {/* Table Header */}
               <div className="bg-gray-50 px-6 py-3 border-b border-gray-200">
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2 sm:space-x-4">
                   <input
                     type="checkbox"
                     checked={selectedJobs.size === jobs.length && jobs.length > 0}
                     onChange={selectAllJobs}
                     className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
-                  <div className="flex-1 grid grid-cols-12 gap-4 text-sm font-medium text-gray-700">
-                    <div className="col-span-3">Job Details</div>
-                    <div className="col-span-2">Status</div>
-                    <div className="col-span-2">Type</div>
-                    <div className="col-span-2">Project</div>
-                    <div className="col-span-2">Created</div>
-                    <div className="col-span-1">Actions</div>
+                  <div className="flex-1 grid grid-cols-6 sm:grid-cols-12 gap-2 sm:gap-4 text-xs sm:text-sm font-medium text-gray-700">
+                    <div className="col-span-2 sm:col-span-3">Job Details</div>
+                    <div className="col-span-1 sm:col-span-2">Status</div>
+                    <div className="col-span-1 sm:col-span-2 hidden sm:block">Type</div>
+                    <div className="col-span-1 sm:col-span-2 hidden sm:block">Project</div>
+                    <div className="col-span-1 sm:col-span-2 hidden lg:block">Created</div>
+                    <div className="col-span-1 sm:col-span-1">Actions</div>
                   </div>
                 </div>
               </div>
@@ -607,7 +631,7 @@ const JobsPage: React.FC = () => {
                       transition={{ delay: index * 0.05 }}
                       className="px-6 py-4 hover:bg-blue-50/30 transition-all duration-200 group"
                     >
-                      <div className="flex items-center space-x-4">
+                      <div className="flex items-center space-x-2 sm:space-x-4">
                         <input
                           type="checkbox"
                           checked={selectedJobs.has(job.id)}
@@ -615,23 +639,23 @@ const JobsPage: React.FC = () => {
                           className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                         />
                         
-                        <div className="flex-1 grid grid-cols-12 gap-4 items-center">
+                        <div className="flex-1 grid grid-cols-6 sm:grid-cols-12 gap-2 sm:gap-4 items-center">
                           {/* Job Details */}
-                          <div className="col-span-3">
+                          <div className="col-span-2 sm:col-span-3">
                             <div className="flex items-center space-x-3">
                               <StatusIcon status={job.status} size="sm" />
                               <div className="min-w-0">
                                 <button
                                   onClick={() => navigate(`/dashboard/jobs/${job.id}`)}
-                                  className="font-medium text-gray-900 hover:text-blue-700 transition-colors text-left truncate block w-full"
+                                  className="font-medium text-gray-900 hover:text-blue-700 transition-colors text-left truncate block w-full text-sm"
                                 >
                                   {formatJobType(job.type)}
                                 </button>
                                 {document && (
-                                  <p className="text-sm text-gray-500 truncate">{document.name}</p>
+                                  <p className="text-xs sm:text-sm text-gray-500 truncate hidden sm:block">{document.name}</p>
                                 )}
                                 {job.error && (
-                                  <p className="text-xs text-red-600 truncate mt-1">
+                                  <p className="text-xs text-red-600 truncate mt-1 hidden lg:block">
                                     Error: {job.error}
                                   </p>
                                 )}
@@ -640,51 +664,51 @@ const JobsPage: React.FC = () => {
                           </div>
 
                           {/* Status */}
-                          <div className="col-span-2">
+                          <div className="col-span-1 sm:col-span-2">
                             <div className="space-y-1">
                               <StatusBadge status={job.status} />
                               {job.status === 'processing' && (
-                                <div className="flex items-center space-x-2">
-                                  <div className="w-16 bg-blue-100 rounded-full h-1.5">
+                                <div className="flex items-center space-x-1 sm:space-x-2">
+                                  <div className="w-12 sm:w-16 bg-blue-100 rounded-full h-1.5">
                                     <div 
                                       className="bg-gradient-to-r from-blue-600 to-blue-500 h-1.5 rounded-full transition-all duration-500"
                                       style={{ width: `${job.progress}%` }}
                                     />
                                   </div>
-                                  <span className="text-xs text-blue-600 font-medium">{job.progress}%</span>
+                                  <span className="text-xs text-blue-600 font-medium hidden sm:inline">{job.progress}%</span>
                                 </div>
                               )}
                             </div>
                           </div>
 
                           {/* Type */}
-                          <div className="col-span-2">
+                          <div className="col-span-1 sm:col-span-2 hidden sm:block">
                             <Badge variant="outline" className="text-xs">
                               {formatJobType(job.type)}
                             </Badge>
-                            <div className="text-xs text-gray-500 mt-1 capitalize">
+                            <div className="text-xs text-gray-500 mt-1 capitalize hidden lg:block">
                               {job.source}
                             </div>
                           </div>
 
                           {/* Project */}
-                          <div className="col-span-2">
+                          <div className="col-span-1 sm:col-span-2 hidden sm:block">
                             {project ? (
                               <button
                                 onClick={() => navigate(`/dashboard/projects/${project.id}`)}
-                                className="flex items-center space-x-2 text-sm text-blue-600 hover:text-blue-700 transition-colors"
+                                className="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm text-blue-600 hover:text-blue-700 transition-colors"
                               >
                                 <Folder className="w-4 h-4" />
                                 <span className="truncate">{project.name}</span>
                               </button>
                             ) : (
-                              <span className="text-sm text-gray-400">No project</span>
+                              <span className="text-xs sm:text-sm text-gray-400">No project</span>
                             )}
                           </div>
 
                           {/* Created */}
-                          <div className="col-span-2">
-                            <div className="text-sm text-gray-900">{formatDate(job.created_at)}</div>
+                          <div className="col-span-1 sm:col-span-2 hidden lg:block">
+                            <div className="text-xs sm:text-sm text-gray-900">{formatDate(job.created_at)}</div>
                             {job.completed_at && (
                               <div className="text-xs text-gray-500">
                                 Completed {formatDate(job.completed_at)}
@@ -693,8 +717,8 @@ const JobsPage: React.FC = () => {
                           </div>
 
                           {/* Actions */}
-                          <div className="col-span-1">
-                            <div className="flex items-center space-x-1">
+                          <div className="col-span-1 sm:col-span-1">
+                            <div className="flex items-center justify-end space-x-1">
                               {job.status === 'pending' && (
                                 <Button
                                   variant="ghost"
@@ -702,6 +726,7 @@ const JobsPage: React.FC = () => {
                                   onClick={() => handleJobAction(job.id, 'start')}
                                   disabled={startJob.isPending}
                                   title="Start Job"
+                                  className="hidden sm:flex"
                                 >
                                   <Play className="w-4 h-4" />
                                 </Button>
@@ -714,7 +739,7 @@ const JobsPage: React.FC = () => {
                                   onClick={() => handleJobAction(job.id, 'cancel')}
                                   disabled={cancelJob.isPending}
                                   title="Cancel Job"
-                                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                  className="text-red-600 hover:text-red-700 hover:bg-red-50 hidden sm:flex"
                                 >
                                   <Square className="w-4 h-4" />
                                 </Button>
@@ -727,7 +752,7 @@ const JobsPage: React.FC = () => {
                                   onClick={() => handleJobAction(job.id, 'retry')}
                                   disabled={retryJob.isPending}
                                   title="Retry Job"
-                                  className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                                  className="text-green-600 hover:text-green-700 hover:bg-green-50 hidden sm:flex"
                                 >
                                   <RotateCcw className="w-4 h-4" />
                                 </Button>
@@ -741,6 +766,17 @@ const JobsPage: React.FC = () => {
                               >
                                 <Eye className="w-4 h-4" />
                               </Button>
+                              
+                              {/* Mobile Actions Menu */}
+                              <div className="sm:hidden">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  title="More actions"
+                                >
+                                  <MoreVertical className="w-4 h-4" />
+                                </Button>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -752,23 +788,25 @@ const JobsPage: React.FC = () => {
 
               {/* Pagination */}
               {jobsData && jobsData.total_pages > 1 && (
-                <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
+                <div className="px-4 sm:px-6 py-4 border-t border-gray-200 bg-gray-50">
                   <div className="flex items-center justify-between">
-                    <div className="text-sm text-gray-700">
+                    <div className="text-xs sm:text-sm text-gray-700">
                       Showing {((currentPage - 1) * 20) + 1} to {Math.min(currentPage * 20, jobsData.total)} of {jobsData.total} jobs
                     </div>
                     
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-1 sm:space-x-2">
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                         disabled={currentPage === 1}
+                        className="px-2 sm:px-3"
                       >
-                        Previous
+                        <span className="hidden sm:inline">Previous</span>
+                        <span className="sm:hidden">Prev</span>
                       </Button>
                       
-                      <div className="flex items-center space-x-1">
+                      <div className="hidden sm:flex items-center space-x-1">
                         {Array.from({ length: Math.min(5, jobsData.total_pages) }, (_, i) => {
                           const page = i + 1;
                           return (
@@ -785,13 +823,20 @@ const JobsPage: React.FC = () => {
                         })}
                       </div>
                       
+                      {/* Mobile page indicator */}
+                      <div className="sm:hidden text-xs text-gray-600 px-2">
+                        {currentPage} / {jobsData.total_pages}
+                      </div>
+                      
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => setCurrentPage(Math.min(jobsData.total_pages, currentPage + 1))}
                         disabled={currentPage === jobsData.total_pages}
+                        className="px-2 sm:px-3"
                       >
-                        Next
+                        <span className="hidden sm:inline">Next</span>
+                        <span className="sm:hidden">Next</span>
                       </Button>
                     </div>
                   </div>
@@ -804,7 +849,7 @@ const JobsPage: React.FC = () => {
 
       {/* Create Job Dialog */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Create Processing Job</DialogTitle>
             <DialogDescription>
@@ -917,7 +962,7 @@ const JobsPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex justify-end space-x-2">
+            <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2">
               <Button
                 variant="outline"
                 onClick={() => {
@@ -930,6 +975,7 @@ const JobsPage: React.FC = () => {
                     max_attempts: 3,
                   });
                 }}
+                className="w-full sm:w-auto"
               >
                 Cancel
               </Button>
@@ -940,6 +986,7 @@ const JobsPage: React.FC = () => {
                   createForm.source === 'url' && !createForm.source_url ||
                   createForm.source === 's3' && !createForm.source_key
                 )}
+                className="w-full sm:w-auto"
               >
                 {createJob.isPending ? 'Creating...' : 'Create Job'}
               </Button>

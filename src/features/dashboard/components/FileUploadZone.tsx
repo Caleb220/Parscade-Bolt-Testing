@@ -246,7 +246,7 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
               Upload Documents
             </h3>
             
-            <p className="text-slate-600 mb-6">
+            <p className="text-slate-600 mb-4 sm:mb-6 text-sm sm:text-base">
               Drop files here or click to browse
             </p>
             
@@ -267,7 +267,7 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
               </motion.div>
             </label>
             
-            <p className="text-xs text-slate-500 mt-4">
+            <p className="text-xs text-slate-500 mt-3 sm:mt-4 text-center">
               Supported: PDF, Word, Excel, CSV, Images (max 50MB)
             </p>
           </div>

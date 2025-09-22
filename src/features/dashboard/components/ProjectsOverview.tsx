@@ -169,26 +169,29 @@ const ProjectsOverview: React.FC<ProjectsOverviewProps> = ({ className = '' }) =
           <Folder className="w-5 h-5 text-blue-600" />
           <div>
             <h2 className="text-lg font-semibold text-gray-900">Projects</h2>
-            <p className="text-sm text-blue-600">Organize your document processing workflows</p>
+            <p className="text-sm text-blue-600 hidden sm:block">Organize your document processing workflows</p>
           </div>
         </div>
         
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-2 sm:space-x-3">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
             <Input
               placeholder="Search projects..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 w-64"
+              className="pl-10 w-40 sm:w-64"
             />
           </div>
           
           <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
             <DialogTrigger asChild>
-              <ParscadeButton variant="primary" size="sm">
+              <ParscadeButton variant="primary" size="sm" className="hidden sm:flex">
                 <FolderPlus className="w-4 h-4 mr-2" />
                 New Project
+              </ParscadeButton>
+              <ParscadeButton variant="primary" size="sm" className="sm:hidden" aria-label="New Project">
+                <FolderPlus className="w-4 h-4" />
               </ParscadeButton>
             </DialogTrigger>
             <DialogContent>
@@ -222,19 +225,23 @@ const ProjectsOverview: React.FC<ProjectsOverviewProps> = ({ className = '' }) =
                   />
                 </div>
                 
-                <div className="flex justify-end space-x-2">
+                <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2">
                   <Button
                     variant="outline"
                     onClick={() => {
                       setShowCreateDialog(false);
                       setFormData({ name: '', description: '' });
                     }}
+                    className="w-full sm:w-auto"
+                    className="w-full sm:w-auto"
                   >
                     Cancel
                   </Button>
                   <Button
                     onClick={handleCreate}
                     disabled={createProject.isPending || !formData.name.trim()}
+                    className="w-full sm:w-auto"
+                    className="w-full sm:w-auto"
                   >
                     {createProject.isPending ? 'Creating...' : 'Create Project'}
                   </Button>
@@ -283,21 +290,21 @@ const ProjectsOverview: React.FC<ProjectsOverviewProps> = ({ className = '' }) =
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.05 }}
-              className="p-4 border border-slate-200 rounded-lg hover:bg-blue-50/30 transition-all duration-200 group cursor-pointer"
+              className="p-3 sm:p-4 border border-slate-200 rounded-lg hover:bg-blue-50/30 transition-all duration-200 group cursor-pointer"
               onClick={() => navigate(`/dashboard/projects/${project.id}`)}
             >
               <div className="flex items-center justify-between">
                 <div className="flex-1">
-                  <div className="flex items-center space-x-3 mb-2">
+                  <div className="flex items-center space-x-2 sm:space-x-3 mb-2">
                     <Folder className="w-5 h-5 text-blue-600" />
-                    <h4 className="font-medium text-gray-900 group-hover:text-blue-700 transition-colors">
+                    <h4 className="font-medium text-gray-900 group-hover:text-blue-700 transition-colors truncate">
                       {project.name}
                     </h4>
                   </div>
                   {project.description && (
-                    <p className="text-sm text-slate-600 mb-2 line-clamp-2">{project.description}</p>
+                    <p className="text-xs sm:text-sm text-slate-600 mb-2 line-clamp-2 hidden sm:block">{project.description}</p>
                   )}
-                  <div className="flex items-center space-x-4 text-xs text-gray-500">
+                  <div className="flex items-center space-x-2 sm:space-x-4 text-xs text-gray-500 flex-wrap">
                     <div className="flex items-center space-x-1">
                       <FileText className="w-3 h-3" />
                       <span>{project.document_count} documents</span>
@@ -306,24 +313,25 @@ const ProjectsOverview: React.FC<ProjectsOverviewProps> = ({ className = '' }) =
                       <Zap className="w-3 h-3" />
                       <span>{project.job_count} jobs</span>
                     </div>
-                    <div className="flex items-center space-x-1">
+                    <div className="flex items-center space-x-1 hidden sm:flex">
                       <Calendar className="w-3 h-3" />
                       <span>Created {formatDate(project.created_at)}</span>
                     </div>
                   </div>
                   {project.last_activity && (
-                    <div className="flex items-center space-x-1 text-xs text-green-600 mt-1">
+                    <div className="flex items-center space-x-1 text-xs text-green-600 mt-1 hidden sm:flex">
                       <Activity className="w-3 h-3" />
                       <span>Last activity {formatDate(project.last_activity)}</span>
                     </div>
                   )}
                 </div>
                 
-                <div className="flex items-center space-x-2" onClick={(e) => e.stopPropagation()}>
+                <div className="flex items-center space-x-1 sm:space-x-2" onClick={(e) => e.stopPropagation()}>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => navigate(`/dashboard/projects/${project.id}`)}
+                    className="hidden sm:flex"
                   >
                     <Eye className="w-4 h-4" />
                   </Button>
@@ -331,6 +339,7 @@ const ProjectsOverview: React.FC<ProjectsOverviewProps> = ({ className = '' }) =
                     variant="ghost"
                     size="sm"
                     onClick={() => startEdit(project)}
+                    className="hidden sm:flex"
                   >
                     <Edit3 className="w-4 h-4" />
                   </Button>
@@ -338,10 +347,21 @@ const ProjectsOverview: React.FC<ProjectsOverviewProps> = ({ className = '' }) =
                     variant="ghost"
                     size="sm"
                     onClick={() => setConfirmDelete(project.id)}
-                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50 hidden sm:flex"
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
+                  
+                  {/* Mobile Actions Menu */}
+                  <div className="sm:hidden">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      title="More actions"
+                    >
+                      <MoreVertical className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -351,7 +371,7 @@ const ProjectsOverview: React.FC<ProjectsOverviewProps> = ({ className = '' }) =
 
       {/* Show total count if filtered */}
       {searchTerm && filteredProjects.length > 0 && (
-        <div className="mt-4 text-center text-sm text-gray-500">
+        <div className="mt-4 text-center text-xs sm:text-sm text-gray-500">
           Showing {filteredProjects.length} of {projects.length} projects
         </div>
       )}

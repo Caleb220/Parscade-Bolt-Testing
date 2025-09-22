@@ -398,16 +398,37 @@ const DocumentsPage: React.FC = () => {
             leftIcon={<RefreshCw className="w-4 h-4" />}
             onClick={() => refetch()}
             disabled={isLoading}
+            className="hidden sm:flex"
           >
             Refresh
+          </ParscadeButton>
+          <ParscadeButton
+            variant="ghost"
+            size="sm"
+            onClick={() => refetch()}
+            disabled={isLoading}
+            className="sm:hidden"
+            aria-label="Refresh"
+          >
+            <RefreshCw className="w-4 h-4" />
           </ParscadeButton>
           <ParscadeButton
             variant="outline"
             size="sm"
             leftIcon={<LinkIcon className="w-4 h-4" />}
             onClick={() => setShowIngestDialog(true)}
+            className="hidden sm:flex"
           >
             Ingest URL
+          </ParscadeButton>
+          <ParscadeButton
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowIngestDialog(true)}
+            className="sm:hidden"
+            aria-label="Ingest URL"
+          >
+            <LinkIcon className="w-4 h-4" />
           </ParscadeButton>
           <ParscadeButton
             variant="primary"
@@ -415,25 +436,36 @@ const DocumentsPage: React.FC = () => {
             leftIcon={<Upload className="w-4 h-4" />}
             onClick={() => setShowUploadDialog(true)}
             glow
+            className="hidden sm:flex"
           >
             Upload
+          </ParscadeButton>
+          <ParscadeButton
+            variant="primary"
+            size="sm"
+            onClick={() => setShowUploadDialog(true)}
+            glow
+            className="sm:hidden"
+            aria-label="Upload"
+          >
+            <Upload className="w-4 h-4" />
           </ParscadeButton>
         </div>
       }
     >
       <div className="space-y-6">
         {/* Statistics Overview */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 border border-blue-200"
+            className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-blue-200"
           >
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2 sm:space-x-3">
               <Activity className="w-5 h-5 text-blue-600" />
               <div>
-                <div className="text-2xl font-bold text-blue-900">{stats.total}</div>
-                <div className="text-sm text-blue-700">Total Documents</div>
+                <div className="text-xl sm:text-2xl font-bold text-blue-900">{stats.total}</div>
+                <div className="text-xs sm:text-sm text-blue-700">Total</div>
               </div>
             </div>
           </motion.div>
@@ -442,13 +474,13 @@ const DocumentsPage: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl p-4 border border-amber-200"
+            className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-amber-200"
           >
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2 sm:space-x-3">
               <Clock className="w-5 h-5 text-amber-600" />
               <div>
-                <div className="text-2xl font-bold text-amber-900">{stats.uploading}</div>
-                <div className="text-sm text-amber-700">Uploading</div>
+                <div className="text-xl sm:text-2xl font-bold text-amber-900">{stats.uploading}</div>
+                <div className="text-xs sm:text-sm text-amber-700">Uploading</div>
               </div>
             </div>
           </motion.div>
@@ -457,13 +489,13 @@ const DocumentsPage: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4 border border-purple-200"
+            className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-purple-200"
           >
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2 sm:space-x-3">
               <FileText className="w-5 h-5 text-purple-600" />
               <div>
-                <div className="text-2xl font-bold text-purple-900">{stats.processing}</div>
-                <div className="text-sm text-purple-700">Processing</div>
+                <div className="text-xl sm:text-2xl font-bold text-purple-900">{stats.processing}</div>
+                <div className="text-xs sm:text-sm text-purple-700">Processing</div>
               </div>
             </div>
           </motion.div>
@@ -472,13 +504,13 @@ const DocumentsPage: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-4 border border-emerald-200"
+            className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-emerald-200"
           >
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2 sm:space-x-3">
               <CheckCircle className="w-5 h-5 text-emerald-600" />
               <div>
-                <div className="text-2xl font-bold text-emerald-900">{stats.completed}</div>
-                <div className="text-sm text-emerald-700">Completed</div>
+                <div className="text-xl sm:text-2xl font-bold text-emerald-900">{stats.completed}</div>
+                <div className="text-xs sm:text-sm text-emerald-700">Completed</div>
               </div>
             </div>
           </motion.div>
@@ -487,13 +519,13 @@ const DocumentsPage: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-4 border border-red-200"
+            className="bg-gradient-to-br from-red-50 to-red-100 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-red-200 col-span-2 sm:col-span-1"
           >
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2 sm:space-x-3">
               <XCircle className="w-5 h-5 text-red-600" />
               <div>
-                <div className="text-2xl font-bold text-red-900">{stats.failed}</div>
-                <div className="text-sm text-red-700">Failed</div>
+                <div className="text-xl sm:text-2xl font-bold text-red-900">{stats.failed}</div>
+                <div className="text-xs sm:text-sm text-red-700">Failed</div>
               </div>
             </div>
           </motion.div>
@@ -504,7 +536,7 @@ const DocumentsPage: React.FC = () => {
           <div className="space-y-4">
             {/* Search and Quick Filters */}
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0 lg:space-x-4">
-              <div className="flex-1 max-w-md">
+              <div className="flex-1 max-w-full lg:max-w-md">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <Input
@@ -516,15 +548,15 @@ const DocumentsPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center justify-between sm:justify-end space-x-2 sm:space-x-3">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setShowFilters(!showFilters)}
-                  className="flex items-center"
+                  className="flex items-center flex-1 sm:flex-none justify-center"
                 >
                   <Filter className="w-4 h-4 mr-2" />
-                  Filters
+                  <span className="hidden sm:inline">Filters</span>
                   <ChevronDown className={`w-4 h-4 ml-2 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
                 </Button>
 
@@ -533,8 +565,10 @@ const DocumentsPage: React.FC = () => {
                     variant="ghost"
                     size="sm"
                     onClick={clearFilters}
+                    className="flex-1 sm:flex-none justify-center"
                   >
-                    Clear Filters
+                    <span className="hidden sm:inline">Clear Filters</span>
+                    <span className="sm:hidden">Clear</span>
                   </Button>
                 )}
               </div>
@@ -546,7 +580,7 @@ const DocumentsPage: React.FC = () => {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="grid grid-cols-1 md:grid-cols-4 gap-4 pt-4 border-t border-gray-200"
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t border-gray-200"
               >
                 <div className="space-y-2">
                   <Label>Status</Label>
