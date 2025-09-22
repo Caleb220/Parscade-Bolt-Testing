@@ -16,7 +16,6 @@ import {
   Trash2,
   AlertTriangle,
   RefreshCw,
-  ArrowRight,
   Eye,
   Search,
   Activity,
@@ -233,14 +232,12 @@ const ProjectsOverview: React.FC<ProjectsOverviewProps> = ({ className = '' }) =
                       setFormData({ name: '', description: '' });
                     }}
                     className="w-full sm:w-auto"
-                    className="w-full sm:w-auto"
                   >
                     Cancel
                   </Button>
                   <Button
                     onClick={handleCreate}
                     disabled={createProject.isPending || !formData.name.trim()}
-                    className="w-full sm:w-auto"
                     className="w-full sm:w-auto"
                   >
                     {createProject.isPending ? 'Creating...' : 'Create Project'}
@@ -313,13 +310,13 @@ const ProjectsOverview: React.FC<ProjectsOverviewProps> = ({ className = '' }) =
                       <Zap className="w-3 h-3" />
                       <span>{project.job_count} jobs</span>
                     </div>
-                    <div className="flex items-center space-x-1 hidden sm:flex">
+                    <div className="flex items-center space-x-1 sm:flex">
                       <Calendar className="w-3 h-3" />
                       <span>Created {formatDate(project.created_at)}</span>
                     </div>
                   </div>
                   {project.last_activity && (
-                    <div className="flex items-center space-x-1 text-xs text-green-600 mt-1 hidden sm:flex">
+                    <div className="flex items-center space-x-1 text-xs text-green-600 mt-1 sm:flex">
                       <Activity className="w-3 h-3" />
                       <span>Last activity {formatDate(project.last_activity)}</span>
                     </div>

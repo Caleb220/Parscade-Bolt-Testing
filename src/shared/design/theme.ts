@@ -294,14 +294,14 @@ export const navigationStructure = {
   secondary: [
     { id: 'analytics', label: 'Analytics', path: '/dashboard/analytics', icon: 'BarChart3', tier: 'pro' },
     { id: 'workflows', label: 'Workflows', path: '/dashboard/workflows', icon: 'GitBranch', tier: 'enterprise' },
-    { id: 'integrations', label: 'Integrations', path: '/dashboard/integrations', icon: 'Puzzle' },
+    { id: 'integrations', label: 'Integrations', path: '/dashboard/integrations', icon: 'Puzzle', tier: 'pro' },
   ],
   admin: [
     { id: 'team', label: 'Team', path: '/dashboard/team', icon: 'Users', role: 'admin' },
     { id: 'billing', label: 'Billing', path: '/dashboard/billing', icon: 'CreditCard', role: 'admin' },
   ],
   settings: [
-    { id: 'account', label: 'Account', path: '/account', icon: 'Settings' },
+    { id: 'account', label: 'Account', path: '/account', icon: 'Settings', tier: 'starter' },
     { id: 'api', label: 'API Keys', path: '/account/api', icon: 'Key', tier: 'pro' },
   ],
 } as const;

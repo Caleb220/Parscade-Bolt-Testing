@@ -287,7 +287,6 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
                   : 'text-slate-700 hover:bg-blue-50/50 hover:shadow-sm hover:scale-[1.01]'
               }`}
               title={isCollapsed && !isMobile ? item.label : undefined}
-              onClick={needsUpgrade ? (e) => e.preventDefault() : undefined}
             >
               <motion.div
                 whileHover={!needsUpgrade ? { scale: 1.1 } : {}}
