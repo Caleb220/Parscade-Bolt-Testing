@@ -52,8 +52,8 @@ const ProjectDetailPage: React.FC = () => {
   const { toast } = useToast();
 
   const { data: project, isLoading, error, refetch } = useProject(projectId!);
-  const { data: documentsData } = useDocuments({ project_id: projectId });
-  const { data: jobsData } = useJobs({ project_id: projectId });
+  const { data: documentsData } = useDocuments({ page: 1, limit: 50 });
+  const { data: jobsData } = useJobs({ project_id: projectId, page: 1, limit: 50 });
   const updateProject = useUpdateProject();
   const deleteProject = useDeleteProject();
   const associateDocument = useAssociateDocument();
@@ -68,8 +68,8 @@ const ProjectDetailPage: React.FC = () => {
   const [documentSearch, setDocumentSearch] = useState('');
   const [jobSearch, setJobSearch] = useState('');
 
-  const documents = documentsData?.documents || [];
-  const jobs = jobsData?.jobs || [];
+  const documents = documentsData?.data || [];
+  const jobs = jobsData?.data || [];
 
   // Initialize edit form when project loads
   React.useEffect(() => {
@@ -570,17 +570,17 @@ const ProjectDetailPage: React.FC = () => {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.05 }}
                   className="p-4 border border-gray-200 rounded-lg hover:bg-blue-50/30 transition-all duration-200 group cursor-pointer"
-                  onClick={() => navigate(`/jobs/${job.id}`)}
+                  onClick={() => navigate(`/dashboard/jobs/${job.id}`)}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <StatusIcon status={job.status as any} />
+                      <StatusIcon status={job.status} />
                       <div>
                         <h4 className="font-medium text-gray-900 group-hover:text-blue-700 transition-colors">
                           {formatJobType(job.type)}
                         </h4>
                         <p className="text-sm text-gray-500">
-                          Created {formatDate(job.createdAt)}
+                          Created {formatDate(job.created_at)}
                         </p>
                         {job.error && (
                           <p className="text-sm text-red-600 mt-1 truncate max-w-md">
@@ -601,7 +601,7 @@ const ProjectDetailPage: React.FC = () => {
                           <span className="text-xs text-blue-600 font-medium">{job.progress}%</span>
                         </div>
                       )}
-                      <StatusBadge status={job.status as any} />
+                      <StatusBadge status={job.status} />
                       <ArrowLeft className="w-4 h-4 text-gray-400 rotate-180 group-hover:text-blue-600 transition-colors" />
                     </div>
                   </div>

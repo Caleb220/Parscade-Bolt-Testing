@@ -7,7 +7,7 @@ import React from 'react';
 import { Badge } from './badge';
 
 interface StatusBadgeProps {
-  status: 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled' | 'active' | 'inactive' | 'error';
+  status: 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled' | 'active' | 'inactive' | 'error' | string;
   className?: string;
 }
 

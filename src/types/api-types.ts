@@ -592,6 +592,209 @@ export interface paths {
       };
     };
   };
+  '/v1/jobs': {
+    get: {
+      parameters: {
+        query?: JobQueryParams;
+      };
+      responses: {
+        '200': {
+          content: {
+            'application/json': PaginatedResponse<Job>;
+          };
+        };
+        '401': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+      };
+    };
+    post: {
+      requestBody: {
+        content: {
+          'application/json': JobCreateData;
+        };
+      };
+      responses: {
+        '201': {
+          content: {
+            'application/json': Job;
+          };
+        };
+        '400': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+        '401': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+      };
+    };
+  };
+  '/v1/jobs/{jobId}': {
+    get: {
+      parameters: {
+        path: {
+          jobId: string;
+        };
+      };
+      responses: {
+        '200': {
+          content: {
+            'application/json': Job;
+          };
+        };
+        '401': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+        '404': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+      };
+    };
+    put: {
+      parameters: {
+        path: {
+          jobId: string;
+        };
+      };
+      requestBody: {
+        content: {
+          'application/json': JobUpdateData;
+        };
+      };
+      responses: {
+        '200': {
+          content: {
+            'application/json': Job;
+          };
+        };
+        '400': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+        '401': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+        '404': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+      };
+    };
+    delete: {
+      parameters: {
+        path: {
+          jobId: string;
+        };
+      };
+      responses: {
+        '204': {
+          content?: never;
+        };
+        '401': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+        '404': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+      };
+    };
+  };
+  '/v1/jobs/{jobId}/start': {
+    post: {
+      parameters: {
+        path: {
+          jobId: string;
+        };
+      };
+      responses: {
+        '200': {
+          content: {
+            'application/json': Job;
+          };
+        };
+        '401': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+        '404': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+      };
+    };
+  };
+  '/v1/jobs/{jobId}/cancel': {
+    post: {
+      parameters: {
+        path: {
+          jobId: string;
+        };
+      };
+      responses: {
+        '200': {
+          content: {
+            'application/json': Job;
+          };
+        };
+        '401': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+        '404': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+      };
+    };
+  };
+  '/v1/jobs/{jobId}/retry': {
+    post: {
+      parameters: {
+        path: {
+          jobId: string;
+        };
+      };
+      responses: {
+        '200': {
+          content: {
+            'application/json': Job;
+          };
+        };
+        '401': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+        '404': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+      };
+    };
+  };
   '/v1/users': {
     get: {
       parameters: {
@@ -705,6 +908,79 @@ export interface HealthResponse {
   };
   readonly environment?: string;
   readonly error?: string;
+}
+
+// Job-related type definitions
+export type JobType = 'analyze_structure' | 'extract_text' | 'parse_document';
+export type JobStatus = 'cancelled' | 'completed' | 'failed' | 'pending' | 'processing';
+export type JobSource = 's3' | 'upload' | 'url';
+
+export interface Job {
+  readonly id: string;
+  readonly user_id: string;
+  readonly document_id: string | null;
+  readonly project_id: string | null;
+  readonly type: JobType;
+  readonly status: JobStatus;
+  readonly source: JobSource;
+  readonly source_url: string | null;
+  readonly source_key: string | null;
+  readonly metadata: Record<string, unknown>;
+  readonly options: Record<string, unknown>;
+  readonly result_ref: string | null;
+  readonly error: string | null;
+  readonly attempts: number;
+  readonly max_attempts: number;
+  readonly progress: number;
+  readonly created_at: string;
+  readonly updated_at: string;
+  readonly started_at: string | null;
+  readonly completed_at: string | null;
+}
+
+export interface JobCreateData {
+  readonly document_id?: string;
+  readonly project_id?: string;
+  readonly type: JobType;
+  readonly source: JobSource;
+  readonly source_url?: string;
+  readonly source_key?: string;
+  readonly metadata?: Record<string, unknown>;
+  readonly options?: Record<string, unknown>;
+  readonly max_attempts?: number;
+}
+
+export interface JobUpdateData {
+  readonly document_id?: string | null;
+  readonly project_id?: string | null;
+  readonly type?: JobType;
+  readonly status?: JobStatus;
+  readonly source?: JobSource;
+  readonly source_url?: string | null;
+  readonly source_key?: string | null;
+  readonly metadata?: Record<string, unknown>;
+  readonly options?: Record<string, unknown>;
+  readonly result_ref?: string | null;
+  readonly error?: string | null;
+  readonly max_attempts?: number;
+  readonly progress?: number;
+  readonly started_at?: string | null;
+  readonly completed_at?: string | null;
+}
+
+export interface JobQueryParams {
+  readonly page?: number;
+  readonly limit?: number;
+  readonly search?: string;
+  readonly project_id?: string;
+  readonly document_id?: string;
+  readonly type?: JobType;
+  readonly status?: JobStatus;
+  readonly source?: JobSource;
+  readonly created_after?: string;
+  readonly created_before?: string;
+  readonly updated_after?: string;
+  readonly updated_before?: string;
 }
 
 export interface UserProfile {
@@ -1018,7 +1294,6 @@ export interface MessageResponse {
 // Legacy compatibility types (for gradual migration)
 export type User = UserProfile;
 export type Document = any; // To be defined when document endpoints are added
-export type Job = any; // To be defined when job endpoints are added
 
 // Pagination metadata (standardized)
 export interface PaginationMetadata {
@@ -1031,5 +1306,8 @@ export interface PaginationMetadata {
 // Generic paginated response (for backward compatibility)
 export interface PaginatedResponse<T> {
   readonly data: readonly T[];
-  readonly pagination: PaginationMetadata;
+  readonly total: number;
+  readonly page: number;
+  readonly limit: number;
+  readonly total_pages: number;
 }

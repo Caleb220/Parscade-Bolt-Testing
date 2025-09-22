@@ -166,7 +166,7 @@ const RecentActivity: React.FC = () => {
         )}
       </div>
 
-      {activityData?.total_pages && activityData.total_pages > 1 && (
+      {activityData && activityData.total_pages > 1 && (
         <div className="p-4 border-t border-slate-200">
           <div className="text-center">
             <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">

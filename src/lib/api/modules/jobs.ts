@@ -1,64 +1,92 @@
 /**
  * Jobs API Module
- * Fully aligned with OpenAPI schema definitions
+ * Comprehensive job management with all workflow operations
+ * Fully aligned with backend handoff specification
  */
 
 import { apiClient } from '../client';
-import type { paths, Job } from '@/types/api-types';
-
-// Extract exact types from OpenAPI paths
-type GetJobsParams = paths['/v1/jobs']['get']['parameters']['query'];
-type GetJobsResponse = paths['/v1/jobs']['get']['responses']['200']['content']['application/json'];
-
-type CreateJobRequest = paths['/v1/jobs']['post']['requestBody']['content']['application/json'];
-type CreateJobResponse = paths['/v1/jobs']['post']['responses']['201']['content']['application/json'];
-
-type GetJobResponse = paths['/v1/jobs/{jobId}']['get']['responses']['200']['content']['application/json'];
-type CancelJobResponse = paths['/v1/jobs/{jobId}']['delete']['responses']['200']['content']['application/json'];
+import type { 
+  Job, 
+  JobCreateData, 
+  JobUpdateData, 
+  JobQueryParams, 
+  PaginatedResponse 
+} from '@/types/api-types';
 
 /**
  * Job management endpoints
- * All endpoints follow OpenAPI schema exactly
+ * All endpoints follow backend specification exactly
  */
 export const jobsApi = {
   /**
-   * List user jobs with pagination and filtering
+   * Create a new document processing job
    */
-  async listJobs(params?: GetJobsParams): Promise<GetJobsResponse> {
-    return apiClient.get<GetJobsResponse>('/v1/jobs', params);
+  async createJob(data: JobCreateData): Promise<Job> {
+    return apiClient.post<Job>('/v1/jobs', data);
   },
 
   /**
-   * Create new document processing job
+   * List user jobs with comprehensive filtering and pagination
    */
-  async createJob(request: CreateJobRequest): Promise<Job> {
-    return apiClient.post<CreateJobResponse>('/v1/jobs', request);
+  async listJobs(params?: JobQueryParams): Promise<PaginatedResponse<Job>> {
+    return apiClient.get<PaginatedResponse<Job>>('/v1/jobs', params);
   },
 
   /**
-   * Get job details and status
+   * Get detailed job information by ID
    */
   async getJob(jobId: string): Promise<Job> {
-    return apiClient.get<GetJobResponse>(`/v1/jobs/${jobId}`);
+    return apiClient.get<Job>(`/v1/jobs/${jobId}`);
   },
 
   /**
-   * Cancel pending or running job
+   * Update job properties and metadata
    */
-  async cancelJob(jobId: string): Promise<Job> {
-    return apiClient.delete<CancelJobResponse>(`/v1/jobs/${jobId}`, {
+  async updateJob(jobId: string, data: JobUpdateData): Promise<Job> {
+    return apiClient.put<Job>(`/v1/jobs/${jobId}`, data);
+  },
+
+  /**
+   * Delete a job permanently
+   */
+  async deleteJob(jobId: string): Promise<void> {
+    return apiClient.delete<void>(`/v1/jobs/${jobId}`, {
       retryable: false,
     });
   },
 
   /**
+   * Start a pending job (changes status to processing)
+   */
+  async startJob(jobId: string): Promise<Job> {
+    return apiClient.post<Job>(`/v1/jobs/${jobId}/start`, {});
+  },
+
+  /**
+   * Cancel a running or pending job
+   */
+  async cancelJob(jobId: string): Promise<Job> {
+    return apiClient.post<Job>(`/v1/jobs/${jobId}/cancel`, {}, {
+      retryable: false,
+    });
+  },
+
+  /**
+   * Retry a failed job (resets to pending status)
+   */
+  async retryJob(jobId: string): Promise<Job> {
+    return apiClient.post<Job>(`/v1/jobs/${jobId}/retry`, {});
+  },
+
+  /**
    * Submit parse job for document (convenience method)
    */
-  async submitParseJob(documentId: string, options?: Record<string, unknown>): Promise<Job> {
+  async submitParseJob(documentId: string, projectId?: string, options?: Record<string, unknown>): Promise<Job> {
     return this.createJob({
       type: 'parse_document',
       source: 'upload',
-      documentId,
+      document_id: documentId,
+      project_id: projectId,
       options: options || {},
     });
   },

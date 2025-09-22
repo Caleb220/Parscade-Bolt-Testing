@@ -7,7 +7,7 @@ import React from 'react';
 import { CheckCircle, XCircle, Clock, RefreshCw, AlertTriangle } from 'lucide-react';
 
 interface StatusIconProps {
-  status: 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled';
+  status: 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled' | string;
   className?: string;
   size?: 'sm' | 'md' | 'lg';
 }

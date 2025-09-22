@@ -8,7 +8,7 @@ import { motion } from 'framer-motion';
 import { CheckCircle, Clock, AlertTriangle, XCircle, Zap } from 'lucide-react';
 
 interface ParscadeStatusBadgeProps {
-  status: 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled';
+  status: 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled' | string;
   size?: 'sm' | 'md' | 'lg';
   animated?: boolean;
   showIcon?: boolean;

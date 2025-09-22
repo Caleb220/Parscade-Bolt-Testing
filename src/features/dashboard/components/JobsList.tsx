@@ -12,6 +12,7 @@ import { ParscadeButton, ParscadeCard, ParscadeStatusBadge } from '@/shared/comp
 import { formatJobType } from '@/shared/utils/formatters';
 import { formatDate } from '@/shared/utils/date';
 import { useJobs } from '@/shared/hooks/api/useJobs';
+import { getErrorMessage } from '@/lib/api';
 
 /**
  * Professional jobs list with refined blue theme
@@ -28,7 +29,7 @@ const JobsList: React.FC = () => {
       <ParscadeCard className="p-6">
         <div className="flex items-center text-red-600 mb-4">
           <AlertTriangle className="w-5 h-5 mr-2" />
-          <span className="text-sm">Failed to load jobs</span>
+          <span className="text-sm">{getErrorMessage(error)}</span>
         </div>
         <ParscadeButton variant="outline" size="sm" onClick={() => refetch()}>
           Retry
@@ -37,8 +38,8 @@ const JobsList: React.FC = () => {
     );
   }
 
-  const jobs = jobsData?.jobs || [];
-  const pagination = jobsData?.pagination;
+  const jobs = jobsData?.data || [];
+  const pagination = jobsData;
 
   return (
     <ParscadeCard
@@ -102,7 +103,7 @@ const JobsList: React.FC = () => {
                     transition: { duration: 0.2 }
                   }}
                   className="p-4 cursor-pointer transition-all duration-200 hover:shadow-sm group border border-slate-200 rounded-lg"
-                  onClick={() => job?.id && navigate(`/jobs/${job.id}`)}
+                  onClick={() => job?.id && navigate(`/dashboard/jobs/${job.id}`)}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-start space-x-3 flex-1">
@@ -111,7 +112,7 @@ const JobsList: React.FC = () => {
                         whileHover={{ scale: 1.05 }}
                         transition={{ duration: 0.2 }}
                       >
-                        <ParscadeStatusBadge status={(job?.status as any) || 'pending'} size="sm" />
+                        <ParscadeStatusBadge status={job?.status || 'pending'} size="sm" />
                       </motion.div>
                       
                       <div className="flex-1 min-w-0">
@@ -119,7 +120,7 @@ const JobsList: React.FC = () => {
                           {job?.type ? formatJobType(job.type) : 'Processing Job'}
                         </p>
                         <p className="text-sm text-slate-600 truncate">
-                          Created {job?.createdAt ? formatDate(job.createdAt) : 'Unknown'}
+                          Created {job?.created_at ? formatDate(job.created_at) : 'Unknown'}
                         </p>
                         {job?.status === 'processing' && (
                           <div className="flex items-center mt-2">
@@ -148,7 +149,7 @@ const JobsList: React.FC = () => {
           )}
         </div>
 
-        {pagination?.hasNext && (
+        {pagination && pagination.total_pages > pagination.page && (
           <div className="p-4 border-t border-slate-200">
             <ParscadeButton 
               variant="outline" 

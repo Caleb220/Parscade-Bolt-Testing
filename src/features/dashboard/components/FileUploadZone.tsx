@@ -52,7 +52,10 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({ onJobSubmitted }) => {
     if (!uploadedDocumentId) return;
     
     try {
-      const result = await submitParseJobMutation.mutateAsync(uploadedDocumentId);
+      const result = await submitParseJobMutation.mutateAsync({ 
+        documentId: uploadedDocumentId,
+        options: {}
+      });
       if (result?.id) {
         onJobSubmitted?.(result.id);
       } else {

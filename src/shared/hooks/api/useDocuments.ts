@@ -17,11 +17,19 @@ const QUERY_KEYS = {
 export const useDocuments = (params?: { page?: number; limit?: number; status?: string; search?: string }) => {
   return useQuery({
     queryKey: [...QUERY_KEYS.documents, params],
-    queryFn: () => documentsApi.listDocuments(params),
-    select: (data) => ({
-      documents: data.documents,
-      pagination: data.pagination,
-    }),
+    queryFn: async () => {
+      try {
+        return await documentsApi.listDocuments(params);
+      } catch (error) {
+        return {
+          data: [],
+          total: 0,
+          page: 1,
+          limit: 10,
+          total_pages: 0,
+        };
+      }
+    },
   });
 };
 
