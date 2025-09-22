@@ -56,6 +56,7 @@ const ProductPage = React.lazy(() => import('@/features/marketing/pages/ProductP
 const DashboardPage = React.lazy(() => import('@/features/dashboard/pages/DashboardPage'));
 const JobDetailPage = React.lazy(() => import('@/features/jobs/pages/JobDetailPage'));
 const AccountLayout = React.lazy(() => import('@/features/account/components/AccountLayout'));
+const ProjectDetailPage = React.lazy(() => import('@/features/dashboard/pages/ProjectDetailPage'));
 const BillingPage = React.lazy(() => import('@/features/marketing/pages/BillingPage'));
 const ContactPage = React.lazy(() => import('@/features/marketing/pages/ContactPage'));
 const AboutPage = React.lazy(() => import('@/features/marketing/pages/AboutPage'));
@@ -159,6 +160,13 @@ const RouteHandler: React.FC = () => {
           <ProtectedRoute redirectTo="/">
             <Suspense fallback={<RouteLoadingFallback />}>
               <JobDetailPage />
+            </Suspense>
+          </ProtectedRoute>
+        } />
+        <Route path="/dashboard/projects/:projectId" element={
+          <ProtectedRoute redirectTo="/">
+            <Suspense fallback={<RouteLoadingFallback />}>
+              <ProjectDetailPage />
             </Suspense>
           </ProtectedRoute>
         } />

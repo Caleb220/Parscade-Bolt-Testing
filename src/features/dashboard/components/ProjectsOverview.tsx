@@ -5,6 +5,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { 
   FolderPlus, 
   Folder, 
@@ -14,7 +15,9 @@ import {
   Edit3,
   Trash2,
   AlertTriangle,
-  RefreshCw
+  RefreshCw,
+  ArrowRight,
+  Eye
 } from 'lucide-react';
 
 import { ParscadeCard, ParscadeButton } from '@/shared/components/brand';
@@ -43,6 +46,7 @@ interface ProjectsOverviewProps {
  */
 const ProjectsOverview: React.FC<ProjectsOverviewProps> = ({ className = '' }) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const { data: projectsData, isLoading, error, refetch } = useProjects({ page: 1, limit: 10 });
   const createProject = useCreateProject();
   const updateProject = useUpdateProject();
@@ -254,7 +258,10 @@ const ProjectsOverview: React.FC<ProjectsOverviewProps> = ({ className = '' }) =
                 <div className="flex-1">
                   <div className="flex items-center space-x-3 mb-2">
                     <Folder className="w-5 h-5 text-blue-600" />
-                    <h4 className="font-medium text-gray-900 group-hover:text-blue-700 transition-colors">
+                    <h4 
+                      className="font-medium text-gray-900 group-hover:text-blue-700 transition-colors cursor-pointer"
+                      onClick={() => navigate(`/dashboard/projects/${project.id}`)}
+                    >
                       {project.name}
                     </h4>
                   </div>
@@ -269,6 +276,13 @@ const ProjectsOverview: React.FC<ProjectsOverviewProps> = ({ className = '' }) =
                 </div>
                 
                 <div className="flex items-center space-x-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => navigate(`/dashboard/projects/${project.id}`)}
+                  >
+                    <Eye className="w-4 h-4" />
+                  </Button>
                   <Button
                     variant="ghost"
                     size="sm"
