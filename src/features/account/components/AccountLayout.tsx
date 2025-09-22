@@ -103,7 +103,6 @@ const AccountLayout: React.FC = () => {
                       </p>
                       <button 
                         onClick={() => refetch()}
-                        end={path === '/account'}
                       >
                         Retry
                       </button>
@@ -157,7 +156,7 @@ const AccountLayout: React.FC = () => {
                           {label}
                         </NavLink>
                       ))}
-                      end={path === '/account'}
+                      </div>
                       
                       {/* Scroll Indicator - Right Side */}
                       <div className="absolute right-0 top-0 bottom-2 w-8 bg-gradient-to-l from-gray-50 to-transparent pointer-events-none flex items-center justify-end pr-1">
