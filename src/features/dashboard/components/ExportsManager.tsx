@@ -16,7 +16,8 @@ import {
   XCircle,
   AlertTriangle,
   RefreshCw,
-  ExternalLink
+  ExternalLink,
+  Plus
 } from 'lucide-react';
 
 import { ParscadeCard, ParscadeButton } from '@/shared/components/brand';

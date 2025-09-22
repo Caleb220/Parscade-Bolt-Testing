@@ -96,7 +96,7 @@ const OverviewStats: React.FC = () => {
       value: formatValue(stats?.average_processing_time_ms || 0, 'time'),
       accentLabel: 'Average',
       subtitle: 'Average processing time',
-      color: 'cyan',
+      color: 'blue',
     },
   ];
 

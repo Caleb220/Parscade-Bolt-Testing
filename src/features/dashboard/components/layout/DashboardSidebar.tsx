@@ -49,6 +49,7 @@ const iconMap = {
   Key,
   GitBranch,
   Puzzle,
+  Crown,
 } as const;
 
 /**

@@ -28,7 +28,6 @@ import {
   MoreVertical,
   ArrowUpDown,
   ChevronDown,
-  Target,
   Activity,
   BarChart3
 } from 'lucide-react';

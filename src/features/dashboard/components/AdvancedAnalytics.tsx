@@ -13,7 +13,8 @@ import {
   RefreshCw,
   BarChart3,
   PieChart,
-  Activity
+  Activity,
+  Crown
 } from 'lucide-react';
 
 import { ParscadeCard, ParscadeButton } from '@/shared/components/brand';

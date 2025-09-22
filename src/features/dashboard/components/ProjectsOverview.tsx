@@ -127,7 +127,6 @@ const ProjectsOverview: React.FC<ProjectsOverviewProps> = ({ className = '' }) =
   const startEdit = (project: any) => {
     setFormData({ name: project.name, description: project.description || '' });
     setEditingProject(project.id);
-  };
 
   if (isLoading) {
     return (

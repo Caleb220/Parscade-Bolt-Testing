@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Upload, Download, Settings, FolderPlus } from 'lucide-react';
+import { Plus, Upload, Download, Settings, FolderPlus, Zap } from 'lucide-react';
 
 import { ParscadeButton } from '@/shared/components/brand';
 import { useCreateProject } from '@/shared/hooks/api/useProjects';
