@@ -9,7 +9,7 @@ import { PublicAuthLayout } from '@/shared/components/layout/templates/PublicAut
 
 // Pages
 import { HomePage } from '@/features/marketing/pages/HomePage';
-import { AboutPage } from '@/features/marketing/pages/AboutPage';
+import AboutPage from '@/features/marketing/pages/AboutPage';
 import { ProductPage } from '@/features/marketing/pages/ProductPage';
 import { BillingPage } from '@/features/marketing/pages/BillingPage';
 import { ContactPage } from '@/features/marketing/pages/ContactPage';
