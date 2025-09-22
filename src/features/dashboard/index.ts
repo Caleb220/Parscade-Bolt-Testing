@@ -5,6 +5,7 @@
 
 // Pages
 export { default as DashboardPage } from './pages/DashboardPage';
+export { default as JobsPage } from './pages/JobsPage';
 
 // Layout Components
 export { default as DashboardLayout } from './components/layout/DashboardLayout';

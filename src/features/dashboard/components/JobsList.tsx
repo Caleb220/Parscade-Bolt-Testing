@@ -133,6 +133,11 @@ const JobsList: React.FC = () => {
                             <span className="text-xs text-blue-600 font-medium">{job?.progress || 0}%</span>
                           </div>
                         )}
+                        {job?.error && (
+                          <p className="text-xs text-red-600 truncate mt-1">
+                            Error: {job.error}
+                          </p>
+                        )}
                       </div>
                     </div>
 
@@ -149,11 +154,12 @@ const JobsList: React.FC = () => {
           )}
         </div>
 
-        {pagination && pagination.total_pages > pagination.page && (
+        {jobsData && jobsData.total_pages > jobsData.page && (
           <div className="p-4 border-t border-slate-200">
             <ParscadeButton 
               variant="outline" 
               className="w-full"
+              onClick={() => navigate('/dashboard/jobs')}
             >
               View All Jobs
             </ParscadeButton>

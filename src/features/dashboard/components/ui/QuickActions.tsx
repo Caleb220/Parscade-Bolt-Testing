@@ -10,6 +10,7 @@ import { Plus, Upload, Download, Settings, FolderPlus } from 'lucide-react';
 import { ParscadeButton } from '@/shared/components/brand';
 import { useCreateProject } from '@/shared/hooks/api/useProjects';
 import { useCreateExport } from '@/shared/hooks/api/useExports';
+import { useNavigate } from 'react-router-dom';
 
 interface QuickActionsProps {
   onUpload?: () => void;
@@ -25,6 +26,7 @@ const QuickActions: React.FC<QuickActionsProps> = ({
   onSettings,
   className = '',
 }) => {
+  const navigate = useNavigate();
   const createProject = useCreateProject();
   const createExport = useCreateExport();
 
@@ -78,6 +80,17 @@ const QuickActions: React.FC<QuickActionsProps> = ({
         >
           <FolderPlus className="w-4 h-4 mr-2" />
           {createProject.isPending ? 'Creating...' : 'New Project'}
+        </ParscadeButton>
+      </motion.div>
+      
+      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+        <ParscadeButton 
+          variant="outline" 
+          size="sm" 
+          onClick={() => navigate('/dashboard/jobs')}
+        >
+          <Zap className="w-4 h-4 mr-2" />
+          View All Jobs
         </ParscadeButton>
       </motion.div>
       

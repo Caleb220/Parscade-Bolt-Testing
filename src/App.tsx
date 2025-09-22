@@ -23,6 +23,7 @@ import LoginSupportPage from '@/features/auth/pages/LoginSupportPage';
 import DashboardPage from '@/features/dashboard/pages/DashboardPage';
 import ProjectDetailPage from '@/features/dashboard/pages/ProjectDetailPage';
 import JobDetailPage from '@/features/jobs/pages/JobDetailPage';
+import JobsPage from '@/features/dashboard/pages/JobsPage';
 
 // Account
 import AccountLayout from '@/features/account/components/AccountLayout';
@@ -64,6 +65,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ProjectDetailPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/jobs"
+              element={
+                <ProtectedRoute>
+                  <JobsPage />
                 </ProtectedRoute>
               }
             />
