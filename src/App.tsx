@@ -8,24 +8,24 @@ import { ProtectedRoute } from '@/shared/components/layout/templates/ProtectedRo
 import { PublicAuthLayout } from '@/shared/components/layout/templates/PublicAuthLayout';
 
 // Pages
-import { HomePage } from '@/features/marketing/pages/HomePage';
+import HomePage } from '@/features/marketing/pages/HomePage';
 import AboutPage from '@/features/marketing/pages/AboutPage';
-import { ProductPage } from '@/features/marketing/pages/ProductPage';
-import { BillingPage } from '@/features/marketing/pages/BillingPage';
-import { ContactPage } from '@/features/marketing/pages/ContactPage';
-import { PrivacyPage } from '@/features/marketing/pages/PrivacyPage';
-import { TermsPage } from '@/features/marketing/pages/TermsPage';
-import { NotFoundPage } from '@/features/marketing/pages/NotFoundPage';
-import { ErrorPage } from '@/features/marketing/pages/ErrorPage';
-import { LoginSupportPage } from '@/features/auth/pages/LoginSupportPage';
+import ProductPage from '@/features/marketing/pages/ProductPage';
+import BillingPage from '@/features/marketing/pages/BillingPage';
+import ContactPage from '@/features/marketing/pages/ContactPage';
+import PrivacyPage from '@/features/marketing/pages/PrivacyPage';
+import TermsPage from '@/features/marketing/pages/TermsPage';
+import NotFoundPage from '@/features/marketing/pages/NotFoundPage';
+import ErrorPage from '@/features/marketing/pages/ErrorPage';
+import LoginSupportPage from '@/features/auth/pages/LoginSupportPage';
 
 // Dashboard
-import { DashboardPage } from '@/features/dashboard/pages/DashboardPage';
-import { ProjectDetailPage } from '@/features/dashboard/pages/ProjectDetailPage';
-import { JobDetailPage } from '@/features/jobs/pages/JobDetailPage';
+import DashboardPage from '@/features/dashboard/pages/DashboardPage';
+import ProjectDetailPage from '@/features/dashboard/pages/ProjectDetailPage';
+import JobDetailPage from '@/features/jobs/pages/JobDetailPage';
 
 // Account
-import { AccountLayout } from '@/features/account/components/AccountLayout';
+import AccountLayout from '@/features/account/components/AccountLayout';
 
 function App() {
   return (
