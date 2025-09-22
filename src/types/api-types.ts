@@ -894,6 +894,196 @@ export interface paths {
       };
     };
   };
+  '/v1/documents/upload': {
+    post: {
+      requestBody: {
+        content: {
+          'multipart/form-data': {
+            file: File;
+            name?: string;
+            project_id?: string;
+            metadata?: string;
+          };
+        };
+      };
+      responses: {
+        '201': {
+          content: {
+            'application/json': DocumentUploadResponse;
+          };
+        };
+        '400': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+        '401': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+      };
+    };
+  };
+  '/v1/documents/ingest': {
+    post: {
+      requestBody: {
+        content: {
+          'application/json': {
+            url: string;
+            name?: string;
+            project_id?: string;
+            mime_type?: string;
+            metadata?: Record<string, unknown>;
+          };
+        };
+      };
+      responses: {
+        '201': {
+          content: {
+            'application/json': Document;
+          };
+        };
+        '400': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+        '401': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+      };
+    };
+  };
+  '/v1/documents': {
+    get: {
+      parameters: {
+        query?: DocumentQueryParams;
+      };
+      responses: {
+        '200': {
+          content: {
+            'application/json': PaginatedResponse<Document>;
+          };
+        };
+        '401': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+      };
+    };
+  };
+  '/v1/documents/{documentId}': {
+    get: {
+      parameters: {
+        path: {
+          documentId: string;
+        };
+      };
+      responses: {
+        '200': {
+          content: {
+            'application/json': Document;
+          };
+        };
+        '401': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+        '404': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+      };
+    };
+    patch: {
+      parameters: {
+        path: {
+          documentId: string;
+        };
+      };
+      requestBody: {
+        content: {
+          'application/json': DocumentUpdateData;
+        };
+      };
+      responses: {
+        '200': {
+          content: {
+            'application/json': Document;
+          };
+        };
+        '400': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+        '401': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+        '404': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+      };
+    };
+    delete: {
+      parameters: {
+        path: {
+          documentId: string;
+        };
+      };
+      responses: {
+        '204': {
+          content?: never;
+        };
+        '401': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+        '404': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+      };
+    };
+  };
+  '/v1/documents/{documentId}/download': {
+    get: {
+      parameters: {
+        path: {
+          documentId: string;
+        };
+      };
+      responses: {
+        '200': {
+          content: {
+            'application/json': DocumentDownloadResponse;
+          };
+        };
+        '401': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+        '404': {
+          content: {
+            'application/json': ErrorResponse;
+          };
+        };
+      };
+    };
+  };
 }
 
 // Core type definitions matching OpenAPI schema exactly
@@ -1293,7 +1483,70 @@ export interface MessageResponse {
 
 // Legacy compatibility types (for gradual migration)
 export type User = UserProfile;
-export type Document = any; // To be defined when document endpoints are added
+
+// Document-related type definitions
+export type DocumentStatus = 'completed' | 'failed' | 'processing' | 'uploading';
+
+export interface Document {
+  readonly id: string;
+  readonly user_id: string;
+  readonly name: string;
+  readonly original_name: string;
+  readonly mime_type: string;
+  readonly size: number;
+  readonly storage_key: string;
+  readonly status: DocumentStatus;
+  readonly metadata: Record<string, unknown>;
+  readonly extracted_text: string | null;
+  readonly structure_data: Record<string, unknown> | null;
+  readonly thumbnail_key: string | null;
+  readonly project_id: string | null;
+  readonly created_at: string;
+  readonly updated_at: string;
+}
+
+export interface DocumentCreateData {
+  readonly name: string;
+  readonly original_name: string;
+  readonly mime_type: string;
+  readonly size: number;
+  readonly project_id?: string;
+  readonly metadata?: Record<string, unknown>;
+}
+
+export interface DocumentUpdateData {
+  readonly name?: string;
+  readonly project_id?: string | null;
+  readonly status?: DocumentStatus;
+  readonly metadata?: Record<string, unknown>;
+  readonly extracted_text?: string | null;
+  readonly structure_data?: Record<string, unknown> | null;
+  readonly thumbnail_key?: string | null;
+}
+
+export interface DocumentQueryParams {
+  readonly page?: number;
+  readonly limit?: number;
+  readonly search?: string;
+  readonly project_id?: string;
+  readonly status?: DocumentStatus;
+  readonly mime_type?: string;
+  readonly created_after?: string;
+  readonly created_before?: string;
+  readonly updated_after?: string;
+  readonly updated_before?: string;
+}
+
+export interface DocumentUploadResponse {
+  readonly document: Document;
+  readonly download_url: string;
+}
+
+export interface DocumentDownloadResponse {
+  readonly download_url: string;
+  readonly expires_in: number;
+  readonly expires_at: string;
+}
 
 // Pagination metadata (standardized)
 export interface PaginationMetadata {

@@ -1,40 +1,100 @@
 /**
  * Documents API Module
- * Fully aligned with OpenAPI schema definitions
+ * Comprehensive document management with upload, ingest, and full CRUD operations
+ * Fully aligned with backend handoff specification
  */
 
 import { apiClient } from '../client';
-import type { paths, Document, PaginationMetadata } from '@/types/api-types';
-
-// Extract exact types from OpenAPI paths
-type GetDocumentsParams = paths['/v1/documents']['get']['parameters']['query'];
-type GetDocumentsResponse = paths['/v1/documents']['get']['responses']['200']['content']['application/json'];
-
-type GetDocumentResponse = paths['/v1/documents/{documentId}']['get']['responses']['200']['content']['application/json'];
-
-type GetDownloadResponse = paths['/v1/documents/{documentId}/download']['get']['responses']['200']['content']['application/json'];
+import type { 
+  Document,
+  DocumentCreateData,
+  DocumentUpdateData,
+  DocumentQueryParams,
+  DocumentUploadResponse,
+  DocumentDownloadResponse,
+  PaginatedResponse
+} from '@/types/api-types';
 
 /**
  * Document management endpoints
- * All endpoints follow OpenAPI schema exactly
+ * All endpoints follow backend specification exactly
  */
 export const documentsApi = {
   /**
-   * List user documents with pagination and filtering
+   * Upload a new document file
    */
-  async listDocuments(params?: GetDocumentsParams): Promise<GetDocumentsResponse> {
-    return apiClient.get<GetDocumentsResponse>('/v1/documents', params);
+  async uploadDocument(
+    file: File,
+    name?: string,
+    projectId?: string,
+    metadata?: Record<string, unknown>
+  ): Promise<DocumentUploadResponse> {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    if (name) {
+      formData.append('name', name);
+    }
+    
+    if (projectId) {
+      formData.append('project_id', projectId);
+    }
+    
+    if (metadata) {
+      formData.append('metadata', JSON.stringify(metadata));
+    }
+
+    return apiClient.post<DocumentUploadResponse>('/v1/documents/upload', formData, {
+      headers: {
+        'Content-Type': undefined, // Let browser set multipart boundary
+      },
+    });
   },
 
   /**
-   * Get document details by ID
+   * Ingest document from URL
+   */
+  async ingestDocument(data: {
+    url: string;
+    name?: string;
+    projectId?: string;
+    mime_type?: string;
+    metadata?: Record<string, unknown>;
+  }): Promise<Document> {
+    const requestBody = {
+      url: data.url,
+      ...(data.name && { name: data.name }),
+      ...(data.projectId && { project_id: data.projectId }),
+      ...(data.mime_type && { mime_type: data.mime_type }),
+      ...(data.metadata && { metadata: data.metadata }),
+    };
+
+    return apiClient.post<Document>('/v1/documents/ingest', requestBody);
+  },
+
+  /**
+   * List user documents with comprehensive filtering and pagination
+   */
+  async listDocuments(params?: DocumentQueryParams): Promise<PaginatedResponse<Document>> {
+    return apiClient.get<PaginatedResponse<Document>>('/v1/documents', params);
+  },
+
+  /**
+   * Get detailed document information by ID
    */
   async getDocument(documentId: string): Promise<Document> {
-    return apiClient.get<GetDocumentResponse>(`/v1/documents/${documentId}`);
+    return apiClient.get<Document>(`/v1/documents/${documentId}`);
   },
 
   /**
-   * Delete document and all associated data
+   * Update document metadata and properties
+   */
+  async updateDocument(documentId: string, data: DocumentUpdateData): Promise<Document> {
+    return apiClient.patch<Document>(`/v1/documents/${documentId}`, data);
+  },
+
+  /**
+   * Delete document and associated file from storage
    */
   async deleteDocument(documentId: string): Promise<void> {
     return apiClient.delete<void>(`/v1/documents/${documentId}`, {
@@ -43,9 +103,9 @@ export const documentsApi = {
   },
 
   /**
-   * Generate download URL for document
+   * Generate time-limited signed download URL
    */
-  async getDownloadUrl(documentId: string): Promise<GetDownloadResponse> {
-    return apiClient.get<GetDownloadResponse>(`/v1/documents/${documentId}/download`);
+  async getDownloadUrl(documentId: string): Promise<DocumentDownloadResponse> {
+    return apiClient.get<DocumentDownloadResponse>(`/v1/documents/${documentId}/download`);
   },
 } as const;

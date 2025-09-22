@@ -19,50 +19,7 @@ export interface User {
   readonly timezone?: string;
   readonly plan: 'free' | 'pro' | 'enterprise';
   readonly createdAt: string;
-  readonly username?: string;
-  readonly company?: string;
-  readonly role?: string;
-  readonly phone?: string;
   readonly updatedAt: string;
-}
-
-export interface Document {
-  readonly id: string;
-  readonly userId: string;
-  readonly name: string;
-  readonly originalName: string;
-  readonly mimeType: string;
-  readonly size: number;
-  readonly storageKey: string;
-  readonly status: 'uploading' | 'processing' | 'completed' | 'failed';
-  readonly metadata: Record<string, any>;
-  readonly extractedText?: string;
-  readonly structureData?: Record<string, any>;
-  readonly thumbnailKey?: string;
-  readonly createdAt: string;
-  readonly updatedAt: string;
-}
-
-export interface Job {
-  readonly id: string;
-  readonly userId: string;
-  readonly documentId?: string;
-  readonly type: 'parse_document' | 'extract_text' | 'analyze_structure';
-  readonly status: 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled';
-  readonly source: 'upload' | 'url' | 's3';
-  readonly sourceUrl?: string;
-  readonly sourceKey?: string;
-  readonly metadata: Record<string, any>;
-  readonly options: Record<string, any>;
-  readonly resultRef?: string;
-  readonly error?: string;
-  readonly attempts: number;
-  readonly maxAttempts: number;
-  readonly progress: number;
-  readonly createdAt: string;
-  readonly updatedAt: string;
-  readonly startedAt?: string;
-  readonly completedAt?: string;
 }
 
 export interface PaginatedResponse<T> {

@@ -5,6 +5,8 @@
 
 // Pages
 export { default as DashboardPage } from './pages/DashboardPage';
+export { default as DocumentsPage } from './pages/DocumentsPage';
+export { default as DocumentDetailPage } from './pages/DocumentDetailPage';
 export { default as JobsPage } from './pages/JobsPage';
 
 // Layout Components

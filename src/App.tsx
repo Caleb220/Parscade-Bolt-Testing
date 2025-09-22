@@ -21,6 +21,8 @@ import LoginSupportPage from '@/features/auth/pages/LoginSupportPage';
 
 // Dashboard
 import DashboardPage from '@/features/dashboard/pages/DashboardPage';
+import DocumentsPage from '@/features/dashboard/pages/DocumentsPage';
+import DocumentDetailPage from '@/features/dashboard/pages/DocumentDetailPage';
 import ProjectDetailPage from '@/features/dashboard/pages/ProjectDetailPage';
 import JobDetailPage from '@/features/jobs/pages/JobDetailPage';
 import JobsPage from '@/features/dashboard/pages/JobsPage';
@@ -57,6 +59,22 @@ function App() {
               element={
                 <ProtectedRoute>
                   <DashboardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/documents"
+              element={
+                <ProtectedRoute>
+                  <DocumentsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/documents/:documentId"
+              element={
+                <ProtectedRoute>
+                  <DocumentDetailPage />
                 </ProtectedRoute>
               }
             />
