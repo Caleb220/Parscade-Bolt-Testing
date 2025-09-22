@@ -4,6 +4,7 @@ import { Mail, Phone, MapPin, Send, CheckCircle } from 'lucide-react';
 import Layout from '@/shared/components/layout/templates/Layout';
 import CustomButton from '@/shared/components/forms/CustomButton';
 import Input from '@/shared/components/forms/FormFieldInput';
+import {env} from "@/app/config/env.ts";
 
 const ContactPage: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -27,11 +28,10 @@ const ContactPage: React.FC = () => {
     setIsSubmitting(true);
     
     try {
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-contact-email`, {
+      const response = await fetch(`${env.api.baseUrl}/contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
         },
         body: JSON.stringify(formData),
       });
