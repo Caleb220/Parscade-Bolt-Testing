@@ -26,6 +26,10 @@ import JobDetailPage from '@/features/jobs/pages/JobDetailPage';
 
 // Account
 import AccountLayout from '@/features/account/components/AccountLayout';
+import ProfileTab from '@/features/account/components/tabs/ProfileTab';
+import SecurityTab from '@/features/account/components/tabs/SecurityTab';
+import NotificationsTab from '@/features/account/components/tabs/NotificationsTab';
+import IntegrationsTab from '@/features/account/components/tabs/IntegrationsTab';
 
 function App() {
   return (
@@ -80,7 +84,13 @@ function App() {
                   <AccountLayout />
                 </ProtectedRoute>
               }
-            />
+            >
+              <Route index element={<ProfileTab />} />
+              <Route path="profile" element={<ProfileTab />} />
+              <Route path="security" element={<SecurityTab />} />
+              <Route path="notifications" element={<NotificationsTab />} />
+              <Route path="integrations" element={<IntegrationsTab />} />
+            </Route>
 
             {/* Error Routes */}
             <Route path="/error" element={<ErrorPage />} />
