@@ -3,9 +3,9 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Toaster } from '@/shared/components/ui/toaster';
 
 // Auth
-import { AuthProvider } from '@/features/auth/context/AuthContext';
-import { ProtectedRoute } from '@/shared/components/layout/templates/ProtectedRoute';
-import { PublicAuthLayout } from '@/shared/components/layout/templates/PublicAuthLayout';
+import AuthProvider from '@/features/auth/context/AuthContext';
+import ProtectedRoute from '@/shared/components/layout/templates/ProtectedRoute';
+import PublicAuthLayout from '@/shared/components/layout/templates/PublicAuthLayout';
 
 // Pages
 import HomePage from '@/features/marketing/pages/HomePage';
