@@ -21,20 +21,13 @@ export const profileSchema = z.object({
     .regex(/^[a-zA-Z0-9_-]+$/, 'Username can only contain letters, numbers, underscores, and hyphens')
     .nullable()
     .optional(),
+  bio: optionalTrimmedStringSchema('Bio', 1, 500),
   company: optionalTrimmedStringSchema('Company', 1, 100),
-  role: optionalTrimmedStringSchema('Job title', 1, 100), // Job title field
-  phone: z.string()
-    .regex(/^\+?[1-9]\d{1,14}$/, 'Phone must be in international format')
+  website: z.string()
+    .url('Must be a valid URL')
     .nullable()
     .optional(),
-  locale: z.string()
-    .max(10, 'Locale must be at most 10 characters')
-    .nullable()
-    .optional(),
-  timezone: z.string()
-    .max(50, 'Timezone must be at most 50 characters')
-    .nullable()
-    .optional(),
+  location: optionalTrimmedStringSchema('Location', 1, 100),
 });
 
 // API Key validation matching OpenAPI CreateApiKeyRequest exactly

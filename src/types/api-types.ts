@@ -1179,14 +1179,17 @@ export interface UserProfile {
   readonly full_name?: string | null;
   readonly username?: string | null;
   readonly avatar_url?: string | null;
+  readonly bio?: string | null;
   readonly company?: string | null;
-  readonly role?: string | null; // Job title
-  readonly phone?: string | null;
-  readonly locale?: string | null;
-  readonly timezone: string;
-  readonly plan: UserPlan;
+  readonly website?: string | null;
+  readonly location?: string | null;
   readonly email_verified: boolean;
-  readonly user_role: UserRole;
+  readonly phone_verified: boolean;
+  readonly onboarding_completed: boolean;
+  readonly subscription_tier: UserPlan;
+  readonly subscription_status: 'active' | 'inactive' | 'cancelled' | 'past_due';
+  readonly last_active_at?: string | null;
+  readonly metadata: Record<string, unknown>;
   readonly created_at: string;
   readonly updated_at: string;
 }
@@ -1197,11 +1200,10 @@ export type UserPlan = 'free' | 'pro' | 'enterprise';
 export interface UpdateProfileRequest {
   readonly full_name?: string | null;
   readonly username?: string | null;
+  readonly bio?: string | null;
   readonly company?: string | null;
-  readonly role?: string | null; // Job title
-  readonly phone?: string | null;
-  readonly locale?: string | null;
-  readonly timezone?: string | null;
+  readonly website?: string | null;
+  readonly location?: string | null;
 }
 
 export interface UpdateUserRequest {

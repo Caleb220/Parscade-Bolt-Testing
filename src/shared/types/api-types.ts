@@ -10,16 +10,21 @@ export interface User {
   readonly id: string;
   readonly email: string;
   readonly full_name?: string | null;
-  readonly username?: string;
-  readonly avatarUrl?: string;
-  readonly company?: string;
-  readonly role?: string;
-  readonly phone?: string;
-  readonly locale?: string;
-  readonly timezone?: string;
-  readonly plan: 'free' | 'pro' | 'enterprise';
-  readonly createdAt: string;
-  readonly updatedAt: string;
+  readonly username?: string | null;
+  readonly avatar_url?: string | null;
+  readonly bio?: string | null;
+  readonly company?: string | null;
+  readonly website?: string | null;
+  readonly location?: string | null;
+  readonly email_verified: boolean;
+  readonly phone_verified: boolean;
+  readonly onboarding_completed: boolean;
+  readonly subscription_tier: 'free' | 'pro' | 'enterprise';
+  readonly subscription_status: 'active' | 'inactive' | 'cancelled' | 'past_due';
+  readonly last_active_at?: string | null;
+  readonly metadata: Record<string, unknown>;
+  readonly created_at: string;
+  readonly updated_at: string;
 }
 
 export interface PaginatedResponse<T> {

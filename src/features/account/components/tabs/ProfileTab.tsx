@@ -58,11 +58,10 @@ const ProfileTab: React.FC = () => {
     defaultValues: {
       full_name: '',
       username: '',
+      bio: '',
       company: '',
-      role: '',
-      phone: '',
-      locale: 'en-US',
-      timezone: 'UTC',
+      website: '',
+      location: '',
     },
   });
 
@@ -72,11 +71,10 @@ const ProfileTab: React.FC = () => {
       reset({
         full_name: user.full_name || '',
         username: user.username || '',
+        bio: user.bio || '',
         company: user.company || '',
-        role: user.role || '', // Job title field
-        phone: user.phone || '',
-        locale: user.locale || 'en-US',
-        timezone: user.timezone || 'UTC',
+        website: user.website || '',
+        location: user.location || '',
       });
     }
   }, [user, reset]);
@@ -87,11 +85,10 @@ const ProfileTab: React.FC = () => {
       const updateData = {
         full_name: data.full_name || null,
         username: data.username || null,
+        bio: data.bio || null,
         company: data.company || null,
-        role: data.role || null, // Job title
-        phone: data.phone || null,
-        locale: data.locale || null,
-        timezone: data.timezone || null,
+        website: data.website || null,
+        location: data.location || null,
       };
 
       await updateAccount.mutateAsync(updateData);
@@ -378,91 +375,61 @@ const ProfileTab: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="role" className="flex items-center text-sm font-medium text-gray-700">
-                  <Briefcase className="w-4 h-4 mr-2 text-gray-500" />
-                  Job Title
+                <Label htmlFor="bio" className="flex items-center text-sm font-medium text-gray-700">
+                  <User className="w-4 h-4 mr-2 text-gray-500" />
+                  Bio
+                </Label>
+                <div className="relative">
+                  <textarea
+                    id="bio"
+                    {...register('bio')}
+                    placeholder="Tell us about yourself..."
+                    rows={3}
+                    className="flex w-full rounded-md border border-input bg-background py-2 px-3 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 resize-none"
+                  />
+                </div>
+                {errors.bio && (
+                  <p className="text-sm text-red-600">{errors.bio.message}</p>
+                )}
+                <p className="text-xs text-gray-500">Share a brief description about yourself</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="website" className="flex items-center text-sm font-medium text-gray-700">
+                  <Globe className="w-4 h-4 mr-2 text-gray-500" />
+                  Website
                 </Label>
                 <div className="relative">
                   <Input
-                    id="role"
-                    {...register('role')}
-                    placeholder="Your job title"
+                    id="website"
+                    {...register('website')}
+                    placeholder="https://yourwebsite.com"
                     className="px-3 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
-                {errors.role && (
-                  <p className="text-sm text-red-600">{errors.role.message}</p>
+                {errors.website && (
+                  <p className="text-sm text-red-600">{errors.website.message}</p>
                 )}
+                <p className="text-xs text-gray-500">Your personal or company website</p>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="phone" className="flex items-center text-sm font-medium text-gray-700">
-                  <Phone className="w-4 h-4 mr-2 text-gray-500" />
-                  Phone Number
+                <Label htmlFor="location" className="flex items-center text-sm font-medium text-gray-700">
+                  <Globe className="w-4 h-4 mr-2 text-gray-500" />
+                  Location
                 </Label>
                 <div className="relative">
                   <Input
-                    id="phone"
-                    {...register('phone')}
-                    placeholder="+1234567890"
+                    id="location"
+                    {...register('location')}
+                    placeholder="City, Country"
                     className="px-3 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
-                {errors.phone && (
-                  <p className="text-sm text-red-600">{errors.phone.message}</p>
+                {errors.location && (
+                  <p className="text-sm text-red-600">{errors.location.message}</p>
                 )}
-                <p className="text-xs text-gray-500">Include country code (e.g., +1 for US)</p>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="timezone" className="flex items-center text-sm font-medium text-gray-700">
-                  <Globe className="w-4 h-4 mr-2 text-gray-500" />
-                  Timezone
-                </Label>
-                <div className="relative">
-                  <select
-                    id="timezone"
-                    {...register('timezone')}
-                    className="flex h-10 w-full rounded-md border border-input bg-background py-2 px-3 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                  >
-                    <option value="UTC">UTC</option>
-                    <option value="America/New_York">Eastern Time</option>
-                    <option value="America/Chicago">Central Time</option>
-                    <option value="America/Denver">Mountain Time</option>
-                    <option value="America/Los_Angeles">Pacific Time</option>
-                    <option value="Europe/London">London</option>
-                    <option value="Europe/Berlin">Berlin</option>
-                    <option value="Asia/Tokyo">Tokyo</option>
-                    <option value="Asia/Shanghai">Shanghai</option>
-                    <option value="Australia/Sydney">Sydney</option>
-                  </select>
-                </div>
-                {errors.timezone && (
-                  <p className="text-sm text-red-600">{errors.timezone.message}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="locale" className="flex items-center text-sm font-medium text-gray-700">
-                  <Globe className="w-4 h-4 mr-2 text-gray-500" />
-                  Language & Region
-                </Label>
-                <select
-                  id="locale"
-                  {...register('locale')}
-                  className="flex h-10 w-full rounded-md border border-input bg-background py-2 px-3 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                >
-                  <option value="en-US">English (US)</option>
-                  <option value="en-GB">English (UK)</option>
-                  <option value="es-ES">Español</option>
-                  <option value="fr-FR">Français</option>
-                  <option value="de-DE">Deutsch</option>
-                  <option value="ja-JP">日本語</option>
-                  <option value="zh-CN">中文 (简体)</option>
-                </select>
-                {errors.locale && (
-                  <p className="text-sm text-red-600">{errors.locale.message}</p>
-                )}
+                <p className="text-xs text-gray-500">Where you're located</p>
               </div>
             </div>
 
@@ -566,7 +533,7 @@ const ProfileTab: React.FC = () => {
                   </Label>
                   <div className="flex items-center space-x-2">
                     <Input 
-                      value={user?.plan === 'free' ? 'Beta (Free)' : user?.plan?.toUpperCase() || 'Beta'} 
+                      value={user?.subscription_tier === 'free' ? 'Beta (Free)' : user?.subscription_tier?.toUpperCase() || 'Beta'} 
                       disabled 
                       className="capitalize px-3 bg-white border-blue-200 text-blue-700 font-medium flex-1" 
                     />

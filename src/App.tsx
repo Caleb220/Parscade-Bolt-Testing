@@ -1,9 +1,7 @@
-import React, { Suspense, useEffect } from 'react';
+import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from '@/shared/components/ui/toaster';
 import LoadingSpinner from '@/components/ui/loading-spinner';
-import { usePreload, clearPreloadCache } from '@/shared/hooks/usePreload';
-import { LazyComponent } from '@/shared/components/optimization';
 
 // Auth (keep these as regular imports since they're critical)
 import { AuthProvider } from '@/features/auth/context/AuthContext';
