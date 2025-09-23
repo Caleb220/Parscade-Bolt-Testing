@@ -6,7 +6,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { FolderOpen, Calendar, Clock, ExternalLink } from 'lucide-react';
-import Badge from '@/components/ui/badge';
+import { Badge } from '@/shared/components/ui/badge';
 import { ParscadeCard } from '@/shared/components/brand';
 import { formatDate } from '@/shared/utils/formatters';
 import ProjectStatsCards from './ProjectStatsCards';

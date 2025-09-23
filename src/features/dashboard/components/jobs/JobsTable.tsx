@@ -8,8 +8,8 @@ import { motion } from 'framer-motion';
 import {
   Eye, Play, Square, RotateCcw, Trash2, FileText
 } from 'lucide-react';
-import Button from '@/components/ui/button';
-import Badge from '@/components/ui/badge';
+import { Button } from '@/shared/components/ui/button';
+import { Badge } from '@/shared/components/ui/badge';
 import { ParscadeCard } from '@/shared/components/brand';
 import { formatDate, formatDuration } from '@/shared/utils/formatters';
 import type { Job } from '@/types/api-types';

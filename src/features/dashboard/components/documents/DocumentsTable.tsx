@@ -9,8 +9,8 @@ import {
   Eye, Edit3, Trash2, Download, MoreVertical,
   FileText, Image, FileSpreadsheet, Archive
 } from 'lucide-react';
-import Button from '@/components/ui/button';
-import Badge from '@/components/ui/badge';
+import { Button } from '@/shared/components/ui/button';
+import { Badge } from '@/shared/components/ui/badge';
 import { ParscadeCard } from '@/shared/components/brand';
 import { formatDate, formatBytes } from '@/shared/utils/formatters';
 import type { Document } from '@/types/api-types';

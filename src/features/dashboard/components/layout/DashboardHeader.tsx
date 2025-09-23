@@ -8,7 +8,7 @@ import { motion } from 'framer-motion';
 import { Menu, Bell, Search } from 'lucide-react';
 
 import { useAuth } from '@/features/auth';
-import Input from '@/components/ui/input';
+import { Input } from '@/shared/components/ui/input';
 
 interface DashboardHeaderProps {
   title?: string;

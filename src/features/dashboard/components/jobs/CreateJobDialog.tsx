@@ -6,8 +6,8 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Upload, Link, Database } from 'lucide-react';
-import Button from '@/components/ui/button';
-import Input from '@/components/ui/input';
+import { Button } from '@/shared/components/ui/button';
+import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import {
   Dialog,

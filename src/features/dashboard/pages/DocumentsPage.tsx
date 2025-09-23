@@ -12,6 +12,8 @@ import {
   DocumentsFilters,
   DocumentsTable,
 } from '../components/documents';
+import { QueryErrorBoundary } from '@/shared/components/error';
+import { TableSkeleton, ProgressiveLoading } from '@/shared/components/loading';
 import {
   useDocuments,
   useUploadDocument,
@@ -72,6 +74,7 @@ const DocumentsPage: React.FC = () => {
   const {
     data: documentsData,
     isLoading: documentsLoading,
+    error: documentsError,
     refetch: refetchDocuments,
   } = useDocuments(queryParams);
 
@@ -221,40 +224,63 @@ const DocumentsPage: React.FC = () => {
   return (
     <DashboardLayout>
       <div className="space-y-8">
-        <DocumentsHeader
-          totalDocuments={totalDocuments}
-          isLoading={documentsLoading}
-          onUpload={handleUpload}
-          onIngest={handleIngest}
-          onRefresh={handleRefresh}
-        />
+        <QueryErrorBoundary>
+          <DocumentsHeader
+            totalDocuments={totalDocuments}
+            isLoading={documentsLoading}
+            onUpload={handleUpload}
+            onIngest={handleIngest}
+            onRefresh={handleRefresh}
+          />
+        </QueryErrorBoundary>
 
-        <DocumentsFilters
-          searchTerm={searchTerm}
-          selectedStatus={selectedStatus}
-          selectedMimeType={selectedMimeType}
-          selectedProject={selectedProject}
-          showFilters={showFilters}
-          projects={projects}
-          onSearchChange={handleSearchChange}
-          onStatusChange={handleStatusChange}
-          onMimeTypeChange={handleMimeTypeChange}
-          onProjectChange={handleProjectChange}
-          onToggleFilters={() => setShowFilters(!showFilters)}
-          onClearFilters={handleClearFilters}
-        />
+        <QueryErrorBoundary>
+          <DocumentsFilters
+            searchTerm={searchTerm}
+            selectedStatus={selectedStatus}
+            selectedMimeType={selectedMimeType}
+            selectedProject={selectedProject}
+            showFilters={showFilters}
+            projects={projects}
+            onSearchChange={handleSearchChange}
+            onStatusChange={handleStatusChange}
+            onMimeTypeChange={handleMimeTypeChange}
+            onProjectChange={handleProjectChange}
+            onToggleFilters={() => setShowFilters(!showFilters)}
+            onClearFilters={handleClearFilters}
+          />
+        </QueryErrorBoundary>
 
-        <DocumentsTable
-          documents={documents}
-          selectedDocuments={selectedDocuments}
-          isLoading={documentsLoading}
-          onSelectDocument={handleSelectDocument}
-          onSelectAll={handleSelectAll}
-          onView={handleView}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onDownload={handleDownload}
-        />
+        <QueryErrorBoundary>
+          <ProgressiveLoading
+            isLoading={documentsLoading}
+            error={documentsError}
+            isEmpty={!documents?.length}
+            loadingComponent={<TableSkeleton rows={10} cols={6} />}
+            emptyComponent={
+              <div className="text-center py-12">
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No documents found</h3>
+                <p className="text-gray-600 mb-4">
+                  {Object.keys(queryParams).length > 1
+                    ? 'Try adjusting your filters or search terms.'
+                    : 'Get started by uploading your first document.'}
+                </p>
+              </div>
+            }
+          >
+            <DocumentsTable
+              documents={documents}
+              selectedDocuments={selectedDocuments}
+              isLoading={documentsLoading}
+              onSelectDocument={handleSelectDocument}
+              onSelectAll={handleSelectAll}
+              onView={handleView}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onDownload={handleDownload}
+            />
+          </ProgressiveLoading>
+        </QueryErrorBoundary>
       </div>
     </DashboardLayout>
   );

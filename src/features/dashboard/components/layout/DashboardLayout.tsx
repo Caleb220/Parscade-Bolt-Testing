@@ -9,7 +9,7 @@ import { motion } from 'framer-motion';
 import Layout from '@/shared/components/layout/templates/Layout';
 import DashboardHeader from './DashboardHeader';
 import DashboardSidebar from './DashboardSidebar';
-import ErrorBoundary from '@/shared/components/layout/molecules/ErrorBoundary';
+import { GlobalErrorBoundary, QueryErrorBoundary } from '@/shared/components/error';
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -43,21 +43,25 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         
         <div className="relative z-10 flex min-h-svh">
           {/* Sidebar - Hidden on mobile, shown on desktop */}
-          <DashboardSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+          <GlobalErrorBoundary level="section">
+            <DashboardSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+          </GlobalErrorBoundary>
 
           {/* Main Content Area */}
           <div className="flex-1 flex flex-col">
             {/* Header */}
-            <DashboardHeader 
-              title={title}
-              subtitle={subtitle}
-              actions={actions}
-              onMenuToggle={() => setSidebarOpen(true)}
-            />
+            <GlobalErrorBoundary level="section">
+              <DashboardHeader
+                title={title}
+                subtitle={subtitle}
+                actions={actions}
+                onMenuToggle={() => setSidebarOpen(true)}
+              />
+            </GlobalErrorBoundary>
 
             {/* Content */}
             <main className="flex-1">
-              <ErrorBoundary>
+              <QueryErrorBoundary>
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -66,7 +70,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 >
                   {children}
                 </motion.div>
-              </ErrorBoundary>
+              </QueryErrorBoundary>
             </main>
           </div>
         </div>

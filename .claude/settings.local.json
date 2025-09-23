@@ -7,7 +7,10 @@
       "Bash(tree:*)",
       "Bash(find:*)",
       "Bash(npx webpack-bundle-analyzer:*)",
-      "Bash(npm run lint)"
+      "Bash(npm run lint)",
+      "Bash(npx vite-bundle-analyzer:*)",
+      "Read(//d/parscade/Parscade-Latest/**)",
+      "Bash(xargs sed:*)"
     ],
     "deny": [],
     "ask": []

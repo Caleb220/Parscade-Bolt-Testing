@@ -6,7 +6,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { FileText, Plus, Upload, Link as LinkIcon, RefreshCw } from 'lucide-react';
-import Button from '@/components/ui/button';
+import { Button } from '@/shared/components/ui/button';
 import { ParscadeCard } from '@/shared/components/brand';
 
 interface DocumentsHeaderProps {
