@@ -16,8 +16,14 @@ export default defineConfig({
         manualChunks: (id) => {
           // Node modules chunking
           if (id.includes('node_modules')) {
-            // Core React ecosystem
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
+            // Core React ecosystem - be more specific to avoid duplicates
+            if (id.includes('react-dom')) {
+              return 'vendor-react';
+            }
+            if (id.includes('react-router')) {
+              return 'vendor-react';
+            }
+            if (id.includes('/react/') || id.includes('@remix-run/router')) {
               return 'vendor-react';
             }
 
@@ -31,8 +37,8 @@ export default defineConfig({
               return 'vendor-forms';
             }
 
-            // Data fetching
-            if (id.includes('@tanstack/react-query')) {
+            // Data fetching - include all tanstack packages
+            if (id.includes('@tanstack')) {
               return 'vendor-query';
             }
 
@@ -47,8 +53,18 @@ export default defineConfig({
             }
 
             // Utilities
-            if (id.includes('lodash') || id.includes('ramda') || id.includes('clsx') || id.includes('class-variance-authority')) {
+            if (id.includes('lodash') || id.includes('ramda') || id.includes('clsx') || id.includes('class-variance-authority') || id.includes('tailwind-merge')) {
               return 'vendor-utils';
+            }
+
+            // Monitoring
+            if (id.includes('@sentry')) {
+              return 'vendor-monitoring';
+            }
+
+            // Polyfills
+            if (id.includes('intersection-observer')) {
+              return 'vendor-polyfills';
             }
 
             // Default vendor chunk for other node_modules
@@ -157,15 +173,22 @@ export default defineConfig({
       'framer-motion',
       '@tanstack/react-query',
       'react-hook-form',
-      'zod'
+      'zod',
+      '@supabase/supabase-js',
+      'class-variance-authority',
+      'tailwind-merge'
     ],
     exclude: ['lucide-react'],
-    force: true, // Force optimization for better dev performance
+    esbuildOptions: {
+      target: 'es2020'
+    }
   },
   define: {
     global: 'globalThis',
+    'process.env': {}
   },
   resolve: {
+    dedupe: ['react', 'react-dom'],
     alias: {
       '@': path.resolve(__dirname, './src'),
       '@/app': path.resolve(__dirname, './src/app'),
