@@ -6,11 +6,8 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-RUN rm -rf node_modules || true
-
 # Install dependencies
 RUN npm ci
-
 
 # Copy source code
 COPY . .
