@@ -13,7 +13,7 @@ export const PATHS = {
   PRODUCT: '/product',
   PRIVACY: '/privacy',
   TERMS: '/terms',
-  LOGIN_SUPPORT: '/login-support',
+  LOGIN_SUPPORT: '/support/login',
   NOT_FOUND: '/404',
   ERROR: '/error',
 } as const;

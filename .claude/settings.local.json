@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx eslint:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run typecheck:*)",
+      "Bash(tree:*)",
+      "Bash(find:*)",
+      "Bash(npx webpack-bundle-analyzer:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -26,6 +26,11 @@ import DocumentDetailPage from '@/features/dashboard/pages/DocumentDetailPage';
 import ProjectDetailPage from '@/features/dashboard/pages/ProjectDetailPage';
 import JobDetailPage from '@/features/jobs/pages/JobDetailPage';
 import JobsPage from '@/features/dashboard/pages/JobsPage';
+import AnalyticsPage from '@/features/dashboard/pages/AnalyticsPage';
+import WorkflowsPage from '@/features/dashboard/pages/WorkflowsPage';
+import IntegrationsPage from '@/features/dashboard/pages/IntegrationsPage';
+import TeamPage from '@/features/dashboard/pages/TeamPage';
+import DashboardBillingPage from '@/features/dashboard/pages/DashboardBillingPage';
 
 // Account
 import AccountLayout from '@/features/account/components/AccountLayout';
@@ -33,6 +38,7 @@ import ProfileTab from '@/features/account/components/tabs/ProfileTab';
 import SecurityTab from '@/features/account/components/tabs/SecurityTab';
 import NotificationsTab from '@/features/account/components/tabs/NotificationsTab';
 import IntegrationsTab from '@/features/account/components/tabs/IntegrationsTab';
+import ApiKeysTab from '@/features/account/components/tabs/ApiKeysTab';
 
 function App() {
   return (
@@ -102,6 +108,46 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/dashboard/analytics"
+              element={
+                <ProtectedRoute>
+                  <AnalyticsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/workflows"
+              element={
+                <ProtectedRoute>
+                  <WorkflowsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/integrations"
+              element={
+                <ProtectedRoute>
+                  <IntegrationsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/team"
+              element={
+                <ProtectedRoute>
+                  <TeamPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/billing"
+              element={
+                <ProtectedRoute>
+                  <DashboardBillingPage />
+                </ProtectedRoute>
+              }
+            />
 
             {/* Protected Account Routes */}
             <Route
@@ -117,6 +163,7 @@ function App() {
               <Route path="security" element={<SecurityTab />} />
               <Route path="notifications" element={<NotificationsTab />} />
               <Route path="integrations" element={<IntegrationsTab />} />
+              <Route path="api" element={<ApiKeysTab />} />
             </Route>
 
             {/* Error Routes */}
