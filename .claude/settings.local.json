@@ -10,7 +10,9 @@
       "Bash(npm run lint)",
       "Bash(npx vite-bundle-analyzer:*)",
       "Read(//d/parscade/Parscade-Latest/**)",
-      "Bash(xargs sed:*)"
+      "Bash(xargs sed:*)",
+      "Bash(cat:*)",
+      "Read(//d/**)"
     ],
     "deny": [],
     "ask": []
