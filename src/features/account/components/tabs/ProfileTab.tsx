@@ -28,9 +28,9 @@ import {
 
 import { getErrorMessage } from '@/lib/api';
 import { profileSchema, type ProfileFormData } from '@/lib/validation/account';
-import { Button } from '@/shared/components/ui/button';
+import Button from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
-import { Input } from '@/shared/components/ui/input';
+import Input from '@/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { useToast } from '@/shared/components/ui/use-toast';

@@ -1,176 +1,302 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from '@/shared/components/ui/toaster';
+import LoadingSpinner from '@/components/ui/loading-spinner';
 
-// Auth
+// Auth (keep these as regular imports since they're critical)
 import { AuthProvider } from '@/features/auth/context/AuthContext';
 import ProtectedRoute from '@/shared/components/layout/templates/ProtectedRoute';
 import PublicAuthLayout from '@/shared/components/layout/templates/PublicAuthLayout';
 
-// Pages
+// Critical pages (keep as regular imports for performance)
 import HomePage from '@/features/marketing/pages/HomePage';
-import AboutPage from '@/features/marketing/pages/AboutPage';
-import ProductPage from '@/features/marketing/pages/ProductPage';
-import BillingPage from '@/features/marketing/pages/BillingPage';
-import ContactPage from '@/features/marketing/pages/ContactPage';
-import PrivacyPage from '@/features/marketing/pages/PrivacyPage';
-import TermsPage from '@/features/marketing/pages/TermsPage';
 import NotFoundPage from '@/features/marketing/pages/NotFoundPage';
 import ErrorPage from '@/features/marketing/pages/ErrorPage';
-import LoginSupportPage from '@/features/auth/pages/LoginSupportPage';
 
-// Dashboard
-import DashboardPage from '@/features/dashboard/pages/DashboardPage';
-import DocumentsPage from '@/features/dashboard/pages/DocumentsPage';
-import DocumentDetailPage from '@/features/dashboard/pages/DocumentDetailPage';
-import ProjectDetailPage from '@/features/dashboard/pages/ProjectDetailPage';
-import JobDetailPage from '@/features/jobs/pages/JobDetailPage';
-import JobsPage from '@/features/dashboard/pages/JobsPage';
-import AnalyticsPage from '@/features/dashboard/pages/AnalyticsPage';
-import WorkflowsPage from '@/features/dashboard/pages/WorkflowsPage';
-import IntegrationsPage from '@/features/dashboard/pages/IntegrationsPage';
-import TeamPage from '@/features/dashboard/pages/TeamPage';
-import DashboardBillingPage from '@/features/dashboard/pages/DashboardBillingPage';
+// Lazy-loaded Marketing Pages
+const AboutPage = React.lazy(() => import('@/features/marketing/pages/AboutPage'));
+const ProductPage = React.lazy(() => import('@/features/marketing/pages/ProductPage'));
+const BillingPage = React.lazy(() => import('@/features/marketing/pages/BillingPage'));
+const ContactPage = React.lazy(() => import('@/features/marketing/pages/ContactPage'));
+const PrivacyPage = React.lazy(() => import('@/features/marketing/pages/PrivacyPage'));
+const TermsPage = React.lazy(() => import('@/features/marketing/pages/TermsPage'));
+const LoginSupportPage = React.lazy(() => import('@/features/auth/pages/LoginSupportPage'));
 
-// Account
-import AccountLayout from '@/features/account/components/AccountLayout';
-import ProfileTab from '@/features/account/components/tabs/ProfileTab';
-import SecurityTab from '@/features/account/components/tabs/SecurityTab';
-import NotificationsTab from '@/features/account/components/tabs/NotificationsTab';
-import IntegrationsTab from '@/features/account/components/tabs/IntegrationsTab';
-import ApiKeysTab from '@/features/account/components/tabs/ApiKeysTab';
+// Lazy-loaded Dashboard Pages
+const DashboardPage = React.lazy(() => import('@/features/dashboard/pages/DashboardPage'));
+const DocumentsPage = React.lazy(() => import('@/features/dashboard/pages/DocumentsPage'));
+const DocumentDetailPage = React.lazy(() => import('@/features/dashboard/pages/DocumentDetailPage'));
+const ProjectDetailPage = React.lazy(() => import('@/features/dashboard/pages/ProjectDetailPage'));
+const JobDetailPage = React.lazy(() => import('@/features/jobs/pages/JobDetailPage'));
+const JobsPage = React.lazy(() => import('@/features/dashboard/pages/JobsPage'));
+const AnalyticsPage = React.lazy(() => import('@/features/dashboard/pages/AnalyticsPage'));
+const WorkflowsPage = React.lazy(() => import('@/features/dashboard/pages/WorkflowsPage'));
+const IntegrationsPage = React.lazy(() => import('@/features/dashboard/pages/IntegrationsPage'));
+const TeamPage = React.lazy(() => import('@/features/dashboard/pages/TeamPage'));
+const DashboardBillingPage = React.lazy(() => import('@/features/dashboard/pages/DashboardBillingPage'));
+
+// Lazy-loaded Account Components
+const AccountLayout = React.lazy(() => import('@/features/account/components/AccountLayout'));
+const ProfileTab = React.lazy(() => import('@/features/account/components/tabs/ProfileTab'));
+const SecurityTab = React.lazy(() => import('@/features/account/components/tabs/SecurityTab'));
+const NotificationsTab = React.lazy(() => import('@/features/account/components/tabs/NotificationsTab'));
+const IntegrationsTab = React.lazy(() => import('@/features/account/components/tabs/IntegrationsTab'));
+const ApiKeysTab = React.lazy(() => import('@/features/account/components/tabs/ApiKeysTab'));
+
+const LoadingFallback = () => (
+  <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <LoadingSpinner size="lg" />
+  </div>
+);
 
 function App() {
   return (
     <AuthProvider>
       <Router>
         <div className="min-h-screen bg-gray-50">
-          <Routes>
-            {/* Public Marketing Routes */}
-            <Route path="/" element={<HomePage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/product" element={<ProductPage />} />
-            <Route path="/billing" element={<BillingPage />} />
-            <Route path="/contact" element={<ContactPage />} />
-            <Route path="/privacy" element={<PrivacyPage />} />
-            <Route path="/terms" element={<TermsPage />} />
-            <Route path="/support/login" element={<LoginSupportPage />} />
+          <Suspense fallback={<LoadingFallback />}>
+            <Routes>
+              {/* Public Marketing Routes */}
+              <Route path="/" element={<HomePage />} />
+              <Route
+                path="/about"
+                element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <AboutPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/product"
+                element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <ProductPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/billing"
+                element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <BillingPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/contact"
+                element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <ContactPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/privacy"
+                element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <PrivacyPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/terms"
+                element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <TermsPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/support/login"
+                element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <LoginSupportPage />
+                  </Suspense>
+                }
+              />
 
-            {/* Auth Routes */}
-            <Route path="/auth/*" element={<PublicAuthLayout />} />
+              {/* Auth Routes */}
+              <Route path="/auth/*" element={<PublicAuthLayout />} />
 
-            {/* Protected Dashboard Routes */}
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <DashboardPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/dashboard/documents"
-              element={
-                <ProtectedRoute>
-                  <DocumentsPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/dashboard/documents/:documentId"
-              element={
-                <ProtectedRoute>
-                  <DocumentDetailPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/dashboard/projects/:projectId"
-              element={
-                <ProtectedRoute>
-                  <ProjectDetailPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/dashboard/jobs"
-              element={
-                <ProtectedRoute>
-                  <JobsPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/dashboard/jobs/:jobId"
-              element={
-                <ProtectedRoute>
-                  <JobDetailPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/dashboard/analytics"
-              element={
-                <ProtectedRoute>
-                  <AnalyticsPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/dashboard/workflows"
-              element={
-                <ProtectedRoute>
-                  <WorkflowsPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/dashboard/integrations"
-              element={
-                <ProtectedRoute>
-                  <IntegrationsPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/dashboard/team"
-              element={
-                <ProtectedRoute>
-                  <TeamPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/dashboard/billing"
-              element={
-                <ProtectedRoute>
-                  <DashboardBillingPage />
-                </ProtectedRoute>
-              }
-            />
+              {/* Protected Dashboard Routes */}
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <DashboardPage />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/dashboard/documents"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <DocumentsPage />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/dashboard/documents/:documentId"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <DocumentDetailPage />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/dashboard/projects/:projectId"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <ProjectDetailPage />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/dashboard/jobs"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <JobsPage />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/dashboard/jobs/:jobId"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <JobDetailPage />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/dashboard/analytics"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <AnalyticsPage />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/dashboard/workflows"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <WorkflowsPage />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/dashboard/integrations"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <IntegrationsPage />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/dashboard/team"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <TeamPage />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/dashboard/billing"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <DashboardBillingPage />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
 
-            {/* Protected Account Routes */}
-            <Route
-              path="/account/*"
-              element={
-                <ProtectedRoute>
-                  <AccountLayout />
-                </ProtectedRoute>
-              }
-            >
-              <Route index element={<ProfileTab />} />
-              <Route path="profile" element={<ProfileTab />} />
-              <Route path="security" element={<SecurityTab />} />
-              <Route path="notifications" element={<NotificationsTab />} />
-              <Route path="integrations" element={<IntegrationsTab />} />
-              <Route path="api" element={<ApiKeysTab />} />
-            </Route>
+              {/* Protected Account Routes */}
+              <Route
+                path="/account/*"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <AccountLayout />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              >
+                <Route
+                  index
+                  element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <ProfileTab />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="profile"
+                  element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <ProfileTab />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="security"
+                  element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <SecurityTab />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="notifications"
+                  element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <NotificationsTab />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="integrations"
+                  element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <IntegrationsTab />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="api"
+                  element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <ApiKeysTab />
+                    </Suspense>
+                  }
+                />
+              </Route>
 
-            {/* Error Routes */}
-            <Route path="/error" element={<ErrorPage />} />
-            <Route path="/404" element={<NotFoundPage />} />
-            <Route path="*" element={<Navigate to="/404" replace />} />
-          </Routes>
+              {/* Error Routes */}
+              <Route path="/error" element={<ErrorPage />} />
+              <Route path="/404" element={<NotFoundPage />} />
+              <Route path="*" element={<Navigate to="/404" replace />} />
+            </Routes>
+          </Suspense>
         </div>
         <Toaster />
       </Router>

@@ -6,7 +6,8 @@
       "Bash(npm run typecheck:*)",
       "Bash(tree:*)",
       "Bash(find:*)",
-      "Bash(npx webpack-bundle-analyzer:*)"
+      "Bash(npx webpack-bundle-analyzer:*)",
+      "Bash(npm run lint)"
     ],
     "deny": [],
     "ask": []
