@@ -138,7 +138,7 @@ const AccountLayout: React.FC = () => {
                   {/* Mobile Tabs - Horizontal Scroll */}
                   <div className="sm:hidden">
                     <div className="relative">
-                      <div className="flex space-x-3 overflow-x-auto pb-2 px-1 scrollbar-hide">
+                      <div className="flex space-x-3 overflow-x-auto pb-2 px-1 py-2 scrollbar-hide">
                       {tabs.map(({ id, label, icon: Icon, path }) => (
                         <NavLink
                           key={id}

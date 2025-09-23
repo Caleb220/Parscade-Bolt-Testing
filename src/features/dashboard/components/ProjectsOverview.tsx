@@ -60,6 +60,7 @@ const ProjectsOverview: React.FC<ProjectsOverviewProps> = ({ className = '' }) =
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [formData, setFormData] = useState<ProjectCreateData>({ name: '', description: '' });
   const [searchTerm, setSearchTerm] = useState('');
+  const [open, setOpen] = useState(false);
 
   const projects = projectsData?.data || [];
   const filteredProjects = projects.filter(project =>
@@ -115,6 +116,7 @@ const ProjectsOverview: React.FC<ProjectsOverviewProps> = ({ className = '' }) =
   };
 
   const handleDelete = async (projectId: string) => {
+
     try {
       await deleteProject.mutateAsync(projectId);
       setConfirmDelete(null);
@@ -182,17 +184,30 @@ const ProjectsOverview: React.FC<ProjectsOverviewProps> = ({ className = '' }) =
               className="pl-10 w-40 sm:w-64"
             />
           </div>
-          
-          <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-            <DialogTrigger asChild>
-              <ParscadeButton variant="primary" size="sm" className="hidden sm:flex">
-                <FolderPlus className="w-4 h-4 mr-2" />
-                New Project
-              </ParscadeButton>
-              <ParscadeButton variant="primary" size="sm" className="sm:hidden" aria-label="New Project">
-                <FolderPlus className="w-4 h-4" />
-              </ParscadeButton>
-            </DialogTrigger>
+            <ParscadeButton
+              type="button"
+              variant="primary"
+              size="sm"
+              className="hidden sm:inline-flex"
+              onClick={() => setOpen(true)}
+            >
+              <FolderPlus className="w-4 h-4 mr-2" />
+              New Project
+            </ParscadeButton>
+
+            <ParscadeButton
+              type="button"
+              variant="primary"
+              size="sm"
+              className="sm:inline-flex"
+              aria-label="New Project"
+              onClick={() => setOpen(true)}
+            >
+              <FolderPlus className="w-4 h-4" />
+            </ParscadeButton>
+
+
+            <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Create New Project</DialogTitle>

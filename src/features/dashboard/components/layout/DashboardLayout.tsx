@@ -5,7 +5,6 @@
 
 import React, { ReactNode } from 'react';
 import { motion } from 'framer-motion';
-import { ParscadeLogo } from '@/shared/components/brand';
 
 import Layout from '@/shared/components/layout/templates/Layout';
 import DashboardHeader from './DashboardHeader';
@@ -35,19 +34,19 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
   return (
     <Layout>
-      <div className="bg-gradient-to-br from-purple-50/30 via-cyan-50/20 to-white min-h-screen relative overflow-hidden">
+      <div className="bg-gradient-to-br from-purple-50/30 via-cyan-50/20 to-white min-h-svh relative">
         {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-30">
+        <div className="pointer-events-none absolute inset-0 opacity-30">
           <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-purple-200 to-transparent rounded-full blur-3xl" />
           <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-cyan-200 to-transparent rounded-full blur-3xl" />
         </div>
         
-        <div className="flex h-screen">
+        <div className="relative z-10 flex min-h-svh">
           {/* Sidebar - Hidden on mobile, shown on desktop */}
           <DashboardSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
           {/* Main Content Area */}
-          <div className="flex-1 flex flex-col overflow-hidden relative z-10">
+          <div className="flex-1 flex flex-col">
             {/* Header */}
             <DashboardHeader 
               title={title}
@@ -57,7 +56,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             />
 
             {/* Content */}
-            <main className="flex-1 overflow-y-auto">
+            <main className="flex-1">
               <ErrorBoundary>
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}

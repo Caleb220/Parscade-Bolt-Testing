@@ -8,9 +8,7 @@ import { motion } from 'framer-motion';
 import { Menu, Bell, Search } from 'lucide-react';
 
 import { useAuth } from '@/features/auth';
-import { ParscadeButton } from '@/shared/components/brand';
 import { Input } from '@/shared/components/ui/input';
-import UserMenu from '@/shared/components/layout/molecules/UserMenu';
 
 interface DashboardHeaderProps {
   title?: string;

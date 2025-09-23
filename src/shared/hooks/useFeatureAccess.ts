@@ -1,6 +1,6 @@
 /**
  * Feature Access Control Hook
- * Manages role-based and tier-based feature access
+ * Manages role-based and plan-based feature access
  */
 
 import { useMemo } from 'react';
@@ -8,7 +8,8 @@ import { useAuth } from '@/features/auth';
 import { featureModules } from '@/shared/design/theme';
 
 export type UserRole = 'user' | 'admin';
-export type UserTier = 'free' | 'pro' | 'enterprise';
+export type UserPlan = 'free' | 'standard' |'pro' | 'enterprise';
+
 export type FeatureId = keyof typeof featureModules.features;
 
 interface FeatureAccess {
@@ -19,13 +20,13 @@ interface FeatureAccess {
 }
 
 /**
- * Hook for managing feature access based on user role and tier
+ * Hook for managing feature access based on user role and plan
  */
 export const useFeatureAccess = (): FeatureAccess => {
   const { user } = useAuth();
   
   const userRole: UserRole = (user as any)?.user_role || 'user';
-  const userTier: UserTier = (user as any)?.plan || 'free';
+  const userPlan: UserPlan = (user as any)?.plan || 'free';
 
   const featureAccess = useMemo(() => {
     const hasAccess = (featureId: FeatureId): boolean => {
@@ -33,9 +34,9 @@ export const useFeatureAccess = (): FeatureAccess => {
       if (!feature) return false;
 
       const hasRole = feature.roles.includes(userRole);
-      const hasTier = feature.tiers.includes(userTier);
+      const hasPlan = feature.plans.includes(userPlan);
 
-      return hasRole && hasTier;
+      return hasRole && hasPlan;
     };
 
     const getAccessibleFeatures = (): FeatureId[] => {
@@ -53,17 +54,17 @@ export const useFeatureAccess = (): FeatureAccess => {
       if (!feature) return null;
 
       const hasRole = feature.roles.includes(userRole);
-      const hasTier = feature.tiers.includes(userTier);
+      const hasPlan = feature.plans.includes(userPlan);
 
       if (!hasRole) {
         return 'This feature requires admin access.';
       }
 
-      if (!hasTier) {
-        const requiredTier = feature.tiers.find(tier => 
-          ['pro', 'enterprise'].includes(tier)
+      if (!hasPlan) {
+        const requiredPlan = feature.plans.find(plan => 
+          ['standard', 'pro', 'enterprise'].includes(plan)
         );
-        return `This feature requires ${requiredTier} plan.`;
+        return `This feature requires ${requiredPlan} plan.`;
       }
 
       return null;
@@ -75,7 +76,7 @@ export const useFeatureAccess = (): FeatureAccess => {
       isFeatureEnabled,
       getUpgradeMessage,
     };
-  }, [userRole, userTier]);
+  }, [userRole, userPlan]);
 
   return featureAccess;
 };

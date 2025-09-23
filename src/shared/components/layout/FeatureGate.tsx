@@ -5,7 +5,8 @@
 
 import React, { ReactNode } from 'react';
 import { motion } from 'framer-motion';
-import { Lock, Crown, Users } from 'lucide-react';
+import { Crown, Users } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 import { useFeatureAccess, type FeatureId } from '@/shared/hooks/useFeatureAccess';
 import { ParscadeCard, ParscadeButton } from '@/shared/components/brand';
@@ -25,8 +26,11 @@ const FeatureGate: React.FC<FeatureGateProps> = ({
   children,
   fallback,
   showUpgrade = true,
-}) => {
+
+  }) => {
   const { hasAccess, getUpgradeMessage } = useFeatureAccess();
+  const navigate = useNavigate();
+  const billingPath = '/billing'
 
   if (hasAccess(featureId)) {
     return <>{children}</>;
@@ -40,10 +44,19 @@ const FeatureGate: React.FC<FeatureGateProps> = ({
     return null;
   }
 
+  const goToBilling = () => {
+    try {
+      navigate(billingPath);
+    } catch {
+      // Fallback if not in a Router context:
+      window.location.href = billingPath;
+    }
+  };
+
   const upgradeMessage = getUpgradeMessage(featureId);
 
   return (
-    <ParscadeCard variant="gradient" className="p-6 text-center">
+    <ParscadeCard variant="gradient" className="p-6 text-center h-full">
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -66,7 +79,7 @@ const FeatureGate: React.FC<FeatureGateProps> = ({
         </p>
         
         {!upgradeMessage?.includes('admin') && (
-          <ParscadeButton variant="primary" size="sm">
+          <ParscadeButton type="button" variant="primary" size="sm" onClick={goToBilling}>
             <Crown className="w-4 h-4 mr-2" />
             Upgrade Plan
           </ParscadeButton>

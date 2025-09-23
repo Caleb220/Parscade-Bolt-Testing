@@ -24,8 +24,6 @@ import Button from '@/shared/components/forms/Button';
 import Input from '@/shared/components/forms/Input';
 import LoadingButton from '@/shared/components/forms/LoadingButton';
 import LoadingSpinner from '@/shared/components/forms/LoadingSpinner';
-import PasswordInput from '@/shared/components/forms/PasswordInput';
-import PasswordStrengthMeter from '@/shared/components/forms/PasswordStrengthMeter';
 import { useAuth } from '@/features/auth';
 import { useAccountSettings } from '@/features/account/hooks/useAccountSettings';
 

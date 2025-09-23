@@ -9,15 +9,12 @@ import {
   Download, 
   FileText, 
   Database,
-  Calendar,
-  Filter,
   CheckCircle,
   Clock,
   XCircle,
   AlertTriangle,
   RefreshCw,
   ExternalLink,
-  Plus
 } from 'lucide-react';
 
 import { ParscadeCard, ParscadeButton } from '@/shared/components/brand';
@@ -29,7 +26,6 @@ import { Skeleton } from '@/shared/components/ui/skeleton';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/shared/components/ui/dialog';
 import ConfirmationDialog from '@/shared/components/ui/confirmation-dialog';
 import StatusBadge from '@/shared/components/ui/status-badge';
-import { useToast } from '@/shared/components/ui/use-toast';
 import { 
   useExports, 
   useCreateExport, 
@@ -46,7 +42,6 @@ interface ExportsManagerProps {
  * Data export management interface
  */
 const ExportsManager: React.FC<ExportsManagerProps> = ({ className = '' }) => {
-  const { toast } = useToast();
   const { data: exportsData, isLoading, error, refetch } = useExports({ page: 1, limit: 10 });
   const createExport = useCreateExport();
   const cancelExport = useCancelExport();
@@ -136,17 +131,28 @@ const ExportsManager: React.FC<ExportsManagerProps> = ({ className = '' }) => {
             <p className="text-sm text-blue-600 hidden sm:block">Export your documents and processing data</p>
           </div>
         </div>
-        
-        <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-          <DialogTrigger asChild>
-            <ParscadeButton variant="primary" size="sm" className="hidden sm:flex">
-              <Download className="w-4 h-4 mr-2" />
-              New Export
-            </ParscadeButton>
-            <ParscadeButton variant="primary" size="sm" className="sm:hidden" aria-label="New Export">
-              <Download className="w-4 h-4" />
-            </ParscadeButton>
-          </DialogTrigger>
+
+          <ParscadeButton
+            variant="primary"
+            size="sm"
+            className="hidden sm:flex"
+            onClick={() => setShowCreateDialog(true)}
+          >
+            <Download className="w-4 h-4 mr-2" /> New Export
+          </ParscadeButton>
+
+          <ParscadeButton
+            variant="primary"
+            size="sm"
+            className="sm:hidden"
+            aria-label="New Export"
+            onClick={() => setShowCreateDialog(true)}
+          >
+            <Download className="w-4 h-4" />
+          </ParscadeButton>
+
+          <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Create Data Export</DialogTitle>

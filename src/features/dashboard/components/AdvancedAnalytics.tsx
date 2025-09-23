@@ -4,7 +4,6 @@
  */
 
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
 import { 
   TrendingUp, 
   Target, 
@@ -14,10 +13,9 @@ import {
   BarChart3,
   PieChart,
   Activity,
-  Crown
 } from 'lucide-react';
 
-import { ParscadeCard, ParscadeButton } from '@/shared/components/brand';
+import { ParscadeCard } from '@/shared/components/brand';
 import { Button } from '@/shared/components/ui/button';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { Badge } from '@/shared/components/ui/badge';
@@ -27,17 +25,46 @@ import {
   useAnalyticsAccuracy, 
   useAnalyticsErrors 
 } from '@/shared/hooks/api/useAnalytics';
+import FeatureGate from '@/shared/components/layout/FeatureGate';
 import { formatDate } from '@/shared/utils/date';
 
 interface AdvancedAnalyticsProps {
   className?: string;
 }
 
+
+const AnalyticsHeader: React.FC = () => {
+  return (
+    <ParscadeCard
+      variant="default"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: 0.3 }}
+      className="flex flex-col"
+    >
+      <div className="auto-rows-fr h-full">
+      <div className="p-6 border-b border-slate-200">
+        <div className="flex items-center">
+          <BarChart3 className="w-6 h-6 text-blue-600 mr-3" />
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900">Advanced Analytics</h2>
+            <p className="text-sm text-blue-600">Detailed insights into your processing performance</p>
+          </div>
+        </div>
+      </div>
+        <FeatureGate featureId="analytis">
+          <AdvancedAnalytics />
+        </FeatureGate>
+    </div>
+    </ParscadeCard>
+  )
+}
+
 /**
  * Advanced analytics dashboard with real-time data
  */
 const AdvancedAnalytics: React.FC<AdvancedAnalyticsProps> = ({ className = '' }) => {
-  const [timeframe, setTimeframe] = useState<'day' | 'week' | 'month' | 'year'>('month');
+  const [timeframe, setTimeframe] = useState<'week' | 'month' | 'year'>('month');
   
   const { data: overview, isLoading, error, refetch } = useAnalyticsOverview({ timeframe });
   const { data: trends } = useAnalyticsTrends({ timeframe });
@@ -83,13 +110,7 @@ const AdvancedAnalytics: React.FC<AdvancedAnalyticsProps> = ({ className = '' })
     <div className={`space-y-6 ${className}`}>
       {/* Analytics Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <BarChart3 className="w-6 h-6 text-blue-600" />
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900">Advanced Analytics</h2>
-            <p className="text-sm text-blue-600">Detailed insights into your processing performance</p>
-          </div>
-        </div>
+        <AnalyticsHeader />
         
         {/* Timeframe Selector */}
         <div className="flex items-center space-x-2">
@@ -99,10 +120,9 @@ const AdvancedAnalytics: React.FC<AdvancedAnalyticsProps> = ({ className = '' })
             onChange={(e) => setTimeframe(e.target.value as any)}
             className="text-sm border border-gray-300 rounded-md px-3 py-1 bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
-            <option value="day">Last 7 Days</option>
-            <option value="week">Last 4 Weeks</option>
-            <option value="month">Last 12 Months</option>
-            <option value="year">Last 3 Years</option>
+            <option value="week">Last 7 Days</option>
+            <option value="month">Last 4 Weeks</option>
+            <option value="year">Last 12 Months</option>
           </select>
         </div>
       </div>
@@ -127,7 +147,7 @@ const AdvancedAnalytics: React.FC<AdvancedAnalyticsProps> = ({ className = '' })
               {overview?.trends.summary.total_data_points || 0}
             </div>
             <div className="text-sm text-slate-600">
-              Data points in {timeframe}ly analysis
+              Data points in {timeframe} analysis
             </div>
           </div>
         </ParscadeCard>
@@ -265,4 +285,4 @@ const AdvancedAnalytics: React.FC<AdvancedAnalyticsProps> = ({ className = '' })
   );
 };
 
-export default AdvancedAnalytics;
+export default AnalyticsHeader;

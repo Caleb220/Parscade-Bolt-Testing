@@ -5,24 +5,20 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Crown, Target, TrendingUp, Zap, BarChart3 } from 'lucide-react';
+import { Crown, Target } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth';
-import { ParscadeButton, ParscadeCard } from '@/shared/components/brand';
-import FeatureGate from '@/shared/components/layout/FeatureGate';
-import { useAnalyticsOverview } from '@/shared/hooks/api/useAnalytics';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import DashboardSection from '../components/ui/DashboardSection';
-import DashboardGrid from '../components/ui/DashboardGrid';
 import QuickActions from '../components/ui/QuickActions';
 import OverviewStats from '../components/overview/OverviewStats';
 import RecentActivity from '../components/overview/RecentActivity';
 import FileUploadZone from '../components/FileUploadZone';
 import JobsList from '../components/JobsList';
-import AdvancedAnalytics from '../components/AdvancedAnalytics';
 import ProjectsOverview from '../components/ProjectsOverview';
 import ExportsManager from '../components/ExportsManager';
+import AnalyticsHeader from '../components/AdvancedAnalytics';
 
 /**
  * Main dashboard overview page with scalable modular architecture
@@ -152,9 +148,8 @@ const DashboardPage: React.FC = () => {
             <RecentActivity />
             
             {/* Analytics Preview - Feature Gated */}
-            <FeatureGate featureId="analytics">
-              <AdvancedAnalytics />
-            </FeatureGate>
+            <AnalyticsHeader />
+
           </div>
         </DashboardSection>
 

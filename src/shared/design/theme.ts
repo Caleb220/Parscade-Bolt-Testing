@@ -273,14 +273,14 @@ export const featureModules = {
   
   // Feature modules with role/tier requirements
   features: {
-    documents: { roles: ['user', 'admin'], tiers: ['free', 'pro', 'enterprise'] },
-    jobs: { roles: ['user', 'admin'], tiers: ['free', 'pro', 'enterprise'] },
-    analytics: { roles: ['user', 'admin'], tiers: ['pro', 'enterprise'] },
-    team: { roles: ['admin'], tiers: ['pro', 'enterprise'] },
-    integrations: { roles: ['user', 'admin'], tiers: ['pro', 'enterprise'] },
-    billing: { roles: ['admin'], tiers: ['free', 'pro', 'enterprise'] },
-    workflows: { roles: ['user', 'admin'], tiers: ['enterprise'] },
-    api: { roles: ['user', 'admin'], tiers: ['pro', 'enterprise'] },
+    documents: { roles: ['user', 'admin'], plans: ['free', 'standard', 'pro', 'enterprise'] },
+    jobs: { roles: ['user', 'admin'], plans: ['free', 'pro', 'enterprise'] },
+    analytics: { roles: ['user', 'admin'], plans: ['standard', 'pro', 'enterprise'] },
+    team: { roles: ['admin'], plans: ['pro', 'enterprise'] },
+    integrations: { roles: ['user', 'admin'], plans: ['pro', 'enterprise'] },
+    billing: { roles: ['admin'], plans: ['free', 'standard', 'pro', 'enterprise'] },
+    workflows: { roles: ['user', 'admin'], plans: ['enterprise'] },
+    api: { roles: ['user', 'admin'], plans: ['pro', 'enterprise'] },
   },
 } as const;
 
