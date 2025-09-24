@@ -229,7 +229,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           ? { email: identifier.trim().toLowerCase(), password }
           : { username: identifier.trim().toLowerCase(), password };
 
-      const { user, session } = await userApi.signIn(body);
+      const { session } = await userApi.signIn(body);
 
       const { error: setErr } = await supabase.auth.setSession({
         access_token: session.access_token,
