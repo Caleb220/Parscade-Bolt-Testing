@@ -3,26 +3,26 @@
  * Clean job tracking with refined styling
  */
 
-import React from 'react';
 import { motion } from 'framer-motion';
 import { FileText, AlertTriangle, ChevronRight, Zap, Clock } from 'lucide-react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { ParscadeButton, ParscadeCard, ParscadeStatusBadge } from '@/shared/components/brand';
-import { formatJobType } from '@/shared/utils/formatters';
-import { formatDate } from '@/shared/utils/date';
-import { useJobs } from '@/shared/hooks/api/useJobs';
 import { getErrorMessage } from '@/lib/api';
+import { ParscadeButton, ParscadeCard, ParscadeStatusBadge } from '@/shared/components/brand';
+import { useJobs } from '@/shared/hooks/api/useJobs';
+import { formatDate } from '@/shared/utils/date';
+import { formatJobType } from '@/shared/utils/formatters';
 
 /**
  * Professional jobs list with refined blue theme
  */
 const JobsList: React.FC = () => {
   const navigate = useNavigate();
-  const { data: jobsData, isLoading, error, refetch } = useJobs({ 
-    page: 1, 
-    limit: 10 
-  });
+  const { data: jobsData, isLoading, error, refetch, isFetching } = useJobs(
+    { page: 1, limit: 10 },
+    { enablePolling: true, pollingInterval: 10000 } // Poll every 10 seconds for job updates
+  );
 
   if (error) {
     return (

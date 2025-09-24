@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BarChart3, Wifi, Zap, Package, Clock } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 
 import { useNetworkStatus } from '@/shared/hooks/useNetworkStatus';
 import { getPreloadStats } from '@/shared/hooks/usePreload';

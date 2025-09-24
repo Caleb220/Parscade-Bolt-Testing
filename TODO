@@ -1,0 +1,20 @@
+1. fix notifications/preferences backend endpoint returning 500 no data when visiting the profile-> notifications tab on frontend.
+
+2. fix main dashboard displaying up to date and correct data based off endpoints with validation and live updating.
+
+3. log in the user after they sign up
+
+4. change the text in top right on their profile card to their full name or username not start of email text.
+
+5. Fix updating profile data, returns an error " "stack": "ApiError: Invalid profile data\n    at Object.<anonymous> (file:///app/dist/interfaces/http/account.js:114:23)\"
+
+6. Make each part of the user profile optional when updating, they dont need to fill out everything to be able to save changes.
+
+6. Validate each frontend page and ensure access to the page is only granted if they have the correct role/plan.
+On the dashboard side just keep the ones they dont have access to greyed out with a crown option representing like an upgrade now.
+
+7. Remove the document search box from the dashboard header on all pages of the dashboard. Keep the header clean.
+
+8. fix file/image uploads, getting a Request body size did not match Content-Length when trying to upload an image.
+
+9. polish the app and make it less stock like design wise and more professional/tailored to Parscade and its goal of being the next generation data pipeline.

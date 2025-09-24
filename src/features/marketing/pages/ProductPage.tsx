@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { 
   FileText, 
@@ -10,10 +9,13 @@ import {
   Code,
   BarChart3
 } from 'lucide-react';
-import Layout from '@/shared/components/layout/templates/Layout';
-import CustomButton from '@/shared/components/forms/CustomButton';
-import { useAuth } from '../../auth';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
+
+import CustomButton from '@/shared/components/forms/CustomButton';
+import Layout from '@/shared/components/layout/templates/Layout';
+
+import { useAuth } from '../../auth';
 import BetaCTASection from '../components/BetaCTASection';
 
 const ProductPage: React.FC = () => {

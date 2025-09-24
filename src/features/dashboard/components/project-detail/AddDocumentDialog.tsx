@@ -3,13 +3,12 @@
  * Modal for associating documents with a project
  */
 
-import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, Search, FileText } from 'lucide-react';
-import { Button } from '@/shared/components/ui/button';
-import { Input } from '@/shared/components/ui/input';
+import React, { useState, useMemo } from 'react';
+
 import { Badge } from '@/shared/components/ui/badge';
-import { Label } from '@/shared/components/ui/label';
+import { Button } from '@/shared/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -17,6 +16,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/shared/components/ui/dialog';
+import { Input } from '@/shared/components/ui/input';
+import { Label } from '@/shared/components/ui/label';
 import { formatDate, formatBytes } from '@/shared/utils/formatters';
 import type { Document } from '@/types/api-types';
 

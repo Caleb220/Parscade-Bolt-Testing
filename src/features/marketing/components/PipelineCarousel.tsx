@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FileText, Zap, Database, Send } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 import StepNavigator from '@/shared/components/layout/molecules/StepNavigator';
-
 import type { PipelineStep } from '@/shared/types';
 
 const pipelineSteps: readonly PipelineStep[] = [

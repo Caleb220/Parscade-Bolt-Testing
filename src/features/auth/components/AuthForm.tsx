@@ -1,13 +1,14 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, User, AlertCircle, ArrowRight } from 'lucide-react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 
+import PasswordInput from '@/shared/components/forms/atoms/PasswordInput';
 import CustomButton from '@/shared/components/forms/CustomButton';
 import FormFieldInput from '@/shared/components/forms/FormFieldInput';
-import PasswordInput from '@/shared/components/forms/atoms/PasswordInput';
 import { validatePassword } from '@/shared/utils/passwordValidation';
 
 import { useAuth } from '../context/AuthContext';
+
 import type { FormErrors } from '../types/authTypes';
 
 interface AuthFormProps {

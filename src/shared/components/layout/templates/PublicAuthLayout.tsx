@@ -1,5 +1,7 @@
-import React, { ReactNode } from 'react';
 import { motion } from 'framer-motion';
+import React from 'react';
+
+import type { ReactNode } from 'react';
 
 interface PublicAuthLayoutProps {
   children: ReactNode;

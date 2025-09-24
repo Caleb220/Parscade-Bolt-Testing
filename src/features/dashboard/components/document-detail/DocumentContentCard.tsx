@@ -3,11 +3,12 @@
  * Text extraction and preview functionality
  */
 
-import React from 'react';
 import { motion } from 'framer-motion';
 import { FileText, Copy, CheckCircle, AlertTriangle } from 'lucide-react';
-import { Button } from '@/shared/components/ui/button';
+import React from 'react';
+
 import { ParscadeCard } from '@/shared/components/brand';
+import { Button } from '@/shared/components/ui/button';
 import { useClipboard } from '@/shared/hooks/useClipboard';
 import type { Document } from '@/types/api-types';
 

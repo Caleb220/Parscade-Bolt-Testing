@@ -1,11 +1,11 @@
-import React, { Suspense, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import React, { Suspense, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
-import { AuthModal } from '../../auth';
-import Layout from '@/shared/components/layout/templates/Layout';
 import LoadingSpinner from '@/shared/components/forms/atoms/LoadingSpinner';
+import Layout from '@/shared/components/layout/templates/Layout';
 
+import { AuthModal } from '../../auth';
 import BetaCTASection from '../components/BetaCTASection';
 import FeaturesSection from '../sections/FeaturesSection';
 import HeroSection from '../sections/HeroSection';

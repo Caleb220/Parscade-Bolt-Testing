@@ -3,9 +3,7 @@
  * Project management interface with real backend integration
  */
 
-import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
 import { 
   FolderPlus, 
   Folder, 
@@ -21,14 +19,17 @@ import {
   Activity,
   Zap
 } from 'lucide-react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
+import { getErrorMessage } from '@/lib/api';
 import { ParscadeCard, ParscadeButton } from '@/shared/components/brand';
 import { Button } from '@/shared/components/ui/button';
+import ConfirmationDialog from '@/shared/components/ui/confirmation-dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/shared/components/ui/dialog';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Skeleton } from '@/shared/components/ui/skeleton';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/shared/components/ui/dialog';
-import ConfirmationDialog from '@/shared/components/ui/confirmation-dialog';
 import { useToast } from '@/shared/components/ui/use-toast';
 import { 
   useProjects, 
@@ -37,7 +38,6 @@ import {
   useDeleteProject 
 } from '@/shared/hooks/api/useProjects';
 import { formatDate } from '@/shared/utils/date';
-import { getErrorMessage } from '@/lib/api';
 import type { ProjectCreateData } from '@/types/dashboard-types';
 
 interface ProjectsOverviewProps {

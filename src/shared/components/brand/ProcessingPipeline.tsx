@@ -3,9 +3,9 @@
  * Unique visual metaphor for document transformation
  */
 
-import React from 'react';
 import { motion } from 'framer-motion';
 import { FileText, Zap, Database, Rocket } from 'lucide-react';
+import React from 'react';
 
 interface PipelineStep {
   id: string;

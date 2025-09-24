@@ -3,7 +3,6 @@
  * Fully aligned with OpenAPI schema definitions using snake_case
  */
 
-import { apiClient } from '../client';
 import type { 
   paths, 
   UserProfile, 
@@ -17,6 +16,8 @@ import type {
   ApiKeyWithSecret,
   CreateApiKeyRequest
 } from '@/types/api-types';
+
+import { apiClient } from '../client';
 
 // Extract exact types from OpenAPI paths
 type GetProfileResponse = paths['/v1/account/me']['get']['responses']['200']['content']['application/json'];
@@ -39,7 +40,12 @@ export const accountApi = {
    * Update user profile
    */
   async updateProfile(updates: UpdateProfileRequest): Promise<UserProfile> {
-    return apiClient.patch<UpdateProfileResponse>('/v1/account/me', updates);
+    // Filter out undefined values and prepare request
+    const cleanedUpdates = Object.fromEntries(
+      Object.entries(updates).filter(([_, value]) => value !== undefined)
+    ) as UpdateProfileRequest;
+
+    return await apiClient.patch<UpdateProfileResponse>('/v1/account/me', cleanedUpdates);
   },
 
   /**
@@ -51,7 +57,7 @@ export const accountApi = {
     
     return apiClient.post<UploadAvatarResponse>('/v1/account/avatar', formData, {
       headers: {
-        'Content-Type': undefined, // Let browser set multipart boundary
+        'Content-Type': null, // Let browser set multipart boundary
       },
     });
   },
@@ -60,13 +66,8 @@ export const accountApi = {
    * Get user sessions with proper data extraction
    */
   async getSessions(): Promise<UserSession[]> {
-    try {
-      const response = await apiClient.get<UserSessionListResponse>('/v1/account/sessions');
-      return response.data || [];
-    } catch (error) {
-      console.warn('Sessions endpoint not available:', error);
-      return [];
-    }
+    const response = await apiClient.get<UserSessionListResponse>('/v1/account/sessions');
+    return response.data || [];
   },
 
   /**
@@ -82,26 +83,16 @@ export const accountApi = {
    * Get security events with proper data extraction
    */
   async getSecurityEvents(): Promise<SecurityEvent[]> {
-    try {
-      const response = await apiClient.get<SecurityEventListResponse>('/v1/account/security-events');
-      return response.data || [];
-    } catch (error) {
-      console.warn('Security events endpoint not available:', error);
-      return [];
-    }
+    const response = await apiClient.get<SecurityEventListResponse>('/v1/account/security-events');
+    return response.data || [];
   },
 
   /**
    * Get API keys with proper data extraction
    */
   async getApiKeys(): Promise<ApiKey[]> {
-    try {
-      const response = await apiClient.get<ApiKeyListResponse>('/v1/keys');
-      return response.data || [];
-    } catch (error) {
-      console.warn('API Keys endpoint not available:', error);
-      return [];
-    }
+    const response = await apiClient.get<ApiKeyListResponse>('/v1/keys');
+    return response.data || [];
   },
 
   /**

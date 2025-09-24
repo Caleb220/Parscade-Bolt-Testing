@@ -3,8 +3,6 @@
  * Modular navigation system with feature access control
  */
 
-import React, { useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Home, 
@@ -21,11 +19,13 @@ import {
   Puzzle,
   Crown
 } from 'lucide-react';
+import React, { useState } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
 
-import { ParscadeLogo } from '@/shared/components/brand';
 import { useAuth } from '@/features/auth';
-import { useFeatureAccess } from '@/shared/hooks/useFeatureAccess';
+import { ParscadeLogo } from '@/shared/components/brand';
 import { navigationStructure } from '@/shared/design/theme';
+import { useFeatureAccess, type UserRole, type UserPlan } from '@/shared/hooks/useFeatureAccess';
 
 interface NavigationItem {
   id: string;
@@ -66,8 +66,9 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ isOpen = false, onC
   const { user } = useAuth();
   const { hasAccess } = useFeatureAccess();
 
-  const isAdmin = (user as any)?.user_role === 'admin';
-  const userTier = (user as any)?.plan || 'free';
+  const userRole: UserRole = user?.user_role || 'user';
+  const userTier: UserPlan = user?.subscription_tier || user?.plan || 'free';
+  const isAdmin = userRole === 'admin';
 
   // Convert navigation structure to items with access control
   const getNavigationItems = (): NavigationItem[] => {
@@ -277,16 +278,16 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
           return (
             <NavLink
               key={item.href}
-              to={item.href}
+              to={needsUpgrade ? '/billing' : item.href}
               onClick={isMobile ? onToggleCollapse : undefined}
               className={`flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group ${
                 isItemActive
                   ? 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 shadow-sm border border-blue-200/60'
                   : needsUpgrade
-                  ? 'text-slate-400 cursor-not-allowed'
+                  ? 'text-slate-500 hover:bg-amber-50/50 hover:text-amber-700 hover:shadow-sm cursor-pointer border border-amber-200/40'
                   : 'text-slate-700 hover:bg-blue-50/50 hover:shadow-sm hover:scale-[1.01]'
               }`}
-              title={isCollapsed && !isMobile ? item.label : undefined}
+              title={needsUpgrade ? `Upgrade to ${item.tier} to access ${item.label}` : (isCollapsed && !isMobile ? item.label : undefined)}
             >
               <motion.div
                 whileHover={!needsUpgrade ? { scale: 1.1 } : {}}
@@ -313,7 +314,12 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
                       </motion.span>
                     )}
                     {needsUpgrade && (
-                      <Crown className="w-3 h-3 text-amber-500" />
+                      <motion.div
+                        animate={{ scale: [1, 1.1, 1] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                      >
+                        <Crown className="w-4 h-4 text-amber-500 drop-shadow-sm" />
+                      </motion.div>
                     )}
                   </motion.div>
                 )}

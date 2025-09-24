@@ -4,6 +4,8 @@
  */
 
 import React from 'react';
+
+import { Button } from './button';
 import {
   Dialog,
   DialogContent,
@@ -11,7 +13,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from './dialog';
-import { Button } from './button';
 
 interface ConfirmationDialogProps {
   isOpen: boolean;

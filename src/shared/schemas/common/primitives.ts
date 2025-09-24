@@ -84,14 +84,16 @@ export const passwordSchema = z
   .string({ required_error: 'Password is required.' })
   .trim()
   .min(8, 'Password must be at least 8 characters long.')
-  .max(120, 'Password must be 120 characters or less.');
+  .max(128, 'Password must be 128 characters or less.')
+  .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$/,
+    'Password must contain at least one lowercase letter, one uppercase letter, and one digit.');
 
 
 export const userNameSchema = z
   .string({ required_error: 'Username is required.' })
   .trim()
-  .min(2, 'Username must be at least 2 characters long.')
-  .max(60, 'Username must be 60 characters or less.');
+  .min(3, 'Username must be at least 3 characters long.')
+  .max(32, 'Username must be 32 characters or less.');
 /**
  * International phone number schema with loose punctuation support.
  */

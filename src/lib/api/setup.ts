@@ -4,30 +4,9 @@
  * Must be imported once at application startup
  */
 
-import { apiValidator } from './validation';
 import { z } from 'zod';
 
 // Import validation schemas
-import {
-  documentCreateSchema,
-  documentUpdateSchema,
-  documentIngestSchema,
-  documentQuerySchema,
-  fileUploadSchema,
-} from '@/lib/validation/documents';
-
-import {
-  jobCreateSchema,
-  jobUpdateSchema,
-  jobQuerySchema,
-  jobSubmitSchema,
-} from '@/lib/validation/jobs';
-
-import {
-  exportCreateSchema,
-  exportQuerySchema,
-} from '@/lib/validation/exports';
-
 import {
   analyticsQuerySchema,
   analyticsOverviewSchema,
@@ -35,13 +14,30 @@ import {
   accuracyBreakdownItemSchema,
   errorRateItemSchema,
 } from '@/lib/validation/analytics';
-
 import {
   contactFormSchema,
   contactResponseSchema,
 } from '@/lib/validation/contact';
-
+import {
+  documentCreateSchema,
+  documentUpdateSchema,
+  documentIngestSchema,
+  documentQuerySchema,
+  fileUploadSchema,
+} from '@/lib/validation/documents';
+import {
+  exportCreateSchema,
+  exportQuerySchema,
+} from '@/lib/validation/exports';
+import {
+  jobCreateSchema,
+  jobUpdateSchema,
+  jobQuerySchema,
+  jobSubmitSchema,
+} from '@/lib/validation/jobs';
 import { uuidSchema } from '@/shared/schemas/common';
+
+import { apiValidator } from './validation';
 
 /**
  * Register all API endpoint validations

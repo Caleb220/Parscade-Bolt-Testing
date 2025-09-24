@@ -3,9 +3,10 @@
  * Search and filter controls for jobs dashboard
  */
 
-import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Filter, ChevronDown } from 'lucide-react';
+import React from 'react';
+
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import type { JobStatus } from '@/types/api-types';

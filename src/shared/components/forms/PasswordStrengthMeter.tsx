@@ -3,9 +3,9 @@
  * Visual indicator for password strength with real-time feedback
  */
 
-import React from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import React from 'react';
 
 import { validatePassword, getPasswordStrengthLabel, getPasswordStrengthColor } from '@/shared/utils/passwordValidation';
 

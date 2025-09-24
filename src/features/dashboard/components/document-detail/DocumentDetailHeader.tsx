@@ -3,7 +3,6 @@
  * Navigation and primary actions for document detail page
  */
 
-import React from 'react';
 import { motion } from 'framer-motion';
 import {
   ArrowLeft,
@@ -15,8 +14,10 @@ import {
   Archive,
   Globe
 } from 'lucide-react';
-import { Button } from '@/shared/components/ui/button';
+import React from 'react';
+
 import { Badge } from '@/shared/components/ui/badge';
+import { Button } from '@/shared/components/ui/button';
 import type { Document } from '@/types/api-types';
 
 interface DocumentDetailHeaderProps {

@@ -5,9 +5,20 @@
 
 import React, { useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useToast } from '@/shared/components/ui/use-toast';
-import Layout from '@/shared/components/layout/templates/Layout';
+
+import { getErrorMessage } from '@/lib/api';
 import LoadingSpinner from '@/shared/components/forms/atoms/LoadingSpinner';
+import Layout from '@/shared/components/layout/templates/Layout';
+import { useToast } from '@/shared/components/ui/use-toast';
+import {
+  useDocument,
+  useUpdateDocument,
+  useDeleteDocument,
+  useDocumentDownload,
+} from '@/shared/hooks/api/useDocuments';
+import { useJobs } from '@/shared/hooks/api/useJobs';
+import { useProject } from '@/shared/hooks/api/useProjects';
+
 import {
   DocumentDetailHeader,
   DocumentContentCard,
@@ -15,15 +26,7 @@ import {
   DocumentJobsCard,
   DocumentInfoSidebar,
 } from '../components/document-detail';
-import {
-  useDocument,
-  useUpdateDocument,
-  useDeleteDocument,
-  useDocumentDownload,
-} from '@/shared/hooks/api/useDocuments';
-import { useProject } from '@/shared/hooks/api/useProjects';
-import { useJobs } from '@/shared/hooks/api/useJobs';
-import { getErrorMessage } from '@/lib/api';
+
 
 /**
  * Streamlined Document Detail page

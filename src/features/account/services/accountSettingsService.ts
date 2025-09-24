@@ -1,9 +1,10 @@
 import { z } from 'zod';
 
 import { accountApi } from '@/lib/api';
-import {
+import type {
   AccountSettings,
-  AccountSettingsUpdate,
+  AccountSettingsUpdate} from '@/shared/schemas/account/accountSettings';
+import {
   accountSettingsSchema,
   accountSettingsUpdateSchema,
   createDefaultAccountSettings,

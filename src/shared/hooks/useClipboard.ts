@@ -4,6 +4,7 @@
  */
 
 import { useState, useCallback } from 'react';
+
 import { useToast } from '@/shared/components/ui/use-toast';
 import { copyToClipboard } from '@/shared/utils/clipboard';
 

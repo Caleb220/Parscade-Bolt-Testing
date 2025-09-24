@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Phone, MapPin, Send, CheckCircle } from 'lucide-react';
-import Layout from '@/shared/components/layout/templates/Layout';
+import React, { useState } from 'react';
+
+import {env} from "@/app/config/env.ts";
 import CustomButton from '@/shared/components/forms/CustomButton';
 import Input from '@/shared/components/forms/FormFieldInput';
-import {env} from "@/app/config/env.ts";
+import Layout from '@/shared/components/layout/templates/Layout';
 
 const ContactPage: React.FC = () => {
   const [formData, setFormData] = useState({

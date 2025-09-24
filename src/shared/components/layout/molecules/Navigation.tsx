@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, ChevronDown } from 'lucide-react';
+import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth';
-import CustomButton from '../../forms/CustomButton';
-import UserMenu from './UserMenu';
-
 import AuthModal from '@/features/auth/components/AuthModal';
+
+import UserMenu from './UserMenu';
+import CustomButton from '../../forms/CustomButton';
+
 
 interface NavigationItem {
   label: string;

@@ -3,12 +3,11 @@
  * Modal form for editing project details
  */
 
-import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Save } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+
 import { Button } from '@/shared/components/ui/button';
-import { Input } from '@/shared/components/ui/input';
-import { Label } from '@/shared/components/ui/label';
 import {
   Dialog,
   DialogContent,
@@ -16,6 +15,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/shared/components/ui/dialog';
+import { Input } from '@/shared/components/ui/input';
+import { Label } from '@/shared/components/ui/label';
 import type { Project } from '@/types/api-types';
 
 interface EditProjectDialogProps {

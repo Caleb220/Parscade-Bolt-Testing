@@ -5,8 +5,9 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { apiValidator } from '@/lib/api/validation';
+
 import { getValidationSummary } from '@/lib/api/setup';
+import { apiValidator } from '@/lib/api/validation';
 
 interface ApiCall {
   id: string;

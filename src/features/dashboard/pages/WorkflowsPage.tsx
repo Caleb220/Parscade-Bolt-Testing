@@ -3,15 +3,16 @@
  * Enterprise workflow builder and automation management
  */
 
-import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { GitBranch, Plus, Play, Pause, Settings, Zap, ArrowRight, Crown } from 'lucide-react';
+import React, { useState } from 'react';
 
-import DashboardLayout from '../components/layout/DashboardLayout';
-import DashboardSection from '../components/ui/DashboardSection';
 import { ParscadeCard } from '@/shared/components/brand';
 import CustomButton from '@/shared/components/forms/CustomButton';
 import FeatureGate from '@/shared/components/layout/FeatureGate';
+
+import DashboardLayout from '../components/layout/DashboardLayout';
+import DashboardSection from '../components/ui/DashboardSection';
 
 /**
  * Workflows page for enterprise automation

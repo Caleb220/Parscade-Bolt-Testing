@@ -1,8 +1,11 @@
-import React, { ReactNode } from 'react';
 import { motion } from 'framer-motion';
-import Header from '../organisms/Header';
-import Footer from '../organisms/Footer';
+import React from 'react';
+
 import { GlobalErrorBoundary, NetworkErrorBoundary } from '../../error';
+import Footer from '../organisms/Footer';
+import Header from '../organisms/Header';
+
+import type { ReactNode } from 'react';
 
 interface LayoutProps {
   children: ReactNode;

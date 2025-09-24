@@ -24,14 +24,24 @@ const authUserMetadataSchema = z
   .catchall(z.unknown());
 
 /**
- * Minimal Supabase user profile schema with runtime validation and passthrough
- * for provider-specific metadata that we do not explicitly model.
+ * Complete user profile schema with application-specific fields
+ * Combines Supabase auth user with user profile data
  */
 export const authUserSchema = z
   .object({
     id: uuidSchema,
     email: optionalEmailSchema,
     user_metadata: authUserMetadataSchema,
+    // Application-specific profile fields
+    full_name: optionalTrimmedStringSchema('Full name', 0, 100),
+    username: optionalTrimmedStringSchema('Username', 0, 32),
+    avatar_url: optionalHttpsUrlSchema,
+    user_role: z.enum(['user', 'admin']).default('user'),
+    subscription_tier: z.enum(['free', 'standard', 'pro', 'enterprise']).default('free'),
+    plan: z.enum(['free', 'standard', 'pro', 'enterprise']).default('free'), // Legacy field for compatibility
+    email_verified: booleanSchema.default(false),
+    created_at: z.string().datetime().optional(),
+    updated_at: z.string().datetime().optional(),
   })
   .passthrough();
 

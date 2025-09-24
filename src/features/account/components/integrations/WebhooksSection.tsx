@@ -1,4 +1,3 @@
-import React, { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import {
   Webhook,
@@ -11,23 +10,25 @@ import {
   XCircle,
   Copy
 } from 'lucide-react';
+import React, { useState, useCallback } from 'react';
 
 import { getErrorMessage } from '@/lib/api';
+import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
-import { Badge } from '@/shared/components/ui/badge';
+import ConfirmationDialog from '@/shared/components/ui/confirmation-dialog';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/shared/components/ui/dialog';
 import { Skeleton } from '@/shared/components/ui/skeleton';
-import ConfirmationDialog from '@/shared/components/ui/confirmation-dialog';
 import StatusBadge from '@/shared/components/ui/status-badge';
-import { useClipboard } from '@/shared/hooks/useClipboard';
-import { formatDate } from '@/shared/utils/date';
 import {
   useWebhooks,
   useCreateWebhook,
   useDeleteWebhook,
   useTestWebhook
 } from '@/shared/hooks/api/useAccountData';
+import { useClipboard } from '@/shared/hooks/useClipboard';
+import { formatDate } from '@/shared/utils/date';
+
 import CreateWebhookDialog from './CreateWebhookDialog';
 
 const WebhooksSection: React.FC = () => {

@@ -3,13 +3,16 @@
  * Container for all job information cards
  */
 
-import React from 'react';
 import { motion } from 'framer-motion';
-import JobInfoCard from './JobInfoCard';
-import ProjectInfoCard from './ProjectInfoCard';
+import React from 'react';
+
+import type { Job, Project, Document } from '@/types/api-types';
+
 import DocumentInfoCard from './DocumentInfoCard';
 import JobConfigCard from './JobConfigCard';
-import type { Job, Project, Document } from '@/types/api-types';
+import JobInfoCard from './JobInfoCard';
+import ProjectInfoCard from './ProjectInfoCard';
+
 
 interface JobInfoSidebarProps {
   job: Job;

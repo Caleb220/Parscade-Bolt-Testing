@@ -4,9 +4,13 @@
  * Provides runtime validation against backend schema
  */
 
-import { ZodSchema, ZodError } from 'zod';
-import { ApiError } from './errors';
+import { ZodError } from 'zod';
+
 import { logger } from '@/shared/services/logger';
+
+import { ApiError } from './errors';
+
+import type { ZodSchema} from 'zod';
 
 /**
  * Validation configuration for API endpoints

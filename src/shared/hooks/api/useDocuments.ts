@@ -5,9 +5,10 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+
+import { getErrorMessage } from '@/lib/api';
 import { documentsApi } from '@/lib/api/modules/documents';
 import { useToast } from '@/shared/components/ui/use-toast';
-import { getErrorMessage } from '@/lib/api';
 import type { 
   Document,
   DocumentUpdateData,

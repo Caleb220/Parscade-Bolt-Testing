@@ -4,6 +4,7 @@
  */
 
 import { z } from 'zod';
+
 import {
   phoneSchema,
   timezoneSchema,
@@ -12,23 +13,25 @@ import {
   emailSchema,
 } from '@/shared/schemas/common';
 
-// Profile validation matching OpenAPI UpdateProfileRequest exactly
+// Profile validation with fully optional fields for partial updates
 export const profileSchema = z.object({
-  full_name: optionalTrimmedStringSchema('Full name', 1, 100),
+  full_name: optionalTrimmedStringSchema('Full name', 0, 100),
   username: z.string()
     .min(3, 'Username must be at least 3 characters')
     .max(32, 'Username must be at most 32 characters')
     .regex(/^[a-zA-Z0-9_-]+$/, 'Username can only contain letters, numbers, underscores, and hyphens')
+    .or(z.literal(''))  // Allow empty string
     .nullable()
     .optional(),
-  bio: optionalTrimmedStringSchema('Bio', 1, 500),
-  company: optionalTrimmedStringSchema('Company', 1, 100),
+  bio: optionalTrimmedStringSchema('Bio', 0, 500),
+  company: optionalTrimmedStringSchema('Company', 0, 100),
   website: z.string()
     .url('Must be a valid URL')
+    .or(z.literal(''))  // Allow empty string
     .nullable()
     .optional(),
-  location: optionalTrimmedStringSchema('Location', 1, 100),
-});
+  location: optionalTrimmedStringSchema('Location', 0, 100),
+}).partial(); // Make entire schema partial for flexible updates
 
 // API Key validation matching OpenAPI CreateApiKeyRequest exactly
 export const apiKeySchema = z.object({

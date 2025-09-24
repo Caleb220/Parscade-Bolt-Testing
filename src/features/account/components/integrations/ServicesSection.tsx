@@ -1,17 +1,17 @@
-import React, { useCallback } from 'react';
 import { Database, AlertCircle as AlertIcon } from 'lucide-react';
+import React, { useCallback } from 'react';
 
 import { getErrorMessage } from '@/lib/api';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import StatusBadge from '@/shared/components/ui/status-badge';
-import { formatDate } from '@/shared/utils/date';
 import {
   useServices,
   useConnectService,
   useDisconnectService
 } from '@/shared/hooks/api/useAccountData';
+import { formatDate } from '@/shared/utils/date';
 
 const ServicesSection: React.FC = () => {
   const { data: services, isLoading: servicesLoading, error: servicesError } = useServices();

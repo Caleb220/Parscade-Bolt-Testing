@@ -3,7 +3,6 @@
  * Project management endpoints with type safety
  */
 
-import { apiClient } from '../client';
 import type { 
   Project,
   ProjectWithStats,
@@ -13,6 +12,8 @@ import type {
   ProjectResponse,
   DocumentAssociationData
 } from '@/types/dashboard-types';
+
+import { apiClient } from '../client';
 
 /**
  * Project management endpoints

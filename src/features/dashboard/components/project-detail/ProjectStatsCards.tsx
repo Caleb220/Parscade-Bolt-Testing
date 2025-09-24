@@ -3,9 +3,10 @@
  * Displays key project metrics in animated cards
  */
 
-import React from 'react';
 import { motion } from 'framer-motion';
 import { FileText, Activity, Calendar } from 'lucide-react';
+import React from 'react';
+
 import { ParscadeCard } from '@/shared/components/brand';
 import { formatRelativeTime } from '@/shared/utils/formatters';
 import type { Project, Document, Job } from '@/types/api-types';

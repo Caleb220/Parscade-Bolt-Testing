@@ -3,11 +3,12 @@
  * Header section with title, stats, and primary actions
  */
 
-import React from 'react';
 import { motion } from 'framer-motion';
 import { FileText, Plus, Upload, Link as LinkIcon, RefreshCw } from 'lucide-react';
-import { Button } from '@/shared/components/ui/button';
+import React from 'react';
+
 import { ParscadeCard } from '@/shared/components/brand';
+import { Button } from '@/shared/components/ui/button';
 
 interface DocumentsHeaderProps {
   totalDocuments: number;

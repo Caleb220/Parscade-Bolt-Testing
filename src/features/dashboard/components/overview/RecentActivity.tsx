@@ -3,9 +3,9 @@
  * Clean activity feed with refined styling
  */
 
-import React from 'react';
 import { motion } from 'framer-motion';
 import { FileText, CheckCircle, Clock, AlertTriangle, Zap, Activity, RefreshCw } from 'lucide-react';
+import React from 'react';
 
 import { ParscadeCard } from '@/shared/components/brand';
 import { Button } from '@/shared/components/ui/button';

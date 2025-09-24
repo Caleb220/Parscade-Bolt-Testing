@@ -3,8 +3,8 @@
  * Individual statistic card with premium styling and animations
  */
 
-import React from 'react';
 import { motion } from 'framer-motion';
+import React from 'react';
 
 interface StatCardProps {
   icon: React.ReactNode;

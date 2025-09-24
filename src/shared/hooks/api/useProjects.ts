@@ -4,9 +4,10 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+
+import { getErrorMessage } from '@/lib/api';
 import { projectsApi } from '@/lib/api/modules/projects';
 import { useToast } from '@/shared/components/ui/use-toast';
-import { getErrorMessage } from '@/lib/api';
 import type { 
   ProjectCreateData, 
   ProjectUpdateData, 

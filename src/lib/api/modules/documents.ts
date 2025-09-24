@@ -4,8 +4,7 @@
  * Fully aligned with backend handoff specification
  */
 
-import { apiClient } from '../client';
-import type { 
+import type {
   Document,
   DocumentCreateData,
   DocumentUpdateData,
@@ -15,13 +14,16 @@ import type {
   PaginatedResponse
 } from '@/types/api-types';
 
+import { apiClient } from '../client';
+import { uploadsApi } from './uploads';
+
 /**
  * Document management endpoints
  * All endpoints follow backend specification exactly
  */
 export const documentsApi = {
   /**
-   * Upload a new document file
+   * Upload a new document file using signed URL approach for better scalability
    */
   async uploadDocument(
     file: File,
@@ -29,26 +31,59 @@ export const documentsApi = {
     projectId?: string,
     metadata?: Record<string, unknown>
   ): Promise<DocumentUploadResponse> {
-    const formData = new FormData();
-    formData.append('file', file);
-    
-    if (name) {
-      formData.append('name', name);
-    }
-    
-    if (projectId) {
-      formData.append('project_id', projectId);
-    }
-    
-    if (metadata) {
-      formData.append('metadata', JSON.stringify(metadata));
-    }
+    try {
+      // Step 1: Get signed upload URL from backend
+      const signedUploadRequest = {
+        filename: name || file.name,
+        content_type: file.type,
+        file_size: file.size,
+        project_id: projectId || undefined,
+        metadata: metadata || undefined,
+      };
 
-    return apiClient.post<DocumentUploadResponse>('/v1/documents/upload', formData, {
-      headers: {
-        'Content-Type': undefined, // Let browser set multipart boundary
-      },
-    });
+      const signedResponse = await uploadsApi.getSignedUploadUrl(signedUploadRequest);
+
+      // Step 2: Upload file directly to storage using signed URL
+      await uploadsApi.uploadFileToSignedUrl(signedResponse.upload_url, file);
+
+      // Step 3: Complete the upload and create document record
+      const completeRequest = {
+        filename: name || file.name,
+        content_type: file.type,
+        file_size: file.size,
+        project_id: projectId || undefined,
+        metadata: metadata || undefined,
+      };
+
+      return await uploadsApi.completeUpload(signedResponse.storage_key, completeRequest);
+
+    } catch (error) {
+      // Fallback to direct upload if signed URL approach fails
+      console.warn('Signed URL upload failed, falling back to direct upload:', error);
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      if (name) {
+        formData.append('name', name);
+      }
+
+      if (projectId) {
+        formData.append('project_id', projectId);
+      }
+
+      if (metadata) {
+        formData.append('metadata', JSON.stringify(metadata));
+      }
+
+      return apiClient.post<DocumentUploadResponse>('/v1/documents/upload', formData, {
+        headers: {
+          'Content-Type': null, // Let browser set multipart boundary
+        },
+        timeout: 60000, // 60 second timeout for large files
+        retryable: false, // Don't retry file uploads
+      });
+    }
   },
 
   /**

@@ -3,10 +3,11 @@
  * Navigation and primary actions for project detail page
  */
 
-import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Download, Edit3, Trash2 } from 'lucide-react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
+
 import { Button } from '@/shared/components/ui/button';
 import type { Project } from '@/types/api-types';
 

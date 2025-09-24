@@ -3,9 +3,10 @@
  * Progress visualization and status display
  */
 
-import React from 'react';
 import { motion } from 'framer-motion';
 import { Activity, AlertTriangle, CheckCircle, Clock, XCircle } from 'lucide-react';
+import React from 'react';
+
 import { ParscadeCard } from '@/shared/components/brand';
 import { formatDuration } from '@/shared/utils/formatters';
 import type { Job } from '@/types/api-types';

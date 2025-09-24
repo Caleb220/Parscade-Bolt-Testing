@@ -3,9 +3,9 @@
  * Clean status indicators with refined styling
  */
 
-import React from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle, Clock, AlertTriangle, XCircle, Zap } from 'lucide-react';
+import React from 'react';
 
 interface ParscadeStatusBadgeProps {
   status: 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled' | string;

@@ -3,8 +3,9 @@
  * Basic job information display
  */
 
-import React from 'react';
 import { Zap, Calendar, User, Activity } from 'lucide-react';
+import React from 'react';
+
 import { ParscadeCard } from '@/shared/components/brand';
 import { formatDate, formatJobType } from '@/shared/utils/formatters';
 import type { Job } from '@/types/api-types';

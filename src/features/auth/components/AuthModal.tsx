@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
 
 import AuthForm from './AuthForm';
 
@@ -62,7 +62,6 @@ const AuthModal: React.FC<AuthModalProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={onClose}
             className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           >
             {/* Modal */}
@@ -70,7 +69,6 @@ const AuthModal: React.FC<AuthModalProps> = ({
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              onClick={(e) => e.stopPropagation()}
               className="bg-white rounded-2xl shadow-2xl w-full max-w-md relative overflow-hidden"
             >
               {/* Close Button */}

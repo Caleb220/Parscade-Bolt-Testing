@@ -1,5 +1,6 @@
-import React from 'react';
 import { motion } from 'framer-motion';
+import React from 'react';
+
 import type { LucideIcon } from 'lucide-react';
 
 interface FeatureCardProps {

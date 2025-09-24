@@ -5,15 +5,11 @@
 
 import React, { useState, useMemo, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useToast } from '@/shared/components/ui/use-toast';
-import DashboardLayout from '../components/layout/DashboardLayout';
-import {
-  DocumentsHeader,
-  DocumentsFilters,
-  DocumentsTable,
-} from '../components/documents';
+
+import { getErrorMessage } from '@/lib/api';
 import { QueryErrorBoundary } from '@/shared/components/error';
 import { TableSkeleton, ProgressiveLoading } from '@/shared/components/loading';
+import { useToast } from '@/shared/components/ui/use-toast';
 import {
   useDocuments,
   useUploadDocument,
@@ -22,16 +18,22 @@ import {
   useDeleteDocument,
   useDocumentDownload
 } from '@/shared/hooks/api/useDocuments';
-import { useProjects } from '@/shared/hooks/api/useProjects';
 import { useSubmitParseJob } from '@/shared/hooks/api/useJobs';
+import { useProjects } from '@/shared/hooks/api/useProjects';
 import { useDebounce } from '@/shared/hooks/useDebounce';
-import { getErrorMessage } from '@/lib/api';
 import type {
   Document,
   DocumentQueryParams,
   DocumentStatus,
   DocumentUpdateData
 } from '@/types/api-types';
+
+import {
+  DocumentsHeader,
+  DocumentsFilters,
+  DocumentsTable,
+} from '../components/documents';
+import DashboardLayout from '../components/layout/DashboardLayout';
 
 /**
  * Streamlined Documents dashboard page

@@ -3,7 +3,9 @@
  * Responsive grid system for dashboard layouts
  */
 
-import React, { ReactNode } from 'react';
+import React from 'react';
+
+import type { ReactNode } from 'react';
 
 interface DashboardGridProps {
   children: ReactNode;

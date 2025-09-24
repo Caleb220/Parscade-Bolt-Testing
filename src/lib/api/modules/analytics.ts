@@ -3,7 +3,6 @@
  * Advanced analytics endpoints with type safety
  */
 
-import { apiClient } from '../client';
 import type { 
   AnalyticsTrendsResponse,
   AnalyticsAccuracyResponse,
@@ -11,6 +10,8 @@ import type {
   AnalyticsOverviewResponse,
   AnalyticsQueryParams
 } from '@/types/dashboard-types';
+
+import { apiClient } from '../client';
 
 /**
  * Analytics endpoints

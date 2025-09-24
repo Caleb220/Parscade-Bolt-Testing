@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, Settings, LogOut, ChevronDown } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
 
 import { useAuth } from '@/features/auth';
 
@@ -44,7 +44,14 @@ const UserMenu: React.FC = () => {
 
   if (!user) return null;
 
-  const displayName = user.user_metadata?.full_name || user.email?.split('@')[0] || 'User';
+  // Prioritize full_name > username > email prefix
+  const displayName = user.full_name ||
+                     user.username ||
+                     user.user_metadata?.full_name ||
+                     user.user_metadata?.username ||
+                     user.email?.split('@')[0] ||
+                     'User';
+
   const initials = displayName
     .split(' ')
     .map(name => name.charAt(0))
@@ -58,9 +65,9 @@ const UserMenu: React.FC = () => {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
       >
-        {user.user_metadata?.avatar_url ? (
+        {(user.avatar_url || user.user_metadata?.avatar_url) ? (
           <img
-            src={user.user_metadata.avatar_url}
+            src={user.avatar_url || user.user_metadata?.avatar_url}
             alt={displayName}
             className="w-8 h-8 rounded-full object-cover border-2 border-white shadow-sm"
           />

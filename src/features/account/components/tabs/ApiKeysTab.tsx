@@ -3,9 +3,9 @@
  * Pro-tier API key management for developers
  */
 
-import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Key, Plus, Copy, Eye, EyeOff, Trash2, AlertCircle, ExternalLink, Crown } from 'lucide-react';
+import React, { useState } from 'react';
 
 import { ParscadeCard } from '@/shared/components/brand';
 import CustomButton from '@/shared/components/forms/CustomButton';

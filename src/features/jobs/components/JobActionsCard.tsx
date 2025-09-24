@@ -3,7 +3,6 @@
  * Action buttons and controls for job management
  */
 
-import React from 'react';
 import { motion } from 'framer-motion';
 import {
   Play,
@@ -14,8 +13,10 @@ import {
   RefreshCw,
   Download
 } from 'lucide-react';
-import { Button } from '@/shared/components/ui/button';
+import React from 'react';
+
 import { ParscadeCard } from '@/shared/components/brand';
+import { Button } from '@/shared/components/ui/button';
 import type { Job } from '@/types/api-types';
 
 interface JobActionsCardProps {

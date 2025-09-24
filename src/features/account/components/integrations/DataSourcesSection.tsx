@@ -1,19 +1,20 @@
-import React, { useState, useCallback } from 'react';
 import { Database, Plus, TestTube, Trash2, AlertCircle as AlertIcon } from 'lucide-react';
+import React, { useState, useCallback } from 'react';
 
 import { getErrorMessage } from '@/lib/api';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
+import ConfirmationDialog from '@/shared/components/ui/confirmation-dialog';
 import { Dialog, DialogContent, DialogTrigger } from '@/shared/components/ui/dialog';
 import { Skeleton } from '@/shared/components/ui/skeleton';
-import ConfirmationDialog from '@/shared/components/ui/confirmation-dialog';
 import StatusBadge from '@/shared/components/ui/status-badge';
-import { formatDate } from '@/shared/utils/date';
 import {
   useDataSources,
   useDeleteDataSource,
   useTestDataSource
 } from '@/shared/hooks/api/useAccountData';
+import { formatDate } from '@/shared/utils/date';
+
 import CreateDataSourceDialog from './CreateDataSourceDialog';
 
 const DataSourcesSection: React.FC = () => {

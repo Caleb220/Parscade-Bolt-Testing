@@ -3,8 +3,9 @@
  * Job configuration and metadata display
  */
 
-import React from 'react';
 import { Database, Settings } from 'lucide-react';
+import React from 'react';
+
 import { ParscadeCard } from '@/shared/components/brand';
 import type { Job } from '@/types/api-types';
 

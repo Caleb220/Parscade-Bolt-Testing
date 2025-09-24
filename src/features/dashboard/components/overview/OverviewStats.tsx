@@ -3,9 +3,9 @@
  * Clean statistics cards with refined styling
  */
 
-import React from 'react';
 import { motion } from 'framer-motion';
 import { FileText, Zap, Target, TrendingUp, AlertTriangle, RefreshCw } from 'lucide-react';
+import React from 'react';
 
 import { ParscadeCard } from '@/shared/components/brand';
 import { Button } from '@/shared/components/ui/button';
@@ -16,7 +16,7 @@ import { useDashboardStats } from '@/shared/hooks/api/useDashboard';
  * Real-time statistics overview with backend integration
  */
 const OverviewStats: React.FC = () => {
-  const { data: stats, isLoading, error, refetch } = useDashboardStats();
+  const { data: stats, isLoading, error, refetch, isFetching, dataUpdatedAt } = useDashboardStats();
 
   if (isLoading) {
     return (
@@ -54,14 +54,25 @@ const OverviewStats: React.FC = () => {
     );
   }
 
-  const formatValue = (value: number, type: 'count' | 'percentage' | 'time') => {
+  // Data validation and formatting
+  const validateAndFormatValue = (value: number | undefined | null, type: 'count' | 'percentage' | 'time') => {
+    // Handle invalid/missing data gracefully
+    if (value === undefined || value === null || isNaN(value)) {
+      return type === 'percentage' ? '0.0%' : type === 'time' ? '0ms' : '0';
+    }
+
+    // Clamp values to reasonable ranges
+    const clampedValue = type === 'percentage'
+      ? Math.max(0, Math.min(100, value))
+      : Math.max(0, value);
+
     switch (type) {
       case 'percentage':
-        return `${value.toFixed(1)}%`;
+        return `${clampedValue.toFixed(1)}%`;
       case 'time':
-        return value < 1000 ? `${value}ms` : `${(value / 1000).toFixed(1)}s`;
+        return clampedValue < 1000 ? `${Math.round(clampedValue)}ms` : `${(clampedValue / 1000).toFixed(1)}s`;
       default:
-        return value.toLocaleString();
+        return Math.round(clampedValue).toLocaleString();
     }
   };
 
@@ -69,7 +80,7 @@ const OverviewStats: React.FC = () => {
     {
       icon: <FileText className="h-5 w-5" />,
       title: 'Documents',
-      value: formatValue(stats?.documents_processed_this_month || 0, 'count'),
+      value: validateAndFormatValue(stats?.documents_processed_this_month, 'count'),
       accentLabel: 'This Month',
       subtitle: 'Documents processed this month',
       color: 'blue',
@@ -77,7 +88,7 @@ const OverviewStats: React.FC = () => {
     {
       icon: <Zap className="h-5 w-5" />,
       title: 'Processing',
-      value: formatValue(stats?.jobs_processing_current || 0, 'count'),
+      value: validateAndFormatValue(stats?.jobs_processing_current, 'count'),
       accentLabel: 'Active',
       subtitle: 'Jobs currently being processed',
       color: 'purple',
@@ -85,7 +96,7 @@ const OverviewStats: React.FC = () => {
     {
       icon: <Target className="h-5 w-5" />,
       title: 'Accuracy',
-      value: formatValue(stats?.average_accuracy || 0, 'percentage'),
+      value: validateAndFormatValue(stats?.average_accuracy, 'percentage'),
       accentLabel: 'Average',
       subtitle: 'Average processing accuracy',
       color: 'emerald',
@@ -93,16 +104,44 @@ const OverviewStats: React.FC = () => {
     {
       icon: <TrendingUp className="h-5 w-5" />,
       title: 'Performance',
-      value: formatValue(stats?.average_processing_time_ms || 0, 'time'),
+      value: validateAndFormatValue(stats?.average_processing_time_ms, 'time'),
       accentLabel: 'Average',
       subtitle: 'Average processing time',
       color: 'blue',
     },
   ];
 
+  // Calculate time since last update
+  const timeSinceUpdate = dataUpdatedAt ? Date.now() - dataUpdatedAt : 0;
+  const lastUpdateText = timeSinceUpdate < 60000
+    ? 'Just now'
+    : `${Math.floor(timeSinceUpdate / 60000)}m ago`;
+
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-      {statItems.map((stat, index) => (
+    <>
+      {/* Real-time Status Indicator */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center space-x-2">
+          <div className={`w-2 h-2 rounded-full ${isFetching ? 'bg-blue-500 animate-pulse' : 'bg-green-500'}`} />
+          <span className="text-sm text-slate-600">
+            {isFetching ? 'Updating...' : `Updated ${lastUpdateText}`}
+          </span>
+        </div>
+
+        <motion.button
+          onClick={() => refetch()}
+          disabled={isFetching}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="text-sm text-blue-600 hover:text-blue-700 flex items-center space-x-1 disabled:opacity-50"
+        >
+          <RefreshCw className={`w-3 h-3 ${isFetching ? 'animate-spin' : ''}`} />
+          <span>Refresh</span>
+        </motion.button>
+      </div>
+
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        {statItems.map((stat, index) => (
         <ParscadeCard
           key={stat.title}
           variant="default"
@@ -132,9 +171,14 @@ const OverviewStats: React.FC = () => {
           
           <div className="space-y-1">
             <div className="text-xs font-medium text-slate-500 uppercase tracking-wide truncate">{stat.title}</div>
-            <div className="text-2xl font-bold text-gray-900">
+            <motion.div
+              className="text-2xl font-bold text-gray-900"
+              initial={{ scale: 0.5, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.6, delay: index * 0.1 + 0.3, type: "spring", stiffness: 100 }}
+            >
               {stat.value}
-            </div>
+            </motion.div>
             <div className="text-xs sm:text-sm text-slate-600 line-clamp-2">{stat.subtitle}</div>
           </div>
           
@@ -145,7 +189,8 @@ const OverviewStats: React.FC = () => {
           />
         </ParscadeCard>
       ))}
-    </div>
+      </div>
+    </>
   );
 };
 

@@ -3,14 +3,15 @@
  * Common action buttons for dashboard
  */
 
-import React from 'react';
 import { motion } from 'framer-motion';
 import { Plus, Upload, Download, Settings, FolderPlus, Zap } from 'lucide-react';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { ParscadeButton } from '@/shared/components/brand';
-import { useCreateProject } from '@/shared/hooks/api/useProjects';
+import FeatureGate from '@/shared/components/layout/FeatureGate';
 import { useCreateExport } from '@/shared/hooks/api/useExports';
-import { useNavigate } from 'react-router-dom';
+import { useCreateProject } from '@/shared/hooks/api/useProjects';
 
 interface QuickActionsProps {
   onUpload?: () => void;
@@ -126,28 +127,30 @@ const QuickActions: React.FC<QuickActionsProps> = ({
         </ParscadeButton>
       </motion.div>
       
-      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-        <ParscadeButton 
-          variant="outline" 
-          size="sm" 
-          onClick={handleExport}
-          disabled={createExport.isPending}
-          className="hidden lg:flex"
-        >
-          <Download className="w-4 h-4 mr-2" />
-          {createExport.isPending ? 'Exporting...' : 'Export Data'}
-        </ParscadeButton>
-        <ParscadeButton 
-          variant="ghost" 
-          size="sm" 
-          onClick={handleExport}
-          disabled={createExport.isPending}
-          className="lg:hidden"
-          aria-label="Export Data"
-        >
-          <Download className="w-4 h-4" />
-        </ParscadeButton>
-      </motion.div>
+      <FeatureGate requiredTier="standard" hideWhenLocked>
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          <ParscadeButton
+            variant="outline"
+            size="sm"
+            onClick={handleExport}
+            disabled={createExport.isPending}
+            className="hidden lg:flex"
+          >
+            <Download className="w-4 h-4 mr-2" />
+            {createExport.isPending ? 'Exporting...' : 'Export Data'}
+          </ParscadeButton>
+          <ParscadeButton
+            variant="ghost"
+            size="sm"
+            onClick={handleExport}
+            disabled={createExport.isPending}
+            className="lg:hidden"
+            aria-label="Export Data"
+          >
+            <Download className="w-4 h-4" />
+          </ParscadeButton>
+        </motion.div>
+      </FeatureGate>
       
       {onSettings && (
         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>

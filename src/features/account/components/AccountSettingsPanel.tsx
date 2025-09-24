@@ -1,4 +1,3 @@
-import React, { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   User, 
@@ -19,14 +18,14 @@ import {
   Key,
   Mail
 } from 'lucide-react';
+import React, { useState, useCallback, useMemo } from 'react';
 
+import { useAccountSettings } from '@/features/account/hooks/useAccountSettings';
+import { useAuth } from '@/features/auth';
 import Button from '@/shared/components/forms/Button';
 import Input from '@/shared/components/forms/Input';
 import LoadingButton from '@/shared/components/forms/LoadingButton';
 import LoadingSpinner from '@/shared/components/forms/LoadingSpinner';
-import { useAuth } from '@/features/auth';
-import { useAccountSettings } from '@/features/account/hooks/useAccountSettings';
-
 import type {
   AccountSettingsSection,
   IntegrationSettings,

@@ -3,15 +3,16 @@
  * Professional analytics dashboard with charts and KPIs
  */
 
-import React from 'react';
 import { motion } from 'framer-motion';
 import { BarChart3, TrendingUp, Users, FileText, Clock, ArrowUpRight } from 'lucide-react';
+import React from 'react';
 
-import DashboardLayout from '../components/layout/DashboardLayout';
-import DashboardSection from '../components/ui/DashboardSection';
 import { ParscadeCard } from '@/shared/components/brand';
 import CustomButton from '@/shared/components/forms/CustomButton';
 import FeatureGate from '@/shared/components/layout/FeatureGate';
+
+import DashboardLayout from '../components/layout/DashboardLayout';
+import DashboardSection from '../components/ui/DashboardSection';
 
 /**
  * Analytics page with data insights and metrics

@@ -1,17 +1,19 @@
 import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Toaster } from '@/shared/components/ui/toaster';
+
 import LoadingSpinner from '@/components/ui/loading-spinner';
 
 // Auth (keep these as regular imports since they're critical)
 import { AuthProvider } from '@/features/auth/context/AuthContext';
-import ProtectedRoute from '@/shared/components/layout/templates/ProtectedRoute';
-import PublicAuthLayout from '@/shared/components/layout/templates/PublicAuthLayout';
-
-// Critical pages (keep as regular imports for performance)
+import ErrorPage from '@/features/marketing/pages/ErrorPage';
 import HomePage from '@/features/marketing/pages/HomePage';
 import NotFoundPage from '@/features/marketing/pages/NotFoundPage';
-import ErrorPage from '@/features/marketing/pages/ErrorPage';
+import ProtectedRoute from '@/shared/components/layout/templates/ProtectedRoute';
+import PublicAuthLayout from '@/shared/components/layout/templates/PublicAuthLayout';
+import { ProProtectedRoute } from '@/shared/components/layout/templates';
+
+// Critical pages (keep as regular imports for performance)
+import { Toaster } from '@/shared/components/ui/toaster';
 
 // Lazy-loaded Marketing Pages
 const AboutPage = React.lazy(() => import('@/features/marketing/pages/AboutPage'));
@@ -183,9 +185,11 @@ function App() {
                 path="/dashboard/analytics"
                 element={
                   <ProtectedRoute>
-                    <Suspense fallback={<LoadingFallback />}>
-                      <AnalyticsPage />
-                    </Suspense>
+                    <ProProtectedRoute>
+                      <Suspense fallback={<LoadingFallback />}>
+                        <AnalyticsPage />
+                      </Suspense>
+                    </ProProtectedRoute>
                   </ProtectedRoute>
                 }
               />

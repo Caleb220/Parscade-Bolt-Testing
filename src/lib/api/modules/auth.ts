@@ -3,8 +3,9 @@
  * Auto-generated from OpenAPI spec
  */
 
-import { apiClient } from '../client';
 import type { paths } from '@/types/api-types';
+
+import { apiClient } from '../client';
 
 type AuthCallbackRequest = paths['/v1/auth/callback']['post']['requestBody']['content']['application/json'];
 type AuthResponse = paths['/v1/auth/callback']['post']['responses']['200']['content']['application/json'];

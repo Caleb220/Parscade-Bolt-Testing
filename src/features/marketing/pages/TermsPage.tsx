@@ -1,6 +1,7 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { FileText, AlertTriangle, CheckCircle, Users } from 'lucide-react';
+import React from 'react';
+
 import Layout from '@/shared/components/layout/templates/Layout';
 
 const TermsPage: React.FC = () => {

@@ -3,8 +3,8 @@
  * Streamlined integrations management with extracted component sections
  */
 
-import React from 'react';
 import { motion } from 'framer-motion';
+import React from 'react';
 
 import {
   WebhooksSection,

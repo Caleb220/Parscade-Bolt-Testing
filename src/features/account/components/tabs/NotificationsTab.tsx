@@ -4,11 +4,11 @@
  * Updated to use snake_case field names matching OpenAPI schema
  */ 
 
-import React from 'react';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
 import { Bell, Mail, Smartphone, Webhook, Clock, Save, AlertCircle, CheckCircle } from 'lucide-react';
+import React from 'react';
+import { useForm } from 'react-hook-form';
 
 import { getErrorMessage } from '@/lib/api';
 import { notificationPreferencesSchema, type NotificationPreferencesFormData } from '@/lib/validation/account';
@@ -16,10 +16,11 @@ import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
-import { Switch } from '@/shared/components/ui/switch';
 import { Skeleton } from '@/shared/components/ui/skeleton';
+import { Switch } from '@/shared/components/ui/switch';
 import { useToast } from '@/shared/components/ui/use-toast';
 import { useNotificationPreferences, useUpdateNotificationPreferences } from '@/shared/hooks/api/useAccountData';
+
 import { useAccountContext } from '../AccountLayout';
 
 const NotificationsTab: React.FC = () => {

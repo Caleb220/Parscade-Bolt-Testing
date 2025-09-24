@@ -3,7 +3,6 @@
  * Statistics overview and primary actions for jobs dashboard
  */
 
-import React from 'react';
 import { motion } from 'framer-motion';
 import {
   Zap,
@@ -15,8 +14,10 @@ import {
   XCircle,
   AlertTriangle
 } from 'lucide-react';
-import { Button } from '@/shared/components/ui/button';
+import React from 'react';
+
 import { ParscadeCard } from '@/shared/components/brand';
+import { Button } from '@/shared/components/ui/button';
 import type { Job } from '@/types/api-types';
 
 interface JobsHeaderProps {

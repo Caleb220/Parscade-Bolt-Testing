@@ -3,8 +3,9 @@
  * Fully aligned with OpenAPI schema definitions
  */
 
-import { apiClient } from '../client';
 import type { paths } from '@/types/api-types';
+
+import { apiClient } from '../client';
 
 // Extract exact types from OpenAPI paths
 type GetUsersParams = paths['/v1/admin/users']['get']['parameters']['query'];

@@ -1,12 +1,15 @@
-import React, { createContext, useContext, useReducer, useEffect, ReactNode, useCallback, useMemo, useRef } from 'react';
-import type { AuthError, User as SupabaseUser } from '@supabase/supabase-js';
+import React, { createContext, useContext, useReducer, useEffect, useCallback, useMemo, useRef } from 'react';
+
 
 import { userApi } from '@/lib/api/modules/user';
 import { supabase } from '@/lib/supabase';
 import { logger } from '@/shared/services/logger';
 import type { TypedSupabaseUser } from '@/shared/types/supabase';
 import { setupCrossTabLogoutListener } from '@/shared/utils/hardLogout';
+
 import type { AuthState, AuthContextType, User, FormErrors } from '../types/authTypes';
+import type { AuthError, User as SupabaseUser } from '@supabase/supabase-js';
+import type { ReactNode} from 'react';
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -262,13 +265,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const { session, message } = await userApi.signUp(body);
 
       if (session) {
+        // Auto-login: Set the session immediately after successful signup
         const { error: setErr } = await supabase.auth.setSession({
           access_token: session.access_token,
           refresh_token: session.refresh_token,
         });
-        if (setErr) throw setErr;
+        if (setErr) {
+          logger.warn('Failed to set session after signup', {
+            context: { feature: 'auth', action: 'signUp' },
+            error: setErr,
+          });
+          throw setErr;
+        }
+
+        logger.info('User successfully signed up and auto-logged in', {
+          context: { feature: 'auth', action: 'signUp' },
+          metadata: { hasSession: true }
+        });
       } else {
-        dispatch({ type: 'AUTH_INFO', payload: message || 'Check your email to confirm your account.' });
+        // If no session returned, user needs email confirmation
+        dispatch({ type: 'AUTH_INFO', payload: message || 'Please check your email to confirm your account before signing in.' });
+
+        logger.info('User signed up, email confirmation required', {
+          context: { feature: 'auth', action: 'signUp' },
+          metadata: { hasSession: false, message }
+        });
       }
     } catch (err: any) {
       const message = err?.message || 'Unable to sign up';

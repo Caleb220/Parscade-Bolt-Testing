@@ -4,6 +4,7 @@
  */
 
 import { useQuery } from '@tanstack/react-query';
+
 import { analyticsApi } from '@/lib/api/modules/analytics';
 import type { AnalyticsQueryParams } from '@/types/dashboard-types';
 

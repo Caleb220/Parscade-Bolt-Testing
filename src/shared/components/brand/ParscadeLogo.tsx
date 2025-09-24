@@ -3,8 +3,8 @@
  * Professional logo with subtle animations and responsive sizing
  */
 
-import React from 'react';
 import { motion } from 'framer-motion';
+import React from 'react';
 
 interface ParscadeLogoProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';

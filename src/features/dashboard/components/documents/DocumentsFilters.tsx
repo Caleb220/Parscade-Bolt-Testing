@@ -3,12 +3,13 @@
  * Search and filter controls for documents
  */
 
-import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Filter, ChevronDown } from 'lucide-react';
+import React from 'react';
+
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
-import { DocumentStatus } from '@/types/api-types';
+import type { DocumentStatus } from '@/types/api-types';
 
 interface DocumentsFiltersProps {
   searchTerm: string;

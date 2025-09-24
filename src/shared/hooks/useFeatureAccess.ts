@@ -4,6 +4,7 @@
  */
 
 import { useMemo } from 'react';
+
 import { useAuth } from '@/features/auth';
 import { featureModules } from '@/shared/design/theme';
 
@@ -24,9 +25,10 @@ interface FeatureAccess {
  */
 export const useFeatureAccess = (): FeatureAccess => {
   const { user } = useAuth();
-  
-  const userRole: UserRole = (user as any)?.user_role || 'user';
-  const userPlan: UserPlan = (user as any)?.plan || 'free';
+
+  // Properly typed user access - no more casting to any
+  const userRole: UserRole = user?.user_role || 'user';
+  const userPlan: UserPlan = user?.subscription_tier || user?.plan || 'free';
 
   const featureAccess = useMemo(() => {
     const hasAccess = (featureId: FeatureId): boolean => {

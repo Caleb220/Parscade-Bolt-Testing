@@ -1,8 +1,11 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
+import React, { Component } from 'react';
 
 import { isApiError, getErrorMessage, getRequestId } from '@/lib/api';
+
 import CustomButton from '../../forms/CustomButton';
+
+import type { ErrorInfo, ReactNode } from 'react';
 
 interface Props {
   children: ReactNode;

@@ -5,12 +5,13 @@ import type { NotificationPreferencesFormData } from '@/lib/validation/account';
  * Fully aligned with OpenAPI schema definitions using snake_case
  */
 
-import { apiClient } from '../client';
 import type { 
   paths,
   NotificationPreferences,
   NotificationPreferencesUpdate
 } from '@/types/api-types';
+
+import { apiClient } from '../client';
 
 // Extract exact types from OpenAPI paths
 type GetNotificationPreferencesResponse = paths['/v1/notifications/preferences']['get']['responses']['200']['content']['application/json'];
@@ -26,30 +27,7 @@ export const notificationsApi = {
    * Get notification preferences
    */
   async getPreferences(): Promise<NotificationPreferences> {
-    try {
-      return await apiClient.get<GetNotificationPreferencesResponse>('/v1/notifications/preferences');
-    } catch (error) {
-      return {
-        channels: {
-          email: true,
-          in_app: true,
-          webhook: false,
-        },
-        categories: {
-          product: 'immediate',
-          billing: 'immediate',
-          incidents: 'immediate',
-          jobs: 'immediate',
-          digest: 'daily',
-        },
-        dnd_settings: {
-          start: '22:00',
-          end: '08:00',
-          timezone: 'UTC',
-        },
-        webhook_url: null,
-      };
-    }
+    return await apiClient.get<GetNotificationPreferencesResponse>('/v1/notifications/preferences');
   },
 
   /**

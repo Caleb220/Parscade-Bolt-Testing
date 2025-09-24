@@ -1,4 +1,4 @@
-import React from 'react';
+import { motion } from 'framer-motion';
 import { 
   FileText, 
   Zap, 
@@ -10,11 +10,12 @@ import {
   Users,
   Globe
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import FeatureCard from '@/shared/components/layout/molecules/FeatureCard';
 import CustomButton from '@/shared/components/forms/CustomButton';
+import FeatureCard from '@/shared/components/layout/molecules/FeatureCard';
+
 import { useAuth } from '../../auth';
 
 const features = [

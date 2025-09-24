@@ -3,13 +3,16 @@
  * Modular layout foundation for the dashboard with responsive design
  */
 
-import React, { ReactNode } from 'react';
 import { motion } from 'framer-motion';
+import React from 'react';
 
+import { GlobalErrorBoundary, QueryErrorBoundary } from '@/shared/components/error';
 import Layout from '@/shared/components/layout/templates/Layout';
+
 import DashboardHeader from './DashboardHeader';
 import DashboardSidebar from './DashboardSidebar';
-import { GlobalErrorBoundary, QueryErrorBoundary } from '@/shared/components/error';
+
+import type { ReactNode } from 'react';
 
 interface DashboardLayoutProps {
   children: ReactNode;

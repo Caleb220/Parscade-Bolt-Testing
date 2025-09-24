@@ -3,7 +3,6 @@
  * Fully aligned with OpenAPI schema definitions using snake_case
  */
 
-import { apiClient } from '../client';
 import type { 
   paths,
   Webhook,
@@ -17,6 +16,8 @@ import type {
   DataSourceListResponse,
   CreateDataSourceRequest
 } from '@/types/api-types';
+
+import { apiClient } from '../client';
 
 // Extract exact types from OpenAPI paths
 type GetWebhooksResponse = paths['/v1/integrations/webhooks']['get']['responses']['200']['content']['application/json'];

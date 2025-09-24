@@ -1,6 +1,8 @@
-import React, { useState, forwardRef } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
+import React, { useState, forwardRef } from 'react';
+
 import PasswordStrengthMeter from '../PasswordStrengthMeter';
+
 import type { ComponentWithRef } from '../../types/common';
 
 interface PasswordInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {

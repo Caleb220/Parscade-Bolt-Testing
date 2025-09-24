@@ -4,12 +4,13 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+
+import { getErrorMessage } from '@/lib/api';
 import { accountApi } from '@/lib/api/modules/account';
-import { notificationsApi } from '@/lib/api/modules/notifications';
 import { integrationsApi } from '@/lib/api/modules/integrations';
+import { notificationsApi } from '@/lib/api/modules/notifications';
 import type { NotificationPreferencesFormData } from '@/lib/validation/account';
 import { useToast } from '@/shared/components/ui/use-toast';
-import { getErrorMessage } from '@/lib/api';
 import type { 
   UserProfile, 
   UpdateProfileRequest,
@@ -258,34 +259,7 @@ export const useSecurityEvents = () => {
 export const useNotificationPreferences = () => {
   return useQuery({
     queryKey: QUERY_KEYS.notificationPreferences,
-    queryFn: async () => {
-      try {
-        return await notificationsApi.getPreferences();
-      } catch (error) {
-        console.warn('Notification preferences endpoint not available:', error);
-        // Return default structure matching backend schema
-        return {
-          channels: {
-            email: true,
-            in_app: true,
-            webhook: false,
-          },
-          categories: {
-            product: 'immediate' as const,
-            billing: 'immediate' as const,
-            incidents: 'immediate' as const,
-            jobs: 'immediate' as const,
-            digest: 'daily' as const,
-          },
-          dnd_settings: {
-            start: '22:00',
-            end: '08:00',
-            timezone: 'UTC',
-          },
-          webhook_url: null,
-        };
-      }
-    },
+    queryFn: () => notificationsApi.getPreferences(),
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: (failureCount, error) => {
       // Don't retry auth errors

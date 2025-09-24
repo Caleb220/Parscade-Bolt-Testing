@@ -1,14 +1,15 @@
 /**
  * Dashboard Header Component - Professional Blue Theme
- * Clean header with search, notifications, and user context
+ * Clean header with notifications and user context
  */
 
-import React, { ReactNode } from 'react';
 import { motion } from 'framer-motion';
-import { Menu, Bell, Search } from 'lucide-react';
+import { Menu, Bell } from 'lucide-react';
+import React from 'react';
 
 import { useAuth } from '@/features/auth';
-import { Input } from '@/shared/components/ui/input';
+
+import type { ReactNode } from 'react';
 
 interface DashboardHeaderProps {
   title?: string;
@@ -69,17 +70,6 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 
           {/* Right Section */}
           <div className="flex items-center space-x-2 sm:space-x-4">
-            {/* Search - Hidden on mobile */}
-            <div className="hidden md:block">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <Input
-                  placeholder="Search documents..."
-                  className="pl-10 w-64 bg-slate-50 border-slate-200 focus:bg-white focus:border-blue-300 transition-all duration-200 rounded-lg"
-                />
-              </div>
-            </div>
-
             {/* Notifications */}
             <motion.button
               whileHover={{ scale: 1.05 }}

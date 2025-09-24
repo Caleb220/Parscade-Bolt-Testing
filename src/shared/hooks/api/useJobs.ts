@@ -5,9 +5,10 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+
+import { getErrorMessage } from '@/lib/api';
 import { jobsApi } from '@/lib/api/modules/jobs';
 import { useToast } from '@/shared/components/ui/use-toast';
-import { getErrorMessage } from '@/lib/api';
 import type { 
   Job, 
   JobCreateData, 

@@ -3,8 +3,8 @@
  * Standardized status icons with consistent styling
  */
 
-import React from 'react';
 import { CheckCircle, XCircle, Clock, RefreshCw, AlertTriangle } from 'lucide-react';
+import React from 'react';
 
 interface StatusIconProps {
   status: 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled' | string;

@@ -3,10 +3,12 @@
  * Standardized empty state for dashboard sections
  */
 
-import React, { ReactNode } from 'react';
 import { motion } from 'framer-motion';
+import React from 'react';
 
 import { Button } from '@/shared/components/ui/button';
+
+import type { ReactNode } from 'react';
 
 interface EmptyStateProps {
   icon: ReactNode;

@@ -3,8 +3,9 @@
  * Enhanced button with variants, loading states, and animations
  */
 
-import React, { forwardRef } from 'react';
 import { motion } from 'framer-motion';
+import React, { forwardRef } from 'react';
+
 import LoadingSpinner from './atoms/LoadingSpinner';
 
 interface CustomButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {

@@ -3,12 +3,11 @@
  * Modal form for creating new jobs
  */
 
-import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Upload, Link, Database } from 'lucide-react';
+import React, { useState } from 'react';
+
 import { Button } from '@/shared/components/ui/button';
-import { Input } from '@/shared/components/ui/input';
-import { Label } from '@/shared/components/ui/label';
 import {
   Dialog,
   DialogContent,
@@ -16,6 +15,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/shared/components/ui/dialog';
+import { Input } from '@/shared/components/ui/input';
+import { Label } from '@/shared/components/ui/label';
 
 interface CreateJobDialogProps {
   isOpen: boolean;

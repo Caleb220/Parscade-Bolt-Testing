@@ -5,6 +5,7 @@
  */
 
 import DOMPurify from 'isomorphic-dompurify';
+
 import { logger } from '@/shared/services/logger';
 
 /**

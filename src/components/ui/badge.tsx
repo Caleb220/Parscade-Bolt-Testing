@@ -4,10 +4,10 @@
  * Provides consistent styling across the application
  */
 
-import React from 'react';
-import { motion } from 'framer-motion';
 import { cva, type VariantProps } from 'class-variance-authority';
+import { motion } from 'framer-motion';
 import { CheckCircle, Clock, AlertTriangle, XCircle, Zap } from 'lucide-react';
+import React from 'react';
 
 const badgeVariants = cva(
   "inline-flex items-center rounded-full border font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",

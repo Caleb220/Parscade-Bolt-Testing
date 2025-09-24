@@ -1,8 +1,12 @@
-import React, { createContext, useContext, useCallback, ReactNode } from 'react';
-import { QueryClient } from '@tanstack/react-query';
+import React, { createContext, useContext, useCallback } from 'react';
+
+
+import { getErrorMessage, isApiError } from '@/lib/api';
 import { useToast } from '@/shared/components/ui/use-toast';
 import { useNetworkStatus } from '@/shared/hooks/useNetworkStatus';
-import { getErrorMessage, isApiError } from '@/lib/api';
+
+import type { QueryClient } from '@tanstack/react-query';
+import type { ReactNode } from 'react';
 
 interface ErrorContextType {
   reportError: (error: Error, context?: Record<string, any>) => void;

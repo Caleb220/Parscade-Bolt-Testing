@@ -5,15 +5,12 @@
 
 import React, { useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useToast } from '@/shared/components/ui/use-toast';
-import Layout from '@/shared/components/layout/templates/Layout';
+
+import { getErrorMessage } from '@/lib/api';
 import LoadingSpinner from '@/shared/components/forms/atoms/LoadingSpinner';
-import {
-  JobDetailHeader,
-  JobProgressCard,
-  JobActionsCard,
-  JobInfoSidebar,
-} from '../components';
+import Layout from '@/shared/components/layout/templates/Layout';
+import { useToast } from '@/shared/components/ui/use-toast';
+import { useDocument, useDocumentDownload } from '@/shared/hooks/api/useDocuments';
 import {
   useJob,
   useCancelJob,
@@ -21,9 +18,14 @@ import {
   useRetryJob,
   useDeleteJob,
 } from '@/shared/hooks/api/useJobs';
-import { useDocument, useDocumentDownload } from '@/shared/hooks/api/useDocuments';
 import { useProject } from '@/shared/hooks/api/useProjects';
-import { getErrorMessage } from '@/lib/api';
+
+import {
+  JobDetailHeader,
+  JobProgressCard,
+  JobActionsCard,
+  JobInfoSidebar,
+} from '../components';
 
 /**
  * Streamlined Job Detail page

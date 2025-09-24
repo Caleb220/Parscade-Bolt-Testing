@@ -3,8 +3,8 @@
  * Professional error handling with retry logic and authentication
  */
 
-import { supabase } from '@/lib/supabase';
 import { env } from '@/app/config/env';
+import { supabase } from '@/lib/supabase';
 import { logger } from '@/shared/services/logger';
 
 import { ApiError } from './errors';
@@ -153,9 +153,14 @@ class ApiClient {
       ...options.headers,
     };
 
-    if (!options.headers?.['Content-Type'] || options.headers['Content-Type'] !== undefined) {
+    // Set Content-Type header appropriately
+    if (options.headers?.['Content-Type'] === undefined) {
+      // Default to application/json for non-FormData requests
       headers['Content-Type'] = 'application/json';
+    } else if (options.headers?.['Content-Type'] !== null) {
+      headers['Content-Type'] = options.headers['Content-Type'];
     }
+    // If Content-Type is explicitly set to null, don't set it (for FormData)
 
     if (authToken) {
       headers.Authorization = `Bearer ${authToken}`;
@@ -177,6 +182,19 @@ class ApiClient {
         const timeoutId = setTimeout(() => {
           controller.abort();
         }, options.timeout ?? this.timeout);
+
+        // Debug logging for auth requests
+        if (this.isDevelopment && (fullUrl.includes('/auth/') || fullUrl.includes('/v1/auth/'))) {
+          logger.debug('Auth Request Headers', {
+            metadata: {
+              url: fullUrl,
+              method: init.method,
+              headers: { ...headers },
+              hasBody: !!init.body,
+              bodyType: init.body ? typeof init.body : 'none',
+            }
+          });
+        }
 
         const response = await fetch(fullUrl, {
           ...init,
@@ -325,11 +343,23 @@ class ApiClient {
     options?: RequestOptions
   ): Promise<T> {
     let requestBody: BodyInit | undefined;
-    
+
     if (body instanceof FormData) {
       requestBody = body;
     } else if (body !== undefined) {
       requestBody = JSON.stringify(body);
+
+      // Debug logging for auth requests
+      if (this.isDevelopment && (url.includes('/auth/') || url.includes('/v1/auth/'))) {
+        logger.debug('Auth API Request', {
+          metadata: {
+            url,
+            body: typeof body === 'object' ? body : 'non-object body',
+            bodyType: typeof body,
+            serializedBodyLength: requestBody.length,
+          }
+        });
+      }
     }
 
     const response = await this.executeRequest(url, {
@@ -391,7 +421,7 @@ class ApiClient {
   }
 
   /**
-   * Upload file with progress tracking
+   * Upload file with progress tracking and enhanced error handling
    */
   async uploadFile(
     signedUrl: string,
@@ -419,7 +449,11 @@ class ApiClient {
             `File upload failed: ${xhr.statusText}`,
             'UPLOAD_ERROR',
             xhr.status,
-            { fileName: file.name, fileSize: file.size },
+            {
+              fileName: file.name,
+              fileSize: file.size,
+              responseText: xhr.responseText?.slice(0, 200)
+            },
             requestId
           );
           reject(error);
@@ -430,7 +464,8 @@ class ApiClient {
         const error = new ApiError(
           `File upload network error: ${file.name}`,
           'NETWORK_ERROR',
-          0
+          0,
+          { fileName: file.name, fileSize: file.size }
         );
         reject(error);
       });
@@ -440,17 +475,28 @@ class ApiClient {
           `File upload timeout: ${file.name}`,
           'TIMEOUT',
           408,
-          { fileName: file.name },
+          { fileName: file.name, fileSize: file.size },
           requestId
         );
         reject(error);
       });
 
-      xhr.timeout = this.timeout;
+      // Enhanced timeout for large files
+      xhr.timeout = Math.max(this.timeout, file.size / 1024 + 30000); // At least 30s + 1s per KB
       xhr.open('PUT', signedUrl);
-      xhr.setRequestHeader('Content-Type', file.type);
+
+      // Critical: Set Content-Type and Content-Length properly
+      xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
+      xhr.setRequestHeader('Content-Length', file.size.toString());
       xhr.setRequestHeader('X-Request-ID', requestId);
-      
+
+      // For debugging in development
+      if (this.isDevelopment) {
+        logger.debug(`Starting file upload: ${file.name} (${file.size} bytes)`, {
+          metadata: { fileName: file.name, fileSize: file.size, contentType: file.type }
+        });
+      }
+
       xhr.send(file);
     });
   }

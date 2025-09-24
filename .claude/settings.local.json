@@ -19,7 +19,14 @@
       "Bash(npm run dev:*)",
       "Bash(curl:*)",
       "Bash(npm ls:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(npm run lint:*)",
+      "Bash(source .env)",
+      "Bash(npm install:*)",
+      "Bash(taskkill:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(npx @redocly/cli lint:*)"
     ],
     "deny": [],
     "ask": []

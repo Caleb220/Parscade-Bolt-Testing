@@ -3,14 +3,15 @@
  * Professional upload interface with transformation metaphors
  */
 
-import React, { useCallback, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Upload, FileText, AlertCircle, CheckCircle, Zap, ArrowRight } from 'lucide-react';
+import React, { useCallback, useState } from 'react';
 
+import { getErrorMessage } from '@/lib/api';
 import { ParscadeButton, ParscadeCard } from '@/shared/components/brand';
-import { formatBytes } from '@/shared/utils/formatters';
 import { useUploadDocument } from '@/shared/hooks/api/useDocuments';
 import { useSubmitParseJob } from '@/shared/hooks/api/useJobs';
+import { formatBytes } from '@/shared/utils/formatters';
 
 interface FileUploadZoneProps {
   onJobSubmitted?: (jobId: string) => void;

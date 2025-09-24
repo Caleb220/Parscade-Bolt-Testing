@@ -3,13 +3,14 @@
  * Processing jobs list and management
  */
 
-import React from 'react';
 import { motion } from 'framer-motion';
 import { Activity, Eye, CheckCircle, XCircle, Clock, AlertTriangle } from 'lucide-react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/shared/components/ui/button';
-import { Badge } from '@/shared/components/ui/badge';
+
 import { ParscadeCard } from '@/shared/components/brand';
+import { Badge } from '@/shared/components/ui/badge';
+import { Button } from '@/shared/components/ui/button';
 import { formatDate, formatDuration } from '@/shared/utils/formatters';
 import type { Job } from '@/types/api-types';
 

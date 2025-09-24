@@ -3,9 +3,12 @@
  * Professional card with subtle effects and clean styling
  */
 
-import React, { ReactNode } from 'react';
 import { motion } from 'framer-motion';
+import React from 'react';
+
 import { parscadeAnimations } from '@/shared/design/theme';
+
+import type { ReactNode } from 'react';
 
 interface ParscadeCardProps {
   children: ReactNode;

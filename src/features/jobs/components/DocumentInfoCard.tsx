@@ -3,12 +3,13 @@
  * Document information display (reusable)
  */
 
-import React from 'react';
 import { FileText, Eye, Download } from 'lucide-react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/shared/components/ui/button';
-import { Badge } from '@/shared/components/ui/badge';
+
 import { ParscadeCard } from '@/shared/components/brand';
+import { Badge } from '@/shared/components/ui/badge';
+import { Button } from '@/shared/components/ui/button';
 import { formatDate, formatBytes } from '@/shared/utils/formatters';
 import type { Document } from '@/types/api-types';
 

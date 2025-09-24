@@ -3,22 +3,24 @@
  * Scalable dashboard with modular architecture and refined blue theme
  */
 
-import React from 'react';
 import { motion } from 'framer-motion';
 import { Crown, Target } from 'lucide-react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth';
-import DashboardLayout from '../components/layout/DashboardLayout';
-import DashboardSection from '../components/ui/DashboardSection';
-import QuickActions from '../components/ui/QuickActions';
-import OverviewStats from '../components/overview/OverviewStats';
-import RecentActivity from '../components/overview/RecentActivity';
+import { StandardProtectedRoute, ProProtectedRoute } from '@/shared/components/layout/templates';
+
+import AnalyticsHeader from '../components/AdvancedAnalytics';
+import ExportsManager from '../components/ExportsManager';
 import FileUploadZone from '../components/FileUploadZone';
 import JobsList from '../components/JobsList';
+import DashboardLayout from '../components/layout/DashboardLayout';
+import OverviewStats from '../components/overview/OverviewStats';
+import RecentActivity from '../components/overview/RecentActivity';
 import ProjectsOverview from '../components/ProjectsOverview';
-import ExportsManager from '../components/ExportsManager';
-import AnalyticsHeader from '../components/AdvancedAnalytics';
+import DashboardSection from '../components/ui/DashboardSection';
+import QuickActions from '../components/ui/QuickActions';
 
 /**
  * Main dashboard overview page with scalable modular architecture
@@ -94,26 +96,40 @@ const DashboardPage: React.FC = () => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl p-6 text-white shadow-parscade-lg relative overflow-hidden"
+          className="bg-gradient-to-br from-blue-600 via-blue-500 to-purple-600 rounded-xl p-6 text-white shadow-parscade-lg relative overflow-hidden border border-blue-400/20"
         >
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16" />
           <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-12 -translate-x-12" />
-          
+          <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/5 to-transparent" />
+
           <div className="relative z-10 flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-bold mb-2">
+              <motion.h2
+                className="text-xl font-bold mb-2"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
                 Welcome to Parscade
-              </h2>
-              <p className="text-blue-100">
+              </motion.h2>
+              <motion.p
+                className="text-blue-100"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+              >
                 Transform documents into structured data with intelligent processing
-              </p>
+              </motion.p>
             </div>
             <motion.div
-              animate={{ rotate: [0, 5, -5, 0] }}
-              transition={{ duration: 4, repeat: Infinity }}
+              animate={{
+                rotate: [0, 5, -5, 0],
+                y: [0, -2, 2, 0]
+              }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               className="hidden sm:block"
             >
-              <Crown className="w-10 h-10 text-blue-200" />
+              <Crown className="w-10 h-10 text-blue-200 drop-shadow-lg" />
             </motion.div>
           </div>
         </motion.div>
@@ -148,7 +164,9 @@ const DashboardPage: React.FC = () => {
             <RecentActivity />
             
             {/* Analytics Preview - Feature Gated */}
-            <AnalyticsHeader />
+            <ProProtectedRoute>
+              <AnalyticsHeader />
+            </ProProtectedRoute>
 
           </div>
         </DashboardSection>
@@ -160,7 +178,9 @@ const DashboardPage: React.FC = () => {
 
         {/* Data Exports Section */}
         <DashboardSection>
-          <ExportsManager />
+          <StandardProtectedRoute>
+            <ExportsManager />
+          </StandardProtectedRoute>
         </DashboardSection>
       </div>
     </DashboardLayout>

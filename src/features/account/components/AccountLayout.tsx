@@ -2,16 +2,15 @@
  * Account Layout with Context Provider
  */
 
-import React, { createContext, useContext } from 'react';
-import { Outlet, useLocation, NavLink } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { User, Shield, Bell, Zap } from 'lucide-react';
+import React, { createContext, useContext } from 'react';
+import { Outlet, useLocation, NavLink } from 'react-router-dom';
 
 import { getErrorMessage } from '@/lib/api';
 import Layout from '@/shared/components/layout/templates/Layout';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { useAccount } from '@/shared/hooks/api/useAccountData';
-
 import type { User as UserType } from '@/shared/types/api-types';
 
 interface AccountContextType {

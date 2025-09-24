@@ -3,15 +3,16 @@
  * Admin-only team management and user administration
  */
 
-import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Users, Plus, Settings, Crown, Mail, MoreVertical, UserPlus, Shield } from 'lucide-react';
+import React, { useState } from 'react';
 
-import DashboardLayout from '../components/layout/DashboardLayout';
-import DashboardSection from '../components/ui/DashboardSection';
 import { ParscadeCard } from '@/shared/components/brand';
 import CustomButton from '@/shared/components/forms/CustomButton';
 import FeatureGate from '@/shared/components/layout/FeatureGate';
+
+import DashboardLayout from '../components/layout/DashboardLayout';
+import DashboardSection from '../components/ui/DashboardSection';
 
 /**
  * Team management page for admin users

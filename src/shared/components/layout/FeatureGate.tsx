@@ -3,16 +3,21 @@
  * Controls access to features based on user role and tier
  */
 
-import React, { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { Crown, Users } from 'lucide-react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useFeatureAccess, type FeatureId } from '@/shared/hooks/useFeatureAccess';
+import { useAuth } from '@/features/auth';
 import { ParscadeCard, ParscadeButton } from '@/shared/components/brand';
+import { useFeatureAccess, type FeatureId, type UserRole, type UserPlan } from '@/shared/hooks/useFeatureAccess';
+
+import type { ReactNode } from 'react';
 
 interface FeatureGateProps {
-  featureId: FeatureId;
+  featureId?: FeatureId;
+  requiredTier?: 'free' | 'standard' | 'pro' | 'enterprise';
+  requiredRole?: 'user' | 'admin';
   children: ReactNode;
   fallback?: ReactNode;
   showUpgrade?: boolean;
@@ -23,16 +28,48 @@ interface FeatureGateProps {
  */
 const FeatureGate: React.FC<FeatureGateProps> = ({
   featureId,
+  requiredTier,
+  requiredRole,
   children,
   fallback,
   showUpgrade = true,
-
-  }) => {
+}) => {
   const { hasAccess, getUpgradeMessage } = useFeatureAccess();
   const navigate = useNavigate();
-  const billingPath = '/billing'
+  const billingPath = '/billing';
 
-  if (hasAccess(featureId)) {
+  // Import useAuth to get user data for tier/role checks
+  const { user } = useAuth();
+  const userRole: UserRole = user?.user_role || 'user';
+  const userTier: UserPlan = user?.subscription_tier || user?.plan || 'free';
+
+  // Check access based on featureId first, then tier/role
+  let hasAccessToFeature = true;
+  let upgradeMessage = null;
+
+  if (featureId) {
+    hasAccessToFeature = hasAccess(featureId);
+    upgradeMessage = getUpgradeMessage(featureId);
+  } else {
+    // Manual tier/role checking
+    if (requiredRole && userRole !== requiredRole && userRole !== 'admin') {
+      hasAccessToFeature = false;
+      upgradeMessage = 'This feature requires admin access.';
+    }
+
+    if (requiredTier) {
+      const tierHierarchy = ['free', 'standard', 'pro', 'enterprise'];
+      const requiredIndex = tierHierarchy.indexOf(requiredTier);
+      const userIndex = tierHierarchy.indexOf(userTier);
+
+      if (userIndex < requiredIndex) {
+        hasAccessToFeature = false;
+        upgradeMessage = `This feature requires ${requiredTier} plan.`;
+      }
+    }
+  }
+
+  if (hasAccessToFeature) {
     return <>{children}</>;
   }
 
@@ -52,8 +89,6 @@ const FeatureGate: React.FC<FeatureGateProps> = ({
       window.location.href = billingPath;
     }
   };
-
-  const upgradeMessage = getUpgradeMessage(featureId);
 
   return (
     <ParscadeCard variant="gradient" className="p-6 text-center h-full">

@@ -4,8 +4,6 @@
  * Updated to use snake_case field names matching OpenAPI schema
  */ 
 
-import React, { useState, useRef } from 'react';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
 import { 
@@ -25,6 +23,8 @@ import {
   AtSign,
   Briefcase
 } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { useForm } from 'react-hook-form';
 
 import { getErrorMessage } from '@/lib/api';
 import { profileSchema, type ProfileFormData } from '@/lib/validation/account';
@@ -36,6 +36,7 @@ import { Skeleton } from '@/shared/components/ui/skeleton';
 import { useToast } from '@/shared/components/ui/use-toast';
 import { useUpdateAccount, useUploadAvatar } from '@/shared/hooks/api/useAccountData';
 import { formatDate } from '@/shared/utils/date';
+
 import { useAccountContext } from '../AccountLayout';
 
 const ProfileTab: React.FC = () => {

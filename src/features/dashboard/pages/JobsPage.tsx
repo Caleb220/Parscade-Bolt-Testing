@@ -5,14 +5,9 @@
 
 import React, { useState, useMemo, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+
+import { getErrorMessage } from '@/lib/api';
 import { useToast } from '@/shared/components/ui/use-toast';
-import DashboardLayout from '../components/layout/DashboardLayout';
-import {
-  JobsHeader,
-  JobsFilters,
-  JobsTable,
-  CreateJobDialog,
-} from '../components/jobs';
 import {
   useJobs,
   useCreateJob,
@@ -23,13 +18,20 @@ import {
 } from '@/shared/hooks/api/useJobs';
 import { useProjects } from '@/shared/hooks/api/useProjects';
 import { useDebounce } from '@/shared/hooks/useDebounce';
-import { getErrorMessage } from '@/lib/api';
 import type {
   Job,
   JobCreateData,
   JobQueryParams,
   JobStatus
 } from '@/types/api-types';
+
+import {
+  JobsHeader,
+  JobsFilters,
+  JobsTable,
+  CreateJobDialog,
+} from '../components/jobs';
+import DashboardLayout from '../components/layout/DashboardLayout';
 
 /**
  * Streamlined Jobs dashboard page

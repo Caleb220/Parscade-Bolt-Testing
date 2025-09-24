@@ -3,8 +3,9 @@
  * Basic document information display
  */
 
-import React from 'react';
 import { FileText, Calendar, User, HardDrive, Database } from 'lucide-react';
+import React from 'react';
+
 import { ParscadeCard } from '@/shared/components/brand';
 import { formatDate, formatBytes } from '@/shared/utils/formatters';
 import type { Document } from '@/types/api-types';

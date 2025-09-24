@@ -5,7 +5,26 @@
 
 import React, { useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+
+import { getErrorMessage } from '@/lib/api';
+import LoadingSpinner from '@/shared/components/forms/atoms/LoadingSpinner';
 import { useToast } from '@/shared/components/ui/use-toast';
+import { useDocuments } from '@/shared/hooks/api/useDocuments';
+import { useCreateExport } from '@/shared/hooks/api/useExports';
+import { useJobs ,
+  useStartJob,
+  useCancelJob,
+  useRetryJob
+} from '@/shared/hooks/api/useJobs';
+import {
+  useProject,
+  useUpdateProject,
+  useDeleteProject,
+  useAssociateDocument,
+  useRemoveDocument
+} from '@/shared/hooks/api/useProjects';
+import type { Document, Job } from '@/types/api-types';
+
 import DashboardLayout from '../components/layout/DashboardLayout';
 import {
   ProjectDetailHeader,
@@ -15,24 +34,6 @@ import {
   EditProjectDialog,
   AddDocumentDialog,
 } from '../components/project-detail';
-import LoadingSpinner from '@/shared/components/forms/atoms/LoadingSpinner';
-import {
-  useProject,
-  useUpdateProject,
-  useDeleteProject,
-  useAssociateDocument,
-  useRemoveDocument
-} from '@/shared/hooks/api/useProjects';
-import { useDocuments } from '@/shared/hooks/api/useDocuments';
-import { useJobs } from '@/shared/hooks/api/useJobs';
-import { useCreateExport } from '@/shared/hooks/api/useExports';
-import {
-  useStartJob,
-  useCancelJob,
-  useRetryJob
-} from '@/shared/hooks/api/useJobs';
-import { getErrorMessage } from '@/lib/api';
-import type { Document, Job } from '@/types/api-types';
 
 /**
  * Streamlined Project Detail page

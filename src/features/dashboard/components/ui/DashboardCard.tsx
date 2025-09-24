@@ -3,12 +3,14 @@
  * Reusable card component for dashboard content
  */
 
-import React, { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { AlertTriangle } from 'lucide-react';
+import React from 'react';
 
 import { ParscadeButton, ParscadeCard } from '@/shared/components/brand';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
+
+import type { ReactNode } from 'react';
 
 interface DashboardCardProps {
   title: string;

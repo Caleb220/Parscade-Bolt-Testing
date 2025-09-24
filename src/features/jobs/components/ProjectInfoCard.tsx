@@ -3,11 +3,12 @@
  * Project information display (reusable)
  */
 
-import React from 'react';
 import { Folder, ExternalLink, Eye } from 'lucide-react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/shared/components/ui/button';
+
 import { ParscadeCard } from '@/shared/components/brand';
+import { Button } from '@/shared/components/ui/button';
 import { formatDate } from '@/shared/utils/formatters';
 import type { Project } from '@/types/api-types';
 

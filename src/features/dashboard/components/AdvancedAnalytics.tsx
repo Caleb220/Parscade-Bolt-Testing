@@ -3,7 +3,6 @@
  * Feature-gated analytics dashboard with real backend integration
  */
 
-import React, { useState } from 'react';
 import { 
   TrendingUp, 
   Target, 
@@ -14,18 +13,19 @@ import {
   PieChart,
   Activity,
 } from 'lucide-react';
+import React, { useState } from 'react';
 
 import { ParscadeCard } from '@/shared/components/brand';
+import FeatureGate from '@/shared/components/layout/FeatureGate';
+import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
 import { Skeleton } from '@/shared/components/ui/skeleton';
-import { Badge } from '@/shared/components/ui/badge';
 import { 
   useAnalyticsOverview, 
   useAnalyticsTrends, 
   useAnalyticsAccuracy, 
   useAnalyticsErrors 
 } from '@/shared/hooks/api/useAnalytics';
-import FeatureGate from '@/shared/components/layout/FeatureGate';
 import { formatDate } from '@/shared/utils/date';
 
 interface AdvancedAnalyticsProps {

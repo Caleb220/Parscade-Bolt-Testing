@@ -1,7 +1,9 @@
-import React, { Component, ReactNode } from 'react';
 import { WifiOff, RefreshCw, AlertCircle } from 'lucide-react';
+import React, { Component } from 'react';
 
 import { Button } from '@/shared/components/ui/button';
+
+import type { ReactNode } from 'react';
 
 interface Props {
   children: ReactNode;

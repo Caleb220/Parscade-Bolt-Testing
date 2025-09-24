@@ -1,5 +1,6 @@
-import React from 'react';
 import { BarChart3, Clock, FileText, Users } from 'lucide-react';
+import React from 'react';
+
 import StatCard from './statCards/StatCard';
 
 const DEFAULT_STATS = [

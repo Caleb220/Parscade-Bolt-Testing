@@ -1,7 +1,7 @@
-import React from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Play } from 'lucide-react';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth';
 import AuthModal from '@/features/auth/components/AuthModal';

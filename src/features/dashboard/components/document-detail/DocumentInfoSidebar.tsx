@@ -3,12 +3,15 @@
  * Container for all document information cards
  */
 
-import React from 'react';
 import { motion } from 'framer-motion';
+import React from 'react';
+
+import type { Document, Project } from '@/types/api-types';
+
 import DocumentInfoCard from './DocumentInfoCard';
 import DocumentMetadataCard from './DocumentMetadataCard';
 import { ProjectInfoCard } from '../../../jobs/components';
-import type { Document, Project } from '@/types/api-types';
+
 
 interface DocumentInfoSidebarProps {
   document: Document;

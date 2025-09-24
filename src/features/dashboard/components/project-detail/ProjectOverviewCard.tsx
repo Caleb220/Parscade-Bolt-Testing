@@ -3,14 +3,16 @@
  * Main project information and metadata display
  */
 
-import React from 'react';
 import { motion } from 'framer-motion';
 import { FolderOpen, Calendar, Clock, ExternalLink } from 'lucide-react';
-import { Badge } from '@/shared/components/ui/badge';
+import React from 'react';
+
 import { ParscadeCard } from '@/shared/components/brand';
+import { Badge } from '@/shared/components/ui/badge';
 import { formatDate } from '@/shared/utils/formatters';
-import ProjectStatsCards from './ProjectStatsCards';
 import type { Project, Document, Job } from '@/types/api-types';
+
+import ProjectStatsCards from './ProjectStatsCards';
 
 interface ProjectOverviewCardProps {
   project: Project;

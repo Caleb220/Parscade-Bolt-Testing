@@ -1,10 +1,13 @@
-import React, { ReactNode } from 'react';
 import { QueryErrorResetBoundary } from '@tanstack/react-query';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
+import React from 'react';
 
-import { Button } from '@/shared/components/ui/button';
 import { getErrorMessage, isApiError } from '@/lib/api';
+import { Button } from '@/shared/components/ui/button';
+
 import GlobalErrorBoundary from './GlobalErrorBoundary';
+
+import type { ReactNode } from 'react';
 
 interface Props {
   children: ReactNode;

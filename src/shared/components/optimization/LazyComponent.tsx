@@ -1,10 +1,12 @@
-import React, { Suspense, ComponentType, ReactNode } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
 import { motion, AnimatePresence } from 'framer-motion';
+import React, { Suspense } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 
-import { usePreload, useBandwidthAwarePreload } from '@/shared/hooks/usePreload';
-import { PageLoading, SectionLoading } from '@/shared/components/loading';
 import { GlobalErrorBoundary } from '@/shared/components/error';
+import { PageLoading, SectionLoading } from '@/shared/components/loading';
+import { usePreload, useBandwidthAwarePreload } from '@/shared/hooks/usePreload';
+
+import type { ComponentType, ReactNode } from 'react';
 
 interface LazyComponentProps {
   /** The lazy-loaded component */

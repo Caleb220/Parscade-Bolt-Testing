@@ -3,8 +3,9 @@
  * Fully aligned with OpenAPI schema definitions
  */
 
-import { apiClient } from '../client';
 import type { paths, Document } from '@/types/api-types';
+
+import { apiClient } from '../client';
 
 // Extract exact types from OpenAPI paths
 type SignedUploadRequest = paths['/v1/uploads/sign']['post']['requestBody']['content']['application/json'];

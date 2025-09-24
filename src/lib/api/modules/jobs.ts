@@ -4,7 +4,6 @@
  * Fully aligned with backend handoff specification
  */
 
-import { apiClient } from '../client';
 import type { 
   Job, 
   JobCreateData, 
@@ -12,6 +11,8 @@ import type {
   JobQueryParams, 
   PaginatedResponse 
 } from '@/types/api-types';
+
+import { apiClient } from '../client';
 
 /**
  * Job management endpoints

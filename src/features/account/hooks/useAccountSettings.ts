@@ -1,18 +1,24 @@
 import { useCallback, useEffect, useMemo, useState, useRef } from 'react';
-import {
+
+import type {
   AccountSettings,
   AccountSettingsSection,
   IntegrationSettings,
   NotificationSettings,
   ProfileSettings,
-  SecuritySettings,
+  SecuritySettings} from '@/shared/schemas/account/accountSettings';
+import {
   accountSettingsSchema,
   createDefaultAccountSettings,
 } from '@/shared/schemas/account/accountSettings';
+import { logger } from '@/shared/services/logger';
+import { formatErrorForUser } from '@/shared/utils/zodError';
+
 import {
   fetchOrCreateAccountSettings,
   updateAccountSettingsSection,
 } from '../services/accountSettingsService';
+
 
 interface UseAccountSettingsOptions {
   userId?: string;
@@ -31,9 +37,6 @@ interface UseAccountSettingsResult {
   saveNotifications: (notifications: NotificationSettings) => Promise<AccountSettings>;
   saveIntegrations: (integrations: IntegrationSettings) => Promise<AccountSettings>;
 }
-
-import { formatErrorForUser } from '@/shared/utils/zodError';
-import { logger } from '@/shared/services/logger';
 
 export const useAccountSettings = ({ userId, email, fullName }: UseAccountSettingsOptions): UseAccountSettingsResult => {
   const [settings, setSettings] = useState<AccountSettings | null>(null);
