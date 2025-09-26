@@ -5,7 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "npm run clean && npm run typecheck && vite build",
+    "build:analyze": "ANALYZE=true npm run build",
+    "build:prod": "NODE_ENV=production npm run build",
+    "build:docker": "npm run clean:all && npm ci && npm run build:prod",
+    "clean": "rm -rf dist",
+    "clean:all": "rm -rf dist node_modules/.vite node_modules/.cache",
+    "clean:cache": "rm -rf node_modules/.vite",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --check .",
@@ -15,7 +21,11 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
-    "security:audit": "npm audit --production"
+    "test:coverage": "vitest run --coverage",
+    "security:audit": "npm audit --production",
+    "deps:check": "npm ls --depth=0",
+    "deps:update": "npm update",
+    "preflight": "npm run typecheck && npm run lint && npm run test:run"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.2.8",
@@ -35,6 +45,7 @@
     "events": "^3.3.0",
     "framer-motion": "^12.23.13",
     "intersection-observer": "^0.12.2",
+    "isomorphic-dompurify": "^2.28.0",
     "lucide-react": "^0.344.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -47,10 +58,12 @@
   "devDependencies": {
     "@eslint/js": "^9.9.1",
     "@tanstack/react-query-devtools": "^5.89.0",
+    "@testing-library/jest-dom": "^6.8.0",
     "@types/node": "^24.5.1",
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
+    "@vitest/ui": "^2.1.8",
     "autoprefixer": "^10.4.18",
     "eslint": "^9.36.0",
     "eslint-import-resolver-typescript": "^3.10.1",
@@ -68,6 +81,7 @@
     "typescript": "5.5.3",
     "typescript-eslint": "^8.3.0",
     "vite": "^5.4.2",
-    "vite-plugin-compression": "^0.5.1"
+    "vite-plugin-compression": "^0.5.1",
+    "vitest": "^2.1.8"
   }
 }
