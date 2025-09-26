@@ -6,13 +6,7 @@
 import React from 'react';
 
 import { Button } from './button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from './dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './dialog';
 
 interface ConfirmationDialogProps {
   isOpen: boolean;
@@ -48,7 +42,7 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
           <Button variant="outline" onClick={onClose} disabled={isLoading}>
             {cancelText}
           </Button>
-          <Button 
+          <Button
             variant={variant === 'destructive' ? 'destructive' : 'default'}
             onClick={onConfirm}
             disabled={isLoading}

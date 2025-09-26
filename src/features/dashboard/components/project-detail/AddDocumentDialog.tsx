@@ -7,8 +7,8 @@ import { motion } from 'framer-motion';
 import { Plus, Search, FileText } from 'lucide-react';
 import React, { useState, useMemo } from 'react';
 
+import Button from '@/shared/components/forms/atoms/Button';
 import { Badge } from '@/shared/components/ui/badge';
-import { Button } from '@/shared/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -49,9 +49,10 @@ const AddDocumentDialog: React.FC<AddDocumentDialogProps> = ({
   // Filter documents based on search
   const filteredDocuments = useMemo(() => {
     if (!searchTerm) return selectableDocuments;
-    return selectableDocuments.filter(doc =>
-      doc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (doc.mime_type && doc.mime_type.toLowerCase().includes(searchTerm.toLowerCase()))
+    return selectableDocuments.filter(
+      doc =>
+        doc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (doc.mime_type && doc.mime_type.toLowerCase().includes(searchTerm.toLowerCase()))
     );
   }, [selectableDocuments, searchTerm]);
 
@@ -85,9 +86,7 @@ const AddDocumentDialog: React.FC<AddDocumentDialogProps> = ({
       <DialogContent className="max-w-2xl max-h-[80vh]">
         <DialogHeader>
           <DialogTitle>Add Documents to Project</DialogTitle>
-          <DialogDescription>
-            Select documents to associate with this project.
-          </DialogDescription>
+          <DialogDescription>Select documents to associate with this project.</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -98,7 +97,7 @@ const AddDocumentDialog: React.FC<AddDocumentDialogProps> = ({
               id="document-search"
               placeholder="Search by name or type..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
               leftIcon={<Search className="w-4 h-4" />}
               fullWidth
             />
@@ -110,12 +109,14 @@ const AddDocumentDialog: React.FC<AddDocumentDialogProps> = ({
               <div className="p-8 text-center">
                 <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                 <p className="text-gray-500">
-                  {searchTerm ? 'No documents found matching your search' : 'No available documents to add'}
+                  {searchTerm
+                    ? 'No documents found matching your search'
+                    : 'No available documents to add'}
                 </p>
               </div>
             ) : (
               <div className="space-y-1 p-2">
-                {filteredDocuments.map((document) => (
+                {filteredDocuments.map(document => (
                   <motion.div
                     key={document.id}
                     initial={{ opacity: 0 }}
@@ -141,9 +142,7 @@ const AddDocumentDialog: React.FC<AddDocumentDialogProps> = ({
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
-                          <h4 className="font-medium text-gray-900 truncate">
-                            {document.name}
-                          </h4>
+                          <h4 className="font-medium text-gray-900 truncate">{document.name}</h4>
                           <Badge
                             variant={document.status === 'completed' ? 'success' : 'secondary'}
                             showIcon
@@ -154,7 +153,9 @@ const AddDocumentDialog: React.FC<AddDocumentDialogProps> = ({
                         <div className="flex items-center space-x-4 mt-1 text-sm text-gray-500">
                           <span>{document.mime_type || 'Unknown type'}</span>
                           <span>•</span>
-                          <span>{document.file_size ? formatBytes(document.file_size) : 'N/A'}</span>
+                          <span>
+                            {document.file_size ? formatBytes(document.file_size) : 'N/A'}
+                          </span>
                           <span>•</span>
                           <span>{formatDate(document.created_at)}</span>
                         </div>
@@ -170,18 +171,14 @@ const AddDocumentDialog: React.FC<AddDocumentDialogProps> = ({
           {selectedDocumentIds.size > 0 && (
             <div className="p-3 bg-blue-50 rounded-lg">
               <p className="text-sm text-blue-700">
-                {selectedDocumentIds.size} document{selectedDocumentIds.size > 1 ? 's' : ''} selected
+                {selectedDocumentIds.size} document{selectedDocumentIds.size > 1 ? 's' : ''}{' '}
+                selected
               </p>
             </div>
           )}
 
           <div className="flex justify-end space-x-3 pt-4 border-t">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleClose}
-              disabled={isLoading}
-            >
+            <Button type="button" variant="outline" onClick={handleClose} disabled={isLoading}>
               Cancel
             </Button>
             <Button
@@ -191,7 +188,8 @@ const AddDocumentDialog: React.FC<AddDocumentDialogProps> = ({
               disabled={selectedDocumentIds.size === 0}
               glow
             >
-              Add {selectedDocumentIds.size > 0 ? `${selectedDocumentIds.size} ` : ''}Document{selectedDocumentIds.size > 1 ? 's' : ''}
+              Add {selectedDocumentIds.size > 0 ? `${selectedDocumentIds.size} ` : ''}Document
+              {selectedDocumentIds.size > 1 ? 's' : ''}
             </Button>
           </div>
         </form>

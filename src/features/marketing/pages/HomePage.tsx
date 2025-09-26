@@ -38,11 +38,15 @@ const HomePage: React.FC = () => {
             transition={{ duration: 0.6 }}
             className="text-center mb-12"
           >
-            <h2 id="pipeline-demo" className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+            <h2
+              id="pipeline-demo"
+              className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4"
+            >
               See how it works
             </h2>
             <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto px-4">
-              Our intelligent pipeline transforms your documents through four seamless stages, delivering structured data ready for your applications.
+              Our intelligent pipeline transforms your documents through four seamless stages,
+              delivering structured data ready for your applications.
             </p>
           </motion.div>
 
@@ -53,14 +57,14 @@ const HomePage: React.FC = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
           >
             <Suspense
-              fallback={(
+              fallback={
                 <div className="flex h-72 items-center justify-center rounded-2xl border border-dashed border-gray-300">
                   <div className="text-center">
                     <LoadingSpinner size="lg" className="mx-auto mb-4" />
                     <span className="text-sm text-gray-500">Loading interactive preview...</span>
                   </div>
                 </div>
-              )}
+              }
             >
               <PipelineCarousel />
             </Suspense>
@@ -68,10 +72,10 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      <FeaturesSection /> 
+      <FeaturesSection />
 
       <BetaCTASection />
-      
+
       <AuthModal
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
@@ -82,4 +86,3 @@ const HomePage: React.FC = () => {
 };
 
 export default HomePage;
-

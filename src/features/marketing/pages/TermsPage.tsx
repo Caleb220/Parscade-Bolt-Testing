@@ -9,23 +9,23 @@ const TermsPage: React.FC = () => {
     {
       icon: FileText,
       title: 'Beta Terms',
-      description: 'Special terms for our beta program participants with flexible usage rights.'
+      description: 'Special terms for our beta program participants with flexible usage rights.',
     },
     {
       icon: AlertTriangle,
       title: 'Fair Use',
-      description: 'Reasonable usage limits to ensure service quality for all beta users.'
+      description: 'Reasonable usage limits to ensure service quality for all beta users.',
     },
     {
       icon: CheckCircle,
       title: 'Your Rights',
-      description: 'Clear rights and protections for beta users, including data ownership.'
+      description: 'Clear rights and protections for beta users, including data ownership.',
     },
     {
       icon: Users,
       title: 'Community',
-      description: 'Guidelines for participating in our beta community and feedback programs.'
-    }
+      description: 'Guidelines for participating in our beta community and feedback programs.',
+    },
   ];
 
   return (
@@ -76,7 +76,9 @@ const TermsPage: React.FC = () => {
                       <highlight.icon className="w-6 h-6 text-blue-600" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">{highlight.title}</h3>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                        {highlight.title}
+                      </h3>
                       <p className="text-gray-600">{highlight.description}</p>
                     </div>
                   </div>
@@ -94,21 +96,19 @@ const TermsPage: React.FC = () => {
           >
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
               <p className="text-blue-800 mb-0">
-                <strong>Beta Program:</strong> These terms apply to our beta program. 
-                We may update these terms as we develop our platform, with advance notice to users.
+                <strong>Beta Program:</strong> These terms apply to our beta program. We may update
+                these terms as we develop our platform, with advance notice to users.
               </p>
             </div>
 
             <h2 className="text-2xl font-bold text-gray-900 mb-4">1. Acceptance of Terms</h2>
             <p className="text-gray-600 mb-6">
-              By accessing or using Parscade, you agree to be bound by these Terms of Service. 
-              If you don't agree to these terms, please don't use our service.
+              By accessing or using Parscade, you agree to be bound by these Terms of Service. If
+              you don't agree to these terms, please don't use our service.
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900 mb-4">2. Beta Program Participation</h2>
-            <p className="text-gray-600 mb-4">
-              Parscade is currently in beta. This means:
-            </p>
+            <p className="text-gray-600 mb-4">Parscade is currently in beta. This means:</p>
             <ul className="text-gray-600 mb-6">
               <li>The service may have bugs, limitations, or interruptions</li>
               <li>Features may change or be discontinued</li>
@@ -118,9 +118,7 @@ const TermsPage: React.FC = () => {
             </ul>
 
             <h2 className="text-2xl font-bold text-gray-900 mb-4">3. Account Registration</h2>
-            <p className="text-gray-600 mb-4">
-              To use Parscade, you must:
-            </p>
+            <p className="text-gray-600 mb-4">To use Parscade, you must:</p>
             <ul className="text-gray-600 mb-6">
               <li>Provide accurate and complete registration information</li>
               <li>Maintain the security of your account credentials</li>
@@ -130,9 +128,7 @@ const TermsPage: React.FC = () => {
             </ul>
 
             <h2 className="text-2xl font-bold text-gray-900 mb-4">4. Acceptable Use</h2>
-            <p className="text-gray-600 mb-4">
-              You may not use Parscade to:
-            </p>
+            <p className="text-gray-600 mb-4">You may not use Parscade to:</p>
             <ul className="text-gray-600 mb-6">
               <li>Process illegal, harmful, or inappropriate content</li>
               <li>Violate any laws or regulations</li>
@@ -143,9 +139,7 @@ const TermsPage: React.FC = () => {
             </ul>
 
             <h2 className="text-2xl font-bold text-gray-900 mb-4">5. Data and Privacy</h2>
-            <p className="text-gray-600 mb-4">
-              Regarding your data:
-            </p>
+            <p className="text-gray-600 mb-4">Regarding your data:</p>
             <ul className="text-gray-600 mb-6">
               <li>You retain ownership of all documents and data you upload</li>
               <li>We process your data only as necessary to provide our service</li>
@@ -156,42 +150,41 @@ const TermsPage: React.FC = () => {
 
             <h2 className="text-2xl font-bold text-gray-900 mb-4">6. Service Availability</h2>
             <p className="text-gray-600 mb-6">
-              During beta, we strive for high availability but cannot guarantee uninterrupted service. 
-              We may perform maintenance, updates, or modifications that temporarily affect service availability.
+              During beta, we strive for high availability but cannot guarantee uninterrupted
+              service. We may perform maintenance, updates, or modifications that temporarily affect
+              service availability.
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900 mb-4">7. Intellectual Property</h2>
             <p className="text-gray-600 mb-6">
-              Parscade and its technology are protected by intellectual property laws. 
-              You may not copy, modify, or distribute our software or content without permission. 
-              You grant us a limited license to process your uploaded documents to provide our service.
+              Parscade and its technology are protected by intellectual property laws. You may not
+              copy, modify, or distribute our software or content without permission. You grant us a
+              limited license to process your uploaded documents to provide our service.
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900 mb-4">8. Limitation of Liability</h2>
             <p className="text-gray-600 mb-6">
-              As a beta service, Parscade is provided "as is" without warranties. 
-              We're not liable for any damages arising from your use of the service, 
-              including data loss, business interruption, or other indirect damages.
+              As a beta service, Parscade is provided "as is" without warranties. We're not liable
+              for any damages arising from your use of the service, including data loss, business
+              interruption, or other indirect damages.
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900 mb-4">9. Termination</h2>
             <p className="text-gray-600 mb-6">
-              Either party may terminate your account at any time. Upon termination, 
-              your access to the service will cease, and we'll delete your data according 
-              to our retention policies. You may export your data before termination.
+              Either party may terminate your account at any time. Upon termination, your access to
+              the service will cease, and we'll delete your data according to our retention
+              policies. You may export your data before termination.
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900 mb-4">10. Changes to Terms</h2>
             <p className="text-gray-600 mb-6">
-              We may update these terms as our service evolves. We'll notify users of 
-              significant changes via email or through our service. Continued use after 
-              changes constitutes acceptance of the new terms.
+              We may update these terms as our service evolves. We'll notify users of significant
+              changes via email or through our service. Continued use after changes constitutes
+              acceptance of the new terms.
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900 mb-4">11. Contact Information</h2>
-            <p className="text-gray-600 mb-4">
-              Questions about these terms? Contact us:
-            </p>
+            <p className="text-gray-600 mb-4">Questions about these terms? Contact us:</p>
             <ul className="text-gray-600 mb-8">
               <li>Email: admin@parscade.com</li>
               <li>Contact form: Available on our contact page</li>
@@ -201,9 +194,9 @@ const TermsPage: React.FC = () => {
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Beta Program Benefits</h3>
               <p className="text-gray-600 mb-0">
-                As a beta user, you get early access to new features, direct communication 
-                with our team, and the opportunity to influence our product development. 
-                Thank you for helping us build something amazing!
+                As a beta user, you get early access to new features, direct communication with our
+                team, and the opportunity to influence our product development. Thank you for
+                helping us build something amazing!
               </p>
             </div>
           </motion.div>

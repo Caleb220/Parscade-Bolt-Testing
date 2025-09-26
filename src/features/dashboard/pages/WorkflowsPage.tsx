@@ -80,16 +80,11 @@ const WorkflowsPage: React.FC = () => {
         >
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Workflows</h1>
-            <p className="text-gray-600">
-              Automate your document processing with custom workflows
-            </p>
+            <p className="text-gray-600">Automate your document processing with custom workflows</p>
           </div>
 
           <FeatureGate requiredTier="enterprise">
-            <CustomButton
-              variant="primary"
-              leftIcon={<Plus className="w-4 h-4" />}
-            >
+            <CustomButton variant="primary" leftIcon={<Plus className="w-4 h-4" />}>
               Create Workflow
             </CustomButton>
           </FeatureGate>
@@ -110,9 +105,7 @@ const WorkflowsPage: React.FC = () => {
                     <Crown className="w-8 h-8 text-amber-500 mr-3" />
                     <GitBranch className="w-16 h-16 text-blue-600" />
                   </div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                    Enterprise Workflows
-                  </h2>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-4">Enterprise Workflows</h2>
                   <p className="text-gray-600 mb-8 text-lg">
                     Build powerful automation workflows to streamline your document processing.
                     Create custom pipelines, set triggers, and automate complex business processes.
@@ -120,7 +113,10 @@ const WorkflowsPage: React.FC = () => {
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     {templates.map((template, index) => (
-                      <div key={template.name} className="bg-white rounded-lg p-6 border border-gray-200">
+                      <div
+                        key={template.name}
+                        className="bg-white rounded-lg p-6 border border-gray-200"
+                      >
                         <div className="text-3xl mb-3">{template.icon}</div>
                         <h3 className="font-semibold text-gray-900 mb-2">{template.name}</h3>
                         <p className="text-sm text-gray-600">{template.description}</p>
@@ -148,7 +144,7 @@ const WorkflowsPage: React.FC = () => {
                 { key: 'all', label: 'All Workflows' },
                 { key: 'active', label: 'Active' },
                 { key: 'templates', label: 'Templates' },
-              ].map((tab) => (
+              ].map(tab => (
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key as typeof activeTab)}
@@ -176,14 +172,14 @@ const WorkflowsPage: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-2">
-                      <h3 className="text-lg font-semibold text-gray-900">
-                        {workflow.name}
-                      </h3>
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        workflow.status === 'active'
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-yellow-100 text-yellow-800'
-                      }`}>
+                      <h3 className="text-lg font-semibold text-gray-900">{workflow.name}</h3>
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          workflow.status === 'active'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-yellow-100 text-yellow-800'
+                        }`}
+                      >
                         {workflow.status === 'active' ? (
                           <>
                             <Play className="w-3 h-3 mr-1" />
@@ -231,10 +227,7 @@ const WorkflowsPage: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
           >
-            <DashboardSection
-              title="Workflow Builder"
-              description="Visual workflow creation tool"
-            >
+            <DashboardSection title="Workflow Builder" description="Visual workflow creation tool">
               <div className="h-64 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center">
                 <div className="text-center">
                   <GitBranch className="w-12 h-12 text-gray-400 mx-auto mb-4" />

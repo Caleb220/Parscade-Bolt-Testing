@@ -45,7 +45,10 @@ export const formatZodError = (error: ZodError): string => {
 /**
  * Format any error for user display
  */
-export const formatErrorForUser = (error: unknown, fallback = 'An unexpected error occurred'): string => {
+export const formatErrorForUser = (
+  error: unknown,
+  fallback = 'An unexpected error occurred'
+): string => {
   if (error instanceof ZodError) {
     return formatZodError(error);
   }

@@ -8,7 +8,7 @@ import { ArrowLeft, Download, Edit3, Trash2 } from 'lucide-react';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Button } from '@/shared/components/ui/button';
+import Button from '@/shared/components/forms/atoms/Button';
 import type { Project } from '@/types/api-types';
 
 interface ProjectDetailHeaderProps {
@@ -50,12 +50,8 @@ const ProjectDetailHeader: React.FC<ProjectDetailHeaderProps> = ({
           <div className="h-6 w-px bg-gray-300" />
 
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">
-              {project?.name || 'Loading...'}
-            </h1>
-            <p className="text-gray-600 mt-1">
-              Project Details & Management
-            </p>
+            <h1 className="text-2xl font-bold text-gray-900">{project?.name || 'Loading...'}</h1>
+            <p className="text-gray-600 mt-1">Project Details & Management</p>
           </div>
         </div>
 

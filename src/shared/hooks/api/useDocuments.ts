@@ -9,11 +9,11 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getErrorMessage } from '@/lib/api';
 import { documentsApi } from '@/lib/api/modules/documents';
 import { useToast } from '@/shared/components/ui/use-toast';
-import type { 
+import type {
   Document,
   DocumentUpdateData,
   DocumentQueryParams,
-  PaginatedResponse
+  PaginatedResponse,
 } from '@/types/api-types';
 
 // Query keys
@@ -59,28 +59,28 @@ export const useDocument = (documentId: string) => {
 export const useUploadDocument = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  
+
   return useMutation({
-    mutationFn: ({ 
-      file, 
-      name, 
-      projectId, 
-      metadata 
-    }: { 
-      file: File; 
-      name?: string; 
-      projectId?: string; 
-      metadata?: Record<string, unknown> 
+    mutationFn: ({
+      file,
+      name,
+      projectId,
+      metadata,
+    }: {
+      file: File;
+      name?: string;
+      projectId?: string;
+      metadata?: Record<string, unknown>;
     }) => documentsApi.uploadDocument(file, name, projectId, metadata),
-    onSuccess: (response) => {
+    onSuccess: response => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.documents });
-      
+
       toast({
         title: 'Document uploaded',
         description: `"${response.document.name}" has been uploaded successfully.`,
       });
     },
-    onError: (error) => {
+    onError: error => {
       toast({
         title: 'Upload failed',
         description: getErrorMessage(error),
@@ -96,7 +96,7 @@ export const useUploadDocument = () => {
 export const useIngestDocument = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  
+
   return useMutation({
     mutationFn: (data: {
       url: string;
@@ -105,15 +105,15 @@ export const useIngestDocument = () => {
       mime_type?: string;
       metadata?: Record<string, unknown>;
     }) => documentsApi.ingestDocument(data),
-    onSuccess: (document) => {
+    onSuccess: document => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.documents });
-      
+
       toast({
         title: 'Document ingested',
         description: `"${document.name}" has been ingested from URL successfully.`,
       });
     },
-    onError: (error) => {
+    onError: error => {
       toast({
         title: 'Ingestion failed',
         description: getErrorMessage(error),
@@ -129,20 +129,20 @@ export const useIngestDocument = () => {
 export const useUpdateDocument = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  
+
   return useMutation({
-    mutationFn: ({ documentId, data }: { documentId: string; data: DocumentUpdateData }) => 
+    mutationFn: ({ documentId, data }: { documentId: string; data: DocumentUpdateData }) =>
       documentsApi.updateDocument(documentId, data),
-    onSuccess: (document) => {
+    onSuccess: document => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.document(document.id) });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.documents });
-      
+
       toast({
         title: 'Document updated',
         description: `"${document.name}" has been updated successfully.`,
       });
     },
-    onError: (error) => {
+    onError: error => {
       toast({
         title: 'Update failed',
         description: getErrorMessage(error),
@@ -158,19 +158,19 @@ export const useUpdateDocument = () => {
 export const useDeleteDocument = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  
+
   return useMutation({
     mutationFn: (documentId: string) => documentsApi.deleteDocument(documentId),
     onSuccess: (_, documentId) => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.document(documentId) });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.documents });
-      
+
       toast({
         title: 'Document deleted',
         description: 'The document has been deleted successfully.',
       });
     },
-    onError: (error) => {
+    onError: error => {
       toast({
         title: 'Deletion failed',
         description: getErrorMessage(error),
@@ -185,19 +185,19 @@ export const useDeleteDocument = () => {
  */
 export const useDocumentDownload = () => {
   const { toast } = useToast();
-  
+
   return useMutation({
     mutationFn: (documentId: string) => documentsApi.getDownloadUrl(documentId),
-    onSuccess: (response) => {
+    onSuccess: response => {
       // Open download URL in new tab
       window.open(response.download_url, '_blank');
-      
+
       toast({
         title: 'Download started',
         description: 'Your document download has been initiated.',
       });
     },
-    onError: (error) => {
+    onError: error => {
       toast({
         title: 'Download failed',
         description: getErrorMessage(error),

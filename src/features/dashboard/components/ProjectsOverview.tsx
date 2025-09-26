@@ -4,10 +4,10 @@
  */
 
 import { motion } from 'framer-motion';
-import { 
-  FolderPlus, 
-  Folder, 
-  FileText, 
+import {
+  FolderPlus,
+  Folder,
+  FileText,
   Calendar,
   MoreVertical,
   Edit3,
@@ -17,7 +17,7 @@ import {
   Eye,
   Search,
   Activity,
-  Zap
+  Zap,
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -26,16 +26,23 @@ import { getErrorMessage } from '@/lib/api';
 import { ParscadeCard, ParscadeButton } from '@/shared/components/brand';
 import { Button } from '@/shared/components/ui/button';
 import ConfirmationDialog from '@/shared/components/ui/confirmation-dialog';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/shared/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/shared/components/ui/dialog';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { useToast } from '@/shared/components/ui/use-toast';
-import { 
-  useProjects, 
-  useCreateProject, 
-  useUpdateProject, 
-  useDeleteProject 
+import {
+  useProjects,
+  useCreateProject,
+  useUpdateProject,
+  useDeleteProject,
 } from '@/shared/hooks/api/useProjects';
 import { formatDate } from '@/shared/utils/date';
 import type { ProjectCreateData } from '@/types/dashboard-types';
@@ -63,9 +70,10 @@ const ProjectsOverview: React.FC<ProjectsOverviewProps> = ({ className = '' }) =
   const [open, setOpen] = useState(false);
 
   const projects = projectsData?.data || [];
-  const filteredProjects = projects.filter(project =>
-    project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (project.description && project.description.toLowerCase().includes(searchTerm.toLowerCase()))
+  const filteredProjects = projects.filter(
+    project =>
+      project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (project.description && project.description.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   const handleCreate = async () => {
@@ -82,7 +90,7 @@ const ProjectsOverview: React.FC<ProjectsOverviewProps> = ({ className = '' }) =
       const newProject = await createProject.mutateAsync(formData);
       setFormData({ name: '', description: '' });
       setShowCreateDialog(false);
-      
+
       // Navigate to the new project
       navigate(`/dashboard/projects/${newProject.id}`);
     } catch (error) {
@@ -101,12 +109,12 @@ const ProjectsOverview: React.FC<ProjectsOverviewProps> = ({ className = '' }) =
     }
 
     try {
-      await updateProject.mutateAsync({ 
-        projectId, 
-        data: { 
-          name: formData.name, 
-          description: formData.description || undefined 
-        } 
+      await updateProject.mutateAsync({
+        projectId,
+        data: {
+          name: formData.name,
+          description: formData.description || undefined,
+        },
       });
       setFormData({ name: '', description: '' });
       setEditingProject(null);
@@ -116,7 +124,6 @@ const ProjectsOverview: React.FC<ProjectsOverviewProps> = ({ className = '' }) =
   };
 
   const handleDelete = async (projectId: string) => {
-
     try {
       await deleteProject.mutateAsync(projectId);
       setConfirmDelete(null);
@@ -170,44 +177,45 @@ const ProjectsOverview: React.FC<ProjectsOverviewProps> = ({ className = '' }) =
           <Folder className="w-5 h-5 text-blue-600" />
           <div>
             <h2 className="text-lg font-semibold text-gray-900">Projects</h2>
-            <p className="text-sm text-blue-600 hidden sm:block">Organize your document processing workflows</p>
+            <p className="text-sm text-blue-600 hidden sm:block">
+              Organize your document processing workflows
+            </p>
           </div>
         </div>
-        
+
         <div className="flex items-center space-x-2 sm:space-x-3">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
             <Input
               placeholder="Search projects..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
               className="pl-10 w-40 sm:w-64"
             />
           </div>
-            <ParscadeButton
-              type="button"
-              variant="primary"
-              size="sm"
-              className="hidden sm:inline-flex"
-              onClick={() => setOpen(true)}
-            >
-              <FolderPlus className="w-4 h-4 mr-2" />
-              New Project
-            </ParscadeButton>
+          <ParscadeButton
+            type="button"
+            variant="primary"
+            size="sm"
+            className="hidden sm:inline-flex"
+            onClick={() => setOpen(true)}
+          >
+            <FolderPlus className="w-4 h-4 mr-2" />
+            New Project
+          </ParscadeButton>
 
-            <ParscadeButton
-              type="button"
-              variant="primary"
-              size="sm"
-              className="sm:inline-flex"
-              aria-label="New Project"
-              onClick={() => setOpen(true)}
-            >
-              <FolderPlus className="w-4 h-4" />
-            </ParscadeButton>
+          <ParscadeButton
+            type="button"
+            variant="primary"
+            size="sm"
+            className="sm:inline-flex"
+            aria-label="New Project"
+            onClick={() => setOpen(true)}
+          >
+            <FolderPlus className="w-4 h-4" />
+          </ParscadeButton>
 
-
-            <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+          <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Create New Project</DialogTitle>
@@ -215,30 +223,30 @@ const ProjectsOverview: React.FC<ProjectsOverviewProps> = ({ className = '' }) =
                   Create a new project to organize your documents and processing workflows.
                 </DialogDescription>
               </DialogHeader>
-              
+
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="project_name">Project Name</Label>
                   <Input
                     id="project_name"
                     value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    onChange={e => setFormData({ ...formData, name: e.target.value })}
                     placeholder="Enter project name"
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="project_description">Description (Optional)</Label>
                   <textarea
                     id="project_description"
                     value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    onChange={e => setFormData({ ...formData, description: e.target.value })}
                     placeholder="Describe your project..."
                     rows={3}
                     className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none"
                   />
                 </div>
-                
+
                 <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2">
                   <Button
                     variant="outline"
@@ -278,17 +286,12 @@ const ProjectsOverview: React.FC<ProjectsOverviewProps> = ({ className = '' }) =
             {searchTerm ? 'No matching projects' : 'No projects yet'}
           </h3>
           <p className="text-slate-600 mb-4">
-            {searchTerm 
+            {searchTerm
               ? `No projects match "${searchTerm}". Try a different search term.`
-              : 'Create your first project to organize your document processing workflows.'
-            }
+              : 'Create your first project to organize your document processing workflows.'}
           </p>
           {!searchTerm && (
-            <ParscadeButton 
-              variant="primary" 
-              size="sm"
-              onClick={() => setShowCreateDialog(true)}
-            >
+            <ParscadeButton variant="primary" size="sm" onClick={() => setShowCreateDialog(true)}>
               <FolderPlus className="w-4 h-4 mr-2" />
               Create First Project
             </ParscadeButton>
@@ -314,7 +317,9 @@ const ProjectsOverview: React.FC<ProjectsOverviewProps> = ({ className = '' }) =
                     </h4>
                   </div>
                   {project.description && (
-                    <p className="text-xs sm:text-sm text-slate-600 mb-2 line-clamp-2 hidden sm:block">{project.description}</p>
+                    <p className="text-xs sm:text-sm text-slate-600 mb-2 line-clamp-2 hidden sm:block">
+                      {project.description}
+                    </p>
                   )}
                   <div className="flex items-center space-x-2 sm:space-x-4 text-xs text-gray-500 flex-wrap">
                     <div className="flex items-center space-x-1">
@@ -337,8 +342,11 @@ const ProjectsOverview: React.FC<ProjectsOverviewProps> = ({ className = '' }) =
                     </div>
                   )}
                 </div>
-                
-                <div className="flex items-center space-x-1 sm:space-x-2" onClick={(e) => e.stopPropagation()}>
+
+                <div
+                  className="flex items-center space-x-1 sm:space-x-2"
+                  onClick={e => e.stopPropagation()}
+                >
                   <Button
                     variant="ghost"
                     size="sm"
@@ -363,14 +371,10 @@ const ProjectsOverview: React.FC<ProjectsOverviewProps> = ({ className = '' }) =
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
-                  
+
                   {/* Mobile Actions Menu */}
                   <div className="sm:hidden">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      title="More actions"
-                    >
+                    <Button variant="ghost" size="sm" title="More actions">
                       <MoreVertical className="w-4 h-4" />
                     </Button>
                   </div>
@@ -389,38 +393,36 @@ const ProjectsOverview: React.FC<ProjectsOverviewProps> = ({ className = '' }) =
       )}
 
       {/* Edit Dialog */}
-      <Dialog open={!!editingProject} onOpenChange={(open) => !open && setEditingProject(null)}>
+      <Dialog open={!!editingProject} onOpenChange={open => !open && setEditingProject(null)}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Edit Project</DialogTitle>
-            <DialogDescription>
-              Update your project details.
-            </DialogDescription>
+            <DialogDescription>Update your project details.</DialogDescription>
           </DialogHeader>
-          
+
           <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="edit_project_name">Project Name</Label>
               <Input
                 id="edit_project_name"
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={e => setFormData({ ...formData, name: e.target.value })}
                 placeholder="Enter project name"
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="edit_project_description">Description (Optional)</Label>
               <textarea
                 id="edit_project_description"
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={e => setFormData({ ...formData, description: e.target.value })}
                 placeholder="Describe your project..."
                 rows={3}
                 className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none"
               />
             </div>
-            
+
             <div className="flex justify-end space-x-2">
               <Button
                 variant="outline"

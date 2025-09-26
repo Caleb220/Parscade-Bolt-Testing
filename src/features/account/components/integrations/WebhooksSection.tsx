@@ -8,23 +8,30 @@ import {
   Shield,
   CheckCircle,
   XCircle,
-  Copy
 } from 'lucide-react';
 import React, { useState, useCallback } from 'react';
 
 import { getErrorMessage } from '@/lib/api';
 import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/shared/components/ui/card';
 import ConfirmationDialog from '@/shared/components/ui/confirmation-dialog';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/shared/components/ui/dialog';
+import {
+  Dialog,
+  DialogTrigger,
+} from '@/shared/components/ui/dialog';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import StatusBadge from '@/shared/components/ui/status-badge';
 import {
   useWebhooks,
-  useCreateWebhook,
   useDeleteWebhook,
-  useTestWebhook
+  useTestWebhook,
 } from '@/shared/hooks/api/useAccountData';
 import { useClipboard } from '@/shared/hooks/useClipboard';
 import { formatDate } from '@/shared/utils/date';
@@ -32,33 +39,39 @@ import { formatDate } from '@/shared/utils/date';
 import CreateWebhookDialog from './CreateWebhookDialog';
 
 const WebhooksSection: React.FC = () => {
-  const { copy } = useClipboard();
+  useClipboard();
 
   const { data: webhooks, isLoading: webhooksLoading, error: webhooksError } = useWebhooks();
   const deleteWebhook = useDeleteWebhook();
   const testWebhook = useTestWebhook();
 
   const [showNewWebhookDialog, setShowNewWebhookDialog] = useState(false);
-  const [testResults, setTestResults] = useState<Record<string, any>>({});
+  const [testResults, setTestResults] = useState<Record<string, unknown>>({});
   const [confirmDeleteWebhook, setConfirmDeleteWebhook] = useState<string | null>(null);
 
-  const handleTestWebhook = useCallback(async (webhookId: string, webhookUrl: string) => {
-    try {
-      const result = await testWebhook.mutateAsync(webhookId);
-      setTestResults({ ...testResults, [webhookId]: result });
-    } catch (error) {
-      // Error handled by mutation
-    }
-  }, [testWebhook, testResults]);
+  const handleTestWebhook = useCallback(
+    async (webhookId: string, _webhookUrl: string) => {
+      try {
+        const result = await testWebhook.mutateAsync(webhookId);
+        setTestResults({ ...testResults, [webhookId]: result });
+      } catch {
+        // Error handled by mutation
+      }
+    },
+    [testWebhook, testResults]
+  );
 
-  const handleDeleteWebhook = useCallback(async (webhookId: string) => {
-    try {
-      await deleteWebhook.mutateAsync(webhookId);
-      setConfirmDeleteWebhook(null);
-    } catch (error) {
-      // Error handled by mutation
-    }
-  }, [deleteWebhook]);
+  const handleDeleteWebhook = useCallback(
+    async (webhookId: string) => {
+      try {
+        await deleteWebhook.mutateAsync(webhookId);
+        setConfirmDeleteWebhook(null);
+      } catch {
+        // Error handled by mutation
+      }
+    },
+    [deleteWebhook]
+  );
 
   const handleWebhookCreated = useCallback(() => {
     setShowNewWebhookDialog(false);
@@ -107,17 +120,14 @@ const WebhooksSection: React.FC = () => {
               <Webhook className="w-8 h-8 text-gray-400 mx-auto mb-2" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">No webhooks configured</h3>
               <p className="text-gray-600 mb-4">
-                Webhooks allow you to receive real-time notifications when events occur in your account,
-                such as completed document processing or system alerts.
+                Webhooks allow you to receive real-time notifications when events occur in your
+                account, such as completed document processing or system alerts.
               </p>
             </div>
           ) : (
             <div className="space-y-4">
-              {webhooks.map((webhook) => (
-                <div
-                  key={webhook.id}
-                  className="p-4 border border-gray-200 rounded-lg space-y-3"
-                >
+              {webhooks.map(webhook => (
+                <div key={webhook.id} className="p-4 border border-gray-200 rounded-lg space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <div className="flex items-center space-x-2 mb-1">
@@ -131,7 +141,7 @@ const WebhooksSection: React.FC = () => {
                         )}
                       </div>
                       <div className="flex flex-wrap gap-1 mb-2">
-                        {webhook.events.map((event) => (
+                        {webhook.events.map(event => (
                           <Badge key={event} variant="outline" className="text-xs">
                             {event}
                           </Badge>
@@ -178,8 +188,8 @@ const WebhooksSection: React.FC = () => {
                           <XCircle className="w-4 h-4" />
                         )}
                         <span>
-                          Status: {testResults[webhook.id].status} •
-                          Latency: {testResults[webhook.id].latency}ms
+                          Status: {testResults[webhook.id].status} • Latency:{' '}
+                          {testResults[webhook.id].latency}ms
                         </span>
                       </div>
                       {testResults[webhook.id].response && (

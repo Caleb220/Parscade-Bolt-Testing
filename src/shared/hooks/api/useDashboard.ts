@@ -38,7 +38,7 @@ export const useDashboardStats = (options?: {
       }
       return failureCount < 3; // More retries for better reliability
     },
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
+    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
     // Add error and success handlers for better UX
     meta: {
       errorMessage: 'Failed to load dashboard statistics',
@@ -73,7 +73,7 @@ export const useDashboardActivity = (
       }
       return failureCount < 3;
     },
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
     meta: {
       errorMessage: 'Failed to load dashboard activity',
     },

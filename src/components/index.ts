@@ -10,10 +10,21 @@ export { default as Badge } from './ui/badge';
 export { default as LoadingSpinner } from './ui/loading-spinner';
 
 // Re-export existing shared components for backward compatibility
-export { ParscadeCard, ParscadeLogo, ParscadeButton as ParscadeBrandButton } from '@/shared/components/brand';
+export {
+  ParscadeCard,
+  ParscadeLogo,
+  ParscadeButton as ParscadeBrandButton,
+} from '@/shared/components/brand';
 export { Label } from '@/shared/components/ui/label';
 export { Skeleton } from '@/shared/components/ui/skeleton';
-export { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/shared/components/ui/dialog';
+export {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/shared/components/ui/dialog';
 
 // Layout Components
 export { default as Navigation } from '@/shared/components/layout/molecules/Navigation';

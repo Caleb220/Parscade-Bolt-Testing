@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { Mail, Phone, MapPin, Send, CheckCircle } from 'lucide-react';
 import React, { useState } from 'react';
 
-import {env} from "@/app/config/env.ts";
+import { env } from '@/app/config/env.ts';
 import CustomButton from '@/shared/components/forms/CustomButton';
 import Input from '@/shared/components/forms/FormFieldInput';
 import Layout from '@/shared/components/layout/templates/Layout';
@@ -18,16 +18,16 @@ const ContactPage: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const handleInputChange = (field: keyof typeof formData) => (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setFormData(prev => ({ ...prev, [field]: e.target.value }));
-  };
+  const handleInputChange =
+    (field: keyof typeof formData) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      setFormData(prev => ({ ...prev, [field]: e.target.value }));
+    };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     try {
       const response = await fetch(`${env.api.baseUrl}/contact`, {
         method: 'POST',
@@ -44,7 +44,9 @@ const ContactPage: React.FC = () => {
 
       setIsSubmitted(true);
     } catch (error) {
-      alert('Failed to send message. Please try again or contact us directly at admin@parscade.com');
+      alert(
+        'Failed to send message. Please try again or contact us directly at admin@parscade.com'
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -63,15 +65,14 @@ const ContactPage: React.FC = () => {
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <CheckCircle className="w-8 h-8 text-green-600" />
             </div>
-            
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">
-              Message Received!
-            </h1>
-            
+
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Message Received!</h1>
+
             <p className="text-gray-600 mb-6">
-              Thank you for reaching out! We've received your message and will get back to you within 24 hours.
+              Thank you for reaching out! We've received your message and will get back to you
+              within 24 hours.
             </p>
-            
+
             <CustomButton
               onClick={() => {
                 setIsSubmitted(false);
@@ -105,11 +106,10 @@ const ContactPage: React.FC = () => {
               transition={{ duration: 0.6 }}
               className="text-center"
             >
-              <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-                Get in Touch
-              </h1>
+              <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">Get in Touch</h1>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Have questions about Parscade? We're here to help. Reach out to our team and we'll get back to you as soon as possible.
+                Have questions about Parscade? We're here to help. Reach out to our team and we'll
+                get back to you as soon as possible.
               </p>
             </motion.div>
           </div>
@@ -124,10 +124,8 @@ const ContactPage: React.FC = () => {
               transition={{ duration: 0.6 }}
               className="lg:col-span-1 order-2 lg:order-1"
             >
-              <h2 className="text-2xl font-bold text-gray-900 mb-8">
-                Contact Information
-              </h2>
-              
+              <h2 className="text-2xl font-bold text-gray-900 mb-8">Contact Information</h2>
+
               <div className="space-y-6">
                 <div className="flex items-start space-x-4">
                   <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -158,7 +156,8 @@ const ContactPage: React.FC = () => {
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">Office</h3>
                     <p className="text-gray-600">
-                      123 Innovation Drive<br />
+                      123 Innovation Drive
+                      <br />
                       San Francisco, CA 94105
                     </p>
                   </div>
@@ -199,9 +198,7 @@ const ContactPage: React.FC = () => {
               className="lg:col-span-2 order-1 lg:order-2"
             >
               <div className="bg-white rounded-2xl p-6 lg:p-8 shadow-sm border border-gray-100">
-                <h2 className="text-2xl font-bold text-gray-900 mb-8">
-                  Send us a Message
-                </h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-8">Send us a Message</h2>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -212,7 +209,7 @@ const ContactPage: React.FC = () => {
                       placeholder="Enter your full name"
                       required
                     />
-                    
+
                     <Input
                       type="email"
                       label="Email Address"
@@ -230,7 +227,7 @@ const ContactPage: React.FC = () => {
                       onChange={handleInputChange('company')}
                       placeholder="Your company name"
                     />
-                    
+
                     <Input
                       label="Subject"
                       value={formData.subject}
@@ -241,9 +238,7 @@ const ContactPage: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Message
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
                     <textarea
                       value={formData.message}
                       onChange={handleInputChange('message')}
@@ -267,7 +262,8 @@ const ContactPage: React.FC = () => {
 
                 <div className="mt-6 p-4 bg-blue-50 rounded-lg">
                   <p className="text-sm text-blue-800">
-                    <strong>Enterprise customers:</strong> For priority support, please include your organization name and any relevant account details.
+                    <strong>Enterprise customers:</strong> For priority support, please include your
+                    organization name and any relevant account details.
                   </p>
                 </div>
               </div>

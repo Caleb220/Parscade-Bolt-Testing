@@ -22,17 +22,20 @@ const blankToUndefined = (value: unknown): string | undefined => {
 
 const optionalize = <T extends ZodTypeAny>(
   schema: T,
-  normalise: (value: unknown) => unknown = blankToUndefined,
+  normalise: (value: unknown) => unknown = blankToUndefined
 ) =>
   z
-    .preprocess((value) => {
-      if (value === undefined || value === null) {
-        return undefined;
-      }
-      const normalised = normalise(value);
-      return normalised === undefined ? undefined : normalised;
-    }, z.union([schema, z.undefined()]))
-    .transform((value) => (value === undefined ? undefined : (value as z.infer<T>)));
+    .preprocess(
+      value => {
+        if (value === undefined || value === null) {
+          return undefined;
+        }
+        const normalised = normalise(value);
+        return normalised === undefined ? undefined : normalised;
+      },
+      z.union([schema, z.undefined()])
+    )
+    .transform(value => (value === undefined ? undefined : (value as z.infer<T>)));
 
 /**
  * Alphanumeric identifier allowing underscores and hyphens (3-64 chars).
@@ -40,7 +43,10 @@ const optionalize = <T extends ZodTypeAny>(
 export const idSchema = z
   .string({ required_error: 'Identifier is required.' })
   .trim()
-  .regex(identifierRegex, 'Identifier must be 3-64 characters (letters, numbers, underscore, hyphen).');
+  .regex(
+    identifierRegex,
+    'Identifier must be 3-64 characters (letters, numbers, underscore, hyphen).'
+  );
 
 /**
  * URL-safe slug using letters, numbers, underscores, and hyphens.
@@ -65,7 +71,7 @@ export const emailSchema = z
   .string({ required_error: 'Email is required.' })
   .trim()
   .email('Enter a valid email address.')
-  .transform((value) => value.toLowerCase());
+  .transform(value => value.toLowerCase());
 
 /** Optional email where blank inputs resolve to undefined. */
 export const optionalEmailSchema = optionalize(emailSchema);
@@ -79,15 +85,15 @@ export const personNameSchema = z
   .min(2, 'Name must be at least 2 characters long.')
   .max(120, 'Name must be 120 characters or less.');
 
-
 export const passwordSchema = z
   .string({ required_error: 'Password is required.' })
   .trim()
   .min(8, 'Password must be at least 8 characters long.')
   .max(128, 'Password must be 128 characters or less.')
-  .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$/,
-    'Password must contain at least one lowercase letter, one uppercase letter, and one digit.');
-
+  .regex(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$/,
+    'Password must contain at least one lowercase letter, one uppercase letter, and one digit.'
+  );
 
 export const userNameSchema = z
   .string({ required_error: 'Username is required.' })
@@ -100,9 +106,9 @@ export const userNameSchema = z
 export const phoneSchema = z
   .string({ required_error: 'Phone number is required.' })
   .max(20, 'Phone number must be 20 characters or less.')
-  .transform((value) => normalizeSpaces(value.trim()));
+  .transform(value => normalizeSpaces(value.trim()));
 /** Optional phone string that normalises whitespace and blanks to undefined. */
-export const optionalPhoneSchema = optionalize(phoneSchema, (value) => {
+export const optionalPhoneSchema = optionalize(phoneSchema, value => {
   if (typeof value !== 'string') {
     return undefined;
   }
@@ -140,14 +146,17 @@ export const httpsUrlSchema = z
   .string({ required_error: 'URL is required.' })
   .trim()
   .url('Provide a valid URL.')
-  .refine((value) => {
+  .refine(value => {
     try {
       const u = new URL(value);
       if (u.protocol === 'https:') return true;
       const host = u.hostname.toLowerCase();
       // SECURITY: Allow HTTP only for localhost/development environments
       // This enables local development while enforcing HTTPS in production
-      if (u.protocol === 'http:' && (host === 'localhost' || host === '127.0.0.1' || host === '::1' || host.endsWith('.local'))) {
+      if (
+        u.protocol === 'http:' &&
+        (host === 'localhost' || host === '127.0.0.1' || host === '::1' || host.endsWith('.local'))
+      ) {
         return true;
       }
       return false;
@@ -164,14 +173,17 @@ export const optionalHttpsUrlSchema = optionalize(httpsUrlSchema);
 const imagePathSchema = z
   .string({ invalid_type_error: 'Image path must be a string.' })
   .trim()
-  .refine((value) => {
+  .refine(value => {
     if (value.startsWith('/')) return true; // root-relative
     try {
       const u = new URL(value);
       if (u.protocol === 'https:') return true;
       const host = u.hostname.toLowerCase();
       // SECURITY: Same localhost exception as httpsUrlSchema for consistency
-      if (u.protocol === 'http:' && (host === 'localhost' || host === '127.0.0.1' || host === '::1' || host.endsWith('.local'))) {
+      if (
+        u.protocol === 'http:' &&
+        (host === 'localhost' || host === '127.0.0.1' || host === '::1' || host.endsWith('.local'))
+      ) {
         return true;
       }
       return false;
@@ -192,7 +204,10 @@ export const keywordSchema = z
   .trim()
   .min(2, 'Keyword must be at least 2 characters.')
   .max(60, 'Keyword must be at most 60 characters.')
-  .refine((value) => !keywordBlocklistPattern.test(value), 'Keyword cannot contain commas or semicolons.');
+  .refine(
+    value => !keywordBlocklistPattern.test(value),
+    'Keyword cannot contain commas or semicolons.'
+  );
 
 /**
  * ISO-8601 datetime schema expecting timezone offset information.
@@ -225,14 +240,12 @@ export const positiveIntegerSchema = z
  */
 export const paginationParamsSchema = z
   .object({
-    page: z
-      .coerce
+    page: z.coerce
       .number({ invalid_type_error: 'Page must be a number.' })
       .int('Page must be an integer.')
       .min(1, 'Page must be at least 1.')
       .default(1),
-    pageSize: z
-      .coerce
+    pageSize: z.coerce
       .number({ invalid_type_error: 'Page size must be a number.' })
       .int('Page size must be an integer.')
       .min(1, 'Page size must be at least 1.')
@@ -261,7 +274,7 @@ export const optionalStringSchema = (label: string, max = 255) =>
       .string({ invalid_type_error: `${label} must be a string.` })
       .trim()
       .min(1, `${label} is required.`)
-      .max(max, `${label} must be at most ${max} characters.`),
+      .max(max, `${label} must be at most ${max} characters.`)
   );
 
 /** Optional trimmed string with configurable length constraints. */
@@ -287,6 +300,7 @@ export const nonEmptyTextSchema = (label: string, max = 1000) =>
     .max(max, `${label} must be at most ${max} characters.`);
 
 /** Optional non-empty text schema that converts blanks to undefined. */
-export const optionalNonEmptyTextSchema = (label: string, max = 1000) => optionalize(nonEmptyTextSchema(label, max));
+export const optionalNonEmptyTextSchema = (label: string, max = 1000) =>
+  optionalize(nonEmptyTextSchema(label, max));
 
 export type PaginationParams = z.infer<typeof paginationParamsSchema>;

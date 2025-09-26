@@ -69,7 +69,8 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onModeChange, onSuccess }) =>
     } else if (mode === 'signup') {
       const passwordValidation = validatePassword(formData.password);
       if (!passwordValidation.isValid) {
-        errors.password = passwordValidation.feedback[0] || 'Password does not meet security requirements';
+        errors.password =
+          passwordValidation.feedback[0] || 'Password does not meet security requirements';
       }
     }
 
@@ -79,7 +80,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onModeChange, onSuccess }) =>
       } else if (formData.fullName.trim().length < 2) {
         errors.fullName = 'Full name must be at least 2 characters';
       }
-      
+
       if (!formData.username.trim()) {
         errors.username = 'Username is required';
       } else if (formData.username.trim().length < 2) {
@@ -94,59 +95,73 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onModeChange, onSuccess }) =>
   /**
    * Handle form submission with error handling
    */
-  const handleSubmit = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
 
-    if (isRateLimited) {
-      setFormErrors({ general: 'Too many failed attempts. Please wait 5 minutes before trying again.' });
-      return;
-    }
-
-    if (!validateForm()) return;
-
-    setFormErrors({});
-    clearError();
-
-    try {
-      if (mode === 'signin') {
-        await signIn(formData.email.trim(), formData.password);
-      } else {
-        await signUp(formData.email.trim(), formData.password, formData.fullName.trim(), formData.username.trim());
+      if (isRateLimited) {
+        setFormErrors({
+          general: 'Too many failed attempts. Please wait 5 minutes before trying again.',
+        });
+        return;
       }
 
-      setAttemptCount(0);
-      onSuccess?.();
-    } catch (authError) {
-      setAttemptCount((prev) => prev + 1);
+      if (!validateForm()) return;
 
-      const errorMessage = (authError as Error)?.message || error || 'Authentication failed. Please review your details and try again.';
-      setFormErrors((prev) => ({
-        ...prev,
-        general: errorMessage,
-      }));
-    }
-  }, [formData, mode, isRateLimited, validateForm, clearError, signIn, signUp, error, onSuccess]);
+      setFormErrors({});
+      clearError();
+
+      try {
+        if (mode === 'signin') {
+          await signIn(formData.email.trim(), formData.password);
+        } else {
+          await signUp(
+            formData.email.trim(),
+            formData.password,
+            formData.fullName.trim(),
+            formData.username.trim()
+          );
+        }
+
+        setAttemptCount(0);
+        onSuccess?.();
+      } catch (authError) {
+        setAttemptCount(prev => prev + 1);
+
+        const errorMessage =
+          (authError as Error)?.message ||
+          error ||
+          'Authentication failed. Please review your details and try again.';
+        setFormErrors(prev => ({
+          ...prev,
+          general: errorMessage,
+        }));
+      }
+    },
+    [formData, mode, isRateLimited, validateForm, clearError, signIn, signUp, error, onSuccess]
+  );
 
   /**
    * Create input change handler for specific field
    */
-  const handleInputChange = useCallback((field: keyof typeof formData) => (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const value = event.target.value;
-    
-    setFormData((prev) => ({ ...prev, [field]: value }));
+  const handleInputChange = useCallback(
+    (field: keyof typeof formData) => (event: React.ChangeEvent<HTMLInputElement>) => {
+      const value = event.target.value;
 
-    if (formErrors[field]) {
-      setFormErrors((prev) => ({ ...prev, [field]: undefined }));
-    }
+      setFormData(prev => ({ ...prev, [field]: value }));
 
-    if (formErrors.general) {
-      setFormErrors((prev) => ({ ...prev, general: undefined }));
-    }
+      if (formErrors[field]) {
+        setFormErrors(prev => ({ ...prev, [field]: undefined }));
+      }
 
-    clearError();
-  }, [formErrors, clearError]);
+      if (formErrors.general) {
+        setFormErrors(prev => ({ ...prev, general: undefined }));
+      }
+
+      clearError();
+    },
+    [formErrors, clearError]
+  );
 
   const handleEmailChange = useCallback(handleInputChange('email'), [handleInputChange]);
   const handlePasswordChange = useCallback(handleInputChange('password'), [handleInputChange]);
@@ -228,7 +243,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onModeChange, onSuccess }) =>
             <div className="text-center">
               <p className="text-sm text-gray-500">
                 Locked out?{' '}
-                <a 
+                <a
                   href="mailto:admin@parscade.com?subject=Account Access Help"
                   className="text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200"
                 >
@@ -247,9 +262,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onModeChange, onSuccess }) =>
                 className="flex items-center p-3 bg-red-50 border border-red-200 rounded-md"
               >
                 <AlertCircle className="w-5 h-5 text-red-600 mr-2 flex-shrink-0" />
-                <span className="text-sm text-red-700">
-                  {formErrors.general || error}
-                </span>
+                <span className="text-sm text-red-700">{formErrors.general || error}</span>
               </motion.div>
             )}
           </AnimatePresence>

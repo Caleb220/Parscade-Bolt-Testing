@@ -61,16 +61,11 @@ const AnalyticsPage: React.FC = () => {
         >
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Analytics</h1>
-            <p className="text-gray-600">
-              Track your document processing performance and insights
-            </p>
+            <p className="text-gray-600">Track your document processing performance and insights</p>
           </div>
 
           <FeatureGate requiredTier="pro">
-            <CustomButton
-              variant="primary"
-              leftIcon={<ArrowUpRight className="w-4 h-4" />}
-            >
+            <CustomButton variant="primary" leftIcon={<ArrowUpRight className="w-4 h-4" />}>
               Export Report
             </CustomButton>
           </FeatureGate>
@@ -87,12 +82,8 @@ const AnalyticsPage: React.FC = () => {
             <ParscadeCard key={stat.title} className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600 mb-1">
-                    {stat.title}
-                  </p>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {stat.value}
-                  </p>
+                  <p className="text-sm font-medium text-gray-600 mb-1">{stat.title}</p>
+                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className="p-2 bg-blue-50 rounded-lg">
@@ -101,9 +92,11 @@ const AnalyticsPage: React.FC = () => {
                 </div>
               </div>
               <div className="mt-4 flex items-center">
-                <span className={`text-sm font-medium ${
-                  stat.trend === 'up' ? 'text-green-600' : 'text-red-600'
-                }`}>
+                <span
+                  className={`text-sm font-medium ${
+                    stat.trend === 'up' ? 'text-green-600' : 'text-red-600'
+                  }`}
+                >
                   {stat.change}
                 </span>
                 <span className="text-sm text-gray-500 ml-1">vs last month</span>
@@ -128,9 +121,7 @@ const AnalyticsPage: React.FC = () => {
               <div className="text-center">
                 <BarChart3 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                 <p className="text-gray-500 mb-2">Chart visualization coming soon</p>
-                <p className="text-sm text-gray-400">
-                  Upgrade to Pro to unlock advanced analytics
-                </p>
+                <p className="text-sm text-gray-400">Upgrade to Pro to unlock advanced analytics</p>
               </div>
             </div>
           </DashboardSection>

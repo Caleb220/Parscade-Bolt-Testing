@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 import { Upload, Link, Database } from 'lucide-react';
 import React, { useState } from 'react';
 
-import { Button } from '@/shared/components/ui/button';
+import Button from '@/shared/components/forms/atoms/Button';
 import {
   Dialog,
   DialogContent,
@@ -92,7 +92,7 @@ const CreateJobDialog: React.FC<CreateJobDialogProps> = ({
     if (file) {
       setFormData(prev => ({
         ...prev,
-        sourceData: { ...prev.sourceData, file }
+        sourceData: { ...prev.sourceData, file },
       }));
     }
   };
@@ -116,7 +116,7 @@ const CreateJobDialog: React.FC<CreateJobDialogProps> = ({
                 id="job-name"
                 placeholder="Enter job name"
                 value={formData.name}
-                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
                 required
                 fullWidth
               />
@@ -128,11 +128,11 @@ const CreateJobDialog: React.FC<CreateJobDialogProps> = ({
                 <select
                   id="job-type"
                   value={formData.type}
-                  onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value }))}
+                  onChange={e => setFormData(prev => ({ ...prev, type: e.target.value }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
                 >
-                  {jobTypes.map((type) => (
+                  {jobTypes.map(type => (
                     <option key={type.value} value={type.value}>
                       {type.label}
                     </option>
@@ -145,12 +145,12 @@ const CreateJobDialog: React.FC<CreateJobDialogProps> = ({
                 <select
                   id="project"
                   value={formData.projectId}
-                  onChange={(e) => setFormData(prev => ({ ...prev, projectId: e.target.value }))}
+                  onChange={e => setFormData(prev => ({ ...prev, projectId: e.target.value }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
                 >
                   <option value="">Select project</option>
-                  {projects.map((project) => (
+                  {projects.map(project => (
                     <option key={project.id} value={project.id}>
                       {project.name}
                     </option>
@@ -174,11 +174,13 @@ const CreateJobDialog: React.FC<CreateJobDialogProps> = ({
                   type="button"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  onClick={() => setFormData(prev => ({
-                    ...prev,
-                    source: value as 'upload' | 'url' | 's3',
-                    sourceData: {}
-                  }))}
+                  onClick={() =>
+                    setFormData(prev => ({
+                      ...prev,
+                      source: value as 'upload' | 'url' | 's3',
+                      sourceData: {},
+                    }))
+                  }
                   className={`p-4 border-2 rounded-lg flex flex-col items-center space-y-2 transition-colors ${
                     formData.source === value
                       ? 'border-blue-500 bg-blue-50 text-blue-700'
@@ -215,10 +217,12 @@ const CreateJobDialog: React.FC<CreateJobDialogProps> = ({
                   id="source-url"
                   placeholder="https://example.com/document.pdf"
                   value={formData.sourceData.url || ''}
-                  onChange={(e) => setFormData(prev => ({
-                    ...prev,
-                    sourceData: { ...prev.sourceData, url: e.target.value }
-                  }))}
+                  onChange={e =>
+                    setFormData(prev => ({
+                      ...prev,
+                      sourceData: { ...prev.sourceData, url: e.target.value },
+                    }))
+                  }
                   required
                   fullWidth
                 />
@@ -232,10 +236,12 @@ const CreateJobDialog: React.FC<CreateJobDialogProps> = ({
                   id="s3-path"
                   placeholder="bucket-name/path/to/document.pdf"
                   value={formData.sourceData.s3Path || ''}
-                  onChange={(e) => setFormData(prev => ({
-                    ...prev,
-                    sourceData: { ...prev.sourceData, s3Path: e.target.value }
-                  }))}
+                  onChange={e =>
+                    setFormData(prev => ({
+                      ...prev,
+                      sourceData: { ...prev.sourceData, s3Path: e.target.value },
+                    }))
+                  }
                   required
                   fullWidth
                 />
@@ -256,10 +262,12 @@ const CreateJobDialog: React.FC<CreateJobDialogProps> = ({
                   <input
                     type="checkbox"
                     checked={formData.options[key as keyof typeof formData.options]}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      options: { ...prev.options, [key]: e.target.checked }
-                    }))}
+                    onChange={e =>
+                      setFormData(prev => ({
+                        ...prev,
+                        options: { ...prev.options, [key]: e.target.checked },
+                      }))
+                    }
                     className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
                   <span className="text-sm text-gray-700">{label}</span>
@@ -270,19 +278,10 @@ const CreateJobDialog: React.FC<CreateJobDialogProps> = ({
 
           {/* Actions */}
           <div className="flex justify-end space-x-3 pt-6 border-t">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onClose}
-              disabled={isLoading}
-            >
+            <Button type="button" variant="outline" onClick={onClose} disabled={isLoading}>
               Cancel
             </Button>
-            <Button
-              type="submit"
-              isLoading={isLoading}
-              glow
-            >
+            <Button type="submit" isLoading={isLoading} glow>
               Create Job
             </Button>
           </div>

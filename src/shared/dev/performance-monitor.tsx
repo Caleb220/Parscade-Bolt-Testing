@@ -22,7 +22,9 @@ interface PerformanceMonitorProps {
 
 const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({ isOpen, onToggle }) => {
   const [metrics, setMetrics] = useState<PerformanceMetric[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<'all' | 'vitals' | 'bundle' | 'runtime'>('all');
+  const [selectedCategory, setSelectedCategory] = useState<'all' | 'vitals' | 'bundle' | 'runtime'>(
+    'all'
+  );
 
   // Core Web Vitals monitoring
   const measureWebVitals = useCallback(() => {
@@ -31,67 +33,83 @@ const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({ isOpen, onToggl
     // Largest Contentful Paint (LCP)
     if ('PerformanceObserver' in window) {
       try {
-        const lcpObserver = new PerformanceObserver((list) => {
+        const lcpObserver = new PerformanceObserver(list => {
           const entries = list.getEntries();
           const lastEntry = entries[entries.length - 1] as any;
 
           if (lastEntry) {
-            const status = lastEntry.startTime <= 2500 ? 'good' :
-                         lastEntry.startTime <= 4000 ? 'needs-improvement' : 'poor';
+            const status =
+              lastEntry.startTime <= 2500
+                ? 'good'
+                : lastEntry.startTime <= 4000
+                  ? 'needs-improvement'
+                  : 'poor';
 
-            setMetrics(prev => [...prev.filter(m => m.name !== 'LCP'), {
-              name: 'LCP',
-              value: Math.round(lastEntry.startTime),
-              unit: 'ms',
-              category: 'vitals',
-              timestamp: Date.now(),
-              status,
-            }]);
+            setMetrics(prev => [
+              ...prev.filter(m => m.name !== 'LCP'),
+              {
+                name: 'LCP',
+                value: Math.round(lastEntry.startTime),
+                unit: 'ms',
+                category: 'vitals',
+                timestamp: Date.now(),
+                status,
+              },
+            ]);
           }
         });
         lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
 
         // First Input Delay (FID) - approximated with First Contentful Paint
-        const fcpObserver = new PerformanceObserver((list) => {
+        const fcpObserver = new PerformanceObserver(list => {
           const entries = list.getEntries();
           const firstEntry = entries[0] as any;
 
           if (firstEntry) {
-            const status = firstEntry.startTime <= 100 ? 'good' :
-                         firstEntry.startTime <= 300 ? 'needs-improvement' : 'poor';
+            const status =
+              firstEntry.startTime <= 100
+                ? 'good'
+                : firstEntry.startTime <= 300
+                  ? 'needs-improvement'
+                  : 'poor';
 
-            setMetrics(prev => [...prev.filter(m => m.name !== 'FCP'), {
-              name: 'FCP',
-              value: Math.round(firstEntry.startTime),
-              unit: 'ms',
-              category: 'vitals',
-              timestamp: Date.now(),
-              status,
-            }]);
+            setMetrics(prev => [
+              ...prev.filter(m => m.name !== 'FCP'),
+              {
+                name: 'FCP',
+                value: Math.round(firstEntry.startTime),
+                unit: 'ms',
+                category: 'vitals',
+                timestamp: Date.now(),
+                status,
+              },
+            ]);
           }
         });
         fcpObserver.observe({ entryTypes: ['paint'] });
 
         // Cumulative Layout Shift (CLS) - approximated
         let clsValue = 0;
-        const clsObserver = new PerformanceObserver((list) => {
+        const clsObserver = new PerformanceObserver(list => {
           for (const entry of list.getEntries()) {
             if (!(entry as any).hadRecentInput) {
               clsValue += (entry as any).value;
             }
           }
 
-          const status = clsValue <= 0.1 ? 'good' :
-                       clsValue <= 0.25 ? 'needs-improvement' : 'poor';
+          const status = clsValue <= 0.1 ? 'good' : clsValue <= 0.25 ? 'needs-improvement' : 'poor';
 
-          setMetrics(prev => [...prev.filter(m => m.name !== 'CLS'), {
-            name: 'CLS',
-            value: Math.round(clsValue * 1000) / 1000,
-            unit: '',
-            category: 'vitals',
-            timestamp: Date.now(),
-            status,
-          }]);
+          setMetrics(prev => [
+            ...prev.filter(m => m.name !== 'CLS'),
+            {
+              name: 'CLS',
+              value: Math.round(clsValue * 1000) / 1000,
+              unit: '',
+              category: 'vitals',
+              timestamp: Date.now(),
+              status,
+            },
+          ]);
         });
         clsObserver.observe({ entryTypes: ['layout-shift'] });
       } catch (error) {
@@ -113,7 +131,12 @@ const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({ isOpen, onToggl
           unit: 'ms',
           category: 'runtime',
           timestamp: Date.now(),
-          status: domContentLoaded <= 1500 ? 'good' : domContentLoaded <= 3000 ? 'needs-improvement' : 'poor',
+          status:
+            domContentLoaded <= 1500
+              ? 'good'
+              : domContentLoaded <= 3000
+                ? 'needs-improvement'
+                : 'poor',
         },
         {
           name: 'Page Load',
@@ -132,14 +155,22 @@ const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({ isOpen, onToggl
     if (typeof navigator !== 'undefined' && 'connection' in navigator) {
       const connection = (navigator as any).connection;
       if (connection) {
-        setMetrics(prev => [...prev.filter(m => m.name !== 'Connection Speed'), {
-          name: 'Connection Speed',
-          value: connection.downlink || 0,
-          unit: 'Mbps',
-          category: 'runtime',
-          timestamp: Date.now(),
-          status: connection.downlink >= 10 ? 'good' : connection.downlink >= 1.5 ? 'needs-improvement' : 'poor',
-        }]);
+        setMetrics(prev => [
+          ...prev.filter(m => m.name !== 'Connection Speed'),
+          {
+            name: 'Connection Speed',
+            value: connection.downlink || 0,
+            unit: 'Mbps',
+            category: 'runtime',
+            timestamp: Date.now(),
+            status:
+              connection.downlink >= 10
+                ? 'good'
+                : connection.downlink >= 1.5
+                  ? 'needs-improvement'
+                  : 'poor',
+          },
+        ]);
       }
     }
 
@@ -192,7 +223,8 @@ const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({ isOpen, onToggl
         unit: '',
         category: 'runtime',
         timestamp: Date.now(),
-        status: componentCount <= 100 ? 'good' : componentCount <= 200 ? 'needs-improvement' : 'poor',
+        status:
+          componentCount <= 100 ? 'good' : componentCount <= 200 ? 'needs-improvement' : 'poor',
       },
     ]);
   }, []);
@@ -212,25 +244,33 @@ const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({ isOpen, onToggl
     return () => clearInterval(interval);
   }, [measureWebVitals, analyzeBundleSize, measureReactPerformance]);
 
-  const filteredMetrics = metrics.filter(metric =>
-    selectedCategory === 'all' || metric.category === selectedCategory
+  const filteredMetrics = metrics.filter(
+    metric => selectedCategory === 'all' || metric.category === selectedCategory
   );
 
   const getStatusColor = (status?: string) => {
     switch (status) {
-      case 'good': return 'text-green-600';
-      case 'needs-improvement': return 'text-yellow-600';
-      case 'poor': return 'text-red-600';
-      default: return 'text-gray-600';
+      case 'good':
+        return 'text-green-600';
+      case 'needs-improvement':
+        return 'text-yellow-600';
+      case 'poor':
+        return 'text-red-600';
+      default:
+        return 'text-gray-600';
     }
   };
 
   const getStatusBg = (status?: string) => {
     switch (status) {
-      case 'good': return 'bg-green-100';
-      case 'needs-improvement': return 'bg-yellow-100';
-      case 'poor': return 'bg-red-100';
-      default: return 'bg-gray-100';
+      case 'good':
+        return 'bg-green-100';
+      case 'needs-improvement':
+        return 'bg-yellow-100';
+      case 'poor':
+        return 'bg-red-100';
+      default:
+        return 'bg-gray-100';
     }
   };
 
@@ -304,16 +344,16 @@ const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({ isOpen, onToggl
               >
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="font-medium text-gray-900">{metric.name}</h3>
-                  <span className="text-xs text-gray-500 capitalize">
-                    {metric.category}
-                  </span>
+                  <span className="text-xs text-gray-500 capitalize">{metric.category}</span>
                 </div>
                 <div className={`text-2xl font-bold ${getStatusColor(metric.status)}`}>
                   {metric.value}
                   {metric.unit && <span className="text-lg ml-1">{metric.unit}</span>}
                 </div>
                 {metric.status && (
-                  <div className={`text-xs mt-1 capitalize font-medium ${getStatusColor(metric.status)}`}>
+                  <div
+                    className={`text-xs mt-1 capitalize font-medium ${getStatusColor(metric.status)}`}
+                  >
                     {metric.status.replace('-', ' ')}
                   </div>
                 )}
@@ -333,10 +373,7 @@ const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({ isOpen, onToggl
 
         {/* Footer */}
         <div className="p-4 border-t bg-gray-50 text-sm text-gray-600">
-          <p>
-            📊 Metrics update every 5 seconds •
-            🟢 Good • 🟡 Needs Improvement • 🔴 Poor
-          </p>
+          <p>📊 Metrics update every 5 seconds • 🟢 Good • 🟡 Needs Improvement • 🔴 Poor</p>
         </div>
       </div>
     </div>

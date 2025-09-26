@@ -21,7 +21,7 @@ const AuthLoadingSkeleton: React.FC = () => {
             <div className="h-4 bg-gray-200 rounded animate-pulse mb-2 w-1/4" />
             <div className="h-10 bg-gray-200 rounded animate-pulse" />
           </div>
-          
+
           <div>
             <div className="h-4 bg-gray-200 rounded animate-pulse mb-2 w-1/3" />
             <div className="h-10 bg-gray-200 rounded animate-pulse" />

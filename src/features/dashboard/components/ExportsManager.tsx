@@ -4,9 +4,9 @@
  */
 
 import { motion } from 'framer-motion';
-import { 
-  Download, 
-  FileText, 
+import {
+  Download,
+  FileText,
   Database,
   CheckCircle,
   Clock,
@@ -21,16 +21,19 @@ import { ParscadeCard, ParscadeButton } from '@/shared/components/brand';
 import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
 import ConfirmationDialog from '@/shared/components/ui/confirmation-dialog';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/shared/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/shared/components/ui/dialog';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import StatusBadge from '@/shared/components/ui/status-badge';
-import { 
-  useExports, 
-  useCreateExport, 
-  useCancelExport 
-} from '@/shared/hooks/api/useExports';
+import { useExports, useCreateExport, useCancelExport } from '@/shared/hooks/api/useExports';
 import { formatDate, formatBytes } from '@/shared/utils/formatters';
 import type { ExportCreateData } from '@/types/dashboard-types';
 
@@ -128,31 +131,32 @@ const ExportsManager: React.FC<ExportsManagerProps> = ({ className = '' }) => {
           <Download className="w-5 h-5 text-blue-600" />
           <div>
             <h2 className="text-lg font-semibold text-gray-900">Data Exports</h2>
-            <p className="text-sm text-blue-600 hidden sm:block">Export your documents and processing data</p>
+            <p className="text-sm text-blue-600 hidden sm:block">
+              Export your documents and processing data
+            </p>
           </div>
         </div>
 
-          <ParscadeButton
-            variant="primary"
-            size="sm"
-            className="hidden sm:flex"
-            onClick={() => setShowCreateDialog(true)}
-          >
-            <Download className="w-4 h-4 mr-2" /> New Export
-          </ParscadeButton>
+        <ParscadeButton
+          variant="primary"
+          size="sm"
+          className="hidden sm:flex"
+          onClick={() => setShowCreateDialog(true)}
+        >
+          <Download className="w-4 h-4 mr-2" /> New Export
+        </ParscadeButton>
 
-          <ParscadeButton
-            variant="primary"
-            size="sm"
-            className="sm:hidden"
-            aria-label="New Export"
-            onClick={() => setShowCreateDialog(true)}
-          >
-            <Download className="w-4 h-4" />
-          </ParscadeButton>
+        <ParscadeButton
+          variant="primary"
+          size="sm"
+          className="sm:hidden"
+          aria-label="New Export"
+          onClick={() => setShowCreateDialog(true)}
+        >
+          <Download className="w-4 h-4" />
+        </ParscadeButton>
 
-          <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-
+        <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Create Data Export</DialogTitle>
@@ -160,26 +164,26 @@ const ExportsManager: React.FC<ExportsManagerProps> = ({ className = '' }) => {
                 Export your documents or job data in CSV or JSON format.
               </DialogDescription>
             </DialogHeader>
-            
+
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Data Type</Label>
                   <select
                     value={exportForm.type}
-                    onChange={(e) => setExportForm({ ...exportForm, type: e.target.value as any })}
+                    onChange={e => setExportForm({ ...exportForm, type: e.target.value as any })}
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                   >
                     <option value="documents">Documents</option>
                     <option value="jobs">Processing Jobs</option>
                   </select>
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label>Format</Label>
                   <select
                     value={exportForm.format}
-                    onChange={(e) => setExportForm({ ...exportForm, format: e.target.value as any })}
+                    onChange={e => setExportForm({ ...exportForm, format: e.target.value as any })}
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                   >
                     <option value="csv">CSV</option>
@@ -187,33 +191,37 @@ const ExportsManager: React.FC<ExportsManagerProps> = ({ className = '' }) => {
                   </select>
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Start Date (Optional)</Label>
                   <Input
                     type="date"
                     value={exportForm.filters?.start_date || ''}
-                    onChange={(e) => setExportForm({ 
-                      ...exportForm, 
-                      filters: { ...exportForm.filters, start_date: e.target.value || undefined }
-                    })}
+                    onChange={e =>
+                      setExportForm({
+                        ...exportForm,
+                        filters: { ...exportForm.filters, start_date: e.target.value || undefined },
+                      })
+                    }
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label>End Date (Optional)</Label>
                   <Input
                     type="date"
                     value={exportForm.filters?.end_date || ''}
-                    onChange={(e) => setExportForm({ 
-                      ...exportForm, 
-                      filters: { ...exportForm.filters, end_date: e.target.value || undefined }
-                    })}
+                    onChange={e =>
+                      setExportForm({
+                        ...exportForm,
+                        filters: { ...exportForm.filters, end_date: e.target.value || undefined },
+                      })
+                    }
                   />
                 </div>
               </div>
-              
+
               <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2">
                 <Button
                   variant="outline"
@@ -252,11 +260,7 @@ const ExportsManager: React.FC<ExportsManagerProps> = ({ className = '' }) => {
           <p className="text-slate-600 mb-4">
             Create your first data export to download your documents or processing data.
           </p>
-          <ParscadeButton 
-            variant="primary" 
-            size="sm"
-            onClick={() => setShowCreateDialog(true)}
-          >
+          <ParscadeButton variant="primary" size="sm" onClick={() => setShowCreateDialog(true)}>
             <Download className="w-4 h-4 mr-2" />
             Create First Export
           </ParscadeButton>
@@ -291,21 +295,21 @@ const ExportsManager: React.FC<ExportsManagerProps> = ({ className = '' }) => {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="text-xs text-gray-500 space-y-0.5 sm:space-y-1">
                     <div>Created {formatDate(exportItem.created_at)}</div>
                     {exportItem.completed_at && (
-                      <div className="hidden sm:block">Completed {formatDate(exportItem.completed_at)}</div>
+                      <div className="hidden sm:block">
+                        Completed {formatDate(exportItem.completed_at)}
+                      </div>
                     )}
-                    {exportItem.file_size && (
-                      <div>Size: {formatBytes(exportItem.file_size)}</div>
-                    )}
+                    {exportItem.file_size && <div>Size: {formatBytes(exportItem.file_size)}</div>}
                     {exportItem.error_message && (
                       <div className="text-red-600 truncate">Error: {exportItem.error_message}</div>
                     )}
                   </div>
                 </div>
-                
+
                 <div className="flex items-center space-x-1 sm:space-x-2 self-end sm:self-center">
                   {exportItem.status === 'completed' && exportItem.download_url && (
                     <Button
@@ -318,7 +322,7 @@ const ExportsManager: React.FC<ExportsManagerProps> = ({ className = '' }) => {
                       <span className="hidden sm:inline">Download</span>
                     </Button>
                   )}
-                  
+
                   {exportItem.status === 'pending' && (
                     <Button
                       variant="outline"

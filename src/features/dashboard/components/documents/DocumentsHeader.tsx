@@ -8,7 +8,7 @@ import { FileText, Plus, Upload, Link as LinkIcon, RefreshCw } from 'lucide-reac
 import React from 'react';
 
 import { ParscadeCard } from '@/shared/components/brand';
-import { Button } from '@/shared/components/ui/button';
+import Button from '@/shared/components/forms/atoms/Button';
 
 interface DocumentsHeaderProps {
   totalDocuments: number;
@@ -36,9 +36,7 @@ const DocumentsHeader: React.FC<DocumentsHeaderProps> = ({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Documents</h1>
-          <p className="text-gray-600">
-            Manage and process your documents with advanced AI tools
-          </p>
+          <p className="text-gray-600">Manage and process your documents with advanced AI tools</p>
         </div>
 
         <div className="flex items-center space-x-3">
@@ -51,19 +49,11 @@ const DocumentsHeader: React.FC<DocumentsHeaderProps> = ({
             Refresh
           </Button>
 
-          <Button
-            variant="outline"
-            leftIcon={<LinkIcon className="w-4 h-4" />}
-            onClick={onIngest}
-          >
+          <Button variant="outline" leftIcon={<LinkIcon className="w-4 h-4" />} onClick={onIngest}>
             Ingest URL
           </Button>
 
-          <Button
-            variant="primary"
-            leftIcon={<Upload className="w-4 h-4" />}
-            onClick={onUpload}
-          >
+          <Button variant="primary" leftIcon={<Upload className="w-4 h-4" />} onClick={onUpload}>
             Upload Document
           </Button>
         </div>

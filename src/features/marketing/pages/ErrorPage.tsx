@@ -54,12 +54,10 @@ const ErrorPage: React.FC<ErrorPageProps> = ({ error, resetError }) => {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="mb-8"
         >
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
-            Something went wrong
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Something went wrong</h1>
           <p className="text-gray-600 leading-relaxed mb-4">
-            We encountered an unexpected error. Our team has been notified and
-            is working to fix this issue.
+            We encountered an unexpected error. Our team has been notified and is working to fix
+            this issue.
           </p>
 
           {process.env.NODE_ENV === 'development' && error && (
@@ -158,7 +156,11 @@ const ErrorPage: React.FC<ErrorPageProps> = ({ error, resetError }) => {
     </div>
   );
 
-  return isInRouter ? <Layout>{page}</Layout> : <div className="min-h-screen flex flex-col">{page}</div>;
+  return isInRouter ? (
+    <Layout>{page}</Layout>
+  ) : (
+    <div className="min-h-screen flex flex-col">{page}</div>
+  );
 };
 
 export default ErrorPage;

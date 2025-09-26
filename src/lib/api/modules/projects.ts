@@ -3,14 +3,14 @@
  * Project management endpoints with type safety
  */
 
-import type { 
+import type {
   Project,
   ProjectWithStats,
   ProjectCreateData,
   ProjectUpdateData,
   ProjectQueryParams,
   ProjectResponse,
-  DocumentAssociationData
+  DocumentAssociationData,
 } from '@/types/dashboard-types';
 
 import { apiClient } from '../client';

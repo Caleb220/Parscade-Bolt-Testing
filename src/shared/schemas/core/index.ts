@@ -69,8 +69,8 @@ export const routeConfigSchema = z
   .object({
     path: nonEmptyTextSchema('Route path', 120),
     element: z.custom<React.ComponentType>(
-      (value) => typeof value === 'function' || (typeof value === 'object' && value != null),
-      'Element must be a valid React component.',
+      value => typeof value === 'function' || (typeof value === 'object' && value != null),
+      'Element must be a valid React component.'
     ),
     title: nonEmptyTextSchema('Route title', 120),
     description: nonEmptyTextSchema('Route description', 320).optional(),

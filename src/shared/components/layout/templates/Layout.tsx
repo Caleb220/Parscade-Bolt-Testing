@@ -28,9 +28,7 @@ const Layout: React.FC<LayoutProps> = ({ children, className = '' }) => {
             transition={{ duration: 0.3 }}
             className="flex-1"
           >
-            <GlobalErrorBoundary level="page">
-              {children}
-            </GlobalErrorBoundary>
+            <GlobalErrorBoundary level="page">{children}</GlobalErrorBoundary>
           </motion.main>
 
           <GlobalErrorBoundary level="section">

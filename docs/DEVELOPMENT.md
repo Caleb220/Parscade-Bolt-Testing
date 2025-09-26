@@ -5,6 +5,7 @@ This document provides comprehensive guidance for developing and maintaining the
 ## 🏗️ Architecture Overview
 
 ### Technology Stack
+
 - **Frontend**: React 18 + TypeScript + Vite
 - **Styling**: Tailwind CSS with custom design system
 - **State Management**: React Context + useReducer (auth), React Query (server state)
@@ -15,6 +16,7 @@ This document provides comprehensive guidance for developing and maintaining the
 - **API Client**: Enterprise-grade Fetch wrapper with retry logic
 
 ### Project Structure
+
 ```
 src/
 ├── app/                     # App-level configuration
@@ -42,11 +44,13 @@ src/
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Node.js 18+ and npm
 - Access to Supabase project
 - Backend API running locally or staging environment
 
 ### Installation
+
 ```bash
 # Install dependencies
 npm install
@@ -62,6 +66,7 @@ npm run dev
 ```
 
 ### Common Development Commands
+
 ```bash
 # Development
 npm run dev                 # Start Vite dev server
@@ -87,9 +92,11 @@ npm run security:audit     # Run npm security audit
 ## 🔧 Development Tools
 
 ### Built-in Development Tools
+
 The application includes several development tools available only in development mode:
 
 #### API Inspector 🔍
+
 - **Access**: Click the blue 🔍 button in bottom-right corner
 - **Features**:
   - Real-time API call monitoring
@@ -99,6 +106,7 @@ The application includes several development tools available only in development
   - Performance metrics for each call
 
 #### Performance Monitor ⚡
+
 - **Access**: Click the purple ⚡ button in bottom-right corner
 - **Features**:
   - Core Web Vitals monitoring (LCP, FCP, CLS)
@@ -108,6 +116,7 @@ The application includes several development tools available only in development
   - React component performance
 
 ### Development Mode Indicator
+
 - Orange "DEV MODE" indicator appears in top-right corner
 - Only visible in development environment
 - Helps distinguish between development and production builds
@@ -115,32 +124,36 @@ The application includes several development tools available only in development
 ## 📋 Coding Standards
 
 ### File Organization
+
 - Use feature-based architecture
 - Group related files in feature directories
 - Keep shared utilities in `src/shared/`
 - Place API logic in `src/lib/api/modules/`
 
 ### Naming Conventions
+
 ```typescript
 // Components: PascalCase
-export const UserProfile: React.FC = () => { };
+export const UserProfile: React.FC = () => {};
 
 // Hooks: camelCase starting with 'use'
-export const useUserProfile = () => { };
+export const useUserProfile = () => {};
 
 // Constants: SCREAMING_SNAKE_CASE
-export const API_ENDPOINTS = { };
+export const API_ENDPOINTS = {};
 
 // Types/Interfaces: PascalCase
-export interface UserProfile { }
+export interface UserProfile {}
 
 // Files: kebab-case
-user-profile.tsx
-use-user-profile.ts
+user - profile.tsx;
+use - user - profile.ts;
 ```
 
 ### Import Organization
+
 Follow ESLint import order:
+
 ```typescript
 // 1. Built-in modules (none in frontend)
 // 2. External packages
@@ -156,6 +169,7 @@ import type { FC } from 'react';
 ```
 
 ### Component Patterns
+
 ```typescript
 // Use memo for expensive components
 export const ExpensiveComponent = React.memo<Props>(({ prop1, prop2 }) => {
@@ -176,12 +190,14 @@ export const ExpensiveComponent = React.memo<Props>(({ prop1, prop2 }) => {
 ## 🔐 Security Best Practices
 
 ### Input Validation
+
 - All forms use Zod validation schemas
 - API requests are validated before sending
 - User input is sanitized using DOMPurify
 - File uploads are restricted by type and size
 
 ### API Security
+
 - Bearer token authentication
 - Automatic token refresh
 - Request timeout and retry logic
@@ -189,6 +205,7 @@ export const ExpensiveComponent = React.memo<Props>(({ prop1, prop2 }) => {
 - Rate limiting on client side
 
 ### Content Security
+
 - XSS prevention through input sanitization
 - No inline scripts or styles
 - Secure headers for all API requests
@@ -197,12 +214,14 @@ export const ExpensiveComponent = React.memo<Props>(({ prop1, prop2 }) => {
 ## 🧪 Testing Strategy
 
 ### Test Types
+
 1. **Unit Tests**: Business logic and utilities
 2. **Component Tests**: React component behavior
 3. **Integration Tests**: API interactions
 4. **E2E Tests**: User workflows (future enhancement)
 
 ### Testing Patterns
+
 ```typescript
 // Component testing example
 import { render, screen, fireEvent } from '@testing-library/react';
@@ -223,12 +242,14 @@ describe('UserProfile', () => {
 ## 🎨 Design System
 
 ### Theme Configuration
+
 - Located in `src/shared/design/theme.ts`
 - Professional blue-based color palette
 - Inter font with consistent scale
 - Custom Parscade-branded components
 
 ### Component Library
+
 ```typescript
 // Use Parscade design system components
 import { ParscadeButton, ParscadeCard, ParscadeStatusBadge } from '@/shared/design';
@@ -240,6 +261,7 @@ import { ParscadeButton, ParscadeCard, ParscadeStatusBadge } from '@/shared/desi
 ```
 
 ### Animation Guidelines
+
 - Use Framer Motion for complex animations
 - Keep animations subtle and professional
 - Use custom easing functions from theme
@@ -248,6 +270,7 @@ import { ParscadeButton, ParscadeCard, ParscadeStatusBadge } from '@/shared/desi
 ## 🔌 API Integration
 
 ### API Client Usage
+
 ```typescript
 import { documentsApi } from '@/lib/api';
 
@@ -255,11 +278,12 @@ import { documentsApi } from '@/lib/api';
 const documents = await documentsApi.listDocuments({
   page: 1,
   limit: 20,
-  status: 'completed'
+  status: 'completed',
 });
 ```
 
 ### Error Handling
+
 ```typescript
 import { isApiError, getErrorMessage } from '@/lib/api';
 
@@ -278,6 +302,7 @@ try {
 ```
 
 ### Validation Schemas
+
 - All API requests use Zod validation
 - Schemas located in `src/lib/validation/`
 - Runtime validation ensures type safety
@@ -286,18 +311,21 @@ try {
 ## 🎯 Performance Optimization
 
 ### Bundle Optimization
+
 - Feature-based code splitting
 - Intelligent vendor chunking
 - Dynamic imports for heavy components
 - Tree shaking for unused code
 
 ### Runtime Performance
+
 - React.memo for expensive components
 - useCallback for event handlers
 - useMemo for expensive calculations
 - Virtualization for long lists
 
 ### Loading Strategies
+
 - Progressive loading with preloading
 - Skeleton screens for loading states
 - Error boundaries for graceful failures
@@ -306,23 +334,26 @@ try {
 ## 🔍 Debugging
 
 ### Development Tools
+
 1. **React DevTools**: Component inspection and profiling
 2. **API Inspector**: Built-in API call monitoring
 3. **Performance Monitor**: Runtime performance metrics
 4. **Browser DevTools**: Network, Console, and Performance tabs
 
 ### Logging
+
 ```typescript
 import { logger } from '@/shared/services/logger';
 
 // Structured logging with context
 logger.info('User action completed', {
   context: { feature: 'documents', action: 'upload' },
-  metadata: { fileSize: file.size, fileType: file.type }
+  metadata: { fileSize: file.size, fileType: file.type },
 });
 ```
 
 ### Error Tracking
+
 - Centralized error boundaries
 - Automatic error logging in development
 - Context preservation for debugging
@@ -331,12 +362,14 @@ logger.info('User action completed', {
 ## 📊 Monitoring & Analytics
 
 ### Performance Monitoring
+
 - Core Web Vitals tracking
 - Bundle size monitoring
 - API response time tracking
 - Memory usage analysis
 
 ### User Analytics
+
 - Page view tracking
 - User interaction events
 - Error rate monitoring
@@ -345,6 +378,7 @@ logger.info('User action completed', {
 ## 🚢 Deployment
 
 ### Build Process
+
 ```bash
 # Production build
 npm run build
@@ -360,11 +394,13 @@ npm run lint
 ```
 
 ### Environment Configuration
+
 - Development: `NODE_ENV=development`
 - Staging: `NODE_ENV=production` + staging API
 - Production: `NODE_ENV=production` + production API
 
 ### CI/CD Pipeline
+
 1. Install dependencies
 2. Run type checking
 3. Run linting
@@ -377,6 +413,7 @@ npm run lint
 ### Common Issues
 
 #### Build Failures
+
 ```bash
 # Clear cache and reinstall
 rm -rf node_modules package-lock.json
@@ -387,18 +424,21 @@ npm run typecheck
 ```
 
 #### API Connection Issues
+
 - Verify environment variables
 - Check API endpoint availability
 - Validate authentication tokens
 - Review CORS configuration
 
 #### Performance Issues
+
 - Use Performance Monitor tool
 - Check bundle size with `npm run build`
 - Profile components with React DevTools
 - Review network requests in browser
 
 ### Getting Help
+
 1. Check this documentation first
 2. Review existing code patterns
 3. Use development tools for debugging
@@ -408,6 +448,7 @@ npm run typecheck
 ## 🔄 Contributing
 
 ### Development Workflow
+
 1. Create feature branch from `main`
 2. Implement changes following coding standards
 3. Add tests for new functionality
@@ -417,6 +458,7 @@ npm run typecheck
 7. Merge after approval
 
 ### Code Review Checklist
+
 - [ ] TypeScript types are correct
 - [ ] Components follow design system
 - [ ] Error handling is implemented

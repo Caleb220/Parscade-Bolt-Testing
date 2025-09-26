@@ -5,6 +5,7 @@ Enterprise-grade document processing platform with intelligent parsing capabilit
 ## 🌐 Multi-Domain Support
 
 This application is designed to work seamlessly on **any domain or subdomain** without restrictions:
+
 - ✅ Local development (`localhost`, `127.0.0.1`, `.local` domains)
 - ✅ Staging environments (`staging.domain.com`, `preview-*.netlify.app`)
 - ✅ Production domains (`parscade.com`, `app.parscade.com`, custom domains)
@@ -24,7 +25,7 @@ This application is designed to work seamlessly on **any domain or subdomain** w
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - Supabase account
 - Environment variables configured
 
@@ -49,6 +50,7 @@ VITE_ANALYTICS_KEY=your-analytics-key (optional)
 To deploy on multiple domains, configure your Supabase project:
 
 1. **Supabase Dashboard → Authentication → URL Configuration**:
+
    ```
    Site URL: https://your-primary-domain.com
    Additional Redirect URLs:
@@ -66,6 +68,7 @@ npm run dev
 ```
 
 The development server works on any local address:
+
 - `http://localhost:5173`
 - `http://127.0.0.1:5173`
 - `http://your-ip:5173`
@@ -97,6 +100,7 @@ npm run preview
      ```
 
 2. **Email Template** (Authentication → Email Templates → Reset Password):
+
    ```html
    <a href="{{ .ConfirmationURL }}">Reset Your Password</a>
    ```
@@ -190,6 +194,7 @@ VITE_SUPABASE_URL=custom-url npm run build
 This application implements enterprise-grade "hard logout" functionality that ensures complete session termination:
 
 ### Features
+
 - **Global Token Revocation**: Uses `supabase.auth.signOut({ scope: 'global' })` to invalidate all sessions
 - **Complete Storage Purge**: Clears localStorage, sessionStorage, cookies, and IndexedDB
 - **Cross-Tab Synchronization**: Broadcasts logout events to all open tabs
@@ -198,15 +203,18 @@ This application implements enterprise-grade "hard logout" functionality that en
 - **Route Protection**: Protected routes include `Cache-Control: no-store` headers
 
 ### Security Guarantees
+
 After logout, users are guaranteed to be signed out with:
+
 - ✅ No silent re-login possible
-- ✅ All tabs logged out simultaneously  
+- ✅ All tabs logged out simultaneously
 - ✅ Page refresh keeps user logged out
 - ✅ Back button doesn't show cached content
 - ✅ All client-side auth data purged
 - ✅ Server-side tokens revoked globally
 
 ### Implementation
+
 ```typescript
 import { performHardLogout } from './utils/hardLogout';
 

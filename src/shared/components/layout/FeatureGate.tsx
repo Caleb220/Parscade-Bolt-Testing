@@ -10,7 +10,12 @@ import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth';
 import { ParscadeCard, ParscadeButton } from '@/shared/components/brand';
-import { useFeatureAccess, type FeatureId, type UserRole, type UserPlan } from '@/shared/hooks/useFeatureAccess';
+import {
+  useFeatureAccess,
+  type FeatureId,
+  type UserRole,
+  type UserPlan,
+} from '@/shared/hooks/useFeatureAccess';
 
 import type { ReactNode } from 'react';
 
@@ -104,15 +109,15 @@ const FeatureGate: React.FC<FeatureGateProps> = ({
             <Crown className="w-6 h-6 text-blue-600" />
           )}
         </div>
-        
+
         <h3 className="text-lg font-semibold text-gray-900 mb-2">
           {upgradeMessage?.includes('admin') ? 'Admin Access Required' : 'Upgrade Required'}
         </h3>
-        
+
         <p className="text-gray-600 mb-4">
           {upgradeMessage || 'This feature is not available on your current plan.'}
         </p>
-        
+
         {!upgradeMessage?.includes('admin') && (
           <ParscadeButton type="button" variant="primary" size="sm" onClick={goToBilling}>
             <Crown className="w-4 h-4 mr-2" />

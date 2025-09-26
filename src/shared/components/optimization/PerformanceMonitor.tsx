@@ -24,7 +24,7 @@ interface PerformanceMonitorProps {
 const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
   show = import.meta.env?.MODE === 'development',
   position = 'bottom-right',
-  compact = false
+  compact = false,
 }) => {
   const [metrics, setMetrics] = useState<PerformanceMetrics>({
     loadTime: 0,
@@ -50,7 +50,9 @@ const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
 
     const updateMetrics = () => {
       try {
-        const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+        const navigation = performance.getEntriesByType(
+          'navigation'
+        )[0] as PerformanceNavigationTiming;
         const paint = performance.getEntriesByType('paint');
         const preloadStats = getPreloadStats();
 
@@ -100,16 +102,22 @@ const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
 
   const getGradeColor = (grade: string) => {
     switch (grade) {
-      case 'good': return 'text-green-600 bg-green-100';
-      case 'needs-improvement': return 'text-yellow-600 bg-yellow-100';
-      case 'poor': return 'text-red-600 bg-red-100';
-      default: return 'text-gray-600 bg-gray-100';
+      case 'good':
+        return 'text-green-600 bg-green-100';
+      case 'needs-improvement':
+        return 'text-yellow-600 bg-yellow-100';
+      case 'poor':
+        return 'text-red-600 bg-red-100';
+      default:
+        return 'text-gray-600 bg-gray-100';
     }
   };
 
   const networkQuality = networkStatus.isSlowConnection ? 'slow' : 'fast';
   const networkColor = networkStatus.isOnline
-    ? (networkStatus.isSlowConnection ? 'text-yellow-600' : 'text-green-600')
+    ? networkStatus.isSlowConnection
+      ? 'text-yellow-600'
+      : 'text-green-600'
     : 'text-red-600';
 
   return (
@@ -154,13 +162,17 @@ const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
                 <div className="space-y-1">
                   <div className="flex items-center justify-between">
                     <span>FCP</span>
-                    <span className={`px-1 rounded text-xs ${getGradeColor(getPerformanceGrade(metrics.firstContentfulPaint, [1800, 3000]))}`}>
+                    <span
+                      className={`px-1 rounded text-xs ${getGradeColor(getPerformanceGrade(metrics.firstContentfulPaint, [1800, 3000]))}`}
+                    >
                       {formatTime(metrics.firstContentfulPaint)}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span>LCP</span>
-                    <span className={`px-1 rounded text-xs ${getGradeColor(getPerformanceGrade(metrics.largestContentfulPaint, [2500, 4000]))}`}>
+                    <span
+                      className={`px-1 rounded text-xs ${getGradeColor(getPerformanceGrade(metrics.largestContentfulPaint, [2500, 4000]))}`}
+                    >
                       {formatTime(metrics.largestContentfulPaint)}
                     </span>
                   </div>
@@ -179,9 +191,7 @@ const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
                       <Zap className="w-3 h-3 mr-1" />
                       Network
                     </span>
-                    <span className={networkColor}>
-                      {networkStatus.effectiveType || 'unknown'}
-                    </span>
+                    <span className={networkColor}>{networkStatus.effectiveType || 'unknown'}</span>
                   </div>
                 </div>
               </div>
@@ -246,15 +256,15 @@ export const usePerformanceMonitoring = () => {
   });
 
   useEffect(() => {
-    const observer = new PerformanceObserver((list) => {
-      list.getEntries().forEach((entry) => {
+    const observer = new PerformanceObserver(list => {
+      list.getEntries().forEach(entry => {
         if (entry.entryType === 'largest-contentful-paint') {
           setMetrics(prev => ({ ...prev, largestContentfulPaint: entry.startTime }));
         }
         if (entry.entryType === 'layout-shift' && !(entry as any).hadRecentInput) {
           setMetrics(prev => ({
             ...prev,
-            cumulativeLayoutShift: prev.cumulativeLayoutShift + (entry as any).value
+            cumulativeLayoutShift: prev.cumulativeLayoutShift + (entry as any).value,
           }));
         }
       });

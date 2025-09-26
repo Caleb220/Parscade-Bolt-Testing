@@ -4,19 +4,11 @@
  */
 
 import { motion } from 'framer-motion';
-import {
-  Play,
-  RotateCcw,
-  XCircle,
-  Edit3,
-  Trash2,
-  RefreshCw,
-  Download
-} from 'lucide-react';
+import { Play, RotateCcw, XCircle, Edit3, Trash2, RefreshCw, Download } from 'lucide-react';
 import React from 'react';
 
 import { ParscadeCard } from '@/shared/components/brand';
-import { Button } from '@/shared/components/ui/button';
+import Button from '@/shared/components/forms/atoms/Button';
 import type { Job } from '@/types/api-types';
 
 interface JobActionsCardProps {
@@ -54,9 +46,7 @@ const JobActionsCard: React.FC<JobActionsCardProps> = ({
       transition={{ duration: 0.5, delay: 0.3 }}
     >
       <ParscadeCard className="p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-6">
-          Job Actions
-        </h2>
+        <h2 className="text-lg font-semibold text-gray-900 mb-6">Job Actions</h2>
 
         <div className="grid grid-cols-2 gap-4">
           {/* Primary Actions */}
@@ -140,18 +130,10 @@ const JobActionsCard: React.FC<JobActionsCardProps> = ({
         <div className="mt-6 p-4 bg-gray-50 rounded-lg">
           <h4 className="text-sm font-medium text-gray-700 mb-2">Quick Tips</h4>
           <ul className="text-sm text-gray-600 space-y-1">
-            {canStart && (
-              <li>• Click "Start Job" to begin processing</li>
-            )}
-            {canCancel && (
-              <li>• Click "Cancel Job" to stop processing (cannot be undone)</li>
-            )}
-            {canRetry && (
-              <li>• Click "Retry Job" to restart with the same configuration</li>
-            )}
-            {canDownload && (
-              <li>• Click "Download Results" to get the processed output</li>
-            )}
+            {canStart && <li>• Click "Start Job" to begin processing</li>}
+            {canCancel && <li>• Click "Cancel Job" to stop processing (cannot be undone)</li>}
+            {canRetry && <li>• Click "Retry Job" to restart with the same configuration</li>}
+            {canDownload && <li>• Click "Download Results" to get the processed output</li>}
             <li>• Edit job settings when not running</li>
             <li>• Refresh to get the latest status</li>
           </ul>

@@ -33,9 +33,7 @@ const DocumentInfoCard: React.FC<DocumentInfoCardProps> = ({ document }) => {
             <FileText className="w-4 h-4 mr-2" />
             MIME Type
           </dt>
-          <dd className="mt-1 text-sm text-gray-900">
-            {document.mime_type || 'Unknown'}
-          </dd>
+          <dd className="mt-1 text-sm text-gray-900">{document.mime_type || 'Unknown'}</dd>
         </div>
 
         {document.file_size && (
@@ -44,9 +42,7 @@ const DocumentInfoCard: React.FC<DocumentInfoCardProps> = ({ document }) => {
               <HardDrive className="w-4 h-4 mr-2" />
               File Size
             </dt>
-            <dd className="mt-1 text-sm text-gray-900">
-              {formatBytes(document.file_size)}
-            </dd>
+            <dd className="mt-1 text-sm text-gray-900">{formatBytes(document.file_size)}</dd>
           </div>
         )}
 
@@ -55,9 +51,7 @@ const DocumentInfoCard: React.FC<DocumentInfoCardProps> = ({ document }) => {
             <Calendar className="w-4 h-4 mr-2" />
             Created
           </dt>
-          <dd className="mt-1 text-sm text-gray-900">
-            {formatDate(document.created_at)}
-          </dd>
+          <dd className="mt-1 text-sm text-gray-900">{formatDate(document.created_at)}</dd>
         </div>
 
         <div>
@@ -65,9 +59,7 @@ const DocumentInfoCard: React.FC<DocumentInfoCardProps> = ({ document }) => {
             <Calendar className="w-4 h-4 mr-2" />
             Last Updated
           </dt>
-          <dd className="mt-1 text-sm text-gray-900">
-            {formatDate(document.updated_at)}
-          </dd>
+          <dd className="mt-1 text-sm text-gray-900">{formatDate(document.updated_at)}</dd>
         </div>
 
         {document.storage_key && (
@@ -87,9 +79,7 @@ const DocumentInfoCard: React.FC<DocumentInfoCardProps> = ({ document }) => {
             <User className="w-4 h-4 mr-2" />
             Document ID
           </dt>
-          <dd className="mt-1 text-xs font-mono text-gray-900 break-all">
-            {document.id}
-          </dd>
+          <dd className="mt-1 text-xs font-mono text-gray-900 break-all">{document.id}</dd>
         </div>
       </dl>
     </ParscadeCard>

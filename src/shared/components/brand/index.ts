@@ -9,5 +9,15 @@ export { default as ParscadeButton } from './ParscadeButton';
 export { default as ParscadeStatusBadge } from './ParscadeStatusBadge';
 
 // Theme exports
-export { parscadeTheme, parscadeGradients, parscadeVariants, parscadeAnimations } from '@/shared/design/theme';
-export type { ParscadeTheme, ParscadeGradients, ParscadeVariants, ParscadeAnimations } from '@/shared/design/theme';
+export {
+  parscadeTheme,
+  parscadeGradients,
+  parscadeVariants,
+  parscadeAnimations,
+} from '@/shared/design/theme';
+export type {
+  ParscadeTheme,
+  ParscadeGradients,
+  ParscadeVariants,
+  ParscadeAnimations,
+} from '@/shared/design/theme';

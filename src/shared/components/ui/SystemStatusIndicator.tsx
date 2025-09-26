@@ -218,10 +218,7 @@ const SystemStatusIndicator: React.FC<SystemStatusIndicatorProps> = ({
           {statusConfig.label}
         </span>
 
-        <motion.div
-          animate={{ rotate: isExpanded ? 180 : 0 }}
-          transition={{ duration: 0.2 }}
-        >
+        <motion.div animate={{ rotate: isExpanded ? 180 : 0 }} transition={{ duration: 0.2 }}>
           <ChevronDown className={`w-4 h-4 ${statusConfig.textColor}`} />
         </motion.div>
       </div>
@@ -240,9 +237,7 @@ const SystemStatusIndicator: React.FC<SystemStatusIndicatorProps> = ({
               <div className="space-y-4">
                 {/* Header */}
                 <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-semibold text-gray-900">
-                    System Status
-                  </h3>
+                  <h3 className="text-sm font-semibold text-gray-900">System Status</h3>
                   <div className="flex items-center space-x-2">
                     <div className={`w-2 h-2 rounded-full bg-${statusConfig.color}-400`} />
                     <span className="text-xs text-gray-500">
@@ -253,7 +248,7 @@ const SystemStatusIndicator: React.FC<SystemStatusIndicatorProps> = ({
 
                 {/* Services */}
                 <div className="space-y-3">
-                  {systemStatus.services.map((service) => {
+                  {systemStatus.services.map(service => {
                     const serviceConfig = STATUS_CONFIG[service.status];
                     const ServiceIcon = serviceConfig.icon;
 
@@ -262,25 +257,17 @@ const SystemStatusIndicator: React.FC<SystemStatusIndicatorProps> = ({
                         <div className="flex items-center space-x-3">
                           <ServiceIcon className={`w-4 h-4 text-${serviceConfig.color}-600`} />
                           <div>
-                            <p className="text-sm font-medium text-gray-900">
-                              {service.name}
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              {service.description}
-                            </p>
+                            <p className="text-sm font-medium text-gray-900">{service.name}</p>
+                            <p className="text-xs text-gray-500">{service.description}</p>
                           </div>
                         </div>
 
                         <div className="text-right">
                           {service.responseTime && (
-                            <p className="text-xs text-gray-600">
-                              {service.responseTime}ms
-                            </p>
+                            <p className="text-xs text-gray-600">{service.responseTime}ms</p>
                           )}
                           {service.uptime && (
-                            <p className="text-xs text-green-600">
-                              {service.uptime}% uptime
-                            </p>
+                            <p className="text-xs text-green-600">{service.uptime}% uptime</p>
                           )}
                         </div>
                       </div>
@@ -294,8 +281,7 @@ const SystemStatusIndicator: React.FC<SystemStatusIndicatorProps> = ({
                     <span>
                       {systemStatus.incidentCount === 0
                         ? 'No active incidents'
-                        : `${systemStatus.incidentCount} active incidents`
-                      }
+                        : `${systemStatus.incidentCount} active incidents`}
                     </span>
                     <a
                       href="https://status.parscade.com"

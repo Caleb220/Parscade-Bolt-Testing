@@ -1,9 +1,9 @@
 /**
  * API Type Definitions - Auto-generated from OpenAPI Schema
- * 
+ *
  * IMPORTANT: This file should be auto-generated from the OpenAPI schema.
  * For now, manually aligned with the backend schema structure.
- * 
+ *
  * All types use snake_case to match backend exactly.
  */
 
@@ -1195,7 +1195,7 @@ export interface UserProfile {
 }
 
 export type UserRole = 'admin' | 'user';
-export type UserPlan = 'free' | 'pro' | 'enterprise';
+export type UserPlan = 'free'| 'standard' | 'pro' | 'enterprise';
 
 export interface UpdateProfileRequest {
   readonly full_name?: string | null;
@@ -1229,14 +1229,14 @@ export interface SecurityEvent {
   readonly created_at: string;
 }
 
-export type SecurityEventType = 
-  | 'login_success' 
-  | 'login_failed' 
-  | 'logout' 
-  | 'password_change' 
-  | 'api_key_created' 
-  | 'api_key_revoked' 
-  | 'session_revoked' 
+export type SecurityEventType =
+  | 'login_success'
+  | 'login_failed'
+  | 'logout'
+  | 'password_change'
+  | 'api_key_created'
+  | 'api_key_revoked'
+  | 'session_revoked'
   | 'user_role_updated';
 
 export interface ApiKey {
@@ -1316,7 +1316,11 @@ export interface WebhookWithSecret extends Webhook {
   readonly secret: string;
 }
 
-export type WebhookEventType = 'job.completed' | 'job.failed' | 'document.processed' | 'document.failed';
+export type WebhookEventType =
+  | 'job.completed'
+  | 'job.failed'
+  | 'document.processed'
+  | 'document.failed';
 
 export interface CreateWebhookRequest {
   readonly url: string;

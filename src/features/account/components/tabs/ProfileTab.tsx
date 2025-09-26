@@ -2,26 +2,26 @@
  * Profile Tab Component - Enhanced with Backend Integration
  * Comprehensive profile management with avatar upload and real-time validation
  * Updated to use snake_case field names matching OpenAPI schema
- */ 
+ */
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
-import { 
-  Upload, 
-  Save, 
-  User, 
-  Building, 
-  Phone, 
-  Globe, 
-  Camera, 
-  AlertCircle, 
+import {
+  Upload,
+  Save,
+  User,
+  Building,
+  Phone,
+  Globe,
+  Camera,
+  AlertCircle,
   CheckCircle,
   Mail,
   Calendar,
   Shield,
   Crown,
   AtSign,
-  Briefcase
+  Briefcase,
 } from 'lucide-react';
 import React, { useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
@@ -29,7 +29,13 @@ import { useForm } from 'react-hook-form';
 import { getErrorMessage } from '@/lib/api';
 import { profileSchema, type ProfileFormData } from '@/lib/validation/account';
 import { Button } from '@/shared/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/shared/components/ui/card';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Skeleton } from '@/shared/components/ui/skeleton';
@@ -44,7 +50,7 @@ const ProfileTab: React.FC = () => {
   const { toast } = useToast();
   const updateAccount = useUpdateAccount();
   const uploadAvatar = useUploadAvatar();
-  
+
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -120,7 +126,7 @@ const ProfileTab: React.FC = () => {
 
     // Show preview
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = e => {
       setAvatarPreview(e.target?.result as string);
     };
     reader.readAsDataURL(file);
@@ -154,7 +160,7 @@ const ProfileTab: React.FC = () => {
   const handleDrop = (event: React.DragEvent) => {
     event.preventDefault();
     setIsDragOver(false);
-    
+
     const file = event.dataTransfer.files?.[0];
     if (file) {
       handleAvatarChange(file);
@@ -192,9 +198,7 @@ const ProfileTab: React.FC = () => {
             <AlertCircle className="w-8 h-8 text-red-600 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Failed to load profile</h3>
             <p className="text-gray-600 mb-4">{getErrorMessage(contextError)}</p>
-            <Button onClick={() => window.location.reload()}>
-              Retry
-            </Button>
+            <Button onClick={() => window.location.reload()}>Retry</Button>
           </div>
         </CardContent>
       </Card>
@@ -220,7 +224,7 @@ const ProfileTab: React.FC = () => {
         </CardHeader>
         <CardContent>
           <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6 p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-100">
-            <div 
+            <div
               className={`relative cursor-pointer transition-all duration-200 ${
                 isDragOver ? 'ring-2 ring-blue-500 ring-offset-2' : ''
               }`}
@@ -248,12 +252,14 @@ const ProfileTab: React.FC = () => {
               ) : (
                 <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center hover:from-blue-600 hover:to-purple-700 transition-all duration-200 border-4 border-white shadow-lg">
                   <span className="text-white text-2xl font-bold">
-                    {user?.full_name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || 'U'}
+                    {user?.full_name?.charAt(0)?.toUpperCase() ||
+                      user?.email?.charAt(0)?.toUpperCase() ||
+                      'U'}
                   </span>
                 </div>
               )}
             </div>
-            
+
             <div className="flex-1">
               <div className="mb-4">
                 <h3 className="text-xl font-bold text-gray-900">
@@ -273,7 +279,7 @@ const ProfileTab: React.FC = () => {
                   )}
                 </div>
               </div>
-              
+
               <input
                 ref={fileInputRef}
                 type="file"
@@ -281,10 +287,10 @@ const ProfileTab: React.FC = () => {
                 onChange={handleFileSelect}
                 className="hidden"
               />
-              
-              <Button 
-                variant="outline" 
-                size="sm" 
+
+              <Button
+                variant="outline"
+                size="sm"
                 className="cursor-pointer bg-white hover:bg-gray-50"
                 disabled={uploadAvatar.isPending}
                 onClick={() => fileInputRef.current?.click()}
@@ -292,15 +298,13 @@ const ProfileTab: React.FC = () => {
                 <Upload className="w-4 h-4 mr-2" />
                 {uploadAvatar.isPending ? 'Uploading...' : 'Upload Image'}
               </Button>
-              
+
               <p className="text-sm text-gray-500 mt-1">
                 JPG, PNG or WebP. Max 5MB. Drag & drop or click to select.
               </p>
-              
+
               {uploadAvatar.error && (
-                <p className="text-sm text-red-600 mt-1">
-                  {getErrorMessage(uploadAvatar.error)}
-                </p>
+                <p className="text-sm text-red-600 mt-1">{getErrorMessage(uploadAvatar.error)}</p>
               )}
             </div>
           </div>
@@ -323,7 +327,10 @@ const ProfileTab: React.FC = () => {
             {/* Editable Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="full_name" className="flex items-center text-sm font-medium text-gray-700">
+                <Label
+                  htmlFor="full_name"
+                  className="flex items-center text-sm font-medium text-gray-700"
+                >
                   <User className="w-4 h-4 mr-2 text-gray-500" />
                   Full Name
                 </Label>
@@ -341,7 +348,10 @@ const ProfileTab: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="username" className="flex items-center text-sm font-medium text-gray-700">
+                <Label
+                  htmlFor="username"
+                  className="flex items-center text-sm font-medium text-gray-700"
+                >
                   <AtSign className="w-4 h-4 mr-2 text-gray-500" />
                   Username
                 </Label>
@@ -358,7 +368,10 @@ const ProfileTab: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="company" className="flex items-center text-sm font-medium text-gray-700">
+                <Label
+                  htmlFor="company"
+                  className="flex items-center text-sm font-medium text-gray-700"
+                >
                   <Building className="w-4 h-4 mr-2 text-gray-500" />
                   Company
                 </Label>
@@ -370,13 +383,14 @@ const ProfileTab: React.FC = () => {
                     className="px-3 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
-                {errors.company && (
-                  <p className="text-sm text-red-600">{errors.company.message}</p>
-                )}
+                {errors.company && <p className="text-sm text-red-600">{errors.company.message}</p>}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="bio" className="flex items-center text-sm font-medium text-gray-700">
+                <Label
+                  htmlFor="bio"
+                  className="flex items-center text-sm font-medium text-gray-700"
+                >
                   <User className="w-4 h-4 mr-2 text-gray-500" />
                   Bio
                 </Label>
@@ -389,14 +403,15 @@ const ProfileTab: React.FC = () => {
                     className="flex w-full rounded-md border border-input bg-background py-2 px-3 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 resize-none"
                   />
                 </div>
-                {errors.bio && (
-                  <p className="text-sm text-red-600">{errors.bio.message}</p>
-                )}
+                {errors.bio && <p className="text-sm text-red-600">{errors.bio.message}</p>}
                 <p className="text-xs text-gray-500">Share a brief description about yourself</p>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="website" className="flex items-center text-sm font-medium text-gray-700">
+                <Label
+                  htmlFor="website"
+                  className="flex items-center text-sm font-medium text-gray-700"
+                >
                   <Globe className="w-4 h-4 mr-2 text-gray-500" />
                   Website
                 </Label>
@@ -408,14 +423,15 @@ const ProfileTab: React.FC = () => {
                     className="px-3 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
-                {errors.website && (
-                  <p className="text-sm text-red-600">{errors.website.message}</p>
-                )}
+                {errors.website && <p className="text-sm text-red-600">{errors.website.message}</p>}
                 <p className="text-xs text-gray-500">Your personal or company website</p>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="location" className="flex items-center text-sm font-medium text-gray-700">
+                <Label
+                  htmlFor="location"
+                  className="flex items-center text-sm font-medium text-gray-700"
+                >
                   <Globe className="w-4 h-4 mr-2 text-gray-500" />
                   Location
                 </Label>
@@ -465,9 +481,7 @@ const ProfileTab: React.FC = () => {
             <Shield className="w-5 h-5 mr-2 text-blue-600" />
             Account Information
           </CardTitle>
-          <CardDescription>
-            View your account details and security information
-          </CardDescription>
+          <CardDescription>View your account details and security information</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -479,10 +493,10 @@ const ProfileTab: React.FC = () => {
                     Email Address
                   </Label>
                   <div className="flex items-center space-x-2">
-                    <Input 
-                      value={user?.email || ''} 
-                      disabled 
-                      className="px-3 bg-gray-100 border-gray-200 text-gray-700" 
+                    <Input
+                      value={user?.email || ''}
+                      disabled
+                      className="px-3 bg-gray-100 border-gray-200 text-gray-700"
                     />
                     {user?.email_verified && (
                       <div className="flex items-center text-green-600">
@@ -490,7 +504,9 @@ const ProfileTab: React.FC = () => {
                       </div>
                     )}
                   </div>
-                  <p className="text-xs text-gray-500">Contact support to change your email address</p>
+                  <p className="text-xs text-gray-500">
+                    Contact support to change your email address
+                  </p>
                 </div>
               </div>
 
@@ -500,10 +516,10 @@ const ProfileTab: React.FC = () => {
                     <User className="w-4 h-4 mr-2 text-gray-500" />
                     User ID
                   </Label>
-                  <Input 
-                    value={user?.id || ''} 
-                    disabled 
-                    className="font-mono text-xs px-3 bg-gray-100 border-gray-200 text-gray-700" 
+                  <Input
+                    value={user?.id || ''}
+                    disabled
+                    className="font-mono text-xs px-3 bg-gray-100 border-gray-200 text-gray-700"
                   />
                   <p className="text-xs text-gray-500">Your unique account identifier</p>
                 </div>
@@ -517,10 +533,10 @@ const ProfileTab: React.FC = () => {
                     <Shield className="w-4 h-4 mr-2 text-gray-500" />
                     Account Role
                   </Label>
-                  <Input 
-                    value={user?.user_role === 'admin' ? 'Administrator' : 'User'} 
-                    disabled 
-                    className="capitalize px-3 bg-gray-100 border-gray-200 text-gray-700" 
+                  <Input
+                    value={user?.user_role === 'admin' ? 'Administrator' : 'User'}
+                    disabled
+                    className="capitalize px-3 bg-gray-100 border-gray-200 text-gray-700"
                   />
                   <p className="text-xs text-gray-500">Contact support to change your role</p>
                 </div>
@@ -533,12 +549,20 @@ const ProfileTab: React.FC = () => {
                     Current Plan
                   </Label>
                   <div className="flex items-center space-x-2">
-                    <Input 
-                      value={user?.subscription_tier === 'free' ? 'Beta (Free)' : user?.subscription_tier?.toUpperCase() || 'Beta'} 
-                      disabled 
-                      className="capitalize px-3 bg-white border-blue-200 text-blue-700 font-medium flex-1" 
+                    <Input
+                      value={
+                        user?.subscription_tier === 'free'
+                          ? 'Beta (Free)'
+                          : user?.subscription_tier?.toUpperCase() || 'Beta'
+                      }
+                      disabled
+                      className="capitalize px-3 bg-white border-blue-200 text-blue-700 font-medium flex-1"
                     />
-                    <Button variant="outline" size="sm" className="border-blue-300 text-blue-600 hover:bg-blue-50">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="border-blue-300 text-blue-600 hover:bg-blue-50"
+                    >
                       Upgrade
                     </Button>
                   </div>
@@ -552,8 +576,8 @@ const ProfileTab: React.FC = () => {
                     <Calendar className="w-4 h-4 mr-2 text-gray-500" />
                     Member Since
                   </Label>
-                  <Input 
-                    value={user?.created_at ? formatDate(user.created_at) : ''} 
+                  <Input
+                    value={user?.created_at ? formatDate(user.created_at) : ''}
                     disabled
                     className="px-3 bg-gray-100 border-gray-200 text-gray-700"
                   />
@@ -592,7 +616,9 @@ const ProfileTab: React.FC = () => {
             <CheckCircle className="w-5 h-5 text-green-600 mr-3 flex-shrink-0" />
             <div>
               <p className="text-sm font-medium text-green-800">Profile Updated</p>
-              <p className="text-sm text-green-700">Your profile information has been saved successfully</p>
+              <p className="text-sm text-green-700">
+                Your profile information has been saved successfully
+              </p>
             </div>
           </motion.div>
         )}

@@ -7,8 +7,8 @@ import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import React from 'react';
 
+import Button from '@/shared/components/forms/atoms/Button';
 import { Badge } from '@/shared/components/ui/badge';
-import { Button } from '@/shared/components/ui/button';
 import type { Job } from '@/types/api-types';
 
 interface JobDetailHeaderProps {
@@ -18,19 +18,22 @@ interface JobDetailHeaderProps {
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'completed': return 'success';
-    case 'failed': return 'destructive';
-    case 'running': return 'default';
-    case 'pending': return 'secondary';
-    case 'cancelled': return 'outline';
-    default: return 'secondary';
+    case 'completed':
+      return 'success';
+    case 'failed':
+      return 'destructive';
+    case 'running':
+      return 'default';
+    case 'pending':
+      return 'secondary';
+    case 'cancelled':
+      return 'outline';
+    default:
+      return 'secondary';
   }
 };
 
-const JobDetailHeader: React.FC<JobDetailHeaderProps> = ({
-  job,
-  onBack,
-}) => {
+const JobDetailHeader: React.FC<JobDetailHeaderProps> = ({ job, onBack }) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -54,9 +57,7 @@ const JobDetailHeader: React.FC<JobDetailHeaderProps> = ({
 
           <div>
             <div className="flex items-center space-x-3">
-              <h1 className="text-2xl font-bold text-gray-900">
-                {job.name || `${job.type} Job`}
-              </h1>
+              <h1 className="text-2xl font-bold text-gray-900">{job.name || `${job.type} Job`}</h1>
               <Badge
                 variant={getStatusColor(job.status)}
                 showIcon

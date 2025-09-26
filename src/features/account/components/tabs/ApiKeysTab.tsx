@@ -4,7 +4,17 @@
  */
 
 import { motion } from 'framer-motion';
-import { Key, Plus, Copy, Eye, EyeOff, Trash2, AlertCircle, ExternalLink, Crown } from 'lucide-react';
+import {
+  Key,
+  Plus,
+  Copy,
+  Eye,
+  EyeOff,
+  Trash2,
+  AlertCircle,
+  ExternalLink,
+  Crown,
+} from 'lucide-react';
 import React, { useState } from 'react';
 
 import { ParscadeCard } from '@/shared/components/brand';
@@ -16,7 +26,6 @@ import FeatureGate from '@/shared/components/layout/FeatureGate';
  */
 const ApiKeysTab: React.FC = () => {
   const [visibleKeys, setVisibleKeys] = useState<Set<string>>(new Set());
-  const [showCreateModal, setShowCreateModal] = useState(false);
 
   const apiKeys = [
     {
@@ -52,7 +61,11 @@ const ApiKeysTab: React.FC = () => {
     { label: 'Total Requests', value: '12,847', change: '+5.2%' },
     { label: 'This Month', value: '2,341', change: '+12.1%' },
     { label: 'Rate Limit', value: '1000/hour', change: null },
-    { label: 'Active Keys', value: apiKeys.filter(k => k.status === 'active').length.toString(), change: null },
+    {
+      label: 'Active Keys',
+      value: apiKeys.filter(k => k.status === 'active').length.toString(),
+      change: null,
+    },
   ];
 
   const toggleKeyVisibility = (keyId: string) => {
@@ -98,12 +111,10 @@ const ApiKeysTab: React.FC = () => {
               <Crown className="w-8 h-8 text-amber-500 mr-3" />
               <Key className="w-16 h-16 text-blue-600" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              API Access - Pro Feature
-            </h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">API Access - Pro Feature</h2>
             <p className="text-gray-600 mb-8 text-lg">
-              Integrate Parscade with your applications using our powerful REST API.
-              Generate API keys, manage permissions, and build custom workflows.
+              Integrate Parscade with your applications using our powerful REST API. Generate API
+              keys, manage permissions, and build custom workflows.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
@@ -138,10 +149,7 @@ const ApiKeysTab: React.FC = () => {
             </p>
           </div>
           <div className="flex space-x-3">
-            <CustomButton
-              variant="outline"
-              leftIcon={<ExternalLink className="w-4 h-4" />}
-            >
+            <CustomButton variant="outline" leftIcon={<ExternalLink className="w-4 h-4" />}>
               View Docs
             </CustomButton>
             <CustomButton
@@ -161,7 +169,7 @@ const ApiKeysTab: React.FC = () => {
           transition={{ duration: 0.5 }}
           className="grid grid-cols-1 md:grid-cols-4 gap-6"
         >
-          {usageStats.map((stat, index) => (
+          {usageStats.map((stat) => (
             <ParscadeCard key={stat.label} className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -169,9 +177,7 @@ const ApiKeysTab: React.FC = () => {
                   <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
                 </div>
                 {stat.change && (
-                  <span className="text-sm font-medium text-green-600">
-                    {stat.change}
-                  </span>
+                  <span className="text-sm font-medium text-green-600">{stat.change}</span>
                 )}
               </div>
             </ParscadeCard>
@@ -187,18 +193,20 @@ const ApiKeysTab: React.FC = () => {
         >
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Your API Keys</h3>
 
-          {apiKeys.map((apiKey, index) => (
+          {apiKeys.map((apiKey) => (
             <ParscadeCard key={apiKey.id} className="p-6">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <div className="flex items-center space-x-3 mb-3">
                     <Key className="w-5 h-5 text-gray-600" />
                     <h4 className="text-lg font-semibold text-gray-900">{apiKey.name}</h4>
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      apiKey.status === 'active'
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-gray-100 text-gray-800'
-                    }`}>
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        apiKey.status === 'active'
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-gray-100 text-gray-800'
+                      }`}
+                    >
                       {apiKey.status}
                     </span>
                   </div>
@@ -233,7 +241,7 @@ const ApiKeysTab: React.FC = () => {
                   {/* Permissions */}
                   <div className="flex items-center space-x-2 mb-3">
                     <span className="text-sm font-medium text-gray-600">Permissions:</span>
-                    {apiKey.permissions.map((permission) => (
+                    {apiKey.permissions.map(permission => (
                       <span
                         key={permission}
                         className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getPermissionColor(permission)}`}
@@ -297,22 +305,16 @@ const ApiKeysTab: React.FC = () => {
           <ParscadeCard className="p-8 text-center bg-gradient-to-br from-blue-50 to-purple-50">
             <div className="max-w-md mx-auto">
               <Key className="w-16 h-16 text-blue-600 mx-auto mb-4" />
-              <h3 className="text-xl font-bold text-gray-900 mb-2">
-                Ready to Build?
-              </h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Ready to Build?</h3>
               <p className="text-gray-600 mb-6">
-                Check out our comprehensive API documentation and start integrating Parscade into your workflow
+                Check out our comprehensive API documentation and start integrating Parscade into
+                your workflow
               </p>
               <div className="flex space-x-3 justify-center">
-                <CustomButton
-                  variant="primary"
-                  leftIcon={<ExternalLink className="w-4 h-4" />}
-                >
+                <CustomButton variant="primary" leftIcon={<ExternalLink className="w-4 h-4" />}>
                   API Documentation
                 </CustomButton>
-                <CustomButton variant="outline">
-                  View Examples
-                </CustomButton>
+                <CustomButton variant="outline">View Examples</CustomButton>
               </div>
             </div>
           </ParscadeCard>

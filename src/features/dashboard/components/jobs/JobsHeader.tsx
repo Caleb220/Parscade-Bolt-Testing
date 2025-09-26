@@ -12,12 +12,12 @@ import {
   Clock,
   CheckCircle,
   XCircle,
-  AlertTriangle
+  AlertTriangle,
 } from 'lucide-react';
 import React from 'react';
 
 import { ParscadeCard } from '@/shared/components/brand';
-import { Button } from '@/shared/components/ui/button';
+import Button from '@/shared/components/forms/atoms/Button';
 import type { Job } from '@/types/api-types';
 
 interface JobsHeaderProps {
@@ -43,12 +43,12 @@ const StatCard: React.FC<StatCardProps> = React.memo(({ icon, value, label, colo
     transition={{ duration: 0.5, delay }}
   >
     <ParscadeCard className="p-6 text-center hover:shadow-lg transition-shadow">
-      <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${color} mx-auto mb-4 flex items-center justify-center`}>
+      <div
+        className={`w-12 h-12 rounded-lg bg-gradient-to-br ${color} mx-auto mb-4 flex items-center justify-center`}
+      >
         {icon}
       </div>
-      <div className="text-2xl font-bold text-gray-900 mb-1">
-        {value.toLocaleString()}
-      </div>
+      <div className="text-2xl font-bold text-gray-900 mb-1">{value.toLocaleString()}</div>
       <div className="text-sm text-gray-500">{label}</div>
     </ParscadeCard>
   </motion.div>
@@ -102,11 +102,7 @@ const JobsHeader: React.FC<JobsHeaderProps> = ({
           >
             Refresh
           </Button>
-          <Button
-            leftIcon={<Plus className="w-4 h-4" />}
-            onClick={onCreateJob}
-            glow
-          >
+          <Button leftIcon={<Plus className="w-4 h-4" />} onClick={onCreateJob} glow>
             New Job
           </Button>
         </div>

@@ -11,29 +11,33 @@ import { Loader2 } from 'lucide-react';
 import React, { forwardRef } from 'react';
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden",
+  'inline-flex items-center justify-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden',
   {
     variants: {
       variant: {
-        primary: "bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white shadow-parscade hover:shadow-parscade-lg focus:ring-blue-500",
-        secondary: "bg-gradient-to-r from-slate-100 to-slate-200 hover:from-slate-200 hover:to-slate-300 text-slate-800 shadow-sm hover:shadow-md focus:ring-slate-500",
-        accent: "bg-gradient-to-r from-blue-500 to-emerald-500 hover:from-blue-600 hover:to-emerald-600 text-white shadow-parscade hover:shadow-parscade-lg focus:ring-blue-500",
-        outline: "border border-blue-200 bg-white text-blue-700 hover:bg-blue-50 hover:border-blue-300 shadow-sm hover:shadow-parscade focus:ring-blue-500",
-        ghost: "text-slate-700 hover:bg-blue-50 hover:text-blue-700 focus:ring-blue-500",
-        danger: "bg-red-600 text-white hover:bg-red-700 shadow-sm focus:ring-red-500",
-        link: "text-blue-600 underline-offset-4 hover:underline focus:ring-blue-500",
+        primary:
+          'bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white shadow-parscade hover:shadow-parscade-lg focus:ring-blue-500',
+        secondary:
+          'bg-gradient-to-r from-slate-100 to-slate-200 hover:from-slate-200 hover:to-slate-300 text-slate-800 shadow-sm hover:shadow-md focus:ring-slate-500',
+        accent:
+          'bg-gradient-to-r from-blue-500 to-emerald-500 hover:from-blue-600 hover:to-emerald-600 text-white shadow-parscade hover:shadow-parscade-lg focus:ring-blue-500',
+        outline:
+          'border border-blue-200 bg-white text-blue-700 hover:bg-blue-50 hover:border-blue-300 shadow-sm hover:shadow-parscade focus:ring-blue-500',
+        ghost: 'text-slate-700 hover:bg-blue-50 hover:text-blue-700 focus:ring-blue-500',
+        danger: 'bg-red-600 text-white hover:bg-red-700 shadow-sm focus:ring-red-500',
+        link: 'text-blue-600 underline-offset-4 hover:underline focus:ring-blue-500',
       },
       size: {
-        sm: "px-3 py-2 text-sm rounded-lg min-h-[36px]",
-        md: "px-4 py-2.5 text-sm rounded-lg min-h-[40px]",
-        lg: "px-6 py-3 text-base rounded-xl min-h-[44px]",
-        xl: "px-8 py-4 text-lg rounded-xl min-h-[52px]",
-        icon: "h-10 w-10 rounded-lg",
+        sm: 'px-3 py-2 text-sm rounded-lg min-h-[36px]',
+        md: 'px-4 py-2.5 text-sm rounded-lg min-h-[40px]',
+        lg: 'px-6 py-3 text-base rounded-xl min-h-[44px]',
+        xl: 'px-8 py-4 text-lg rounded-xl min-h-[52px]',
+        icon: 'h-10 w-10 rounded-lg',
       },
     },
     defaultVariants: {
-      variant: "primary",
-      size: "md",
+      variant: 'primary',
+      size: 'md',
     },
   }
 );
@@ -60,22 +64,25 @@ export interface ButtonProps
 }
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({
-    className,
-    variant,
-    size,
-    asChild = false,
-    isLoading = false,
-    leftIcon,
-    rightIcon,
-    fullWidth = false,
-    glow = false,
-    noAnimation = false,
-    as: Component,
-    children,
-    disabled,
-    ...props
-  }, ref) => {
+  (
+    {
+      className,
+      variant,
+      size,
+      asChild = false,
+      isLoading = false,
+      leftIcon,
+      rightIcon,
+      fullWidth = false,
+      glow = false,
+      noAnimation = false,
+      as: Component,
+      children,
+      disabled,
+      ...props
+    },
+    ref
+  ) => {
     const isDisabled = disabled || isLoading;
 
     // Add glow effect for primary variant
@@ -87,7 +94,9 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       fullWidth ? 'w-full' : '',
       glowClasses,
       className,
-    ].filter(Boolean).join(' ');
+    ]
+      .filter(Boolean)
+      .join(' ');
 
     // Content with loading state and icons
     const content = (
@@ -110,11 +119,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     // Use Radix Slot for asChild pattern
     if (asChild) {
       return (
-        <Slot
-          className={classes}
-          ref={ref}
-          {...props}
-        >
+        <Slot className={classes} ref={ref} {...props}>
           {children}
         </Slot>
       );
@@ -123,12 +128,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     // Use custom component if specified
     if (Component) {
       return (
-        <Component
-          ref={ref}
-          className={classes}
-          disabled={isDisabled}
-          {...props}
-        >
+        <Component ref={ref} className={classes} disabled={isDisabled} {...props}>
           {content}
         </Component>
       );
@@ -137,12 +137,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     // Default button with motion animations
     if (noAnimation) {
       return (
-        <button
-          ref={ref}
-          className={classes}
-          disabled={isDisabled}
-          {...props}
-        >
+        <button ref={ref} className={classes} disabled={isDisabled} {...props}>
           {content}
         </button>
       );
@@ -153,11 +148,15 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         className={classes}
         disabled={isDisabled}
-        whileHover={!isDisabled ? {
-          scale: 1.02,
-          y: -1,
-          transition: { duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }
-        } : {}}
+        whileHover={
+          !isDisabled
+            ? {
+                scale: 1.02,
+                y: -1,
+                transition: { duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] },
+              }
+            : {}
+        }
         whileTap={!isDisabled ? { scale: 0.98 } : {}}
         {...props}
       >
@@ -167,7 +166,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   }
 );
 
-Button.displayName = "Button";
+Button.displayName = 'Button';
 
 export { Button, buttonVariants };
 export default Button;

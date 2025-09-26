@@ -8,11 +8,15 @@ import type { paths, Document } from '@/types/api-types';
 import { apiClient } from '../client';
 
 // Extract exact types from OpenAPI paths
-type SignedUploadRequest = paths['/v1/uploads/sign']['post']['requestBody']['content']['application/json'];
-type SignedUploadResponse = paths['/v1/uploads/sign']['post']['responses']['200']['content']['application/json'];
+type SignedUploadRequest =
+  paths['/v1/uploads/sign']['post']['requestBody']['content']['application/json'];
+type SignedUploadResponse =
+  paths['/v1/uploads/sign']['post']['responses']['200']['content']['application/json'];
 
-type CompleteUploadRequest = paths['/v1/uploads/{storageKey}/complete']['post']['requestBody']['content']['application/json'];
-type CompleteUploadResponse = paths['/v1/uploads/{storageKey}/complete']['post']['responses']['201']['content']['application/json'];
+type CompleteUploadRequest =
+  paths['/v1/uploads/{storageKey}/complete']['post']['requestBody']['content']['application/json'];
+type CompleteUploadResponse =
+  paths['/v1/uploads/{storageKey}/complete']['post']['responses']['201']['content']['application/json'];
 
 /**
  * File upload endpoints

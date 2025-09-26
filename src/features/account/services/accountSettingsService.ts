@@ -3,7 +3,8 @@ import { z } from 'zod';
 import { accountApi } from '@/lib/api';
 import type {
   AccountSettings,
-  AccountSettingsUpdate} from '@/shared/schemas/account/accountSettings';
+  AccountSettingsUpdate,
+} from '@/shared/schemas/account/accountSettings';
 import {
   accountSettingsSchema,
   accountSettingsUpdateSchema,
@@ -15,7 +16,6 @@ import {
 } from '@/shared/schemas/account/accountSettings';
 import { optionalIsoDateTimeSchema } from '@/shared/schemas/common';
 import { logger } from '@/shared/services/logger';
-
 
 const supabaseTimestampSchema = optionalIsoDateTimeSchema.nullish();
 
@@ -33,10 +33,9 @@ const accountSettingsRowSchema = z
 
 type AccountSettingsRow = z.infer<typeof accountSettingsRowSchema>;
 
-
 export const fetchOrCreateAccountSettings = async (
   userId: string,
-  seed?: AccountSettingsUpdate,
+  seed?: AccountSettingsUpdate
 ): Promise<AccountSettings> => {
   try {
     // Try to fetch from API Gateway first
@@ -44,9 +43,12 @@ export const fetchOrCreateAccountSettings = async (
     logger.debug('Found existing account settings', {
       context: { feature: 'account-settings', action: 'fetchSettings', userId },
     });
-    
+
     // Convert API profile to AccountSettings format
-    const defaults = createDefaultAccountSettings(userId, seed as Partial<AccountSettings> | undefined);
+    const defaults = createDefaultAccountSettings(
+      userId,
+      seed as Partial<AccountSettings> | undefined
+    );
     return {
       ...defaults,
       profile: {
@@ -60,9 +62,12 @@ export const fetchOrCreateAccountSettings = async (
     logger.info('Creating default account settings for new user', {
       context: { feature: 'account-settings', action: 'createDefaults', userId },
     });
-    
+
     const sanitizedSeed = seed ? accountSettingsUpdateSchema.parse(seed) : undefined;
-    const defaults = createDefaultAccountSettings(userId, sanitizedSeed as Partial<AccountSettings> | undefined);
+    const defaults = createDefaultAccountSettings(
+      userId,
+      sanitizedSeed as Partial<AccountSettings> | undefined
+    );
     return defaults;
   }
 };
@@ -79,7 +84,7 @@ type SectionPayloadMap = { [K in keyof SectionSchemaMap]: z.infer<SectionSchemaM
 
 export const updateAccountSettings = async (
   userId: string,
-  updates: AccountSettingsUpdate,
+  updates: AccountSettingsUpdate
 ): Promise<AccountSettings> => {
   if (!updates || Object.keys(updates).length === 0) {
     return fetchOrCreateAccountSettings(userId);
@@ -92,7 +97,7 @@ export const updateAccountSettings = async (
         fullName: updates.profile.fullName,
         timezone: updates.profile.timezone,
       });
-      
+
       // Merge with existing settings
       const currentSettings = await fetchOrCreateAccountSettings(userId);
       return {
@@ -120,19 +125,13 @@ export const updateAccountSettings = async (
 export const updateAccountSettingsSection = async <T extends keyof SectionSchemaMap>(
   userId: string,
   section: T,
-  value: SectionPayloadMap[T],
+  value: SectionPayloadMap[T]
 ): Promise<AccountSettings> => {
   const schema = sectionSchemaMap[section];
   const sanitizedValue = schema.parse(value);
-  const updates = accountSettingsUpdateSchema.parse({ [section]: sanitizedValue } as AccountSettingsUpdate);
+  const updates = accountSettingsUpdateSchema.parse({
+    [section]: sanitizedValue,
+  } as AccountSettingsUpdate);
 
   return updateAccountSettings(userId, updates);
 };
-
-
-
-
-
-
-
-

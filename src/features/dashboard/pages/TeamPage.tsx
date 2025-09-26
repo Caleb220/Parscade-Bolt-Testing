@@ -69,7 +69,11 @@ const TeamPage: React.FC = () => {
   });
 
   const getInitials = (name: string) => {
-    return name.split(' ').map(n => n[0]).join('').toUpperCase();
+    return name
+      .split(' ')
+      .map(n => n[0])
+      .join('')
+      .toUpperCase();
   };
 
   const getRoleColor = (role: string) => {
@@ -100,9 +104,7 @@ const TeamPage: React.FC = () => {
           <div className="min-h-screen flex items-center justify-center">
             <ParscadeCard className="p-12 text-center max-w-md">
               <Shield className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h2 className="text-xl font-bold text-gray-900 mb-2">
-                Admin Access Required
-              </h2>
+              <h2 className="text-xl font-bold text-gray-900 mb-2">Admin Access Required</h2>
               <p className="text-gray-600">
                 You need administrator privileges to access team management.
               </p>
@@ -120,15 +122,10 @@ const TeamPage: React.FC = () => {
           >
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-2">Team Management</h1>
-              <p className="text-gray-600">
-                Manage team members, roles, and permissions
-              </p>
+              <p className="text-gray-600">Manage team members, roles, and permissions</p>
             </div>
 
-            <CustomButton
-              variant="primary"
-              leftIcon={<UserPlus className="w-4 h-4" />}
-            >
+            <CustomButton variant="primary" leftIcon={<UserPlus className="w-4 h-4" />}>
               Invite Member
             </CustomButton>
           </motion.div>
@@ -207,7 +204,7 @@ const TeamPage: React.FC = () => {
                 { key: 'all', label: 'All Members' },
                 { key: 'admin', label: 'Administrators' },
                 { key: 'user', label: 'Users' },
-              ].map((tab) => (
+              ].map(tab => (
                 <button
                   key={tab.key}
                   onClick={() => setSelectedRole(tab.key as typeof selectedRole)}
@@ -236,22 +233,22 @@ const TeamPage: React.FC = () => {
                   <div className="flex items-center space-x-4">
                     {/* Avatar */}
                     <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                      <span className="text-white font-semibold">
-                        {getInitials(member.name)}
-                      </span>
+                      <span className="text-white font-semibold">{getInitials(member.name)}</span>
                     </div>
 
                     {/* Member Info */}
                     <div>
                       <div className="flex items-center space-x-3 mb-1">
-                        <h3 className="text-lg font-semibold text-gray-900">
-                          {member.name}
-                        </h3>
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleColor(member.role)}`}>
+                        <h3 className="text-lg font-semibold text-gray-900">{member.name}</h3>
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleColor(member.role)}`}
+                        >
                           {member.role === 'admin' && <Crown className="w-3 h-3 mr-1" />}
                           {member.role}
                         </span>
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(member.status)}`}>
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(member.status)}`}
+                        >
                           {member.status}
                         </span>
                       </div>
@@ -301,10 +298,7 @@ const TeamPage: React.FC = () => {
                       Invite colleagues to collaborate on documents and projects
                     </p>
                   </div>
-                  <CustomButton
-                    variant="primary"
-                    leftIcon={<Mail className="w-4 h-4" />}
-                  >
+                  <CustomButton variant="primary" leftIcon={<Mail className="w-4 h-4" />}>
                     Send Invitation
                   </CustomButton>
                 </div>

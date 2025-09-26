@@ -11,7 +11,7 @@ import type {
   DocumentQueryParams,
   DocumentUploadResponse,
   DocumentDownloadResponse,
-  PaginatedResponse
+  PaginatedResponse,
 } from '@/types/api-types';
 
 import { apiClient } from '../client';
@@ -56,7 +56,6 @@ export const documentsApi = {
       };
 
       return await uploadsApi.completeUpload(signedResponse.storage_key, completeRequest);
-
     } catch (error) {
       // Fallback to direct upload if signed URL approach fails
       console.warn('Signed URL upload failed, falling back to direct upload:', error);

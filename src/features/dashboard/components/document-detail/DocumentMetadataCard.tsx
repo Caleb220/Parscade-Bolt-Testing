@@ -7,7 +7,7 @@ import { Database, Copy, CheckCircle } from 'lucide-react';
 import React from 'react';
 
 import { ParscadeCard } from '@/shared/components/brand';
-import { Button } from '@/shared/components/ui/button';
+import Button from '@/shared/components/forms/atoms/Button';
 import { useClipboard } from '@/shared/hooks/useClipboard';
 import type { Document } from '@/types/api-types';
 
@@ -61,9 +61,7 @@ const DocumentMetadataCard: React.FC<DocumentMetadataCardProps> = ({ document })
       ) : (
         <div className="text-center py-6">
           <Database className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-          <p className="text-sm text-gray-500">
-            No metadata available
-          </p>
+          <p className="text-sm text-gray-500">No metadata available</p>
         </div>
       )}
     </ParscadeCard>

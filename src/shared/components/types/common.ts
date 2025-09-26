@@ -3,7 +3,12 @@
  * Shared types for component props and refs
  */
 
-import type { ComponentPropsWithRef, ElementType, ForwardRefExoticComponent, RefAttributes } from 'react';
+import type {
+  ComponentPropsWithRef,
+  ElementType,
+  ForwardRefExoticComponent,
+  RefAttributes,
+} from 'react';
 
 /**
  * Generic component with ref forwarding support
@@ -13,7 +18,7 @@ export type ComponentWithRef<P, T> = ForwardRefExoticComponent<P & RefAttributes
 /**
  * Polymorphic component props for components that can render as different elements
  */
-export type PolymorphicProps<E extends ElementType, P = {}> = P & 
+export type PolymorphicProps<E extends ElementType, P = {}> = P &
   Omit<ComponentPropsWithRef<E>, keyof P> & {
     as?: E;
   };

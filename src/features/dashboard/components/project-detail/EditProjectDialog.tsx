@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 import { Save } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 
-import { Button } from '@/shared/components/ui/button';
+import Button from '@/shared/components/forms/atoms/Button';
 import {
   Dialog,
   DialogContent,
@@ -79,9 +79,7 @@ const EditProjectDialog: React.FC<EditProjectDialogProps> = ({
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>Edit Project</DialogTitle>
-          <DialogDescription>
-            Update the project details and settings.
-          </DialogDescription>
+          <DialogDescription>Update the project details and settings.</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -91,7 +89,7 @@ const EditProjectDialog: React.FC<EditProjectDialogProps> = ({
               id="project-name"
               placeholder="Enter project name"
               value={formData.name}
-              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+              onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
               required
               fullWidth
             />
@@ -103,7 +101,7 @@ const EditProjectDialog: React.FC<EditProjectDialogProps> = ({
               id="project-description"
               placeholder="Enter project description"
               value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+              onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
               rows={3}
             />
@@ -115,19 +113,14 @@ const EditProjectDialog: React.FC<EditProjectDialogProps> = ({
               id="project-url"
               placeholder="https://example.com"
               value={formData.url}
-              onChange={(e) => setFormData(prev => ({ ...prev, url: e.target.value }))}
+              onChange={e => setFormData(prev => ({ ...prev, url: e.target.value }))}
               type="url"
               fullWidth
             />
           </div>
 
           <div className="flex justify-end space-x-3 pt-4 border-t">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleClose}
-              disabled={isLoading}
-            >
+            <Button type="button" variant="outline" onClick={handleClose} disabled={isLoading}>
               Cancel
             </Button>
             <Button

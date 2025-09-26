@@ -27,7 +27,6 @@ import {
   DocumentInfoSidebar,
 } from '../components/document-detail';
 
-
 /**
  * Streamlined Document Detail page
  */
@@ -95,24 +94,27 @@ const DocumentDetailPage: React.FC = () => {
     setShowEditDialog(true);
   }, []);
 
-  const handleEditSubmit = useCallback(async (documentData: any) => {
-    if (!document) return;
+  const handleEditSubmit = useCallback(
+    async (documentData: any) => {
+      if (!document) return;
 
-    try {
-      await updateDocument.mutateAsync({ id: document.id, ...documentData });
-      setShowEditDialog(false);
-      toast({
-        title: 'Document updated',
-        description: 'Document has been updated successfully.',
-      });
-    } catch (error) {
-      toast({
-        title: 'Failed to update document',
-        description: getErrorMessage(error),
-        variant: 'destructive',
-      });
-    }
-  }, [document, updateDocument, toast]);
+      try {
+        await updateDocument.mutateAsync({ id: document.id, ...documentData });
+        setShowEditDialog(false);
+        toast({
+          title: 'Document updated',
+          description: 'Document has been updated successfully.',
+        });
+      } catch (error) {
+        toast({
+          title: 'Failed to update document',
+          description: getErrorMessage(error),
+          variant: 'destructive',
+        });
+      }
+    },
+    [document, updateDocument, toast]
+  );
 
   const handleDelete = useCallback(async () => {
     if (!document) return;
@@ -161,9 +163,7 @@ const DocumentDetailPage: React.FC = () => {
     return (
       <Layout>
         <div className="text-center py-12">
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
-            Document not found
-          </h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Document not found</h2>
           <p className="text-gray-600 mb-4">
             The document you're looking for doesn't exist or you don't have access to it.
           </p>
@@ -178,9 +178,8 @@ const DocumentDetailPage: React.FC = () => {
     );
   }
 
-  const isLoading = updateDocument.isPending ||
-                   deleteDocument.isPending ||
-                   downloadDocument.isPending;
+  const isLoading =
+    updateDocument.isPending || deleteDocument.isPending || downloadDocument.isPending;
 
   return (
     <Layout>
@@ -200,17 +199,11 @@ const DocumentDetailPage: React.FC = () => {
 
             <DocumentStructuredDataCard document={document} />
 
-            <DocumentJobsCard
-              jobs={jobs}
-              isLoading={documentLoading}
-            />
+            <DocumentJobsCard jobs={jobs} isLoading={documentLoading} />
           </div>
 
           {/* Sidebar */}
-          <DocumentInfoSidebar
-            document={document}
-            project={project}
-          />
+          <DocumentInfoSidebar document={document} project={project} />
         </div>
 
         {/* TODO: Add EditDocumentDialog when needed */}

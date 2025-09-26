@@ -42,11 +42,7 @@ const DEFAULT_CONFIGS: Record<string, SecurityConfig> = {
     sanitizeInput: true,
     allowHTML: false,
     maxLength: 2048,
-    blacklistedPatterns: [
-      /javascript:/gi,
-      /data:text\/html/gi,
-      /vbscript:/gi,
-    ],
+    blacklistedPatterns: [/javascript:/gi, /data:text\/html/gi, /vbscript:/gi],
   },
   json: {
     sanitizeInput: true,
@@ -68,10 +64,7 @@ export class ApiSecurity {
   /**
    * Sanitize string input based on security configuration
    */
-  sanitizeString(
-    input: string,
-    type: keyof typeof DEFAULT_CONFIGS = 'text'
-  ): string {
+  sanitizeString(input: string, type: keyof typeof DEFAULT_CONFIGS = 'text'): string {
     const config = DEFAULT_CONFIGS[type];
 
     // Length validation
@@ -190,7 +183,11 @@ export class ApiSecurity {
       for (const [key, value] of Object.entries(obj)) {
         // Sanitize key names to prevent prototype pollution
         const sanitizedKey = this.sanitizeString(key.toString());
-        if (sanitizedKey !== '__proto__' && sanitizedKey !== 'constructor' && sanitizedKey !== 'prototype') {
+        if (
+          sanitizedKey !== '__proto__' &&
+          sanitizedKey !== 'constructor' &&
+          sanitizedKey !== 'prototype'
+        ) {
           sanitized[sanitizedKey] = this.sanitizeObject(value, maxDepth - 1);
         }
       }
@@ -251,7 +248,7 @@ export class ApiSecurity {
       'X-XSS-Protection': '1; mode=block',
       'Referrer-Policy': 'strict-origin-when-cross-origin',
       'Cache-Control': 'no-store, no-cache, must-revalidate, private',
-      'Pragma': 'no-cache',
+      Pragma: 'no-cache',
     };
   }
 

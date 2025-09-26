@@ -35,11 +35,7 @@ export class ApiError extends Error {
   /**
    * Create ApiError from HTTP response
    */
-  static fromResponse(
-    response: Response,
-    errorData: any | null,
-    endpoint?: string
-  ): ApiError {
+  static fromResponse(response: Response, errorData: any | null, endpoint?: string): ApiError {
     const code = errorData?.error || `HTTP_${response.status}`;
     const message = errorData?.message || response.statusText || 'An error occurred';
     const details = errorData?.details;
@@ -95,7 +91,7 @@ export class ApiError extends Error {
         return retryAfter * 1000;
       }
     }
-    
+
     return Math.min(1000 * Math.pow(2, (this.details?.attempt as number) || 0), 8000);
   }
 }
@@ -114,11 +110,11 @@ export const getErrorMessage = (error: unknown): string => {
   if (isApiError(error)) {
     return error.getUserMessage();
   }
-  
+
   if (error instanceof Error) {
     return error.message;
   }
-  
+
   return 'An unexpected error occurred';
 };
 
@@ -129,6 +125,6 @@ export const getRequestId = (error: unknown): string | undefined => {
   if (isApiError(error)) {
     return error.requestId;
   }
-  
+
   return undefined;
 };

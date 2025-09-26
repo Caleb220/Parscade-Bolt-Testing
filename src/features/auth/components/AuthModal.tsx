@@ -10,11 +10,7 @@ interface AuthModalProps {
   initialMode?: 'signin' | 'signup';
 }
 
-const AuthModal: React.FC<AuthModalProps> = ({ 
-  isOpen, 
-  onClose, 
-  initialMode = 'signin' 
-}) => {
+const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'signin' }) => {
   const [mode, setMode] = useState<'signin' | 'signup'>(initialMode);
 
   // Reset mode when modal opens

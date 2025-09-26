@@ -32,23 +32,17 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
     const [showPassword, setShowPassword] = useState(false);
     const inputId = id ?? `password-${Math.random().toString(36).slice(2, 11)}`;
 
-    const baseClasses = 'block w-full pr-12 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed';
+    const baseClasses =
+      'block w-full pr-12 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed';
 
     const variantClasses: Record<NonNullable<PasswordInputProps['variant']>, string> = {
       default: 'border border-gray-300 rounded-md px-3 py-2 bg-white',
       filled: 'border-0 rounded-md px-3 py-2 bg-gray-100 focus:bg-white',
     };
 
-    const errorClasses = error
-      ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
-      : '';
+    const errorClasses = error ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : '';
 
-    const inputClasses = [
-      baseClasses,
-      variantClasses[variant],
-      errorClasses,
-      className,
-    ].join(' ');
+    const inputClasses = [baseClasses, variantClasses[variant], errorClasses, className].join(' ');
 
     const togglePasswordVisibility = (): void => {
       setShowPassword(!showPassword);
@@ -57,14 +51,11 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
     return (
       <div className="w-full">
         {label && (
-          <label
-            htmlFor={inputId}
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
+          <label htmlFor={inputId} className="block text-sm font-medium text-gray-700 mb-1">
             {label}
           </label>
         )}
-        
+
         <div className="relative">
           <input
             ref={ref}
@@ -73,9 +64,10 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
             className={inputClasses}
             value={value}
             onChange={onChange}
+            autoComplete="current-password"
             {...props}
           />
-          
+
           <button
             type="button"
             onClick={togglePasswordVisibility}
@@ -83,30 +75,17 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
             tabIndex={-1}
             aria-label={showPassword ? 'Hide password' : 'Show password'}
           >
-            {showPassword ? (
-              <EyeOff className="h-5 w-5" />
-            ) : (
-              <Eye className="h-5 w-5" />
-            )}
+            {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
           </button>
         </div>
 
-        {error && (
-          <p className="mt-1 text-sm text-red-600">
-            {error}
-          </p>
-        )}
-        
-        {helperText && !error && (
-          <p className="mt-1 text-sm text-gray-500">{helperText}</p>
-        )}
-        
+        {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
+
+        {helperText && !error && <p className="mt-1 text-sm text-gray-500">{helperText}</p>}
+
         {showStrengthMeter && (
           <div className="mt-2">
-            <PasswordStrengthMeter 
-              password={String(value)} 
-              showFeedback={true}
-            />
+            <PasswordStrengthMeter password={String(value)} showFeedback={true} />
           </div>
         )}
       </div>

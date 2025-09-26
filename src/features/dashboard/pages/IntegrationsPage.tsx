@@ -97,16 +97,11 @@ const IntegrationsPage: React.FC = () => {
         >
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Integrations</h1>
-            <p className="text-gray-600">
-              Connect Parscade with your favorite tools and services
-            </p>
+            <p className="text-gray-600">Connect Parscade with your favorite tools and services</p>
           </div>
 
           <FeatureGate requiredTier="pro">
-            <CustomButton
-              variant="primary"
-              leftIcon={<Plus className="w-4 h-4" />}
-            >
+            <CustomButton variant="primary" leftIcon={<Plus className="w-4 h-4" />}>
               Add Custom Integration
             </CustomButton>
           </FeatureGate>
@@ -172,7 +167,7 @@ const IntegrationsPage: React.FC = () => {
               { key: 'all', label: 'All Integrations' },
               { key: 'connected', label: 'Connected' },
               { key: 'available', label: 'Available' },
-            ].map((tab) => (
+            ].map(tab => (
               <button
                 key={tab.key}
                 onClick={() => setFilter(tab.key as typeof filter)}
@@ -294,10 +289,7 @@ const IntegrationsPage: React.FC = () => {
                     Use our REST API to build custom integrations and automate your workflows
                   </p>
                 </div>
-                <CustomButton
-                  variant="outline"
-                  leftIcon={<ExternalLink className="w-4 h-4" />}
-                >
+                <CustomButton variant="outline" leftIcon={<ExternalLink className="w-4 h-4" />}>
                   View Documentation
                 </CustomButton>
               </div>

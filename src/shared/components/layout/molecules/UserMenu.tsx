@@ -44,13 +44,14 @@ const UserMenu: React.FC = () => {
 
   if (!user) return null;
 
-  // Prioritize full_name > username > email prefix
-  const displayName = user.full_name ||
-                     user.username ||
-                     user.user_metadata?.full_name ||
-                     user.user_metadata?.username ||
-                     user.email?.split('@')[0] ||
-                     'User';
+  // Prioritize full_name > username > email prefix, but avoid email display
+  const displayName =
+    user.full_name?.trim() ||
+    user.username?.trim() ||
+    user.user_metadata?.full_name?.trim() ||
+    user.user_metadata?.username?.trim() ||
+    (user.email?.split('@')[0] !== user.email ? user.email?.split('@')[0] : null) ||
+    'User';
 
   const initials = displayName
     .split(' ')
@@ -65,7 +66,7 @@ const UserMenu: React.FC = () => {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
       >
-        {(user.avatar_url || user.user_metadata?.avatar_url) ? (
+        {user.avatar_url || user.user_metadata?.avatar_url ? (
           <img
             src={user.avatar_url || user.user_metadata?.avatar_url}
             alt={displayName}
@@ -76,12 +77,12 @@ const UserMenu: React.FC = () => {
             {initials}
           </div>
         )}
-        <span className="hidden sm:block text-sm font-medium text-gray-700">
-          {displayName}
-        </span>
-        <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
-          isOpen ? 'rotate-180' : ''
-        }`} />
+        <span className="hidden sm:block text-sm font-medium text-gray-700">{displayName}</span>
+        <ChevronDown
+          className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
+            isOpen ? 'rotate-180' : ''
+          }`}
+        />
       </button>
 
       <AnimatePresence>
@@ -96,7 +97,9 @@ const UserMenu: React.FC = () => {
             {/* User Info */}
             <div className="px-4 py-3 border-b border-gray-100">
               <p className="text-sm font-medium text-gray-900">{displayName}</p>
-              <p className="text-sm text-gray-500 truncate">{user.email}</p>
+              {user.email && displayName !== user.email?.split('@')[0] && (
+                <p className="text-sm text-gray-500 truncate">{user.email}</p>
+              )}
             </div>
 
             {/* Menu Items */}

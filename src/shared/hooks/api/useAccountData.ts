@@ -11,20 +11,19 @@ import { integrationsApi } from '@/lib/api/modules/integrations';
 import { notificationsApi } from '@/lib/api/modules/notifications';
 import type { NotificationPreferencesFormData } from '@/lib/validation/account';
 import { useToast } from '@/shared/components/ui/use-toast';
-import type { 
-  UserProfile, 
+import type {
+  UserProfile,
   UpdateProfileRequest,
-  ApiKey, 
-  UserSession, 
+  ApiKey,
+  UserSession,
   SecurityEvent,
   NotificationPreferences,
   NotificationPreferencesUpdate,
   Webhook,
   ConnectedService,
   DataSource,
-  CreateApiKeyRequest
+  CreateApiKeyRequest,
 } from '@/types/api-types';
-
 
 // Query keys
 const QUERY_KEYS = {
@@ -57,10 +56,10 @@ export const useAccount = () => {
 export const useUpdateAccount = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  
+
   return useMutation({
     mutationFn: (data: UpdateProfileRequest) => accountApi.updateProfile(data),
-    onMutate: async (newData) => {
+    onMutate: async newData => {
       // Cancel outgoing refetches
       await queryClient.cancelQueries({ queryKey: QUERY_KEYS.account });
 
@@ -83,16 +82,16 @@ export const useUpdateAccount = () => {
       if (context?.previousData) {
         queryClient.setQueryData(QUERY_KEYS.account, context.previousData);
       }
-      
+
       toast({
         title: 'Update failed',
         description: getErrorMessage(error),
         variant: 'destructive',
       });
     },
-    onSuccess: (updatedProfile) => {
+    onSuccess: updatedProfile => {
       queryClient.setQueryData(QUERY_KEYS.account, updatedProfile);
-      
+
       toast({
         title: 'Profile updated',
         description: 'Your profile has been updated successfully.',
@@ -104,12 +103,12 @@ export const useUpdateAccount = () => {
 export const useUploadAvatar = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  
+
   return useMutation({
     mutationFn: (file: File) => accountApi.uploadAvatar(file),
-    onSuccess: (response) => {
+    onSuccess: response => {
       // Update the cached profile with new avatar URL
-      queryClient.setQueryData<UserProfile>(QUERY_KEYS.account, (old) => {
+      queryClient.setQueryData<UserProfile>(QUERY_KEYS.account, old => {
         if (old) {
           return {
             ...old,
@@ -119,13 +118,13 @@ export const useUploadAvatar = () => {
         }
         return old;
       });
-      
+
       toast({
         title: 'Avatar updated',
         description: 'Your profile picture has been updated successfully.',
       });
     },
-    onError: (error) => {
+    onError: error => {
       toast({
         title: 'Upload failed',
         description: getErrorMessage(error),
@@ -154,18 +153,18 @@ export const useApiKeys = () => {
 export const useCreateApiKey = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  
+
   return useMutation({
     mutationFn: (data: CreateApiKeyRequest) => accountApi.createApiKey(data),
-    onSuccess: (result) => {
+    onSuccess: result => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.apiKeys });
-      
+
       toast({
         title: 'API key created',
         description: `Your new API key "${result.name}" has been created successfully.`,
       });
     },
-    onError: (error) => {
+    onError: error => {
       toast({
         title: 'Creation failed',
         description: getErrorMessage(error),
@@ -178,18 +177,18 @@ export const useCreateApiKey = () => {
 export const useRevokeApiKey = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  
+
   return useMutation({
     mutationFn: (keyId: string) => accountApi.revokeApiKey(keyId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.apiKeys });
-      
+
       toast({
         title: 'API key revoked',
         description: 'The API key has been revoked successfully.',
       });
     },
-    onError: (error) => {
+    onError: error => {
       toast({
         title: 'Revocation failed',
         description: getErrorMessage(error),
@@ -218,18 +217,18 @@ export const useSessions = () => {
 export const useRevokeSession = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  
+
   return useMutation({
     mutationFn: (sessionId: string) => accountApi.revokeSession(sessionId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.sessions });
-      
+
       toast({
         title: 'Session revoked',
         description: 'The session has been revoked successfully.',
       });
     },
-    onError: (error) => {
+    onError: error => {
       toast({
         title: 'Revocation failed',
         description: getErrorMessage(error),
@@ -274,7 +273,7 @@ export const useNotificationPreferences = () => {
 export const useUpdateNotificationPreferences = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  
+
   return useMutation({
     mutationFn: (data: NotificationPreferencesFormData) => {
       // Transform form data to match backend schema
@@ -286,42 +285,44 @@ export const useUpdateNotificationPreferences = () => {
       };
       return notificationsApi.updatePreferences(backendData);
     },
-    onMutate: async (newData) => {
+    onMutate: async newData => {
       await queryClient.cancelQueries({ queryKey: QUERY_KEYS.notificationPreferences });
-      
-      const previousData = queryClient.getQueryData<NotificationPreferences>(QUERY_KEYS.notificationPreferences);
-      
+
+      const previousData = queryClient.getQueryData<NotificationPreferences>(
+        QUERY_KEYS.notificationPreferences
+      );
+
       if (previousData) {
         // Transform form data for optimistic update
         const optimisticData: NotificationPreferences = {
           channels: newData.channels || previousData.channels,
           categories: newData.categories || previousData.categories,
           dnd_settings: newData.dnd_settings || previousData.dnd_settings,
-          webhook_url: newData.channels?.webhook ? (newData.webhook_url || null) : null,
+          webhook_url: newData.channels?.webhook ? newData.webhook_url || null : null,
         };
-        
+
         queryClient.setQueryData<NotificationPreferences>(QUERY_KEYS.notificationPreferences, {
           ...previousData,
           ...optimisticData,
         });
       }
-      
+
       return { previousData };
     },
     onError: (error, newData, context) => {
       if (context?.previousData) {
         queryClient.setQueryData(QUERY_KEYS.notificationPreferences, context.previousData);
       }
-      
+
       toast({
         title: 'Update failed',
         description: getErrorMessage(error),
         variant: 'destructive',
       });
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       queryClient.setQueryData(QUERY_KEYS.notificationPreferences, data);
-      
+
       toast({
         title: 'Preferences updated',
         description: 'Your notification preferences have been saved successfully.',
@@ -342,18 +343,18 @@ export const useWebhooks = () => {
 export const useCreateWebhook = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  
+
   return useMutation({
     mutationFn: (data: CreateWebhookRequest) => integrationsApi.createWebhook(data),
-    onSuccess: (result) => {
+    onSuccess: result => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.webhooks });
-      
+
       toast({
         title: 'Webhook created',
         description: `Your webhook "${result.url}" has been created successfully.`,
       });
     },
-    onError: (error) => {
+    onError: error => {
       toast({
         title: 'Creation failed',
         description: getErrorMessage(error),
@@ -366,18 +367,18 @@ export const useCreateWebhook = () => {
 export const useDeleteWebhook = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  
+
   return useMutation({
     mutationFn: (webhookId: string) => integrationsApi.deleteWebhook(webhookId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.webhooks });
-      
+
       toast({
         title: 'Webhook deleted',
         description: 'The webhook has been deleted successfully.',
       });
     },
-    onError: (error) => {
+    onError: error => {
       toast({
         title: 'Deletion failed',
         description: getErrorMessage(error),
@@ -389,17 +390,17 @@ export const useDeleteWebhook = () => {
 
 export const useTestWebhook = () => {
   const { toast } = useToast();
-  
+
   return useMutation({
     mutationFn: (webhookId: string) => integrationsApi.testWebhook(webhookId),
-    onSuccess: (result) => {
+    onSuccess: result => {
       toast({
         title: 'Test completed',
         description: `Webhook test ${result.status === 200 ? 'successful' : 'failed'} (${result.status})`,
         variant: result.status === 200 ? 'default' : 'destructive',
       });
     },
-    onError: (error) => {
+    onError: error => {
       toast({
         title: 'Test failed',
         description: getErrorMessage(error),
@@ -421,14 +422,14 @@ export const useServices = () => {
 export const useConnectService = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  
+
   return useMutation({
     mutationFn: (serviceId: string) => integrationsApi.connectService(serviceId),
-    onSuccess: (result) => {
+    onSuccess: result => {
       // Redirect to OAuth URL
       window.location.href = result.redirect_url;
     },
-    onError: (error) => {
+    onError: error => {
       toast({
         title: 'Connection failed',
         description: getErrorMessage(error),
@@ -441,18 +442,18 @@ export const useConnectService = () => {
 export const useDisconnectService = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  
+
   return useMutation({
     mutationFn: (serviceId: string) => integrationsApi.disconnectService(serviceId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.services });
-      
+
       toast({
         title: 'Service disconnected',
         description: 'The service has been disconnected successfully.',
       });
     },
-    onError: (error) => {
+    onError: error => {
       toast({
         title: 'Disconnection failed',
         description: getErrorMessage(error),
@@ -474,18 +475,18 @@ export const useDataSources = () => {
 export const useCreateDataSource = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  
+
   return useMutation({
     mutationFn: (data: any) => integrationsApi.createDataSource(data),
-    onSuccess: (result) => {
+    onSuccess: result => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.dataSources });
-      
+
       toast({
         title: 'Data source created',
         description: `Data source "${result.name}" has been created successfully.`,
       });
     },
-    onError: (error) => {
+    onError: error => {
       toast({
         title: 'Creation failed',
         description: getErrorMessage(error),
@@ -498,18 +499,18 @@ export const useCreateDataSource = () => {
 export const useDeleteDataSource = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  
+
   return useMutation({
     mutationFn: (sourceId: string) => integrationsApi.deleteDataSource(sourceId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.dataSources });
-      
+
       toast({
         title: 'Data source deleted',
         description: 'The data source has been deleted successfully.',
       });
     },
-    onError: (error) => {
+    onError: error => {
       toast({
         title: 'Deletion failed',
         description: getErrorMessage(error),
@@ -521,7 +522,7 @@ export const useDeleteDataSource = () => {
 
 export const useTestDataSource = () => {
   const { toast } = useToast();
-  
+
   return useMutation({
     mutationFn: async (sourceId: string) => {
       // Mock implementation - replace with actual API call when available
@@ -535,7 +536,7 @@ export const useTestDataSource = () => {
         variant: result.status === 'success' ? 'default' : 'destructive',
       });
     },
-    onError: (error) => {
+    onError: error => {
       toast({
         title: 'Test failed',
         description: getErrorMessage(error),

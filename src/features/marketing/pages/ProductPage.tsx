@@ -1,13 +1,13 @@
 import { motion } from 'framer-motion';
-import { 
-  FileText, 
-  Zap, 
-  Database, 
-  Send, 
-  ArrowRight, 
+import {
+  FileText,
+  Zap,
+  Database,
+  Send,
+  ArrowRight,
   CheckCircle,
   Code,
-  BarChart3
+  BarChart3,
 } from 'lucide-react';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -26,78 +26,83 @@ const ProductPage: React.FC = () => {
     {
       icon: FileText,
       title: 'Document Ingestion',
-      description: 'Upload documents through our web interface, API, or automated integrations. We support PDFs, Word docs, images, spreadsheets, and more.',
+      description:
+        'Upload documents through our web interface, API, or automated integrations. We support PDFs, Word docs, images, spreadsheets, and more.',
       features: [
         'Drag & drop interface',
         'Bulk upload capabilities',
         'API integration',
         'Automated folder monitoring',
-        'Cloud storage connectors'
-      ]
+        'Cloud storage connectors',
+      ],
     },
     {
       icon: Zap,
       title: 'Intelligent Parsing',
-      description: 'Our AI-powered engine analyzes document structure, extracts text, and identifies key data points with industry-leading accuracy.',
+      description:
+        'Our AI-powered engine analyzes document structure, extracts text, and identifies key data points with industry-leading accuracy.',
       features: [
         'OCR for scanned documents',
         'Table extraction',
         'Form field recognition',
         'Multi-language support',
-        'Custom parsing rules'
-      ]
+        'Custom parsing rules',
+      ],
     },
     {
       icon: Database,
       title: 'Data Structuring',
-      description: 'Transform extracted content into clean, structured formats with customizable schemas and validation rules.',
+      description:
+        'Transform extracted content into clean, structured formats with customizable schemas and validation rules.',
       features: [
         'JSON/XML/CSV output',
         'Custom data schemas',
         'Data validation',
         'Field mapping',
-        'Quality scoring'
-      ]
+        'Quality scoring',
+      ],
     },
     {
       icon: Send,
       title: 'Delivery & Integration',
-      description: 'Seamlessly deliver processed data to your systems through APIs, webhooks, or direct database connections.',
+      description:
+        'Seamlessly deliver processed data to your systems through APIs, webhooks, or direct database connections.',
       features: [
         'RESTful APIs',
         'Real-time webhooks',
         'Database connectors',
         'File exports',
-        'Custom integrations'
-      ]
-    }
+        'Custom integrations',
+      ],
+    },
   ];
 
   const useCases = [
     {
       title: 'Invoice Processing',
-      description: 'Automatically extract vendor information, line items, and totals from invoices.',
+      description:
+        'Automatically extract vendor information, line items, and totals from invoices.',
       accuracy: '99.5%',
-      volume: '10K+/day'
+      volume: '10K+/day',
     },
     {
       title: 'Contract Analysis',
       description: 'Parse legal documents to extract key terms, dates, and obligations.',
       accuracy: '98.8%',
-      volume: '1K+/day'
+      volume: '1K+/day',
     },
     {
       title: 'Form Processing',
       description: 'Digitize paper forms and extract structured data for databases.',
       accuracy: '99.2%',
-      volume: '50K+/day'
+      volume: '50K+/day',
     },
     {
       title: 'Report Extraction',
       description: 'Extract data from financial reports, research papers, and analytics.',
       accuracy: '97.9%',
-      volume: '5K+/day'
-    }
+      volume: '5K+/day',
+    },
   ];
 
   return (
@@ -114,11 +119,13 @@ const ProductPage: React.FC = () => {
             <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
               Next-Generation Document Processing
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
-                {' '}Platform
+                {' '}
+                Platform
               </span>
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-              We're building an intelligent parsing platform that will transform how businesses extract and structure data from documents. Join us in shaping the future.
+              We're building an intelligent parsing platform that will transform how businesses
+              extract and structure data from documents. Join us in shaping the future.
             </p>
           </motion.div>
         </div>
@@ -138,7 +145,8 @@ const ProductPage: React.FC = () => {
               Our Vision: Intelligent Document Processing
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              We're developing a revolutionary four-stage pipeline that will deliver unprecedented accuracy and reliability for document processing.
+              We're developing a revolutionary four-stage pipeline that will deliver unprecedented
+              accuracy and reliability for document processing.
             </p>
           </motion.div>
 
@@ -166,13 +174,11 @@ const ProductPage: React.FC = () => {
                       <h3 className="text-2xl font-bold text-gray-900">{step.title}</h3>
                     </div>
                   </div>
-                  
-                  <p className="text-gray-600 text-lg mb-6 leading-relaxed">
-                    {step.description}
-                  </p>
+
+                  <p className="text-gray-600 text-lg mb-6 leading-relaxed">{step.description}</p>
 
                   <ul className="space-y-3">
-                    {step.features.map((feature) => (
+                    {step.features.map(feature => (
                       <li key={feature} className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" />
                         <span className="text-gray-700">{feature}</span>
@@ -205,11 +211,10 @@ const ProductPage: React.FC = () => {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              Target Use Cases
-            </h2>
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Target Use Cases</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              We're designing Parscade to excel in these key areas. Help us prioritize and refine these capabilities.
+              We're designing Parscade to excel in these key areas. Help us prioritize and refine
+              these capabilities.
             </p>
           </motion.div>
 
@@ -223,12 +228,8 @@ const ProductPage: React.FC = () => {
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 className="bg-white rounded-xl p-6 shadow-sm border border-gray-100"
               >
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                  {useCase.title}
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  {useCase.description}
-                </p>
+                <h3 className="text-xl font-semibold text-gray-900 mb-3">{useCase.title}</h3>
+                <p className="text-gray-600 mb-4">{useCase.description}</p>
                 <div className="flex justify-between items-center">
                   <div className="flex space-x-4">
                     <div>
@@ -264,7 +265,8 @@ const ProductPage: React.FC = () => {
               Designed for the Future
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              We're building with enterprise-grade standards from day one. Here's what we're focusing on.
+              We're building with enterprise-grade standards from day one. Here's what we're
+              focusing on.
             </p>
           </motion.div>
 
@@ -281,7 +283,8 @@ const ProductPage: React.FC = () => {
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">Developer-First</h3>
               <p className="text-gray-600">
-                Clean APIs, thorough documentation, and developer tools that make integration seamless.
+                Clean APIs, thorough documentation, and developer tools that make integration
+                seamless.
               </p>
             </motion.div>
 
@@ -297,7 +300,8 @@ const ProductPage: React.FC = () => {
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">Performance</h3>
               <p className="text-gray-600">
-                Architecting for speed and scale - targeting sub-second processing with enterprise reliability.
+                Architecting for speed and scale - targeting sub-second processing with enterprise
+                reliability.
               </p>
             </motion.div>
 
@@ -313,7 +317,8 @@ const ProductPage: React.FC = () => {
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">Compliance</h3>
               <p className="text-gray-600">
-                Building with security and compliance in mind - SOC 2, GDPR, and enterprise-grade protection.
+                Building with security and compliance in mind - SOC 2, GDPR, and enterprise-grade
+                protection.
               </p>
             </motion.div>
           </div>

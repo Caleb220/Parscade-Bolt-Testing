@@ -27,7 +27,7 @@ export const profileSettingsSchema = z
   .object({
     fullName: nonEmptyTextSchema('Full name', 120),
     email: emailSchema,
-    phone: optionalPhoneSchema.transform((value) => value ?? ''),
+    phone: optionalPhoneSchema.transform(value => value ?? ''),
     timezone: nonEmptyTextSchema('Timezone', 80),
     language: nonEmptyTextSchema('Language', 80),
   })
@@ -57,8 +57,12 @@ export const securitySettingsSchema = z
     lastPasswordChange: optionalIsoDateTimeSchema,
     apiKeys: z
       .object({
-        production: optionalTrimmedStringSchema('Production API key', 0, 128).transform((value) => value ?? '').default(''),
-        development: optionalTrimmedStringSchema('Development API key', 0, 128).transform((value) => value ?? '').default(''),
+        production: optionalTrimmedStringSchema('Production API key', 0, 128)
+          .transform(value => value ?? '')
+          .default(''),
+        development: optionalTrimmedStringSchema('Development API key', 0, 128)
+          .transform(value => value ?? '')
+          .default(''),
       })
       .strict(),
     loginHistory: z
@@ -156,7 +160,12 @@ export const accountSettingsSchema = z
 /**
  * Account settings sections available in the UI.
  */
-export const accountSettingsSectionSchema = z.enum(['profile', 'security', 'notifications', 'integrations']);
+export const accountSettingsSectionSchema = z.enum([
+  'profile',
+  'security',
+  'notifications',
+  'integrations',
+]);
 
 export type NotificationFrequency = z.infer<typeof notificationFrequencySchema>;
 export type ProfileSettings = z.infer<typeof profileSettingsSchema>;
@@ -207,14 +216,14 @@ const defaultWebhookConfigs: WebhookConfig[] = [
     name: 'Data Processing Complete',
     url: 'https://your-app.com/webhooks/complete',
     status: 'active',
-    description: "",
+    description: '',
   },
   {
     id: 'errors',
     name: 'Error Notifications',
     url: 'https://your-app.com/webhooks/errors',
     status: 'warning',
-    description: "",
+    description: '',
   },
 ];
 
@@ -232,7 +241,7 @@ const normaliseMaybeString = (value?: string | null) => {
  */
 export const createDefaultAccountSettings = (
   userId: string,
-  overrides?: Partial<AccountSettings>,
+  overrides?: Partial<AccountSettings>
 ): AccountSettings => {
   const base: AccountSettings = {
     userId,

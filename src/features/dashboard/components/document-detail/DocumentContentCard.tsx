@@ -8,7 +8,7 @@ import { FileText, Copy, CheckCircle, AlertTriangle } from 'lucide-react';
 import React from 'react';
 
 import { ParscadeCard } from '@/shared/components/brand';
-import { Button } from '@/shared/components/ui/button';
+import Button from '@/shared/components/forms/atoms/Button';
 import { useClipboard } from '@/shared/hooks/useClipboard';
 import type { Document } from '@/types/api-types';
 
@@ -40,12 +40,8 @@ const DocumentContentCard: React.FC<DocumentContentCardProps> = ({ document }) =
               <FileText className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-gray-900">
-                Document Content
-              </h2>
-              <p className="text-sm text-gray-500">
-                Extracted text content from the document
-              </p>
+              <h2 className="text-lg font-semibold text-gray-900">Document Content</h2>
+              <p className="text-sm text-gray-500">Extracted text content from the document</p>
             </div>
           </div>
 
@@ -53,7 +49,9 @@ const DocumentContentCard: React.FC<DocumentContentCardProps> = ({ document }) =
             <Button
               variant="outline"
               size="sm"
-              leftIcon={isCopied ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+              leftIcon={
+                isCopied ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />
+              }
               onClick={handleCopyText}
               className={isCopied ? 'text-green-600 border-green-200' : ''}
             >
@@ -82,12 +80,8 @@ const DocumentContentCard: React.FC<DocumentContentCardProps> = ({ document }) =
                   <FileText className="w-6 h-6 text-blue-600 animate-pulse" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-1">
-                    Processing Document
-                  </h3>
-                  <p className="text-gray-500">
-                    Text extraction is in progress. Check back soon.
-                  </p>
+                  <h3 className="text-lg font-medium text-gray-900 mb-1">Processing Document</h3>
+                  <p className="text-gray-500">Text extraction is in progress. Check back soon.</p>
                 </div>
               </div>
             ) : document.status === 'failed' ? (
@@ -96,9 +90,7 @@ const DocumentContentCard: React.FC<DocumentContentCardProps> = ({ document }) =
                   <AlertTriangle className="w-6 h-6 text-red-600" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-1">
-                    Processing Failed
-                  </h3>
+                  <h3 className="text-lg font-medium text-gray-900 mb-1">Processing Failed</h3>
                   <p className="text-gray-500">
                     There was an error extracting text from this document.
                   </p>
@@ -110,9 +102,7 @@ const DocumentContentCard: React.FC<DocumentContentCardProps> = ({ document }) =
                   <FileText className="w-6 h-6 text-gray-400" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-1">
-                    No Text Content
-                  </h3>
+                  <h3 className="text-lg font-medium text-gray-900 mb-1">No Text Content</h3>
                   <p className="text-gray-500">
                     This document hasn't been processed for text extraction yet.
                   </p>

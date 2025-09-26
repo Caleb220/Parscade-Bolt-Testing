@@ -33,9 +33,7 @@ const JobInfoCard: React.FC<JobInfoCardProps> = ({ job }) => {
             <Activity className="w-4 h-4 mr-2" />
             Job Type
           </dt>
-          <dd className="mt-1 text-sm text-gray-900">
-            {formatJobType(job.type)}
-          </dd>
+          <dd className="mt-1 text-sm text-gray-900">{formatJobType(job.type)}</dd>
         </div>
 
         <div>
@@ -43,9 +41,7 @@ const JobInfoCard: React.FC<JobInfoCardProps> = ({ job }) => {
             <Calendar className="w-4 h-4 mr-2" />
             Created
           </dt>
-          <dd className="mt-1 text-sm text-gray-900">
-            {formatDate(job.created_at)}
-          </dd>
+          <dd className="mt-1 text-sm text-gray-900">{formatDate(job.created_at)}</dd>
         </div>
 
         <div>
@@ -53,9 +49,7 @@ const JobInfoCard: React.FC<JobInfoCardProps> = ({ job }) => {
             <Calendar className="w-4 h-4 mr-2" />
             Last Updated
           </dt>
-          <dd className="mt-1 text-sm text-gray-900">
-            {formatDate(job.updated_at)}
-          </dd>
+          <dd className="mt-1 text-sm text-gray-900">{formatDate(job.updated_at)}</dd>
         </div>
 
         {job.started_at && (
@@ -64,9 +58,7 @@ const JobInfoCard: React.FC<JobInfoCardProps> = ({ job }) => {
               <Calendar className="w-4 h-4 mr-2" />
               Started
             </dt>
-            <dd className="mt-1 text-sm text-gray-900">
-              {formatDate(job.started_at)}
-            </dd>
+            <dd className="mt-1 text-sm text-gray-900">{formatDate(job.started_at)}</dd>
           </div>
         )}
 
@@ -76,9 +68,7 @@ const JobInfoCard: React.FC<JobInfoCardProps> = ({ job }) => {
               <Calendar className="w-4 h-4 mr-2" />
               Completed
             </dt>
-            <dd className="mt-1 text-sm text-gray-900">
-              {formatDate(job.completed_at)}
-            </dd>
+            <dd className="mt-1 text-sm text-gray-900">{formatDate(job.completed_at)}</dd>
           </div>
         )}
 
@@ -87,9 +77,7 @@ const JobInfoCard: React.FC<JobInfoCardProps> = ({ job }) => {
             <User className="w-4 h-4 mr-2" />
             Job ID
           </dt>
-          <dd className="mt-1 text-xs font-mono text-gray-900 break-all">
-            {job.id}
-          </dd>
+          <dd className="mt-1 text-xs font-mono text-gray-900 break-all">{job.id}</dd>
         </div>
       </dl>
     </ParscadeCard>

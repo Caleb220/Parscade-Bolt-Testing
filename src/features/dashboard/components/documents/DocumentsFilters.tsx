@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Filter, ChevronDown } from 'lucide-react';
 import React from 'react';
 
-import { Button } from '@/shared/components/ui/button';
+import Button from '@/shared/components/forms/atoms/Button';
 import { Input } from '@/shared/components/ui/input';
 import type { DocumentStatus } from '@/types/api-types';
 
@@ -56,10 +56,11 @@ const DocumentsFilters: React.FC<DocumentsFiltersProps> = ({
   onToggleFilters,
   onClearFilters,
 }) => {
-  const hasActiveFilters = selectedStatus !== 'all' ||
-                          selectedMimeType !== 'all' ||
-                          selectedProject !== 'all' ||
-                          searchTerm.length > 0;
+  const hasActiveFilters =
+    selectedStatus !== 'all' ||
+    selectedMimeType !== 'all' ||
+    selectedProject !== 'all' ||
+    searchTerm.length > 0;
 
   return (
     <motion.div
@@ -74,7 +75,7 @@ const DocumentsFilters: React.FC<DocumentsFiltersProps> = ({
           <Input
             placeholder="Search documents by name, content, or metadata..."
             value={searchTerm}
-            onChange={(e) => onSearchChange(e.target.value)}
+            onChange={e => onSearchChange(e.target.value)}
             leftIcon={<Search className="w-4 h-4" />}
             fullWidth
           />
@@ -83,7 +84,11 @@ const DocumentsFilters: React.FC<DocumentsFiltersProps> = ({
         <Button
           variant="outline"
           leftIcon={<Filter className="w-4 h-4" />}
-          rightIcon={<ChevronDown className={`w-4 h-4 transition-transform ${showFilters ? 'rotate-180' : ''}`} />}
+          rightIcon={
+            <ChevronDown
+              className={`w-4 h-4 transition-transform ${showFilters ? 'rotate-180' : ''}`}
+            />
+          }
           onClick={onToggleFilters}
         >
           Filters
@@ -95,11 +100,7 @@ const DocumentsFilters: React.FC<DocumentsFiltersProps> = ({
         </Button>
 
         {hasActiveFilters && (
-          <Button
-            variant="ghost"
-            onClick={onClearFilters}
-            size="sm"
-          >
+          <Button variant="ghost" onClick={onClearFilters} size="sm">
             Clear All
           </Button>
         )}
@@ -119,15 +120,13 @@ const DocumentsFilters: React.FC<DocumentsFiltersProps> = ({
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Status Filter */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Status
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
                   <select
                     value={selectedStatus}
-                    onChange={(e) => onStatusChange(e.target.value as DocumentStatus | 'all')}
+                    onChange={e => onStatusChange(e.target.value as DocumentStatus | 'all')}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    {statusOptions.map((option) => (
+                    {statusOptions.map(option => (
                       <option key={option.value} value={option.value}>
                         {option.label}
                       </option>
@@ -137,15 +136,13 @@ const DocumentsFilters: React.FC<DocumentsFiltersProps> = ({
 
                 {/* MIME Type Filter */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    File Type
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">File Type</label>
                   <select
                     value={selectedMimeType}
-                    onChange={(e) => onMimeTypeChange(e.target.value)}
+                    onChange={e => onMimeTypeChange(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    {mimeTypeOptions.map((option) => (
+                    {mimeTypeOptions.map(option => (
                       <option key={option.value} value={option.value}>
                         {option.label}
                       </option>
@@ -155,16 +152,14 @@ const DocumentsFilters: React.FC<DocumentsFiltersProps> = ({
 
                 {/* Project Filter */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Project
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Project</label>
                   <select
                     value={selectedProject}
-                    onChange={(e) => onProjectChange(e.target.value)}
+                    onChange={e => onProjectChange(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="all">All Projects</option>
-                    {projects.map((project) => (
+                    {projects.map(project => (
                       <option key={project.id} value={project.id}>
                         {project.name}
                       </option>

@@ -28,12 +28,12 @@ const createQueryClient = (): QueryClient => {
           }
           return failureCount < 2;
         },
-        retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+        retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
         refetchOnWindowFocus: env.mode === 'development',
       },
       mutations: {
         retry: false,
-        onError: (error) => {
+        onError: error => {
           const requestId = getRequestId(error);
           logger.warn('Mutation failed', {
             context: { feature: 'react-query', action: 'mutation' },
@@ -59,9 +59,7 @@ export const QueryProvider: React.FC<QueryProviderProps> = ({ children }) => {
   return (
     <QueryClientProvider client={queryClient}>
       {children}
-      {env.mode === 'development' && (
-        <ReactQueryDevtools initialIsOpen={false} />
-      )}
+      {env.mode === 'development' && <ReactQueryDevtools initialIsOpen={false} />}
     </QueryClientProvider>
   );
 };

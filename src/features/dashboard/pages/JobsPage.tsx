@@ -14,23 +14,13 @@ import {
   useStartJob,
   useCancelJob,
   useRetryJob,
-  useDeleteJob
+  useDeleteJob,
 } from '@/shared/hooks/api/useJobs';
 import { useProjects } from '@/shared/hooks/api/useProjects';
 import { useDebounce } from '@/shared/hooks/useDebounce';
-import type {
-  Job,
-  JobCreateData,
-  JobQueryParams,
-  JobStatus
-} from '@/types/api-types';
+import type { Job, JobCreateData, JobQueryParams, JobStatus } from '@/types/api-types';
 
-import {
-  JobsHeader,
-  JobsFilters,
-  JobsTable,
-  CreateJobDialog,
-} from '../components/jobs';
+import { JobsHeader, JobsFilters, JobsTable, CreateJobDialog } from '../components/jobs';
 import DashboardLayout from '../components/layout/DashboardLayout';
 
 /**
@@ -72,11 +62,7 @@ const JobsPage: React.FC = () => {
   }, [currentPage, debouncedSearch, selectedStatus, selectedType, selectedProject]);
 
   // API hooks
-  const {
-    data: jobsData,
-    isLoading: jobsLoading,
-    refetch: refetchJobs,
-  } = useJobs(queryParams);
+  const { data: jobsData, isLoading: jobsLoading, refetch: refetchJobs } = useJobs(queryParams);
 
   const { data: projectsData } = useProjects({ limit: 100 });
   const createJob = useCreateJob();
@@ -90,42 +76,57 @@ const JobsPage: React.FC = () => {
   const projects = projectsData?.results || [];
 
   // Update URL when filters change
-  const updateSearchParams = useCallback((updates: Record<string, string | number>) => {
-    const newParams = new URLSearchParams(searchParams);
-    Object.entries(updates).forEach(([key, value]) => {
-      if (value && value !== 'all' && value !== '') {
-        newParams.set(key, value.toString());
-      } else {
-        newParams.delete(key);
-      }
-    });
-    setSearchParams(newParams);
-  }, [searchParams, setSearchParams]);
+  const updateSearchParams = useCallback(
+    (updates: Record<string, string | number>) => {
+      const newParams = new URLSearchParams(searchParams);
+      Object.entries(updates).forEach(([key, value]) => {
+        if (value && value !== 'all' && value !== '') {
+          newParams.set(key, value.toString());
+        } else {
+          newParams.delete(key);
+        }
+      });
+      setSearchParams(newParams);
+    },
+    [searchParams, setSearchParams]
+  );
 
   // Filter handlers
-  const handleSearchChange = useCallback((value: string) => {
-    setSearchTerm(value);
-    setCurrentPage(1);
-    updateSearchParams({ search: value, page: 1 });
-  }, [updateSearchParams]);
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      setSearchTerm(value);
+      setCurrentPage(1);
+      updateSearchParams({ search: value, page: 1 });
+    },
+    [updateSearchParams]
+  );
 
-  const handleStatusChange = useCallback((status: JobStatus | 'all') => {
-    setSelectedStatus(status);
-    setCurrentPage(1);
-    updateSearchParams({ status, page: 1 });
-  }, [updateSearchParams]);
+  const handleStatusChange = useCallback(
+    (status: JobStatus | 'all') => {
+      setSelectedStatus(status);
+      setCurrentPage(1);
+      updateSearchParams({ status, page: 1 });
+    },
+    [updateSearchParams]
+  );
 
-  const handleTypeChange = useCallback((type: string) => {
-    setSelectedType(type);
-    setCurrentPage(1);
-    updateSearchParams({ type, page: 1 });
-  }, [updateSearchParams]);
+  const handleTypeChange = useCallback(
+    (type: string) => {
+      setSelectedType(type);
+      setCurrentPage(1);
+      updateSearchParams({ type, page: 1 });
+    },
+    [updateSearchParams]
+  );
 
-  const handleProjectChange = useCallback((projectId: string) => {
-    setSelectedProject(projectId);
-    setCurrentPage(1);
-    updateSearchParams({ project_id: projectId, page: 1 });
-  }, [updateSearchParams]);
+  const handleProjectChange = useCallback(
+    (projectId: string) => {
+      setSelectedProject(projectId);
+      setCurrentPage(1);
+      updateSearchParams({ project_id: projectId, page: 1 });
+    },
+    [updateSearchParams]
+  );
 
   const handleClearFilters = useCallback(() => {
     setSearchTerm('');
@@ -158,96 +159,114 @@ const JobsPage: React.FC = () => {
   }, [jobs, selectedJobs.size]);
 
   // Job actions
-  const handleView = useCallback((job: Job) => {
-    navigate(`/dashboard/jobs/${job.id}`);
-  }, [navigate]);
+  const handleView = useCallback(
+    (job: Job) => {
+      navigate(`/dashboard/jobs/${job.id}`);
+    },
+    [navigate]
+  );
 
-  const handleStart = useCallback(async (job: Job) => {
-    try {
-      await startJob.mutateAsync(job.id);
-      toast({
-        title: 'Job started',
-        description: `Job "${job.name || job.id}" has been started successfully.`,
-      });
-    } catch (error) {
-      toast({
-        title: 'Failed to start job',
-        description: getErrorMessage(error),
-        variant: 'destructive',
-      });
-    }
-  }, [startJob, toast]);
+  const handleStart = useCallback(
+    async (job: Job) => {
+      try {
+        await startJob.mutateAsync(job.id);
+        toast({
+          title: 'Job started',
+          description: `Job "${job.name || job.id}" has been started successfully.`,
+        });
+      } catch (error) {
+        toast({
+          title: 'Failed to start job',
+          description: getErrorMessage(error),
+          variant: 'destructive',
+        });
+      }
+    },
+    [startJob, toast]
+  );
 
-  const handleCancel = useCallback(async (job: Job) => {
-    try {
-      await cancelJob.mutateAsync(job.id);
-      toast({
-        title: 'Job cancelled',
-        description: `Job "${job.name || job.id}" has been cancelled.`,
-      });
-    } catch (error) {
-      toast({
-        title: 'Failed to cancel job',
-        description: getErrorMessage(error),
-        variant: 'destructive',
-      });
-    }
-  }, [cancelJob, toast]);
+  const handleCancel = useCallback(
+    async (job: Job) => {
+      try {
+        await cancelJob.mutateAsync(job.id);
+        toast({
+          title: 'Job cancelled',
+          description: `Job "${job.name || job.id}" has been cancelled.`,
+        });
+      } catch (error) {
+        toast({
+          title: 'Failed to cancel job',
+          description: getErrorMessage(error),
+          variant: 'destructive',
+        });
+      }
+    },
+    [cancelJob, toast]
+  );
 
-  const handleRetry = useCallback(async (job: Job) => {
-    try {
-      await retryJob.mutateAsync(job.id);
-      toast({
-        title: 'Job retried',
-        description: `Job "${job.name || job.id}" has been restarted.`,
-      });
-    } catch (error) {
-      toast({
-        title: 'Failed to retry job',
-        description: getErrorMessage(error),
-        variant: 'destructive',
-      });
-    }
-  }, [retryJob, toast]);
+  const handleRetry = useCallback(
+    async (job: Job) => {
+      try {
+        await retryJob.mutateAsync(job.id);
+        toast({
+          title: 'Job retried',
+          description: `Job "${job.name || job.id}" has been restarted.`,
+        });
+      } catch (error) {
+        toast({
+          title: 'Failed to retry job',
+          description: getErrorMessage(error),
+          variant: 'destructive',
+        });
+      }
+    },
+    [retryJob, toast]
+  );
 
-  const handleDelete = useCallback(async (job: Job) => {
-    if (!confirm(`Are you sure you want to delete job "${job.name || job.id}"?`)) return;
+  const handleDelete = useCallback(
+    async (job: Job) => {
+      if (!confirm(`Are you sure you want to delete job "${job.name || job.id}"?`)) return;
 
-    try {
-      await deleteJob.mutateAsync(job.id);
-      toast({
-        title: 'Job deleted',
-        description: `Job "${job.name || job.id}" has been deleted successfully.`,
-      });
-    } catch (error) {
-      toast({
-        title: 'Failed to delete job',
-        description: getErrorMessage(error),
-        variant: 'destructive',
-      });
-    }
-  }, [deleteJob, toast]);
+      try {
+        await deleteJob.mutateAsync(job.id);
+        toast({
+          title: 'Job deleted',
+          description: `Job "${job.name || job.id}" has been deleted successfully.`,
+        });
+      } catch (error) {
+        toast({
+          title: 'Failed to delete job',
+          description: getErrorMessage(error),
+          variant: 'destructive',
+        });
+      }
+    },
+    [deleteJob, toast]
+  );
 
   const handleCreateJob = useCallback(() => {
     setShowCreateDialog(true);
   }, []);
 
-  const handleCreateJobSubmit = useCallback(async (jobData: any) => {
-    try {
-      await createJob.mutateAsync(jobData);
-      setShowCreateDialog(false);
-      toast({
-        title: 'Job created',
-        description: 'New job has been created successfully.',
-      });
-    } catch (error) {
-      toast({
-        title: 'Failed to create job',
-        description: getErrorMessage(error),
-        variant: 'destructive',
-      });
-    }
-  }, [createJob, toast]);
+  const handleCreateJobSubmit = useCallback(
+    async (jobData: any) => {
+      try {
+        await createJob.mutateAsync(jobData);
+        setShowCreateDialog(false);
+        toast({
+          title: 'Job created',
+          description: 'New job has been created successfully.',
+        });
+      } catch (error) {
+        toast({
+          title: 'Failed to create job',
+          description: getErrorMessage(error),
+          variant: 'destructive',
+        });
+      }
+    },
+    [createJob, toast]
+  );
 
   const handleRefresh = useCallback(() => {
     refetchJobs();

@@ -78,17 +78,20 @@ const ParscadeStatusBadge: React.FC<ParscadeStatusBadgeProps> = ({
   const config = statusConfig[status];
   const Icon = config.icon;
 
-  const pulseAnimation = animated && status === 'processing' ? {
-    animate: {
-      scale: [1, 1.05, 1],
-      opacity: [1, 0.8, 1],
-    },
-    transition: {
-      duration: 2,
-      repeat: Infinity,
-      ease: 'easeInOut',
-    },
-  } : {};
+  const pulseAnimation =
+    animated && status === 'processing'
+      ? {
+          animate: {
+            scale: [1, 1.05, 1],
+            opacity: [1, 0.8, 1],
+          },
+          transition: {
+            duration: 2,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          },
+        }
+      : {};
 
   return (
     <motion.div
@@ -109,7 +112,9 @@ const ParscadeStatusBadge: React.FC<ParscadeStatusBadgeProps> = ({
       {showIcon && (
         <motion.div
           animate={status === 'processing' && animated ? { rotate: 360 } : {}}
-          transition={status === 'processing' ? { duration: 2, repeat: Infinity, ease: 'linear' } : {}}
+          transition={
+            status === 'processing' ? { duration: 2, repeat: Infinity, ease: 'linear' } : {}
+          }
           className="mr-1.5"
         >
           <Icon className={iconSizeClasses[size]} />

@@ -15,20 +15,8 @@ export default {
           'Cantarell',
           'sans-serif',
         ],
-        display: [
-          'Poppins',
-          'Inter',
-          '-apple-system',
-          'BlinkMacSystemFont',
-          'sans-serif',
-        ],
-        logo: [
-          'Poppins',
-          'Inter',
-          '-apple-system',
-          'BlinkMacSystemFont',
-          'sans-serif',
-        ],
+        display: ['Poppins', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        logo: ['Poppins', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
       },
       colors: {
         blue: {
@@ -73,8 +61,8 @@ export default {
         blob: 'blob 7s infinite',
         'fade-in': 'fadeIn 0.5s ease-in-out',
         'slide-up': 'slideUp 0.3s ease-out',
-        'float': 'float 3s ease-in-out infinite',
-        'glow': 'glow 2s ease-in-out infinite alternate',
+        float: 'float 3s ease-in-out infinite',
+        glow: 'glow 2s ease-in-out infinite alternate',
         'parscade-pulse': 'parscadePulse 3s ease-in-out infinite',
         'parscade-float': 'parscadeFloat 4s ease-in-out infinite',
       },
@@ -110,13 +98,13 @@ export default {
           '100%': { boxShadow: '0 0 30px rgba(59, 130, 246, 0.6)' },
         },
         parscadePulse: {
-          '0%, 100%': { 
+          '0%, 100%': {
             boxShadow: '0 0 20px rgba(14, 165, 233, 0.2)',
-            transform: 'scale(1)'
+            transform: 'scale(1)',
           },
-          '50%': { 
+          '50%': {
             boxShadow: '0 0 30px rgba(14, 165, 233, 0.3)',
-            transform: 'scale(1.02)'
+            transform: 'scale(1.02)',
           },
         },
         parscadeFloat: {
@@ -127,24 +115,24 @@ export default {
         },
       },
       spacing: {
-        '18': '4.5rem',
-        '88': '22rem',
+        18: '4.5rem',
+        88: '22rem',
       },
       maxWidth: {
         '8xl': '88rem',
         '9xl': '96rem',
       },
       backdropBlur: {
-        'xs': '2px',
-        'sm': '4px',
-        'md': '8px',
-        'lg': '12px',
-        'xl': '16px',
+        xs: '2px',
+        sm: '4px',
+        md: '8px',
+        lg: '12px',
+        xl: '16px',
         '2xl': '24px',
         '3xl': '40px',
       },
       boxShadow: {
-        'parscade': '0 4px 20px rgba(14, 165, 233, 0.08), 0 1px 3px rgba(0, 0, 0, 0.1)',
+        parscade: '0 4px 20px rgba(14, 165, 233, 0.08), 0 1px 3px rgba(0, 0, 0, 0.1)',
         'parscade-lg': '0 10px 40px rgba(14, 165, 233, 0.12), 0 4px 6px rgba(0, 0, 0, 0.05)',
         'parscade-glow': '0 0 20px rgba(14, 165, 233, 0.2)',
       },

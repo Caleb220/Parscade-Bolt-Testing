@@ -14,22 +14,20 @@ interface LoadingSpinnerProps {
 export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   size = 'md',
   className = '',
-  message
+  message,
 }) => {
   const sizeClasses = {
     sm: 'w-4 h-4',
     md: 'w-6 h-6',
     lg: 'w-8 h-8',
-    xl: 'w-12 h-12'
+    xl: 'w-12 h-12',
   };
 
   return (
     <div className={`flex items-center justify-center ${className}`}>
       <div className="flex flex-col items-center space-y-2">
         <Loader2 className={`${sizeClasses[size]} animate-spin text-blue-600`} />
-        {message && (
-          <p className="text-sm text-gray-600 animate-pulse">{message}</p>
-        )}
+        {message && <p className="text-sm text-gray-600 animate-pulse">{message}</p>}
       </div>
     </div>
   );
@@ -45,7 +43,7 @@ export const PageLoading: React.FC<{ message?: string }> = ({ message = 'Loading
 // Section-level loading state
 export const SectionLoading: React.FC<{ message?: string; className?: string }> = ({
   message = 'Loading...',
-  className = ''
+  className = '',
 }) => (
   <div className={`flex items-center justify-center p-8 ${className}`}>
     <LoadingSpinner size="md" message={message} />
@@ -85,7 +83,7 @@ export const CardSkeleton: React.FC<{ count?: number }> = ({ count = 1 }) => (
 // Table skeleton loader
 export const TableSkeleton: React.FC<{ rows?: number; cols?: number }> = ({
   rows = 5,
-  cols = 4
+  cols = 4,
 }) => (
   <div className="border border-gray-200 rounded-lg overflow-hidden">
     <div className="bg-gray-50 p-4 border-b border-gray-200">
@@ -150,11 +148,7 @@ export const ChartSkeleton: React.FC = () => (
     </div>
     <div className="h-64 flex items-end justify-between space-x-2">
       {Array.from({ length: 12 }).map((_, i) => (
-        <Skeleton
-          key={i}
-          className="w-full"
-          style={{ height: `${Math.random() * 80 + 20}%` }}
-        />
+        <Skeleton key={i} className="w-full" style={{ height: `${Math.random() * 80 + 20}%` }} />
       ))}
     </div>
   </div>
@@ -178,7 +172,7 @@ export const ProgressiveLoading: React.FC<ProgressiveLoadingProps> = ({
   children,
   loadingComponent,
   errorComponent,
-  emptyComponent
+  emptyComponent,
 }) => {
   if (isLoading) {
     return <>{loadingComponent || <SectionLoading />}</>;
@@ -189,7 +183,11 @@ export const ProgressiveLoading: React.FC<ProgressiveLoadingProps> = ({
   }
 
   if (isEmpty) {
-    return <>{emptyComponent || <div className="text-gray-500 p-4 text-center">No data available</div>}</>;
+    return (
+      <>
+        {emptyComponent || <div className="text-gray-500 p-4 text-center">No data available</div>}
+      </>
+    );
   }
 
   return <>{children}</>;
@@ -198,7 +196,7 @@ export const ProgressiveLoading: React.FC<ProgressiveLoadingProps> = ({
 // Animated loading dots
 export const LoadingDots: React.FC<{ className?: string }> = ({ className = '' }) => (
   <div className={`flex space-x-1 ${className}`}>
-    {[0, 1, 2].map((i) => (
+    {[0, 1, 2].map(i => (
       <motion.div
         key={i}
         className="w-2 h-2 bg-blue-600 rounded-full"

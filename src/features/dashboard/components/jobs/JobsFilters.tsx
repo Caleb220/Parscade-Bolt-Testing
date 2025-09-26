@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Filter, ChevronDown } from 'lucide-react';
 import React from 'react';
 
-import { Button } from '@/shared/components/ui/button';
+import Button from '@/shared/components/forms/atoms/Button';
 import { Input } from '@/shared/components/ui/input';
 import type { JobStatus } from '@/types/api-types';
 
@@ -57,10 +57,11 @@ const JobsFilters: React.FC<JobsFiltersProps> = ({
   onToggleFilters,
   onClearFilters,
 }) => {
-  const hasActiveFilters = selectedStatus !== 'all' ||
-                          selectedType !== 'all' ||
-                          selectedProject !== 'all' ||
-                          searchTerm.length > 0;
+  const hasActiveFilters =
+    selectedStatus !== 'all' ||
+    selectedType !== 'all' ||
+    selectedProject !== 'all' ||
+    searchTerm.length > 0;
 
   return (
     <motion.div
@@ -75,7 +76,7 @@ const JobsFilters: React.FC<JobsFiltersProps> = ({
           <Input
             placeholder="Search jobs by name, document, or project..."
             value={searchTerm}
-            onChange={(e) => onSearchChange(e.target.value)}
+            onChange={e => onSearchChange(e.target.value)}
             leftIcon={<Search className="w-4 h-4" />}
             fullWidth
           />
@@ -84,7 +85,11 @@ const JobsFilters: React.FC<JobsFiltersProps> = ({
         <Button
           variant="outline"
           leftIcon={<Filter className="w-4 h-4" />}
-          rightIcon={<ChevronDown className={`w-4 h-4 transition-transform ${showFilters ? 'rotate-180' : ''}`} />}
+          rightIcon={
+            <ChevronDown
+              className={`w-4 h-4 transition-transform ${showFilters ? 'rotate-180' : ''}`}
+            />
+          }
           onClick={onToggleFilters}
         >
           Filters
@@ -96,11 +101,7 @@ const JobsFilters: React.FC<JobsFiltersProps> = ({
         </Button>
 
         {hasActiveFilters && (
-          <Button
-            variant="ghost"
-            onClick={onClearFilters}
-            size="sm"
-          >
+          <Button variant="ghost" onClick={onClearFilters} size="sm">
             Clear All
           </Button>
         )}
@@ -120,15 +121,13 @@ const JobsFilters: React.FC<JobsFiltersProps> = ({
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Status Filter */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Status
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
                   <select
                     value={selectedStatus}
-                    onChange={(e) => onStatusChange(e.target.value as JobStatus | 'all')}
+                    onChange={e => onStatusChange(e.target.value as JobStatus | 'all')}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    {statusOptions.map((option) => (
+                    {statusOptions.map(option => (
                       <option key={option.value} value={option.value}>
                         {option.label}
                       </option>
@@ -138,15 +137,13 @@ const JobsFilters: React.FC<JobsFiltersProps> = ({
 
                 {/* Type Filter */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Job Type
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Job Type</label>
                   <select
                     value={selectedType}
-                    onChange={(e) => onTypeChange(e.target.value)}
+                    onChange={e => onTypeChange(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    {typeOptions.map((option) => (
+                    {typeOptions.map(option => (
                       <option key={option.value} value={option.value}>
                         {option.label}
                       </option>
@@ -156,16 +153,14 @@ const JobsFilters: React.FC<JobsFiltersProps> = ({
 
                 {/* Project Filter */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Project
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Project</label>
                   <select
                     value={selectedProject}
-                    onChange={(e) => onProjectChange(e.target.value)}
+                    onChange={e => onProjectChange(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="all">All Projects</option>
-                    {projects.map((project) => (
+                    {projects.map(project => (
                       <option key={project.id} value={project.id}>
                         {project.name}
                       </option>

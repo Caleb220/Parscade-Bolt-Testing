@@ -7,7 +7,11 @@ import { motion } from 'framer-motion';
 import { CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import React from 'react';
 
-import { validatePassword, getPasswordStrengthLabel, getPasswordStrengthColor } from '@/shared/utils/passwordValidation';
+import {
+  validatePassword,
+  getPasswordStrengthLabel,
+  getPasswordStrengthColor,
+} from '@/shared/utils/passwordValidation';
 
 interface PasswordStrengthMeterProps {
   password: string;
@@ -21,7 +25,7 @@ const PasswordStrengthMeter: React.FC<PasswordStrengthMeterProps> = ({
   showFeedback = true,
 }) => {
   const validation = validatePassword(password);
-  
+
   if (!password) {
     return null;
   }
@@ -39,7 +43,7 @@ const PasswordStrengthMeter: React.FC<PasswordStrengthMeterProps> = ({
             {strengthLabel}
           </span>
         </div>
-        
+
         <div className="w-full bg-gray-200 rounded-full h-2">
           <motion.div
             className={`h-2 rounded-full transition-all duration-300 ${strengthColor}`}
@@ -91,7 +95,10 @@ const PasswordStrengthMeter: React.FC<PasswordStrengthMeterProps> = ({
             { test: /[A-Z]/.test(password), label: 'One uppercase letter' },
             { test: /[a-z]/.test(password), label: 'One lowercase letter' },
             { test: /\d/.test(password), label: 'One number' },
-            { test: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password), label: 'One special character' },
+            {
+              test: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password),
+              label: 'One special character',
+            },
           ].map((requirement, index) => (
             <div key={index} className="flex items-center text-xs">
               {requirement.test ? (

@@ -3,10 +3,10 @@
  * Comprehensive dashboard data endpoints with type safety
  */
 
-import type { 
+import type {
   DashboardStats,
   ActivityResponse,
-  ActivityQueryParams
+  ActivityQueryParams,
 } from '@/types/dashboard-types';
 
 import { apiClient } from '../client';

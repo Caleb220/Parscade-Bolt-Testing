@@ -10,7 +10,8 @@ const pipelineSteps: readonly PipelineStep[] = [
     id: '1',
     title: 'Document Ingestion',
     shortTitle: 'Ingestion',
-    description: 'Smart document upload system that will handle PDFs, Word docs, images, and more with intelligent preprocessing.',
+    description:
+      'Smart document upload system that will handle PDFs, Word docs, images, and more with intelligent preprocessing.',
     icon: 'FileText',
     status: 'processing',
   },
@@ -18,7 +19,8 @@ const pipelineSteps: readonly PipelineStep[] = [
     id: '2',
     title: 'Intelligent Parsing',
     shortTitle: 'Parsing',
-    description: 'Next-generation AI algorithms that will understand document structure and extract data with unprecedented accuracy.',
+    description:
+      'Next-generation AI algorithms that will understand document structure and extract data with unprecedented accuracy.',
     icon: 'Zap',
     status: 'processing',
   },
@@ -26,7 +28,8 @@ const pipelineSteps: readonly PipelineStep[] = [
     id: '3',
     title: 'Data Structuring',
     shortTitle: 'Structuring',
-    description: 'Advanced structuring engine that will transform raw data into clean, application-ready formats.',
+    description:
+      'Advanced structuring engine that will transform raw data into clean, application-ready formats.',
     icon: 'Database',
     status: 'pending',
   },
@@ -34,7 +37,8 @@ const pipelineSteps: readonly PipelineStep[] = [
     id: '4',
     title: 'Delivery & Integration',
     shortTitle: 'Delivery',
-    description: 'Flexible delivery system with APIs, webhooks, and integrations designed for modern workflows.',
+    description:
+      'Flexible delivery system with APIs, webhooks, and integrations designed for modern workflows.',
     icon: 'Send',
     status: 'pending',
   },
@@ -66,11 +70,11 @@ const PipelineCarousel: React.FC<PipelineCarouselProps> = ({
   const [isHovered, setIsHovered] = useState(false);
 
   const nextStep = useCallback(() => {
-    setCurrentStep((prev) => (prev + 1) % pipelineSteps.length);
+    setCurrentStep(prev => (prev + 1) % pipelineSteps.length);
   }, []);
 
   const prevStep = useCallback(() => {
-    setCurrentStep((prev) => (prev - 1 + pipelineSteps.length) % pipelineSteps.length);
+    setCurrentStep(prev => (prev - 1 + pipelineSteps.length) % pipelineSteps.length);
   }, []);
 
   const goToStep = useCallback((index: number) => {
@@ -85,13 +89,16 @@ const PipelineCarousel: React.FC<PipelineCarouselProps> = ({
     return undefined;
   }, [autoPlay, interval, isHovered, nextStep]);
 
-  const handleKeyDown = useCallback((event: KeyboardEvent) => {
-    if (event.key === 'ArrowLeft') {
-      prevStep();
-    } else if (event.key === 'ArrowRight') {
-      nextStep();
-    }
-  }, [nextStep, prevStep]);
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key === 'ArrowLeft') {
+        prevStep();
+      } else if (event.key === 'ArrowRight') {
+        nextStep();
+      }
+    },
+    [nextStep, prevStep]
+  );
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
@@ -102,7 +109,7 @@ const PipelineCarousel: React.FC<PipelineCarouselProps> = ({
   if (!currentStepData) {
     throw new Error(`Invalid step index: ${currentStep}`);
   }
-  
+
   const IconComponent = iconMap[currentStepData.icon as IconName];
 
   // Convert pipeline steps to navigator format
@@ -125,7 +132,6 @@ const PipelineCarousel: React.FC<PipelineCarouselProps> = ({
 
       {/* Content */}
       <div className="relative z-10">
-
         {/* Main Content */}
         <div className="flex flex-col lg:grid lg:grid-cols-2 gap-8 lg:gap-12 items-center min-h-[300px] sm:min-h-[320px]">
           {/* Icon and Visual */}
@@ -141,7 +147,7 @@ const PipelineCarousel: React.FC<PipelineCarouselProps> = ({
               <div className="w-28 h-28 sm:w-36 sm:h-36 bg-white rounded-full flex items-center justify-center shadow-xl border border-gray-100">
                 <IconComponent className="w-12 h-12 sm:w-16 sm:h-16 text-blue-600" />
               </div>
-              
+
               {/* Status Indicator */}
               <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2">
                 <div
@@ -149,8 +155,8 @@ const PipelineCarousel: React.FC<PipelineCarouselProps> = ({
                     currentStepData.status === 'completed'
                       ? 'bg-green-500'
                       : currentStepData.status === 'processing'
-                      ? 'bg-yellow-500 animate-pulse'
-                      : 'bg-gray-300'
+                        ? 'bg-yellow-500 animate-pulse'
+                        : 'bg-gray-300'
                   }`}
                 />
               </div>
@@ -191,7 +197,7 @@ const PipelineCarousel: React.FC<PipelineCarouselProps> = ({
             onStepChange={goToStep}
             className="mt-8 sm:mb-8"
           />
-         </div>
+        </div>
       </div>
     </div>
   );

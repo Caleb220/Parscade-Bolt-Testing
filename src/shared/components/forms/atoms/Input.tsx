@@ -27,18 +27,28 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     },
     ref
   ) => {
+    // Filter out custom props to prevent React DOM warnings
+    const {
+      label: _label,
+      error: _error,
+      helperText: _helperText,
+      leftIcon: _leftIcon,
+      rightIcon: _rightIcon,
+      variant: _variant,
+      fullWidth: _fullWidth,
+      ...domProps
+    } = props as any;
     const inputId = id ?? `input-${Math.random().toString(36).slice(2, 11)}`;
 
-    const baseClasses = 'block w-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed';
+    const baseClasses =
+      'block w-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed';
 
     const variantClasses: Record<NonNullable<InputProps['variant']>, string> = {
       default: 'border border-gray-300 rounded-md px-3 py-2 bg-white',
       filled: 'border-0 rounded-md px-3 py-2 bg-gray-100 focus:bg-white',
     };
 
-    const errorClasses = error
-      ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
-      : '';
+    const errorClasses = error ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : '';
 
     const iconPadding = leftIcon ? 'pl-10' : rightIcon ? 'pr-10' : '';
 
@@ -53,10 +63,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="w-full">
         {label && (
-          <label
-            htmlFor={inputId}
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
+          <label htmlFor={inputId} className="block text-sm font-medium text-gray-700 mb-1">
             {label}
           </label>
         )}
@@ -66,24 +73,15 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
               <span className="text-gray-400">{leftIcon}</span>
             </div>
           )}
-          <input
-            ref={ref}
-            id={inputId}
-            className={inputClasses}
-            {...props}
-          />
+          <input ref={ref} id={inputId} className={inputClasses} {...domProps} />
           {rightIcon && (
             <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
               <span className="text-gray-400">{rightIcon}</span>
             </div>
           )}
         </div>
-        {error && (
-          <p className="mt-1 text-sm text-red-600">{error}</p>
-        )}
-        {helperText && !error && (
-          <p className="mt-1 text-sm text-gray-500">{helperText}</p>
-        )}
+        {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
+        {helperText && !error && <p className="mt-1 text-sm text-gray-500">{helperText}</p>}
       </div>
     );
   }

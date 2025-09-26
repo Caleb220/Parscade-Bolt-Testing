@@ -34,12 +34,10 @@ const NotFoundPage: React.FC = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="mb-8"
           >
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">
-              Page Not Found
-            </h1>
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Page Not Found</h1>
             <p className="text-gray-600 leading-relaxed">
-              The page you're looking for doesn't exist or has been moved. 
-              Don't worry, it happens to the best of us.
+              The page you're looking for doesn't exist or has been moved. Don't worry, it happens
+              to the best of us.
             </p>
           </motion.div>
 
@@ -51,15 +49,10 @@ const NotFoundPage: React.FC = () => {
             className="space-y-4"
           >
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <CustomButton
-                as={Link}
-                to="/"
-                leftIcon={<Home className="w-4 h-4" />}
-                size="lg"
-              >
+              <CustomButton as={Link} to="/" leftIcon={<Home className="w-4 h-4" />} size="lg">
                 Go Home
               </CustomButton>
-              
+
               <CustomButton
                 variant="outline"
                 onClick={() => window.history.back()}
@@ -87,28 +80,28 @@ const NotFoundPage: React.FC = () => {
 
           {/* Decorative Elements */}
           <motion.div
-            animate={{ 
+            animate={{
               y: [-10, 10, -10],
-              rotate: [0, 5, -5, 0]
+              rotate: [0, 5, -5, 0],
             }}
-            transition={{ 
-              duration: 6, 
-              repeat: Infinity, 
-              ease: 'easeInOut' 
+            transition={{
+              duration: 6,
+              repeat: Infinity,
+              ease: 'easeInOut',
             }}
             className="absolute top-10 right-10 w-20 h-20 bg-blue-100 rounded-full opacity-20"
           />
-          
+
           <motion.div
-            animate={{ 
+            animate={{
               y: [10, -10, 10],
-              rotate: [0, -5, 5, 0]
+              rotate: [0, -5, 5, 0],
             }}
-            transition={{ 
-              duration: 8, 
-              repeat: Infinity, 
+            transition={{
+              duration: 8,
+              repeat: Infinity,
               ease: 'easeInOut',
-              delay: 1
+              delay: 1,
             }}
             className="absolute bottom-10 left-10 w-16 h-16 bg-purple-100 rounded-full opacity-20"
           />

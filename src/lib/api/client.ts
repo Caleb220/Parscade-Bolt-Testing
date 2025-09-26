@@ -59,8 +59,11 @@ class ApiClient {
 
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession();
+
         if (error) {
           if (this.isDevelopment) {
             logger.warn(`Auth session error (attempt ${attempt}/${maxAttempts})`, {
@@ -68,7 +71,7 @@ class ApiClient {
               error,
             });
           }
-          
+
           if (attempt < maxAttempts) {
             await this.sleep(baseDelay * attempt);
             continue;
@@ -85,7 +88,6 @@ class ApiClient {
         }
 
         await this.sleep(baseDelay * attempt);
-
       } catch (error) {
         if (this.isDevelopment) {
           logger.warn(`Auth token retrieval failed (attempt ${attempt}/${maxAttempts})`, {
@@ -148,8 +150,8 @@ class ApiClient {
     const headers: Record<string, string> = {
       'X-Request-ID': requestId,
       'X-Client-Version': '1.0.0',
-      'Accept': 'application/json',
-      'Origin': window.location.origin,
+      Accept: 'application/json',
+      Origin: window.location.origin,
       ...options.headers,
     };
 
@@ -192,7 +194,7 @@ class ApiClient {
               headers: { ...headers },
               hasBody: !!init.body,
               bodyType: init.body ? typeof init.body : 'none',
-            }
+            },
           });
         }
 
@@ -210,7 +212,7 @@ class ApiClient {
         if (!response.ok) {
           const errorData = await this.parseErrorResponse(response);
           const apiError = ApiError.fromResponse(response, errorData, fullUrl);
-          
+
           if (response.status === 401 || response.status === 403) {
             try {
               await supabase.auth.refreshSession();
@@ -231,7 +233,7 @@ class ApiClient {
             }
           }
 
-          if (attempt < maxAttempts && (options.retryable !== false)) {
+          if (attempt < maxAttempts && options.retryable !== false) {
             await this.sleep(this.getRetryDelay(attempt, apiError));
             lastError = apiError;
             continue;
@@ -241,9 +243,12 @@ class ApiClient {
         }
 
         return response;
-
       } catch (error) {
-        this.logRequest(context, undefined, error instanceof Error ? error : new Error(String(error)));
+        this.logRequest(
+          context,
+          undefined,
+          error instanceof Error ? error : new Error(String(error))
+        );
 
         if (error instanceof ApiError) {
           throw error;
@@ -291,7 +296,7 @@ class ApiClient {
     if (error?.getRetryDelay) {
       return error.getRetryDelay();
     }
-    
+
     const baseDelay = 1000;
     return Math.min(baseDelay * Math.pow(2, attempt - 1), 8000);
   }
@@ -312,7 +317,7 @@ class ApiClient {
     options?: RequestOptions
   ): Promise<T> {
     const searchParams = new URLSearchParams();
-    
+
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
@@ -324,12 +329,16 @@ class ApiClient {
     const queryString = searchParams.toString();
     const fullUrl = queryString ? `${url}?${queryString}` : url;
 
-    const response = await this.executeRequest(fullUrl, {
-      method: 'GET',
-    }, {
-      retryable: true,
-      ...options,
-    });
+    const response = await this.executeRequest(
+      fullUrl,
+      {
+        method: 'GET',
+      },
+      {
+        retryable: true,
+        ...options,
+      }
+    );
 
     return this.parseResponse<T>(response);
   }
@@ -337,11 +346,7 @@ class ApiClient {
   /**
    * POST request with JSON or FormData body
    */
-  async post<T>(
-    url: string,
-    body?: unknown,
-    options?: RequestOptions
-  ): Promise<T> {
+  async post<T>(url: string, body?: unknown, options?: RequestOptions): Promise<T> {
     let requestBody: BodyInit | undefined;
 
     if (body instanceof FormData) {
@@ -357,15 +362,19 @@ class ApiClient {
             body: typeof body === 'object' ? body : 'non-object body',
             bodyType: typeof body,
             serializedBodyLength: requestBody.length,
-          }
+          },
         });
       }
     }
 
-    const response = await this.executeRequest(url, {
-      method: 'POST',
-      body: requestBody,
-    }, options);
+    const response = await this.executeRequest(
+      url,
+      {
+        method: 'POST',
+        body: requestBody,
+      },
+      options
+    );
 
     return this.parseResponse<T>(response);
   }
@@ -373,15 +382,15 @@ class ApiClient {
   /**
    * PATCH request for partial updates
    */
-  async patch<T>(
-    url: string,
-    body?: unknown,
-    options?: RequestOptions
-  ): Promise<T> {
-    const response = await this.executeRequest(url, {
-      method: 'PATCH',
-      body: body ? JSON.stringify(body) : undefined,
-    }, options);
+  async patch<T>(url: string, body?: unknown, options?: RequestOptions): Promise<T> {
+    const response = await this.executeRequest(
+      url,
+      {
+        method: 'PATCH',
+        body: body ? JSON.stringify(body) : undefined,
+      },
+      options
+    );
 
     return this.parseResponse<T>(response);
   }
@@ -389,15 +398,15 @@ class ApiClient {
   /**
    * PUT request for full updates
    */
-  async put<T>(
-    url: string,
-    body?: unknown,
-    options?: RequestOptions
-  ): Promise<T> {
-    const response = await this.executeRequest(url, {
-      method: 'PUT',
-      body: body ? JSON.stringify(body) : undefined,
-    }, options);
+  async put<T>(url: string, body?: unknown, options?: RequestOptions): Promise<T> {
+    const response = await this.executeRequest(
+      url,
+      {
+        method: 'PUT',
+        body: body ? JSON.stringify(body) : undefined,
+      },
+      options
+    );
 
     return this.parseResponse<T>(response);
   }
@@ -405,13 +414,14 @@ class ApiClient {
   /**
    * DELETE request
    */
-  async delete<T>(
-    url: string,
-    options?: RequestOptions
-  ): Promise<T> {
-    const response = await this.executeRequest(url, {
-      method: 'DELETE',
-    }, options);
+  async delete<T>(url: string, options?: RequestOptions): Promise<T> {
+    const response = await this.executeRequest(
+      url,
+      {
+        method: 'DELETE',
+      },
+      options
+    );
 
     if (response.status === 204) {
       return null as T;
@@ -433,7 +443,7 @@ class ApiClient {
       const requestId = this.generateRequestId();
 
       if (onProgress) {
-        xhr.upload.addEventListener('progress', (event) => {
+        xhr.upload.addEventListener('progress', event => {
           if (event.lengthComputable) {
             const progress = Math.round((event.loaded / event.total) * 100);
             onProgress(progress);
@@ -452,7 +462,7 @@ class ApiClient {
             {
               fileName: file.name,
               fileSize: file.size,
-              responseText: xhr.responseText?.slice(0, 200)
+              responseText: xhr.responseText?.slice(0, 200),
             },
             requestId
           );
@@ -461,12 +471,10 @@ class ApiClient {
       });
 
       xhr.addEventListener('error', () => {
-        const error = new ApiError(
-          `File upload network error: ${file.name}`,
-          'NETWORK_ERROR',
-          0,
-          { fileName: file.name, fileSize: file.size }
-        );
+        const error = new ApiError(`File upload network error: ${file.name}`, 'NETWORK_ERROR', 0, {
+          fileName: file.name,
+          fileSize: file.size,
+        });
         reject(error);
       });
 
@@ -493,7 +501,7 @@ class ApiClient {
       // For debugging in development
       if (this.isDevelopment) {
         logger.debug(`Starting file upload: ${file.name} (${file.size} bytes)`, {
-          metadata: { fileName: file.name, fileSize: file.size, contentType: file.type }
+          metadata: { fileName: file.name, fileSize: file.size, contentType: file.type },
         });
       }
 
@@ -506,7 +514,7 @@ class ApiClient {
    */
   private async parseResponse<T>(response: Response): Promise<T> {
     const contentType = response.headers.get('content-type');
-    
+
     if (response.status === 204) {
       return null as T;
     }
@@ -520,23 +528,16 @@ class ApiClient {
           response.status
         );
       } catch {
-        throw new ApiError(
-          'Invalid response format',
-          'INVALID_RESPONSE',
-          response.status
-        );
+        throw new ApiError('Invalid response format', 'INVALID_RESPONSE', response.status);
       }
     }
 
     try {
       return await response.json();
     } catch (error) {
-      throw new ApiError(
-        'Failed to parse response',
-        'PARSE_ERROR',
-        response.status,
-        { originalError: error instanceof Error ? error.message : String(error) }
-      );
+      throw new ApiError('Failed to parse response', 'PARSE_ERROR', response.status, {
+        originalError: error instanceof Error ? error.message : String(error),
+      });
     }
   }
 }

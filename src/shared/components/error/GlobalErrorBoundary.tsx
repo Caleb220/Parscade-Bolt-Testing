@@ -107,7 +107,7 @@ class GlobalErrorBoundary extends Component<Props, State> {
       'temporary',
       '503',
       '502',
-      '500'
+      '500',
     ];
 
     return recoverablePatterns.some(pattern => message.includes(pattern));
@@ -172,7 +172,8 @@ class GlobalErrorBoundary extends Component<Props, State> {
 
       const { level = 'section' } = this.props;
       const isApiError = isApiError(this.state.error);
-      const canRetry = isApiError && this.isRecoverableError(this.state.error) && this.state.retryCount < 3;
+      const canRetry =
+        isApiError && this.isRecoverableError(this.state.error) && this.state.retryCount < 3;
 
       // Different UI based on error boundary level
       if (level === 'app') {
@@ -183,21 +184,15 @@ class GlobalErrorBoundary extends Component<Props, State> {
                 <AlertTriangle className="w-10 h-10 text-red-600" />
               </div>
 
-              <h1 className="text-2xl font-bold text-gray-900 mb-3">
-                Application Error
-              </h1>
+              <h1 className="text-2xl font-bold text-gray-900 mb-3">Application Error</h1>
 
-              <p className="text-gray-600 mb-6">
-                {getErrorMessage(this.state.error)}
-              </p>
+              <p className="text-gray-600 mb-6">{getErrorMessage(this.state.error)}</p>
 
               {this.state.retryCount > 0 && (
                 <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
                   <div className="flex items-center text-yellow-800">
                     <Clock className="w-4 h-4 mr-2" />
-                    <span className="text-sm">
-                      Retry attempt {this.state.retryCount} of 3
-                    </span>
+                    <span className="text-sm">Retry attempt {this.state.retryCount} of 3</span>
                   </div>
                 </div>
               )}
@@ -265,9 +260,7 @@ class GlobalErrorBoundary extends Component<Props, State> {
                 {isApiError ? 'Service Error' : 'Page Error'}
               </h2>
 
-              <p className="text-gray-600 mb-6">
-                {getErrorMessage(this.state.error)}
-              </p>
+              <p className="text-gray-600 mb-6">{getErrorMessage(this.state.error)}</p>
 
               <div className="flex flex-col sm:flex-row gap-2 justify-center">
                 <Button onClick={this.handleReset} size="sm">
@@ -306,9 +299,7 @@ class GlobalErrorBoundary extends Component<Props, State> {
             </span>
           </div>
 
-          <p className="text-red-700 text-sm mb-3">
-            {getErrorMessage(this.state.error)}
-          </p>
+          <p className="text-red-700 text-sm mb-3">{getErrorMessage(this.state.error)}</p>
 
           <Button onClick={this.handleReset} size="sm" variant="outline">
             <RefreshCw className="w-3 h-3 mr-1" />
@@ -317,9 +308,7 @@ class GlobalErrorBoundary extends Component<Props, State> {
 
           {import.meta.env?.MODE === 'development' && (
             <div className="mt-2 pt-2 border-t border-red-200">
-              <code className="text-xs text-red-600">
-                {this.state.errorId}
-              </code>
+              <code className="text-xs text-red-600">{this.state.errorId}</code>
             </div>
           )}
         </div>

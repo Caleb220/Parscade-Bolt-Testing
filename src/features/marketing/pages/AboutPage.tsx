@@ -17,23 +17,27 @@ const AboutPage: React.FC = () => {
     {
       icon: Target,
       title: 'Mission-Driven',
-      description: 'We believe document processing should be intelligent, not tedious. Our mission is to eliminate manual data entry forever.'
+      description:
+        'We believe document processing should be intelligent, not tedious. Our mission is to eliminate manual data entry forever.',
     },
     {
       icon: Users,
       title: 'User-Centric',
-      description: 'Every feature we build starts with user feedback. Our beta community directly shapes our product roadmap.'
+      description:
+        'Every feature we build starts with user feedback. Our beta community directly shapes our product roadmap.',
     },
     {
       icon: Lightbulb,
       title: 'Innovation First',
-      description: 'We\'re not just improving existing solutions - we\'re reimagining what document processing can be.'
+      description:
+        "We're not just improving existing solutions - we're reimagining what document processing can be.",
     },
     {
       icon: Rocket,
       title: 'Move Fast',
-      description: 'As a startup, we ship quickly and iterate based on real user needs. Your feedback becomes features in weeks, not years.'
-    }
+      description:
+        'As a startup, we ship quickly and iterate based on real user needs. Your feedback becomes features in weeks, not years.',
+    },
   ];
 
   return (
@@ -51,12 +55,13 @@ const AboutPage: React.FC = () => {
               <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
                 Building the Future of
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
-                  {' '}Document Processing
+                  {' '}
+                  Document Processing
                 </span>
               </h1>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                We're a small team with a big vision: making document processing intelligent, 
-                fast, and accessible to everyone. Join us on this journey.
+                We're a small team with a big vision: making document processing intelligent, fast,
+                and accessible to everyone. Join us on this journey.
               </p>
             </motion.div>
           </div>
@@ -73,18 +78,18 @@ const AboutPage: React.FC = () => {
             <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">Our Story</h2>
             <div className="max-w-4xl mx-auto">
               <p className="text-lg text-gray-600 mb-6 leading-relaxed">
-                Parscade started with a simple frustration: why does extracting data from documents 
-                still require so much manual work? In 2024, we should be able to upload any document 
+                Parscade started with a simple frustration: why does extracting data from documents
+                still require so much manual work? In 2024, we should be able to upload any document
                 and get structured data back instantly.
               </p>
               <p className="text-lg text-gray-600 mb-6 leading-relaxed">
-                We're building the platform we wish existed - one that understands documents like 
-                humans do, but processes them at machine speed. Our beta program lets us work 
+                We're building the platform we wish existed - one that understands documents like
+                humans do, but processes them at machine speed. Our beta program lets us work
                 directly with users to create something truly useful.
               </p>
               <p className="text-lg text-gray-600 leading-relaxed">
-                This is just the beginning. With your feedback and support, we're creating the 
-                next generation of document processing technology.
+                This is just the beginning. With your feedback and support, we're creating the next
+                generation of document processing technology.
               </p>
             </div>
           </motion.div>
@@ -127,28 +132,24 @@ const AboutPage: React.FC = () => {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 mb-16"
           >
-            <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">Where We Are Today</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">
+              Where We Are Today
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="text-center">
                 <div className="text-3xl font-bold text-blue-600 mb-2">Beta</div>
                 <div className="text-gray-600">Current Stage</div>
-                <p className="text-sm text-gray-500 mt-2">
-                  Actively developing with user feedback
-                </p>
+                <p className="text-sm text-gray-500 mt-2">Actively developing with user feedback</p>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-blue-600 mb-2">250+</div>
                 <div className="text-gray-600">Beta Users</div>
-                <p className="text-sm text-gray-500 mt-2">
-                  Growing community of early adopters
-                </p>
+                <p className="text-sm text-gray-500 mt-2">Growing community of early adopters</p>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-blue-600 mb-2">2025</div>
                 <div className="text-gray-600">Target Launch</div>
-                <p className="text-sm text-gray-500 mt-2">
-                  Full platform release planned
-                </p>
+                <p className="text-sm text-gray-500 mt-2">Full platform release planned</p>
               </div>
             </div>
           </motion.div>

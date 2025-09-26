@@ -17,7 +17,7 @@ import {
   ArrowRight,
   CheckCircle,
   Lock,
-  Sparkles
+  Sparkles,
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -111,11 +111,7 @@ const PLAN_HIERARCHY: Record<UserPlan, number> = {
 /**
  * Check if user has access to a feature
  */
-function hasAccess(
-  feature: FeatureCard,
-  userRole: UserRole,
-  userPlan: UserPlan
-): boolean {
+function hasAccess(feature: FeatureCard, userRole: UserRole, userPlan: UserPlan): boolean {
   // Admin bypass
   if (userRole === 'admin') return true;
 
@@ -157,12 +153,12 @@ const RBACDashboard: React.FC = () => {
     }
   };
 
-  const availableFeatures = ENTERPRISE_FEATURES.filter(f =>
-    hasAccess(f, userRole, userPlan) && !f.comingSoon
+  const availableFeatures = ENTERPRISE_FEATURES.filter(
+    f => hasAccess(f, userRole, userPlan) && !f.comingSoon
   );
 
-  const lockedFeatures = ENTERPRISE_FEATURES.filter(f =>
-    !hasAccess(f, userRole, userPlan) && !f.comingSoon
+  const lockedFeatures = ENTERPRISE_FEATURES.filter(
+    f => !hasAccess(f, userRole, userPlan) && !f.comingSoon
   );
 
   const comingSoonFeatures = ENTERPRISE_FEATURES.filter(f => f.comingSoon);
@@ -181,9 +177,7 @@ const RBACDashboard: React.FC = () => {
               <h1 className="text-2xl font-bold text-gray-900 mb-2">
                 Welcome back, {user?.full_name || 'User'}
               </h1>
-              <p className="text-gray-600">
-                Your document processing workspace is ready
-              </p>
+              <p className="text-gray-600">Your document processing workspace is ready</p>
             </div>
             <div className="flex items-center space-x-3">
               <div className="bg-white rounded-lg px-4 py-2 shadow-sm border">
@@ -207,10 +201,7 @@ const RBACDashboard: React.FC = () => {
         </motion.div>
 
         {/* Quick Stats Overview */}
-        <DashboardSection
-          title="Overview"
-          description="Your processing metrics and insights"
-        >
+        <DashboardSection title="Overview" description="Your processing metrics and insights">
           <OverviewStats />
         </DashboardSection>
 
@@ -244,7 +235,7 @@ const RBACDashboard: React.FC = () => {
               description="Features available with your current plan"
             >
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {availableFeatures.map((feature) => (
+                {availableFeatures.map(feature => (
                   <motion.div
                     key={feature.id}
                     initial={{ opacity: 0, scale: 0.9 }}
@@ -262,7 +253,7 @@ const RBACDashboard: React.FC = () => {
                           <div className="flex items-center space-x-3">
                             <div className="p-2 bg-green-100 rounded-lg">
                               {React.cloneElement(feature.icon as React.ReactElement, {
-                                className: "w-5 h-5 text-green-600"
+                                className: 'w-5 h-5 text-green-600',
                               })}
                             </div>
                             {feature.isNew && (
@@ -274,18 +265,16 @@ const RBACDashboard: React.FC = () => {
                           <CheckCircle className="w-5 h-5 text-green-500" />
                         </div>
 
-                        <h4 className="font-semibold text-gray-900 mb-2">
-                          {feature.title}
-                        </h4>
-                        <p className="text-sm text-gray-600 mb-4">
-                          {feature.description}
-                        </p>
+                        <h4 className="font-semibold text-gray-900 mb-2">{feature.title}</h4>
+                        <p className="text-sm text-gray-600 mb-4">{feature.description}</p>
 
                         <div className="flex items-center justify-between">
                           <span className="text-xs text-green-600 font-medium">AVAILABLE</span>
-                          <ArrowRight className={`w-4 h-4 text-gray-400 transition-transform ${
-                            activeFeature === feature.id ? 'transform translate-x-1' : ''
-                          }`} />
+                          <ArrowRight
+                            className={`w-4 h-4 text-gray-400 transition-transform ${
+                              activeFeature === feature.id ? 'transform translate-x-1' : ''
+                            }`}
+                          />
                         </div>
                       </div>
                     </ParscadeCard>
@@ -308,7 +297,7 @@ const RBACDashboard: React.FC = () => {
               description="Upgrade your plan to access these powerful features"
             >
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {lockedFeatures.map((feature) => (
+                {lockedFeatures.map(feature => (
                   <motion.div
                     key={feature.id}
                     initial={{ opacity: 0, scale: 0.9 }}
@@ -324,7 +313,7 @@ const RBACDashboard: React.FC = () => {
                           <div className="flex items-center space-x-3">
                             <div className="p-2 bg-orange-100 rounded-lg">
                               {React.cloneElement(feature.icon as React.ReactElement, {
-                                className: "w-5 h-5 text-orange-600"
+                                className: 'w-5 h-5 text-orange-600',
                               })}
                             </div>
                             <div className="bg-orange-100 text-orange-700 text-xs px-2 py-1 rounded-full font-medium">
@@ -334,15 +323,13 @@ const RBACDashboard: React.FC = () => {
                           <Lock className="w-5 h-5 text-orange-400" />
                         </div>
 
-                        <h4 className="font-semibold text-gray-900 mb-2">
-                          {feature.title}
-                        </h4>
-                        <p className="text-sm text-gray-600 mb-4">
-                          {feature.description}
-                        </p>
+                        <h4 className="font-semibold text-gray-900 mb-2">{feature.title}</h4>
+                        <p className="text-sm text-gray-600 mb-4">{feature.description}</p>
 
                         <div className="flex items-center justify-between">
-                          <span className="text-xs text-orange-600 font-medium">UPGRADE REQUIRED</span>
+                          <span className="text-xs text-orange-600 font-medium">
+                            UPGRADE REQUIRED
+                          </span>
                           <ArrowRight className="w-4 h-4 text-orange-400" />
                         </div>
                       </div>
@@ -366,7 +353,7 @@ const RBACDashboard: React.FC = () => {
               description="Exciting new features we're working on"
             >
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {comingSoonFeatures.map((feature) => (
+                {comingSoonFeatures.map(feature => (
                   <motion.div
                     key={feature.id}
                     initial={{ opacity: 0, scale: 0.9 }}
@@ -378,7 +365,7 @@ const RBACDashboard: React.FC = () => {
                           <div className="flex items-center space-x-3">
                             <div className="p-2 bg-purple-100 rounded-lg">
                               {React.cloneElement(feature.icon as React.ReactElement, {
-                                className: "w-5 h-5 text-purple-600"
+                                className: 'w-5 h-5 text-purple-600',
                               })}
                             </div>
                             <div className="bg-purple-100 text-purple-700 text-xs px-2 py-1 rounded-full font-medium">
@@ -388,12 +375,8 @@ const RBACDashboard: React.FC = () => {
                           <Sparkles className="w-5 h-5 text-purple-400" />
                         </div>
 
-                        <h4 className="font-semibold text-gray-900 mb-2">
-                          {feature.title}
-                        </h4>
-                        <p className="text-sm text-gray-600 mb-4">
-                          {feature.description}
-                        </p>
+                        <h4 className="font-semibold text-gray-900 mb-2">{feature.title}</h4>
+                        <p className="text-sm text-gray-600 mb-4">{feature.description}</p>
 
                         <span className="text-xs text-purple-600 font-medium">IN DEVELOPMENT</span>
                       </div>

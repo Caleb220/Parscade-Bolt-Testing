@@ -5,10 +5,12 @@
 
 import { motion } from 'framer-motion';
 import { AlertTriangle, RefreshCw, Home, Mail } from 'lucide-react';
-import React, { Component, ErrorInfo, ReactNode } from 'react';
+import React, { Component } from 'react';
 
 import { ParscadeCard, ParscadeButton } from '@/shared/components/brand';
 import { logger } from '@/shared/services/logger';
+
+import type { ErrorInfo, ReactNode } from 'react';
 
 interface Props {
   children: ReactNode;
@@ -87,7 +89,7 @@ class EnterpriseErrorBoundary extends Component<Props, State> {
     const now = Date.now();
 
     // Check cooldown period
-    if (lastErrorTime && (now - lastErrorTime) < RETRY_COOLDOWN_MS) {
+    if (lastErrorTime && now - lastErrorTime < RETRY_COOLDOWN_MS) {
       return;
     }
 
@@ -127,12 +129,8 @@ class EnterpriseErrorBoundary extends Component<Props, State> {
             <div className="flex items-center space-x-2">
               <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0" />
               <div>
-                <p className="text-sm font-medium text-red-800">
-                  Something went wrong
-                </p>
-                <p className="text-xs text-red-600 mt-1">
-                  This component encountered an error
-                </p>
+                <p className="text-sm font-medium text-red-800">Something went wrong</p>
+                <p className="text-xs text-red-600 mt-1">This component encountered an error</p>
               </div>
               {retryCount < MAX_RETRY_COUNT && (
                 <button
@@ -155,28 +153,18 @@ class EnterpriseErrorBoundary extends Component<Props, State> {
               <div className="w-12 h-12 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
                 <AlertTriangle className="w-6 h-6 text-red-600" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Section Unavailable
-              </h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Section Unavailable</h3>
               <p className="text-gray-600 mb-4">
                 This section encountered an error and couldn't load properly.
               </p>
               <div className="flex justify-center space-x-3">
                 {retryCount < MAX_RETRY_COUNT && (
-                  <ParscadeButton
-                    variant="outline"
-                    size="sm"
-                    onClick={this.handleRetry}
-                  >
+                  <ParscadeButton variant="outline" size="sm" onClick={this.handleRetry}>
                     <RefreshCw className="w-4 h-4 mr-2" />
                     Try Again
                   </ParscadeButton>
                 )}
-                <ParscadeButton
-                  variant="ghost"
-                  size="sm"
-                  onClick={this.handleReload}
-                >
+                <ParscadeButton variant="ghost" size="sm" onClick={this.handleReload}>
                   Refresh Page
                 </ParscadeButton>
               </div>
@@ -202,12 +190,11 @@ class EnterpriseErrorBoundary extends Component<Props, State> {
                 <AlertTriangle className="w-8 h-8 text-red-600" />
               </motion.div>
 
-              <h1 className="text-2xl font-bold text-gray-900 mb-3">
-                Something went wrong
-              </h1>
+              <h1 className="text-2xl font-bold text-gray-900 mb-3">Something went wrong</h1>
 
               <p className="text-gray-600 mb-6 leading-relaxed">
-                We encountered an unexpected error. Our team has been notified and is working on a fix.
+                We encountered an unexpected error. Our team has been notified and is working on a
+                fix.
               </p>
 
               {process.env.NODE_ENV === 'development' && error && (
@@ -235,29 +222,19 @@ class EnterpriseErrorBoundary extends Component<Props, State> {
                 )}
 
                 <div className="flex space-x-3">
-                  <ParscadeButton
-                    variant="outline"
-                    onClick={this.handleReload}
-                    className="flex-1"
-                  >
+                  <ParscadeButton variant="outline" onClick={this.handleReload} className="flex-1">
                     <RefreshCw className="w-4 h-4 mr-2" />
                     Reload Page
                   </ParscadeButton>
 
-                  <ParscadeButton
-                    variant="ghost"
-                    onClick={this.handleGoHome}
-                    className="flex-1"
-                  >
+                  <ParscadeButton variant="ghost" onClick={this.handleGoHome} className="flex-1">
                     <Home className="w-4 h-4 mr-2" />
                     Go Home
                   </ParscadeButton>
                 </div>
 
                 <div className="mt-6 pt-6 border-t border-gray-200">
-                  <p className="text-sm text-gray-500 mb-3">
-                    Still having issues?
-                  </p>
+                  <p className="text-sm text-gray-500 mb-3">Still having issues?</p>
                   <a
                     href="mailto:support@parscade.com"
                     className="inline-flex items-center text-blue-600 hover:text-blue-700 text-sm"

@@ -12,12 +12,12 @@ import {
   Image,
   FileSpreadsheet,
   Archive,
-  Globe
+  Globe,
 } from 'lucide-react';
 import React from 'react';
 
+import Button from '@/shared/components/forms/atoms/Button';
 import { Badge } from '@/shared/components/ui/badge';
-import { Button } from '@/shared/components/ui/button';
 import type { Document } from '@/types/api-types';
 
 interface DocumentDetailHeaderProps {
@@ -43,19 +43,26 @@ const getMimeTypeColor = (mimeType: string | null) => {
 
   if (mimeType.startsWith('image/')) return 'from-purple-500 to-purple-600';
   if (mimeType.includes('pdf')) return 'from-red-500 to-red-600';
-  if (mimeType.includes('spreadsheet') || mimeType.includes('excel')) return 'from-green-500 to-green-600';
-  if (mimeType.includes('zip') || mimeType.includes('archive')) return 'from-orange-500 to-orange-600';
+  if (mimeType.includes('spreadsheet') || mimeType.includes('excel'))
+    return 'from-green-500 to-green-600';
+  if (mimeType.includes('zip') || mimeType.includes('archive'))
+    return 'from-orange-500 to-orange-600';
   if (mimeType.includes('html')) return 'from-blue-500 to-blue-600';
   return 'from-gray-500 to-gray-600';
 };
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'completed': return 'success';
-    case 'failed': return 'destructive';
-    case 'processing': return 'default';
-    case 'pending': return 'secondary';
-    default: return 'secondary';
+    case 'completed':
+      return 'success';
+    case 'failed':
+      return 'destructive';
+    case 'processing':
+      return 'default';
+    case 'pending':
+      return 'secondary';
+    default:
+      return 'secondary';
   }
 };
 
@@ -92,15 +99,15 @@ const DocumentDetailHeader: React.FC<DocumentDetailHeaderProps> = ({
 
           <div className="flex items-center space-x-4">
             {/* Document Icon */}
-            <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${colorClass} flex items-center justify-center`}>
+            <div
+              className={`w-12 h-12 rounded-lg bg-gradient-to-br ${colorClass} flex items-center justify-center`}
+            >
               <IconComponent className="w-6 h-6 text-white" />
             </div>
 
             <div>
               <div className="flex items-center space-x-3">
-                <h1 className="text-2xl font-bold text-gray-900">
-                  {document.name}
-                </h1>
+                <h1 className="text-2xl font-bold text-gray-900">{document.name}</h1>
                 <Badge
                   variant={getStatusColor(document.status)}
                   showIcon

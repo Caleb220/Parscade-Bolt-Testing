@@ -9,7 +9,7 @@ import { useAuth } from '@/features/auth';
 import { featureModules } from '@/shared/design/theme';
 
 export type UserRole = 'user' | 'admin';
-export type UserPlan = 'free' | 'standard' |'pro' | 'enterprise';
+export type UserPlan = 'free' | 'standard' | 'pro' | 'enterprise';
 
 export type FeatureId = keyof typeof featureModules.features;
 
@@ -42,8 +42,8 @@ export const useFeatureAccess = (): FeatureAccess => {
     };
 
     const getAccessibleFeatures = (): FeatureId[] => {
-      return Object.keys(featureModules.features).filter(
-        featureId => hasAccess(featureId as FeatureId)
+      return Object.keys(featureModules.features).filter(featureId =>
+        hasAccess(featureId as FeatureId)
       ) as FeatureId[];
     };
 
@@ -63,7 +63,7 @@ export const useFeatureAccess = (): FeatureAccess => {
       }
 
       if (!hasPlan) {
-        const requiredPlan = feature.plans.find(plan => 
+        const requiredPlan = feature.plans.find(plan =>
           ['standard', 'pro', 'enterprise'].includes(plan)
         );
         return `This feature requires ${requiredPlan} plan.`;

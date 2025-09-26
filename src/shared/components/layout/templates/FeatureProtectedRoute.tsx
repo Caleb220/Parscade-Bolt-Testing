@@ -3,8 +3,8 @@ import { Navigate, useLocation } from 'react-router-dom';
 
 import { PATHS } from '@/app/config/routes';
 import { useAuth } from '@/features/auth';
-import LoadingSpinner from '@/shared/components/forms/atoms/LoadingSpinner';
 import { ParscadeCard } from '@/shared/components/brand';
+import LoadingSpinner from '@/shared/components/forms/atoms/LoadingSpinner';
 
 type UserRole = 'user' | 'admin';
 type UserPlan = 'free' | 'standard' | 'pro' | 'enterprise';
@@ -61,8 +61,18 @@ const DefaultUpgradePrompt: React.FC<{
       <ParscadeCard className="max-w-md w-full text-center p-8">
         <div className="mb-6">
           <div className="w-16 h-16 mx-auto mb-4 bg-amber-100 rounded-full flex items-center justify-center">
-            <svg className="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            <svg
+              className="w-8 h-8 text-amber-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+              />
             </svg>
           </div>
           <h2 className="text-2xl font-semibold text-gray-900 mb-2">
@@ -72,23 +82,34 @@ const DefaultUpgradePrompt: React.FC<{
             {requiredPlan
               ? `This feature requires a ${getPlanDisplayName(requiredPlan)} plan or higher.`
               : requiredRole
-              ? `This feature requires ${requiredRole} access.`
-              : 'You do not have access to this feature.'
-            }
+                ? `This feature requires ${requiredRole} access.`
+                : 'You do not have access to this feature.'}
           </p>
         </div>
 
         <div className="space-y-3 mb-6">
           {requiredPlan && (
             <div className="text-sm text-gray-500">
-              <p>Your current plan: <span className="font-medium text-gray-700">{getPlanDisplayName(userPlan)}</span></p>
-              <p>Required plan: <span className="font-medium text-amber-600">{getPlanDisplayName(requiredPlan)}</span></p>
+              <p>
+                Your current plan:{' '}
+                <span className="font-medium text-gray-700">{getPlanDisplayName(userPlan)}</span>
+              </p>
+              <p>
+                Required plan:{' '}
+                <span className="font-medium text-amber-600">
+                  {getPlanDisplayName(requiredPlan)}
+                </span>
+              </p>
             </div>
           )}
           {requiredRole && (
             <div className="text-sm text-gray-500">
-              <p>Your current role: <span className="font-medium text-gray-700">{userRole}</span></p>
-              <p>Required role: <span className="font-medium text-red-600">{requiredRole}</span></p>
+              <p>
+                Your current role: <span className="font-medium text-gray-700">{userRole}</span>
+              </p>
+              <p>
+                Required role: <span className="font-medium text-red-600">{requiredRole}</span>
+              </p>
             </div>
           )}
         </div>
@@ -96,7 +117,7 @@ const DefaultUpgradePrompt: React.FC<{
         <div className="space-y-3">
           {requiredPlan && (
             <button
-              onClick={() => window.location.href = PATHS.DASHBOARD.BILLING}
+              onClick={() => (window.location.href = PATHS.DASHBOARD.BILLING)}
               className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
             >
               Upgrade Plan
@@ -151,13 +172,7 @@ const FeatureProtectedRoute: React.FC<FeatureProtectedRouteProps> = ({
   }
 
   if (!isAuthenticated || !user) {
-    return (
-      <Navigate
-        to={redirectTo}
-        state={{ from: location }}
-        replace
-      />
-    );
+    return <Navigate to={redirectTo} state={{ from: location }} replace />;
   }
 
   // Get user role and plan with proper typing

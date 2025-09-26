@@ -10,7 +10,7 @@ import { logger } from '@/shared/services/logger';
 
 import { ApiError } from './errors';
 
-import type { ZodSchema} from 'zod';
+import type { ZodSchema } from 'zod';
 
 /**
  * Validation configuration for API endpoints
@@ -66,12 +66,9 @@ export class ApiValidator {
           });
         }
 
-        throw new ApiError(
-          'Request validation failed',
-          'VALIDATION_ERROR',
-          400,
-          { validation_errors: formattedErrors }
-        );
+        throw new ApiError('Request validation failed', 'VALIDATION_ERROR', 400, {
+          validation_errors: formattedErrors,
+        });
       }
       throw error;
     }
@@ -103,12 +100,9 @@ export class ApiValidator {
           });
         }
 
-        throw new ApiError(
-          'Query validation failed',
-          'VALIDATION_ERROR',
-          400,
-          { validation_errors: formattedErrors }
-        );
+        throw new ApiError('Query validation failed', 'VALIDATION_ERROR', 400, {
+          validation_errors: formattedErrors,
+        });
       }
       throw error;
     }
@@ -140,12 +134,9 @@ export class ApiValidator {
           });
         }
 
-        throw new ApiError(
-          'Path parameters validation failed',
-          'VALIDATION_ERROR',
-          400,
-          { validation_errors: formattedErrors }
-        );
+        throw new ApiError('Path parameters validation failed', 'VALIDATION_ERROR', 400, {
+          validation_errors: formattedErrors,
+        });
       }
       throw error;
     }

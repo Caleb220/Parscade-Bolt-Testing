@@ -25,7 +25,7 @@ export const formatUserAgent = (userAgent: string): string => {
   if (!userAgent || typeof userAgent !== 'string') {
     return 'Unknown Browser';
   }
-  
+
   if (userAgent.includes('Chrome')) return 'Chrome';
   if (userAgent.includes('Firefox')) return 'Firefox';
   if (userAgent.includes('Safari') && !userAgent.includes('Chrome')) return 'Safari';
@@ -41,7 +41,7 @@ export const formatJobType = (type: string): string => {
   if (!type || typeof type !== 'string') {
     return 'Unknown Job';
   }
-  
+
   switch (type) {
     case 'parse_document':
       return 'Parse Document';
@@ -61,7 +61,7 @@ export const formatStatus = (status: string): string => {
   if (!status || typeof status !== 'string') {
     return 'Unknown';
   }
-  
+
   return status.charAt(0).toUpperCase() + status.slice(1);
 };
 
@@ -72,22 +72,22 @@ export const formatRelativeTime = (date: Date | string): string => {
   if (!date) {
     return 'Unknown time';
   }
-  
+
   const now = new Date();
   const targetDate = typeof date === 'string' ? new Date(date) : date;
-  
+
   // Check for invalid date
   if (isNaN(targetDate.getTime())) {
     return 'Invalid date';
   }
-  
+
   const diffInSeconds = Math.floor((now.getTime() - targetDate.getTime()) / 1000);
 
   if (diffInSeconds < 60) return 'Just now';
   if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
   if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
   if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)} days ago`;
-  
+
   return targetDate.toLocaleDateString();
 };
 
@@ -98,14 +98,14 @@ export const formatDate = (date: Date | string, options?: Intl.DateTimeFormatOpt
   if (!date) {
     return 'Unknown date';
   }
-  
+
   const targetDate = typeof date === 'string' ? new Date(date) : date;
-  
+
   // Check for invalid date
   if (isNaN(targetDate.getTime())) {
     return 'Invalid date';
   }
-  
+
   const defaultOptions: Intl.DateTimeFormatOptions = {
     year: 'numeric',
     month: 'short',

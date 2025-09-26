@@ -13,18 +13,13 @@ import JobConfigCard from './JobConfigCard';
 import JobInfoCard from './JobInfoCard';
 import ProjectInfoCard from './ProjectInfoCard';
 
-
 interface JobInfoSidebarProps {
   job: Job;
   project?: Project;
   document?: Document;
 }
 
-const JobInfoSidebar: React.FC<JobInfoSidebarProps> = ({
-  job,
-  project,
-  document,
-}) => {
+const JobInfoSidebar: React.FC<JobInfoSidebarProps> = ({ job, project, document }) => {
   return (
     <motion.div
       initial={{ opacity: 0, x: 20 }}

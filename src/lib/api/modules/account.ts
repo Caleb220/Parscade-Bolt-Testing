@@ -3,9 +3,9 @@
  * Fully aligned with OpenAPI schema definitions using snake_case
  */
 
-import type { 
-  paths, 
-  UserProfile, 
+import type {
+  paths,
+  UserProfile,
   UpdateProfileRequest,
   UserSession,
   UserSessionListResponse,
@@ -14,15 +14,18 @@ import type {
   ApiKey,
   ApiKeyListResponse,
   ApiKeyWithSecret,
-  CreateApiKeyRequest
+  CreateApiKeyRequest,
 } from '@/types/api-types';
 
 import { apiClient } from '../client';
 
 // Extract exact types from OpenAPI paths
-type GetProfileResponse = paths['/v1/account/me']['get']['responses']['200']['content']['application/json'];
-type UpdateProfileResponse = paths['/v1/account/me']['patch']['responses']['200']['content']['application/json'];
-type UploadAvatarResponse = paths['/v1/account/avatar']['post']['responses']['200']['content']['application/json'];
+type GetProfileResponse =
+  paths['/v1/account/me']['get']['responses']['200']['content']['application/json'];
+type UpdateProfileResponse =
+  paths['/v1/account/me']['patch']['responses']['200']['content']['application/json'];
+type UploadAvatarResponse =
+  paths['/v1/account/avatar']['post']['responses']['200']['content']['application/json'];
 
 /**
  * Account management endpoints
@@ -54,7 +57,7 @@ export const accountApi = {
   async uploadAvatar(file: File): Promise<UploadAvatarResponse> {
     const formData = new FormData();
     formData.append('avatar', file);
-    
+
     return apiClient.post<UploadAvatarResponse>('/v1/account/avatar', formData, {
       headers: {
         'Content-Type': null, // Let browser set multipart boundary

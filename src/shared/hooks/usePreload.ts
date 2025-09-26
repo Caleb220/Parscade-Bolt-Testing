@@ -38,9 +38,7 @@ const processPreloadQueue = async () => {
   // Process up to 2 items concurrently to avoid overwhelming
   const batch = preloadQueue.splice(0, 2);
 
-  await Promise.allSettled(
-    batch.map(item => item.loader())
-  );
+  await Promise.allSettled(batch.map(item => item.loader()));
 
   isProcessingQueue = false;
 
@@ -63,7 +61,7 @@ export const usePreload = (
     onHover = false,
     onVisible = false,
     immediate = false,
-    priority = 'normal'
+    priority = 'normal',
   } = options;
 
   const [isPreloading, setIsPreloading] = useState(false);
@@ -137,7 +135,7 @@ export const usePreload = (
     preload: onHover || onVisible ? schedulePreload : preload,
     isPreloading,
     isPreloaded,
-    error
+    error,
   };
 };
 
@@ -160,8 +158,8 @@ export const useIntersectionPreload = (
     if (!elementRef || !('IntersectionObserver' in window)) return;
 
     const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
+      entries => {
+        entries.forEach(entry => {
           if (entry.isIntersecting) {
             preloadHook.preload();
             observer.unobserve(entry.target);
@@ -192,14 +190,23 @@ export const useRoutePreload = (routes: Record<string, () => Promise<any>>) => {
     const loader = routes[routePath];
     if (!loader) {
       console.warn(`No loader found for route: ${routePath}`);
-      return { preload: () => Promise.resolve(), isPreloading: false, isPreloaded: false, error: null };
+      return {
+        preload: () => Promise.resolve(),
+        isPreloading: false,
+        isPreloaded: false,
+        error: null,
+      };
     }
 
     return usePreload(loader, routePath, options);
   };
 
   const navigateWithPreload = async (routePath: string, preloadOptions?: PreloadOptions) => {
-    const { preload } = preloadRoute(routePath, { immediate: true, priority: 'high', ...preloadOptions });
+    const { preload } = preloadRoute(routePath, {
+      immediate: true,
+      priority: 'high',
+      ...preloadOptions,
+    });
 
     // Start preloading and navigation concurrently
     const preloadPromise = preload();
@@ -227,7 +234,10 @@ export const useBandwidthAwarePreload = (
 
   useEffect(() => {
     // Check network conditions
-    const connection = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
+    const connection =
+      (navigator as any).connection ||
+      (navigator as any).mozConnection ||
+      (navigator as any).webkitConnection;
 
     if (connection) {
       const { effectiveType, saveData } = connection;

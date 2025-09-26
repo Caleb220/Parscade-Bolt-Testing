@@ -4,14 +4,12 @@
  */
 
 import { motion } from 'framer-motion';
-import {
-  Eye, Play, Square, RotateCcw, Trash2, FileText
-} from 'lucide-react';
+import { Eye, Play, Square, RotateCcw, Trash2, FileText } from 'lucide-react';
 import React from 'react';
 
 import { ParscadeCard } from '@/shared/components/brand';
+import Button from '@/shared/components/forms/atoms/Button';
 import { Badge } from '@/shared/components/ui/badge';
-import { Button } from '@/shared/components/ui/button';
 import { formatDate, formatDuration } from '@/shared/utils/formatters';
 import type { Job } from '@/types/api-types';
 
@@ -30,12 +28,18 @@ interface JobsTableProps {
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'completed': return 'success';
-    case 'failed': return 'destructive';
-    case 'running': return 'default';
-    case 'pending': return 'secondary';
-    case 'cancelled': return 'outline';
-    default: return 'secondary';
+    case 'completed':
+      return 'success';
+    case 'failed':
+      return 'destructive';
+    case 'running':
+      return 'default';
+    case 'pending':
+      return 'secondary';
+    case 'cancelled':
+      return 'outline';
+    default:
+      return 'secondary';
   }
 };
 
@@ -146,9 +150,7 @@ const JobsTable: React.FC<JobsTableProps> = ({
                         Type: {job.type} • ID: {job.id.slice(0, 8)}
                       </div>
                       {job.project && (
-                        <div className="text-sm text-gray-500">
-                          Project: {job.project.name}
-                        </div>
+                        <div className="text-sm text-gray-500">Project: {job.project.name}</div>
                       )}
                     </div>
                   </td>
@@ -168,9 +170,7 @@ const JobsTable: React.FC<JobsTableProps> = ({
                         style={{ width: `${job.progress || 0}%` }}
                       ></div>
                     </div>
-                    <div className="text-xs text-gray-500 mt-1">
-                      {job.progress || 0}%
-                    </div>
+                    <div className="text-xs text-gray-500 mt-1">{job.progress || 0}%</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {job.duration ? formatDuration(job.duration) : '-'}

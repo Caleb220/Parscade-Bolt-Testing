@@ -85,9 +85,11 @@ class NetworkErrorBoundary extends Component<Props, State> {
       'net::err_',
     ];
 
-    return networkPatterns.some(pattern => message.includes(pattern)) ||
-           error.name === 'NetworkError' ||
-           error.code === 'NETWORK_ERROR';
+    return (
+      networkPatterns.some(pattern => message.includes(pattern)) ||
+      error.name === 'NetworkError' ||
+      error.code === 'NETWORK_ERROR'
+    );
   }
 
   handleRetry = (): void => {
@@ -134,8 +136,8 @@ class NetworkErrorBoundary extends Component<Props, State> {
 
             <p className="text-gray-600 mb-6">
               {this.state.isOnline
-                ? 'We\'re having trouble connecting to our servers. Please check your connection and try again.'
-                : 'Please check your internet connection and try again. We\'ll automatically retry when your connection is restored.'}
+                ? "We're having trouble connecting to our servers. Please check your connection and try again."
+                : "Please check your internet connection and try again. We'll automatically retry when your connection is restored."}
             </p>
 
             {!this.state.isOnline && (
@@ -168,9 +170,7 @@ class NetworkErrorBoundary extends Component<Props, State> {
             </div>
 
             {this.state.retryCount > 0 && (
-              <p className="text-xs text-gray-500 mt-4">
-                Retry attempts: {this.state.retryCount}
-              </p>
+              <p className="text-xs text-gray-500 mt-4">Retry attempts: {this.state.retryCount}</p>
             )}
           </div>
         </div>

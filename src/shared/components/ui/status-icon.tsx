@@ -30,7 +30,9 @@ const StatusIcon: React.FC<StatusIconProps> = ({ status, className = '', size = 
     case 'cancelled':
       return <XCircle {...iconProps} className={`${iconProps.className} text-red-600`} />;
     case 'processing':
-      return <RefreshCw {...iconProps} className={`${iconProps.className} text-blue-600 animate-spin`} />;
+      return (
+        <RefreshCw {...iconProps} className={`${iconProps.className} text-blue-600 animate-spin`} />
+      );
     case 'pending':
       return <Clock {...iconProps} className={`${iconProps.className} text-yellow-600`} />;
     default:

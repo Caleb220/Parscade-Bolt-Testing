@@ -3,12 +3,12 @@
  * Advanced analytics endpoints with type safety
  */
 
-import type { 
+import type {
   AnalyticsTrendsResponse,
   AnalyticsAccuracyResponse,
   AnalyticsErrorRatesResponse,
   AnalyticsOverviewResponse,
-  AnalyticsQueryParams
+  AnalyticsQueryParams,
 } from '@/types/dashboard-types';
 
 import { apiClient } from '../client';
@@ -39,7 +39,10 @@ export const analyticsApi = {
    */
   async getAccuracyBreakdown(params?: AnalyticsQueryParams): Promise<AnalyticsAccuracyResponse> {
     try {
-      return await apiClient.get<AnalyticsAccuracyResponse>('/v1/analytics/accuracy-breakdown', params);
+      return await apiClient.get<AnalyticsAccuracyResponse>(
+        '/v1/analytics/accuracy-breakdown',
+        params
+      );
     } catch (error) {
       console.warn('Analytics accuracy endpoint not available:', error);
       return {

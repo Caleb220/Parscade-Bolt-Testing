@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 import type { ComponentWithRef } from '../../types/common';
 import type { HTMLMotionProps } from 'framer-motion';
-import type { ButtonHTMLAttributes} from 'react';
+import type { ButtonHTMLAttributes } from 'react';
 
 interface BaseButtonProps {
   readonly variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
@@ -23,7 +23,9 @@ interface ButtonAsLinkProps extends BaseButtonProps {
   readonly to: string;
 }
 
-interface ButtonAsButtonProps extends BaseButtonProps, Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'className'> {
+interface ButtonAsButtonProps
+  extends BaseButtonProps,
+    Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'className'> {
   readonly as?: 'button';
 }
 
@@ -47,7 +49,20 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
     },
     ref
   ) => {
-    const baseClasses = 'inline-flex items-center justify-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
+    // Filter out custom props to prevent React DOM warnings
+    const {
+      variant: _variant,
+      size: _size,
+      isLoading: _isLoading,
+      leftIcon: _leftIcon,
+      rightIcon: _rightIcon,
+      fullWidth: _fullWidth,
+      as: _as,
+      to: _to,
+      ...domProps
+    } = props as any;
+    const baseClasses =
+      'inline-flex items-center justify-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
 
     const variantClasses: Record<NonNullable<BaseButtonProps['variant']>, string> = {
       primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 shadow-sm',
@@ -114,7 +129,7 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
             ref={ref as React.Ref<HTMLAnchorElement>}
             to={to}
             className={classes}
-            {...(props as React.ComponentProps<typeof Link>)}
+            {...domProps}
           >
             {content}
           </Link>
@@ -129,7 +144,7 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
         disabled={disabled || isLoading}
         whileHover={{ scale: disabled || isLoading ? 1 : 1.02 }}
         whileTap={{ scale: disabled || isLoading ? 1 : 0.98 }}
-        {...(props as ButtonHTMLAttributes<HTMLButtonElement>)}
+        {...domProps}
       >
         {content}
       </motion.button>

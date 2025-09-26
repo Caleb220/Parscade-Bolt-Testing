@@ -3,44 +3,60 @@ import React, { useState, useCallback } from 'react';
 
 import { getErrorMessage } from '@/lib/api';
 import { Button } from '@/shared/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/shared/components/ui/card';
 import ConfirmationDialog from '@/shared/components/ui/confirmation-dialog';
-import { Dialog, DialogContent, DialogTrigger } from '@/shared/components/ui/dialog';
+import { Dialog, DialogTrigger } from '@/shared/components/ui/dialog';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import StatusBadge from '@/shared/components/ui/status-badge';
 import {
   useDataSources,
   useDeleteDataSource,
-  useTestDataSource
+  useTestDataSource,
 } from '@/shared/hooks/api/useAccountData';
 import { formatDate } from '@/shared/utils/date';
 
 import CreateDataSourceDialog from './CreateDataSourceDialog';
 
 const DataSourcesSection: React.FC = () => {
-  const { data: dataSources, isLoading: dataSourcesLoading, error: dataSourcesError } = useDataSources();
+  const {
+    data: dataSources,
+    isLoading: dataSourcesLoading,
+    error: dataSourcesError,
+  } = useDataSources();
   const deleteDataSource = useDeleteDataSource();
   const testDataSource = useTestDataSource();
 
   const [showNewDataSourceDialog, setShowNewDataSourceDialog] = useState(false);
   const [confirmDeleteDataSource, setConfirmDeleteDataSource] = useState<string | null>(null);
 
-  const handleTestDataSource = useCallback(async (sourceId: string, sourceName: string) => {
-    try {
-      await testDataSource.mutateAsync(sourceId);
-    } catch (error) {
-      // Error handled by mutation
-    }
-  }, [testDataSource]);
+  const handleTestDataSource = useCallback(
+    async (sourceId: string, _sourceName: string) => {
+      try {
+        await testDataSource.mutateAsync(sourceId);
+      } catch {
+        // Error handled by mutation
+      }
+    },
+    [testDataSource]
+  );
 
-  const handleDeleteDataSource = useCallback(async (sourceId: string) => {
-    try {
-      await deleteDataSource.mutateAsync(sourceId);
-      setConfirmDeleteDataSource(null);
-    } catch (error) {
-      // Error handled by mutation
-    }
-  }, [deleteDataSource]);
+  const handleDeleteDataSource = useCallback(
+    async (sourceId: string) => {
+      try {
+        await deleteDataSource.mutateAsync(sourceId);
+        setConfirmDeleteDataSource(null);
+      } catch {
+        // Error handled by mutation
+      }
+    },
+    [deleteDataSource]
+  );
 
   const handleDataSourceCreated = useCallback(() => {
     setShowNewDataSourceDialog(false);
@@ -86,13 +102,14 @@ const DataSourcesSection: React.FC = () => {
               <Database className="w-8 h-8 text-gray-400 mx-auto mb-2" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">No data sources configured</h3>
               <p className="text-gray-600 mb-4">
-                Data sources enable automated document processing from cloud storage services like S3,
-                Google Drive, or Dropbox. Documents uploaded to connected sources are processed automatically.
+                Data sources enable automated document processing from cloud storage services like
+                S3, Google Drive, or Dropbox. Documents uploaded to connected sources are processed
+                automatically.
               </p>
             </div>
           ) : (
             <div className="space-y-3">
-              {dataSources.map((source) => (
+              {dataSources.map(source => (
                 <div
                   key={source.id}
                   className="flex items-center justify-between p-4 border border-gray-200 rounded-lg"
@@ -104,7 +121,7 @@ const DataSourcesSection: React.FC = () => {
                     <div>
                       <div className="flex items-center space-x-2">
                         <span className="font-medium text-gray-900">{source.name}</span>
-                        <StatusBadge status={source.status as any} className="text-xs" />
+                        <StatusBadge status={source.status as 'active' | 'inactive' | 'error'} className="text-xs" />
                       </div>
                       <div className="text-sm text-gray-500 capitalize">{source.type}</div>
                       {source.last_sync && (

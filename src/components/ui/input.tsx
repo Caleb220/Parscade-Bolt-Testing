@@ -8,23 +8,23 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import React, { forwardRef } from 'react';
 
 const inputVariants = cva(
-  "flex h-10 w-full rounded-md border bg-background px-3 py-2 text-sm ring-offset-background transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+  'flex h-10 w-full rounded-md border bg-background px-3 py-2 text-sm ring-offset-background transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
   {
     variants: {
       variant: {
-        default: "border-input focus-visible:ring-ring",
-        error: "border-red-300 focus-visible:ring-red-500",
-        success: "border-green-300 focus-visible:ring-green-500",
+        default: 'border-input focus-visible:ring-ring',
+        error: 'border-red-300 focus-visible:ring-red-500',
+        success: 'border-green-300 focus-visible:ring-green-500',
       },
       size: {
-        sm: "h-8 px-2 text-xs",
-        md: "h-10 px-3 text-sm",
-        lg: "h-12 px-4 text-base",
+        sm: 'h-8 px-2 text-xs',
+        md: 'h-10 px-3 text-sm',
+        lg: 'h-12 px-4 text-base',
       },
     },
     defaultVariants: {
-      variant: "default",
-      size: "md",
+      variant: 'default',
+      size: 'md',
     },
   }
 );
@@ -49,21 +49,24 @@ export interface InputProps
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({
-    className,
-    variant,
-    size,
-    type,
-    label,
-    error,
-    success,
-    leftIcon,
-    rightIcon,
-    helperText,
-    fullWidth = false,
-    required,
-    ...props
-  }, ref) => {
+  (
+    {
+      className,
+      variant,
+      size,
+      type,
+      label,
+      error,
+      success,
+      leftIcon,
+      rightIcon,
+      helperText,
+      fullWidth = false,
+      required,
+      ...props
+    },
+    ref
+  ) => {
     // Determine variant based on error/success state
     const effectiveVariant = error ? 'error' : success ? 'success' : variant;
 
@@ -76,7 +79,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       iconPadding,
       fullWidth ? 'w-full' : '',
       className,
-    ].filter(Boolean).join(' ');
+    ]
+      .filter(Boolean)
+      .join(' ');
 
     return (
       <div className={fullWidth ? 'w-full' : ''}>
@@ -104,9 +109,13 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             aria-invalid={error ? 'true' : 'false'}
             aria-describedby={
-              error ? `${props.id}-error` :
-              success ? `${props.id}-success` :
-              helperText ? `${props.id}-helper` : undefined
+              error
+                ? `${props.id}-error`
+                : success
+                  ? `${props.id}-success`
+                  : helperText
+                    ? `${props.id}-helper`
+                    : undefined
             }
             {...props}
           />
@@ -142,7 +151,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
   }
 );
 
-Input.displayName = "Input";
+Input.displayName = 'Input';
 
 export { Input, inputVariants };
 export default Input;

@@ -10,14 +10,14 @@ const secureString = (name: string, minLength = 1) =>
     .trim()
     .min(minLength, `${name} must be at least ${minLength} characters.`)
     .refine(
-      (value) => !insecureValuePatterns.some((pattern) => pattern.test(value)),
-      `${name} must be set to a secure value.`,
+      value => !insecureValuePatterns.some(pattern => pattern.test(value)),
+      `${name} must be set to a secure value.`
     );
 
 const optionalSecureString = (name: string, minLength = 1) =>
   secureString(name, minLength)
     .optional()
-    .transform((value) => (value && value.length > 0 ? value : undefined));
+    .transform(value => (value && value.length > 0 ? value : undefined));
 
 /**
  * Raw import.meta.env validation used at startup time.

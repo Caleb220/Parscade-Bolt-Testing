@@ -4,7 +4,15 @@
  */
 
 import { motion } from 'framer-motion';
-import { FileText, CheckCircle, Clock, AlertTriangle, Zap, Activity, RefreshCw } from 'lucide-react';
+import {
+  FileText,
+  CheckCircle,
+  Clock,
+  AlertTriangle,
+  Zap,
+  Activity,
+  RefreshCw,
+} from 'lucide-react';
 import React from 'react';
 
 import { ParscadeCard } from '@/shared/components/brand';
@@ -18,9 +26,14 @@ import type { ActivityItem } from '@/types/dashboard-types';
  * Real-time activity feed with backend integration
  */
 const RecentActivity: React.FC = () => {
-  const { data: activityData, isLoading, error, refetch } = useDashboardActivity({ 
-    page: 1, 
-    limit: 10 
+  const {
+    data: activityData,
+    isLoading,
+    error,
+    refetch,
+  } = useDashboardActivity({
+    page: 1,
+    limit: 10,
   });
 
   const getActivityIcon = (type: ActivityItem['type']) => {
@@ -80,11 +93,11 @@ const RecentActivity: React.FC = () => {
           <Activity className="w-5 h-5 text-blue-600 mr-3" />
           <div>
             <h2 className="text-lg font-semibold text-gray-900">Recent Activity</h2>
-              <p className="text-blue-600 text-sm mt-1 hidden sm:block">Latest processing updates</p>
+            <p className="text-blue-600 text-sm mt-1 hidden sm:block">Latest processing updates</p>
           </div>
         </div>
       </div>
-      
+
       <div className="flex-1 p-6">
         {isLoading ? (
           <div className="space-y-3">
@@ -118,8 +131,8 @@ const RecentActivity: React.FC = () => {
         ) : activities.length === 0 ? (
           <div className="text-center py-12">
             <motion.div
-                initial={{scale: 0.8}}
-                animate={{scale: 1}}
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
               className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-parscade"
             >
               <Clock className="w-6 h-6 text-blue-500" />
@@ -129,36 +142,34 @@ const RecentActivity: React.FC = () => {
           </div>
         ) : (
           <div className="space-y-3">
-              {activities.map((activity) => (
-                  <motion.div
+            {activities.map(activity => (
+              <motion.div
                 key={activity.id}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 whileHover={{
-                    x: 2,
-                  backgroundColor: "rgba(14, 165, 233, 0.02)",
-                  transition: { duration: 0.2 }
+                  x: 2,
+                  backgroundColor: 'rgba(14, 165, 233, 0.02)',
+                  transition: { duration: 0.2 },
                 }}
                 className="flex items-start space-x-3 p-3 rounded-lg transition-all duration-200 hover:shadow-sm group cursor-pointer"
               >
-                <motion.div 
+                <motion.div
                   className={`flex-shrink-0 mt-1 w-8 h-8 bg-gradient-to-br ${getActivityColor(activity.type)} rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-all duration-200`}
                   whileHover={{ scale: 1.1 }}
                 >
                   {getActivityIcon(activity.type)}
                 </motion.div>
-                      <div className="flex-1">
-                          <p className="text-sm font-medium text-gray-900 group-hover:text-blue-700 transition-colors duration-200">
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-900 group-hover:text-blue-700 transition-colors duration-200">
                     {activity.title}
-                          </p>
-                          <p className="text-sm text-slate-600 truncate">
-                    {activity.description}
                   </p>
+                  <p className="text-sm text-slate-600 truncate">{activity.description}</p>
                   <p className="text-xs text-slate-500 mt-1">
                     {formatRelativeTime(activity.timestamp)}
                   </p>
-                      </div>
-                  </motion.div>
+                </div>
+              </motion.div>
             ))}
           </div>
         )}

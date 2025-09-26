@@ -40,10 +40,11 @@ const AccountLayout: React.FC = () => {
   const location = useLocation();
   const { data: user, isLoading, error, refetch } = useAccount();
 
-  const activeTab = tabs.find(tab => 
-    tab.path === location.pathname || 
-    (tab.id === 'profile' && location.pathname === '/account')
-  )?.id || 'profile';
+  const activeTab =
+    tabs.find(
+      tab =>
+        tab.path === location.pathname || (tab.id === 'profile' && location.pathname === '/account')
+    )?.id || 'profile';
 
   const contextValue: AccountContextType = {
     user,
@@ -66,45 +67,41 @@ const AccountLayout: React.FC = () => {
                       Manage your profile, security, and integration preferences
                     </p>
                     {user?.email && (
-                      <p className="text-sm text-blue-600 mt-1">
-                        Signed in as {user.email}
-                      </p>
+                      <p className="text-sm text-blue-600 mt-1">Signed in as {user.email}</p>
                     )}
                   </div>
-                  
+
                   {isLoading ? (
                     <div className="flex items-center space-x-2">
                       <Skeleton className="h-8 w-8 rounded-full" />
                       <Skeleton className="h-4 w-24" />
                     </div>
-                  ) : user && (
-                    <div className="flex items-center space-x-3">
-                      {user.avatar_url ? (
-                        <img
-                          src={user.avatar_url}
-                          alt={user.full_name || user.email}
-                          className="w-8 h-8 rounded-full object-cover border-2 border-white shadow-sm"
-                        />
-                      ) : (
-                        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-bold border-2 border-white shadow-sm">
-                          {(user.full_name || user.email)?.charAt(0).toUpperCase()}
-                        </div>
-                      )}
-                      <span className="text-sm font-medium text-gray-700">
-                        {user.full_name || user.email}
-                      </span>
-                    </div>
+                  ) : (
+                    user && (
+                      <div className="flex items-center space-x-3">
+                        {user.avatar_url ? (
+                          <img
+                            src={user.avatar_url}
+                            alt={user.full_name || user.email}
+                            className="w-8 h-8 rounded-full object-cover border-2 border-white shadow-sm"
+                          />
+                        ) : (
+                          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-bold border-2 border-white shadow-sm">
+                            {(user.full_name || user.email)?.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                        <span className="text-sm font-medium text-gray-700">
+                          {user.full_name || user.email}
+                        </span>
+                      </div>
+                    )
                   )}
                   {error && (
                     <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded text-sm">
                       <p className="text-red-600">
                         Failed to load account data: {getErrorMessage(error)}
                       </p>
-                      <button 
-                        onClick={() => refetch()}
-                      >
-                        Retry
-                      </button>
+                      <button onClick={() => refetch()}>Retry</button>
                     </div>
                   )}
                 </div>
@@ -138,25 +135,25 @@ const AccountLayout: React.FC = () => {
                   <div className="sm:hidden">
                     <div className="relative">
                       <div className="flex space-x-3 overflow-x-auto pb-2 px-1 py-2 scrollbar-hide">
-                      {tabs.map(({ id, label, icon: Icon, path }) => (
-                        <NavLink
-                          key={id}
-                          to={path}
-                          className={({ isActive }) =>
-                            `flex items-center px-4 py-2 rounded-full whitespace-nowrap text-sm font-medium transition-colors duration-200 min-w-max ${
-                              isActive
-                                ? 'bg-blue-100 text-blue-700'
-                                : 'bg-white text-gray-600 hover:bg-gray-50'
-                            }`
-                          }
-                          end={id === 'profile'}
-                        >
-                          <Icon className="w-4 h-4 mr-2 flex-shrink-0" />
-                          {label}
-                        </NavLink>
-                      ))}
+                        {tabs.map(({ id, label, icon: Icon, path }) => (
+                          <NavLink
+                            key={id}
+                            to={path}
+                            className={({ isActive }) =>
+                              `flex items-center px-4 py-2 rounded-full whitespace-nowrap text-sm font-medium transition-colors duration-200 min-w-max ${
+                                isActive
+                                  ? 'bg-blue-100 text-blue-700'
+                                  : 'bg-white text-gray-600 hover:bg-gray-50'
+                              }`
+                            }
+                            end={id === 'profile'}
+                          >
+                            <Icon className="w-4 h-4 mr-2 flex-shrink-0" />
+                            {label}
+                          </NavLink>
+                        ))}
                       </div>
-                      
+
                       {/* Scroll Indicator - Right Side */}
                       <div className="absolute right-0 top-0 bottom-2 w-8 bg-gradient-to-l from-gray-50 to-transparent pointer-events-none flex items-center justify-end pr-1">
                         <div className="w-1 h-1 bg-gray-400 rounded-full animate-pulse"></div>

@@ -5,7 +5,12 @@ import { useForm } from 'react-hook-form';
 
 import { webhookSchema, type WebhookFormData } from '@/lib/validation/account';
 import { Button } from '@/shared/components/ui/button';
-import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog';
+import {
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/shared/components/ui/dialog';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Switch } from '@/shared/components/ui/switch';
@@ -37,15 +42,18 @@ const CreateWebhookDialog: React.FC<CreateWebhookDialogProps> = ({ onSuccess }) 
     },
   });
 
-  const handleCreateWebhook = useCallback(async (data: WebhookFormData) => {
-    try {
-      const result = await createWebhook.mutateAsync(data);
-      setNewWebhookSecret(result.secret);
-      reset();
-    } catch (error) {
-      // Error handled by mutation
-    }
-  }, [createWebhook, reset]);
+  const handleCreateWebhook = useCallback(
+    async (data: WebhookFormData) => {
+      try {
+        const result = await createWebhook.mutateAsync(data);
+        setNewWebhookSecret(result.secret);
+        reset();
+      } catch (error) {
+        // Error handled by mutation
+      }
+    },
+    [createWebhook, reset]
+  );
 
   const handleDone = useCallback(() => {
     setNewWebhookSecret(null);
@@ -56,9 +64,7 @@ const CreateWebhookDialog: React.FC<CreateWebhookDialogProps> = ({ onSuccess }) 
     <DialogContent>
       <DialogHeader>
         <DialogTitle>Create Webhook</DialogTitle>
-        <DialogDescription>
-          Add a new webhook endpoint to receive notifications
-        </DialogDescription>
+        <DialogDescription>Add a new webhook endpoint to receive notifications</DialogDescription>
       </DialogHeader>
 
       {newWebhookSecret ? (
@@ -75,10 +81,7 @@ const CreateWebhookDialog: React.FC<CreateWebhookDialogProps> = ({ onSuccess }) 
               <Label>Webhook Secret</Label>
               <div className="flex items-center space-x-2">
                 <Input value={newWebhookSecret} readOnly className="font-mono text-sm" />
-                <Button
-                  size="sm"
-                  onClick={() => copy(newWebhookSecret, 'Webhook secret')}
-                >
+                <Button size="sm" onClick={() => copy(newWebhookSecret, 'Webhook secret')}>
                   <Copy className="w-4 h-4" />
                 </Button>
               </div>
@@ -97,50 +100,39 @@ const CreateWebhookDialog: React.FC<CreateWebhookDialogProps> = ({ onSuccess }) 
               {...register('url')}
               placeholder="https://your-app.com/webhook"
             />
-            {errors.url && (
-              <p className="text-sm text-red-600">{errors.url.message}</p>
-            )}
+            {errors.url && <p className="text-sm text-red-600">{errors.url.message}</p>}
           </div>
 
           <div className="space-y-2">
             <Label>Events to Subscribe</Label>
             <div className="grid grid-cols-2 gap-2">
-              {[
-                'job.completed',
-                'job.failed',
-                'document.processed',
-                'document.failed'
-              ].map((event) => (
-                <label key={event} className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    value={event}
-                    {...register('events')}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                  <span className="text-sm">{event}</span>
-                </label>
-              ))}
+              {['job.completed', 'job.failed', 'document.processed', 'document.failed'].map(
+                event => (
+                  <label key={event} className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      value={event}
+                      {...register('events')}
+                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="text-sm">{event}</span>
+                  </label>
+                )
+              )}
             </div>
-            {errors.events && (
-              <p className="text-sm text-red-600">{errors.events.message}</p>
-            )}
+            {errors.events && <p className="text-sm text-red-600">{errors.events.message}</p>}
           </div>
 
           <div className="flex items-center space-x-2">
             <Switch
               checked={watch('active')}
-              onCheckedChange={(checked) => setValue('active', checked)}
+              onCheckedChange={checked => setValue('active', checked)}
             />
             <Label>Active</Label>
           </div>
 
           <div className="flex justify-end space-x-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onSuccess}
-            >
+            <Button type="button" variant="outline" onClick={onSuccess}>
               Cancel
             </Button>
             <Button type="submit" disabled={createWebhook.isPending}>

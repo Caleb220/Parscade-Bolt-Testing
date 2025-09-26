@@ -13,21 +13,26 @@ import {
 } from '@/shared/schemas/common';
 
 // Contact form validation schema matching backend exactly
-export const contactFormSchema = z.object({
-  name: nonEmptyTextSchema('Name', 100),
-  email: emailSchema,
-  company: optionalTrimmedStringSchema('Company', 1, 100),
-  subject: nonEmptyTextSchema('Subject', 200),
-  message: z.string()
-    .trim()
-    .min(1, 'Message is required')
-    .max(2000, 'Message must be 2000 characters or less'),
-}).strict();
+export const contactFormSchema = z
+  .object({
+    name: nonEmptyTextSchema('Name', 100),
+    email: emailSchema,
+    company: optionalTrimmedStringSchema('Company', 1, 100),
+    subject: nonEmptyTextSchema('Subject', 200),
+    message: z
+      .string()
+      .trim()
+      .min(1, 'Message is required')
+      .max(2000, 'Message must be 2000 characters or less'),
+  })
+  .strict();
 
 // Contact form response validation schema
-export const contactResponseSchema = z.object({
-  success: z.boolean(),
-}).strict();
+export const contactResponseSchema = z
+  .object({
+    success: z.boolean(),
+  })
+  .strict();
 
 // Type exports
 export type ContactFormData = z.infer<typeof contactFormSchema>;

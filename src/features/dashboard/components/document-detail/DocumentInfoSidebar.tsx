@@ -12,16 +12,12 @@ import DocumentInfoCard from './DocumentInfoCard';
 import DocumentMetadataCard from './DocumentMetadataCard';
 import { ProjectInfoCard } from '../../../jobs/components';
 
-
 interface DocumentInfoSidebarProps {
   document: Document;
   project?: Project;
 }
 
-const DocumentInfoSidebar: React.FC<DocumentInfoSidebarProps> = ({
-  document,
-  project,
-}) => {
+const DocumentInfoSidebar: React.FC<DocumentInfoSidebarProps> = ({ document, project }) => {
   return (
     <motion.div
       initial={{ opacity: 0, x: 20 }}

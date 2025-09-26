@@ -1,5 +1,5 @@
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
-import { createTransport } from 'npm:nodemailer@6.9.7'
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { createTransport } from 'npm:nodemailer@6.9.7';
 
 const corsHeaders = {
   // SECURITY: Allow any origin for contact form submissions
@@ -11,56 +11,47 @@ const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
-}
+};
 
 interface ContactFormData {
-  name: string
-  email: string
-  company?: string
-  subject: string
-  message: string
+  name: string;
+  email: string;
+  company?: string;
+  subject: string;
+  message: string;
 }
 
-serve(async (req) => {
+serve(async req => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+    return new Response('ok', { headers: corsHeaders });
   }
 
   try {
     if (req.method !== 'POST') {
-      return new Response(
-        JSON.stringify({ error: 'Method not allowed' }),
-        { 
-          status: 405, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-        }
-      )
+      return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+        status: 405,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
-    const formData: ContactFormData = await req.json()
+    const formData: ContactFormData = await req.json();
 
     // Validate required fields
     if (!formData.name || !formData.email || !formData.subject || !formData.message) {
-      return new Response(
-        JSON.stringify({ error: 'Missing required fields' }),
-        { 
-          status: 400, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-        }
-      )
+      return new Response(JSON.stringify({ error: 'Missing required fields' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
-      return new Response(
-        JSON.stringify({ error: 'Invalid email format' }),
-        { 
-          status: 400, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-        }
-      )
+      return new Response(JSON.stringify({ error: 'Invalid email format' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     // Create SMTP transporter
@@ -72,7 +63,7 @@ serve(async (req) => {
         user: 'admin@parscade.com',
         pass: 'Plcentaonweetbix1!',
       },
-    })
+    });
 
     // Email content
     const mailOptions = {
@@ -97,12 +88,16 @@ serve(async (req) => {
                 <td style="padding: 8px 0; font-weight: bold; color: #374151;">Email:</td>
                 <td style="padding: 8px 0; color: #1f2937;">${formData.email || 'Not provided'}</td>
               </tr>
-              ${formData.company ? `
+              ${
+                formData.company
+                  ? `
               <tr>
                 <td style="padding: 8px 0; font-weight: bold; color: #374151;">Company:</td>
                 <td style="padding: 8px 0; color: #1f2937;">${formData.company}</td>
               </tr>
-              ` : ''}
+              `
+                  : ''
+              }
               <tr>
                 <td style="padding: 8px 0; font-weight: bold; color: #374151;">Subject:</td>
                 <td style="padding: 8px 0; color: #1f2937;">${formData.subject || 'Not provided'}</td>
@@ -125,14 +120,14 @@ serve(async (req) => {
               </tr>
               <tr>
                 <td style="font-weight: bold; padding: 2px 0; color: #000000;">Timestamp:</td>
-                <td style="padding: 2px 0; color: #000000;">${new Date().toLocaleString('en-US', { 
+                <td style="padding: 2px 0; color: #000000;">${new Date().toLocaleString('en-US', {
                   timeZone: 'America/Los_Angeles',
                   year: 'numeric',
-                  month: 'long', 
+                  month: 'long',
                   day: 'numeric',
                   hour: '2-digit',
                   minute: '2-digit',
-                  second: '2-digit'
+                  second: '2-digit',
                 })}</td>
               </tr>
               <tr>
@@ -155,51 +150,50 @@ ${formData.message || 'No message provided'}
 
 ---
 Sent from: Parscade Contact Form
-Timestamp: ${new Date().toLocaleString('en-US', { 
-  timeZone: 'America/Los_Angeles',
-  year: 'numeric',
-  month: 'long', 
-  day: 'numeric',
-  hour: '2-digit',
-  minute: '2-digit',
-  second: '2-digit'
-})}
+Timestamp: ${new Date().toLocaleString('en-US', {
+        timeZone: 'America/Los_Angeles',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+      })}
 IP Address: ${req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'Unknown'}
       `,
-    }
+    };
 
     // Send immediate response to user
     const response = new Response(
-      JSON.stringify({ 
-        success: true, 
-        message: 'Message received! We\'ll get back to you within 24 hours.' 
+      JSON.stringify({
+        success: true,
+        message: "Message received! We'll get back to you within 24 hours.",
       }),
-      { 
-        status: 200, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
-    )
+    );
 
     // Send email in background (don't await)
-    transporter.sendMail(mailOptions).catch((emailError) => {
-      console.error('Background email sending failed:', emailError)
+    transporter.sendMail(mailOptions).catch(emailError => {
+      console.error('Background email sending failed:', emailError);
       // Could implement retry logic or dead letter queue here
-    })
+    });
 
-    return response
-
+    return response;
   } catch (error) {
-    console.error('Error sending email:', error)
-    
+    console.error('Error sending email:', error);
+
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         error: 'Failed to send email',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        details: error instanceof Error ? error.message : 'Unknown error',
       }),
-      { 
-        status: 500, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
-    )
+    );
   }
-})
+});

@@ -4,7 +4,12 @@ import { useForm } from 'react-hook-form';
 
 import { dataSourceSchema, type DataSourceFormData } from '@/lib/validation/account';
 import { Button } from '@/shared/components/ui/button';
-import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog';
+import {
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/shared/components/ui/dialog';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { useCreateDataSource } from '@/shared/hooks/api/useAccountData';
@@ -30,36 +35,31 @@ const CreateDataSourceDialog: React.FC<CreateDataSourceDialogProps> = ({ onSucce
     },
   });
 
-  const handleCreateDataSource = useCallback(async (data: DataSourceFormData) => {
-    try {
-      await createDataSource.mutateAsync(data);
-      reset();
-      onSuccess();
-    } catch (error) {
-      // Error handled by mutation
-    }
-  }, [createDataSource, reset, onSuccess]);
+  const handleCreateDataSource = useCallback(
+    async (data: DataSourceFormData) => {
+      try {
+        await createDataSource.mutateAsync(data);
+        reset();
+        onSuccess();
+      } catch (error) {
+        // Error handled by mutation
+      }
+    },
+    [createDataSource, reset, onSuccess]
+  );
 
   return (
     <DialogContent className="max-w-lg">
       <DialogHeader>
         <DialogTitle>Add Data Source</DialogTitle>
-        <DialogDescription>
-          Connect a new data source for automated processing
-        </DialogDescription>
+        <DialogDescription>Connect a new data source for automated processing</DialogDescription>
       </DialogHeader>
 
       <form onSubmit={handleSubmit(handleCreateDataSource)} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="ds_name">Source Name</Label>
-          <Input
-            id="ds_name"
-            {...register('name')}
-            placeholder="My S3 Bucket"
-          />
-          {errors.name && (
-            <p className="text-sm text-red-600">{errors.name.message}</p>
-          )}
+          <Input id="ds_name" {...register('name')} placeholder="My S3 Bucket" />
+          {errors.name && <p className="text-sm text-red-600">{errors.name.message}</p>}
         </div>
 
         <div className="space-y-2">
@@ -74,17 +74,11 @@ const CreateDataSourceDialog: React.FC<CreateDataSourceDialogProps> = ({ onSucce
             <option value="azure">Azure Blob Storage</option>
             <option value="supabase">Supabase Storage</option>
           </select>
-          {errors.type && (
-            <p className="text-sm text-red-600">{errors.type.message}</p>
-          )}
+          {errors.type && <p className="text-sm text-red-600">{errors.type.message}</p>}
         </div>
 
         <div className="flex justify-end space-x-2">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onSuccess}
-          >
+          <Button type="button" variant="outline" onClick={onSuccess}>
             Cancel
           </Button>
           <Button type="submit" disabled={createDataSource.isPending}>

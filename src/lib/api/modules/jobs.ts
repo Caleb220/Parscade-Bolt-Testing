@@ -4,12 +4,12 @@
  * Fully aligned with backend handoff specification
  */
 
-import type { 
-  Job, 
-  JobCreateData, 
-  JobUpdateData, 
-  JobQueryParams, 
-  PaginatedResponse 
+import type {
+  Job,
+  JobCreateData,
+  JobUpdateData,
+  JobQueryParams,
+  PaginatedResponse,
 } from '@/types/api-types';
 
 import { apiClient } from '../client';
@@ -67,9 +67,13 @@ export const jobsApi = {
    * Cancel a running or pending job
    */
   async cancelJob(jobId: string): Promise<Job> {
-    return apiClient.post<Job>(`/v1/jobs/${jobId}/cancel`, {}, {
-      retryable: false,
-    });
+    return apiClient.post<Job>(
+      `/v1/jobs/${jobId}/cancel`,
+      {},
+      {
+        retryable: false,
+      }
+    );
   },
 
   /**
@@ -82,7 +86,11 @@ export const jobsApi = {
   /**
    * Submit parse job for document (convenience method)
    */
-  async submitParseJob(documentId: string, projectId?: string, options?: Record<string, unknown>): Promise<Job> {
+  async submitParseJob(
+    documentId: string,
+    projectId?: string,
+    options?: Record<string, unknown>
+  ): Promise<Job> {
     return this.createJob({
       type: 'parse_document',
       source: 'upload',

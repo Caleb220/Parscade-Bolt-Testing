@@ -8,8 +8,8 @@ import { Plus, Search, FileText, Eye, Trash2 } from 'lucide-react';
 import React, { useState, useMemo } from 'react';
 
 import { ParscadeCard } from '@/shared/components/brand';
+import Button from '@/shared/components/forms/atoms/Button';
 import { Badge } from '@/shared/components/ui/badge';
-import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { formatDate, formatBytes } from '@/shared/utils/formatters';
 import type { Document } from '@/types/api-types';
@@ -28,11 +28,7 @@ interface DocumentCardProps {
   onRemove: () => void;
 }
 
-const DocumentCard: React.FC<DocumentCardProps> = React.memo(({
-  document,
-  onView,
-  onRemove,
-}) => (
+const DocumentCard: React.FC<DocumentCardProps> = React.memo(({ document, onView, onRemove }) => (
   <motion.div
     initial={{ opacity: 0, scale: 0.95 }}
     animate={{ opacity: 1, scale: 1 }}
@@ -46,19 +42,12 @@ const DocumentCard: React.FC<DocumentCardProps> = React.memo(({
             <FileText className="w-5 h-5 text-blue-600" />
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="font-medium text-gray-900 truncate">
-              {document.name}
-            </h3>
-            <p className="text-sm text-gray-500">
-              {document.mime_type || 'Unknown type'}
-            </p>
+            <h3 className="font-medium text-gray-900 truncate">{document.name}</h3>
+            <p className="text-sm text-gray-500">{document.mime_type || 'Unknown type'}</p>
           </div>
         </div>
 
-        <Badge
-          variant={document.status === 'completed' ? 'success' : 'secondary'}
-          showIcon
-        >
+        <Badge variant={document.status === 'completed' ? 'success' : 'secondary'} showIcon>
           {document.status}
         </Badge>
       </div>
@@ -72,9 +61,7 @@ const DocumentCard: React.FC<DocumentCardProps> = React.memo(({
         </div>
         <div className="flex justify-between text-sm">
           <span className="text-gray-500">Added</span>
-          <span className="text-gray-900">
-            {formatDate(document.created_at)}
-          </span>
+          <span className="text-gray-900">{formatDate(document.created_at)}</span>
         </div>
       </div>
 
@@ -115,9 +102,10 @@ const ProjectDocumentsSection: React.FC<ProjectDocumentsSectionProps> = ({
 
   const filteredDocuments = useMemo(() => {
     if (!searchTerm) return documents;
-    return documents.filter(doc =>
-      doc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (doc.mime_type && doc.mime_type.toLowerCase().includes(searchTerm.toLowerCase()))
+    return documents.filter(
+      doc =>
+        doc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (doc.mime_type && doc.mime_type.toLowerCase().includes(searchTerm.toLowerCase()))
     );
   }, [documents, searchTerm]);
 
@@ -131,12 +119,8 @@ const ProjectDocumentsSection: React.FC<ProjectDocumentsSectionProps> = ({
       {/* Section Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-xl font-semibold text-gray-900">
-            Project Documents
-          </h2>
-          <p className="text-gray-600 mt-1">
-            Manage documents associated with this project
-          </p>
+          <h2 className="text-xl font-semibold text-gray-900">Project Documents</h2>
+          <p className="text-gray-600 mt-1">Manage documents associated with this project</p>
         </div>
 
         <Button
@@ -153,7 +137,7 @@ const ProjectDocumentsSection: React.FC<ProjectDocumentsSectionProps> = ({
         <Input
           placeholder="Search documents..."
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={e => setSearchTerm(e.target.value)}
           leftIcon={<Search className="w-4 h-4" />}
           fullWidth
         />
@@ -205,14 +189,10 @@ const ProjectDocumentsSection: React.FC<ProjectDocumentsSectionProps> = ({
           <p className="text-gray-500 mb-6">
             {searchTerm
               ? 'Try adjusting your search terms'
-              : 'Get started by adding your first document to this project'
-            }
+              : 'Get started by adding your first document to this project'}
           </p>
           {!searchTerm && (
-            <Button
-              leftIcon={<Plus className="w-4 h-4" />}
-              onClick={onAddDocument}
-            >
+            <Button leftIcon={<Plus className="w-4 h-4" />} onClick={onAddDocument}>
               Add First Document
             </Button>
           )}

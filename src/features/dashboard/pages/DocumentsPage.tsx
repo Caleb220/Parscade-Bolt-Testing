@@ -16,7 +16,7 @@ import {
   useIngestDocument,
   useUpdateDocument,
   useDeleteDocument,
-  useDocumentDownload
+  useDocumentDownload,
 } from '@/shared/hooks/api/useDocuments';
 import { useSubmitParseJob } from '@/shared/hooks/api/useJobs';
 import { useProjects } from '@/shared/hooks/api/useProjects';
@@ -25,14 +25,10 @@ import type {
   Document,
   DocumentQueryParams,
   DocumentStatus,
-  DocumentUpdateData
+  DocumentUpdateData,
 } from '@/types/api-types';
 
-import {
-  DocumentsHeader,
-  DocumentsFilters,
-  DocumentsTable,
-} from '../components/documents';
+import { DocumentsHeader, DocumentsFilters, DocumentsTable } from '../components/documents';
 import DashboardLayout from '../components/layout/DashboardLayout';
 
 /**
@@ -93,42 +89,57 @@ const DocumentsPage: React.FC = () => {
   const projects = projectsData?.results || [];
 
   // Update URL when filters change
-  const updateSearchParams = useCallback((updates: Record<string, string | number>) => {
-    const newParams = new URLSearchParams(searchParams);
-    Object.entries(updates).forEach(([key, value]) => {
-      if (value && value !== 'all' && value !== '') {
-        newParams.set(key, value.toString());
-      } else {
-        newParams.delete(key);
-      }
-    });
-    setSearchParams(newParams);
-  }, [searchParams, setSearchParams]);
+  const updateSearchParams = useCallback(
+    (updates: Record<string, string | number>) => {
+      const newParams = new URLSearchParams(searchParams);
+      Object.entries(updates).forEach(([key, value]) => {
+        if (value && value !== 'all' && value !== '') {
+          newParams.set(key, value.toString());
+        } else {
+          newParams.delete(key);
+        }
+      });
+      setSearchParams(newParams);
+    },
+    [searchParams, setSearchParams]
+  );
 
   // Filter handlers
-  const handleSearchChange = useCallback((value: string) => {
-    setSearchTerm(value);
-    setCurrentPage(1);
-    updateSearchParams({ search: value, page: 1 });
-  }, [updateSearchParams]);
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      setSearchTerm(value);
+      setCurrentPage(1);
+      updateSearchParams({ search: value, page: 1 });
+    },
+    [updateSearchParams]
+  );
 
-  const handleStatusChange = useCallback((status: DocumentStatus | 'all') => {
-    setSelectedStatus(status);
-    setCurrentPage(1);
-    updateSearchParams({ status, page: 1 });
-  }, [updateSearchParams]);
+  const handleStatusChange = useCallback(
+    (status: DocumentStatus | 'all') => {
+      setSelectedStatus(status);
+      setCurrentPage(1);
+      updateSearchParams({ status, page: 1 });
+    },
+    [updateSearchParams]
+  );
 
-  const handleMimeTypeChange = useCallback((mimeType: string) => {
-    setSelectedMimeType(mimeType);
-    setCurrentPage(1);
-    updateSearchParams({ mime_type: mimeType, page: 1 });
-  }, [updateSearchParams]);
+  const handleMimeTypeChange = useCallback(
+    (mimeType: string) => {
+      setSelectedMimeType(mimeType);
+      setCurrentPage(1);
+      updateSearchParams({ mime_type: mimeType, page: 1 });
+    },
+    [updateSearchParams]
+  );
 
-  const handleProjectChange = useCallback((projectId: string) => {
-    setSelectedProject(projectId);
-    setCurrentPage(1);
-    updateSearchParams({ project_id: projectId, page: 1 });
-  }, [updateSearchParams]);
+  const handleProjectChange = useCallback(
+    (projectId: string) => {
+      setSelectedProject(projectId);
+      setCurrentPage(1);
+      updateSearchParams({ project_id: projectId, page: 1 });
+    },
+    [updateSearchParams]
+  );
 
   const handleClearFilters = useCallback(() => {
     setSearchTerm('');
@@ -161,47 +172,59 @@ const DocumentsPage: React.FC = () => {
   }, [documents, selectedDocuments.size]);
 
   // Document actions
-  const handleView = useCallback((document: Document) => {
-    navigate(`/dashboard/documents/${document.id}`);
-  }, [navigate]);
+  const handleView = useCallback(
+    (document: Document) => {
+      navigate(`/dashboard/documents/${document.id}`);
+    },
+    [navigate]
+  );
 
-  const handleEdit = useCallback((document: Document) => {
-    // Implementation for edit modal/page
-    toast({
-      title: 'Edit Document',
-      description: 'Edit functionality will be implemented here',
-    });
-  }, [toast]);
-
-  const handleDelete = useCallback(async (document: Document) => {
-    if (!confirm(`Are you sure you want to delete "${document.name}"?`)) return;
-
-    try {
-      await deleteDocument.mutateAsync(document.id);
+  const handleEdit = useCallback(
+    (document: Document) => {
+      // Implementation for edit modal/page
       toast({
-        title: 'Document deleted',
-        description: `"${document.name}" has been deleted successfully.`,
+        title: 'Edit Document',
+        description: 'Edit functionality will be implemented here',
       });
-    } catch (error) {
-      toast({
-        title: 'Failed to delete document',
-        description: getErrorMessage(error),
-        variant: 'destructive',
-      });
-    }
-  }, [deleteDocument, toast]);
+    },
+    [toast]
+  );
 
-  const handleDownload = useCallback(async (document: Document) => {
-    try {
-      await downloadDocument.mutateAsync(document.id);
-    } catch (error) {
-      toast({
-        title: 'Download failed',
-        description: getErrorMessage(error),
-        variant: 'destructive',
-      });
-    }
-  }, [downloadDocument, toast]);
+  const handleDelete = useCallback(
+    async (document: Document) => {
+      if (!confirm(`Are you sure you want to delete "${document.name}"?`)) return;
+
+      try {
+        await deleteDocument.mutateAsync(document.id);
+        toast({
+          title: 'Document deleted',
+          description: `"${document.name}" has been deleted successfully.`,
+        });
+      } catch (error) {
+        toast({
+          title: 'Failed to delete document',
+          description: getErrorMessage(error),
+          variant: 'destructive',
+        });
+      }
+    },
+    [deleteDocument, toast]
+  );
+
+  const handleDownload = useCallback(
+    async (document: Document) => {
+      try {
+        await downloadDocument.mutateAsync(document.id);
+      } catch (error) {
+        toast({
+          title: 'Download failed',
+          description: getErrorMessage(error),
+          variant: 'destructive',
+        });
+      }
+    },
+    [downloadDocument, toast]
+  );
 
   const handleUpload = useCallback(() => {
     // Implementation for upload modal

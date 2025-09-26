@@ -5,17 +5,17 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
-import { 
-  Key, 
-  Copy, 
-  Trash2, 
-  Plus, 
-  Smartphone, 
+import {
+  Key,
+  Copy,
+  Trash2,
+  Plus,
+  Smartphone,
   Monitor,
   Shield,
   RefreshCw,
   AlertCircle as AlertIcon,
-  CheckCircle
+  CheckCircle,
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -24,36 +24,57 @@ import { getErrorMessage } from '@/lib/api';
 import { apiKeySchema, type ApiKeyFormData } from '@/lib/validation/account';
 import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/shared/components/ui/card';
 import ConfirmationDialog from '@/shared/components/ui/confirmation-dialog';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/shared/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/shared/components/ui/dialog';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import StatusBadge from '@/shared/components/ui/status-badge';
 import { useToast } from '@/shared/components/ui/use-toast';
-import { 
-  useApiKeys, 
-  useCreateApiKey, 
+import {
+  useApiKeys,
+  useCreateApiKey,
   useRevokeApiKey,
   useSessions,
   useRevokeSession,
-  useSecurityEvents
+  useSecurityEvents,
 } from '@/shared/hooks/api/useAccountData';
 import { useClipboard } from '@/shared/hooks/useClipboard';
 import { formatUserAgent, formatDate } from '@/shared/utils/formatters';
 
 import { useAccountContext } from '../AccountLayout';
 
-
 const SecurityTab: React.FC = () => {
   const { user } = useAccountContext();
   const { copy } = useClipboard();
-  
-  const { data: apiKeys, isLoading: keysLoading, error: keysError, refetch: refetchKeys } = useApiKeys();
+
+  const {
+    data: apiKeys,
+    isLoading: keysLoading,
+    error: keysError,
+    refetch: refetchKeys,
+  } = useApiKeys();
   const { data: sessions, isLoading: sessionsLoading, error: sessionsError } = useSessions();
-  const { data: securityEvents, isLoading: eventsLoading, error: eventsError } = useSecurityEvents();
-  
+  const {
+    data: securityEvents,
+    isLoading: eventsLoading,
+    error: eventsError,
+  } = useSecurityEvents();
+
   const createApiKey = useCreateApiKey();
   const revokeApiKey = useRevokeApiKey();
   const revokeSession = useRevokeSession();
@@ -100,7 +121,6 @@ const SecurityTab: React.FC = () => {
   };
 
   const handleRevokeSession = async (sessionId: string) => {
-    
     try {
       await revokeSession.mutateAsync(sessionId);
       setConfirmRevokeSession(null);
@@ -140,7 +160,7 @@ const SecurityTab: React.FC = () => {
                     Create a new API key for accessing Parscade programmatically
                   </DialogDescription>
                 </DialogHeader>
-                
+
                 {newKeyResult ? (
                   <div className="space-y-4">
                     <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
@@ -154,15 +174,8 @@ const SecurityTab: React.FC = () => {
                       <div className="space-y-2">
                         <Label>Key Name: {newKeyResult.name}</Label>
                         <div className="flex items-center space-x-2">
-                          <Input
-                            value={newKeyResult.key}
-                            readOnly
-                            className="font-mono text-sm"
-                          />
-                          <Button
-                            size="sm"
-                            onClick={() => copy(newKeyResult.key, 'API key')}
-                          >
+                          <Input value={newKeyResult.key} readOnly className="font-mono text-sm" />
+                          <Button size="sm" onClick={() => copy(newKeyResult.key, 'API key')}>
                             <Copy className="w-4 h-4" />
                           </Button>
                         </div>
@@ -187,9 +200,7 @@ const SecurityTab: React.FC = () => {
                         {...register('name')}
                         placeholder="Production API, Development, etc."
                       />
-                      {errors.name && (
-                        <p className="text-sm text-red-600">{errors.name.message}</p>
-                      )}
+                      {errors.name && <p className="text-sm text-red-600">{errors.name.message}</p>}
                     </div>
 
                     <div className="space-y-2">
@@ -198,8 +209,12 @@ const SecurityTab: React.FC = () => {
                         {[
                           { value: 'read', label: 'Read', description: 'View documents and data' },
                           { value: 'write', label: 'Write', description: 'Create and update data' },
-                          { value: 'admin', label: 'Admin', description: 'Full administrative access' },
-                        ].map((scope) => (
+                          {
+                            value: 'admin',
+                            label: 'Admin',
+                            description: 'Full administrative access',
+                          },
+                        ].map(scope => (
                           <label key={scope.value} className="flex items-start space-x-2">
                             <input
                               type="checkbox"
@@ -258,7 +273,8 @@ const SecurityTab: React.FC = () => {
               <Key className="w-8 h-8 text-gray-400 mx-auto mb-2" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">No API keys configured</h3>
               <p className="text-gray-600 mb-4">
-                API keys allow you to access Parscade programmatically. Create your first API key to get started with our REST API.
+                API keys allow you to access Parscade programmatically. Create your first API key to
+                get started with our REST API.
               </p>
               <Button size="sm" onClick={() => setShowNewKeyDialog(true)}>
                 <Plus className="w-4 h-4 mr-2" />
@@ -267,7 +283,7 @@ const SecurityTab: React.FC = () => {
             </div>
           ) : (
             <div className="space-y-3">
-              {(apiKeys || []).map((key) => (
+              {(apiKeys || []).map(key => (
                 <div
                   key={key.id}
                   className="flex items-center justify-between p-4 border border-gray-200 rounded-lg"
@@ -275,21 +291,27 @@ const SecurityTab: React.FC = () => {
                   <div className="flex-1">
                     <div className="flex items-start justify-between mb-3">
                       <div>
-                        <h4 className="font-bold text-lg text-gray-900 mb-2">{key?.name || 'Unnamed Key'}</h4>
+                        <h4 className="font-bold text-lg text-gray-900 mb-2">
+                          {key?.name || 'Unnamed Key'}
+                        </h4>
                         <div className="flex space-x-2">
-                        {(key?.scopes || []).map((scope) => (
-                            <Badge key={scope} variant="outline" className="text-xs border border-gray-300 px-2 py-1 bg-gray-50">
-                            {scope}
-                          </Badge>
-                        ))}
+                          {(key?.scopes || []).map(scope => (
+                            <Badge
+                              key={scope}
+                              variant="outline"
+                              className="text-xs border border-gray-300 px-2 py-1 bg-gray-50"
+                            >
+                              {scope}
+                            </Badge>
+                          ))}
                         </div>
                       </div>
                     </div>
                     <div className="flex items-center space-x-4 text-sm text-gray-500">
-                      <span>Created {key?.created_at ? formatDate(key.created_at) : 'Unknown'}</span>
-                      {key?.last_used_at && (
-                        <span>Last used {formatDate(key.last_used_at)}</span>
-                      )}
+                      <span>
+                        Created {key?.created_at ? formatDate(key.created_at) : 'Unknown'}
+                      </span>
+                      {key?.last_used_at && <span>Last used {formatDate(key.last_used_at)}</span>}
                     </div>
                     <div className="flex items-center space-x-2 mt-3">
                       <Input
@@ -301,7 +323,9 @@ const SecurityTab: React.FC = () => {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => copy(key?.preview ? `...${key.preview}` : '', 'API key preview')}
+                          onClick={() =>
+                            copy(key?.preview ? `...${key.preview}` : '', 'API key preview')
+                          }
                           disabled={!key?.preview}
                           className="h-8"
                         >
@@ -381,8 +405,8 @@ const SecurityTab: React.FC = () => {
               <Monitor className="w-8 h-8 text-gray-400 mx-auto mb-2" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">No active sessions</h3>
               <p className="text-gray-600 mb-4">
-                Active sessions show devices and browsers that are currently signed in to your account. 
-                Your current session will appear here once additional sessions are created.
+                Active sessions show devices and browsers that are currently signed in to your
+                account. Your current session will appear here once additional sessions are created.
               </p>
               <p className="text-sm text-gray-500">
                 Sign in from another device or browser to see multiple sessions listed here.
@@ -390,7 +414,7 @@ const SecurityTab: React.FC = () => {
             </div>
           ) : (
             <div className="space-y-3">
-              {(sessions || []).map((session) => (
+              {(sessions || []).map(session => (
                 <div
                   key={session.id}
                   className="flex items-center justify-between p-4 border border-gray-200 rounded-lg"
@@ -406,14 +430,15 @@ const SecurityTab: React.FC = () => {
                     <div>
                       <div className="flex items-center space-x-2">
                         <span className="font-medium text-gray-900">
-                          {session?.user_agent ? formatUserAgent(session.user_agent) : 'Unknown Device'}
+                          {session?.user_agent
+                            ? formatUserAgent(session.user_agent)
+                            : 'Unknown Device'}
                         </span>
-                        {session?.is_current && (
-                          <StatusBadge status="active" className="text-xs" />
-                        )}
+                        {session?.is_current && <StatusBadge status="active" className="text-xs" />}
                       </div>
                       <div className="text-sm text-gray-500">
-                        {session?.ip_address || 'Unknown IP'} • Last seen {session?.last_seen ? formatDate(session.last_seen) : 'Unknown'}
+                        {session?.ip_address || 'Unknown IP'} • Last seen{' '}
+                        {session?.last_seen ? formatDate(session.last_seen) : 'Unknown'}
                       </div>
                     </div>
                   </div>
@@ -441,9 +466,7 @@ const SecurityTab: React.FC = () => {
             <Shield className="w-5 h-5 mr-2" />
             Recent Security Events
           </CardTitle>
-          <CardDescription>
-            Recent security-related activities on your account
-          </CardDescription>
+          <CardDescription>Recent security-related activities on your account</CardDescription>
         </CardHeader>
         <CardContent>
           {eventsLoading && !securityEvents ? (
@@ -460,9 +483,12 @@ const SecurityTab: React.FC = () => {
           ) : !securityEvents || !Array.isArray(securityEvents) || securityEvents.length === 0 ? (
             <div className="text-center py-8">
               <Shield className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No security events recorded</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No security events recorded
+              </h3>
               <p className="text-gray-600 mb-2">
-                Security events track important account activities like sign-ins, password changes, and API key usage.
+                Security events track important account activities like sign-ins, password changes,
+                and API key usage.
               </p>
               <p className="text-sm text-gray-500">
                 Recent security activities will appear here as they occur.
@@ -470,8 +496,11 @@ const SecurityTab: React.FC = () => {
             </div>
           ) : (
             <div className="space-y-3 max-h-80 overflow-y-auto">
-              {(securityEvents || []).map((event) => (
-                <div key={event?.id || Math.random()} className="flex items-start space-x-3 p-3 border border-gray-200 rounded-lg">
+              {(securityEvents || []).map(event => (
+                <div
+                  key={event?.id || Math.random()}
+                  className="flex items-start space-x-3 p-3 border border-gray-200 rounded-lg"
+                >
                   <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
                     <Shield className="w-4 h-4 text-blue-600" />
                   </div>
@@ -479,9 +508,13 @@ const SecurityTab: React.FC = () => {
                     <p className="text-sm font-medium text-gray-900 capitalize">
                       {event?.event_type ? event.event_type.replace(/_/g, ' ') : 'Security Event'}
                     </p>
-                    <p className="text-sm text-gray-600">{event?.description || 'No description available'}</p>
+                    <p className="text-sm text-gray-600">
+                      {event?.description || 'No description available'}
+                    </p>
                     <div className="flex items-center space-x-2 mt-1 text-xs text-gray-500">
-                      <span>{event?.created_at ? formatDate(event.created_at) : 'Unknown time'}</span>
+                      <span>
+                        {event?.created_at ? formatDate(event.created_at) : 'Unknown time'}
+                      </span>
                       {event?.ip_address && <span>• {event.ip_address}</span>}
                     </div>
                   </div>

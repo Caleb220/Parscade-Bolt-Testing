@@ -9,10 +9,12 @@ import { apiClient } from '../client';
 
 // Extract exact types from OpenAPI paths
 type GetUsersParams = paths['/v1/admin/users']['get']['parameters']['query'];
-type GetUsersResponse = paths['/v1/admin/users']['get']['responses']['200']['content']['application/json'];
+type GetUsersResponse =
+  paths['/v1/admin/users']['get']['responses']['200']['content']['application/json'];
 
 type GetJobsParams = paths['/v1/admin/jobs']['get']['parameters']['query'];
-type GetJobsResponse = paths['/v1/admin/jobs']['get']['responses']['200']['content']['application/json'];
+type GetJobsResponse =
+  paths['/v1/admin/jobs']['get']['responses']['200']['content']['application/json'];
 
 /**
  * Admin endpoints (admin role required)

@@ -10,12 +10,8 @@ const Footer: React.FC = () => {
       { label: 'Features', href: '/product' },
       { label: 'Pricing', href: '/billing' },
     ],
-    Company: [
-      { label: 'About Us', href: '/about' },
-    ],
-    Support: [
-      { label: 'Contact Us', href: '/contact' },
-    ],
+    Company: [{ label: 'About Us', href: '/about' }],
+    Support: [{ label: 'Contact Us', href: '/contact' }],
     Legal: [
       { label: 'Privacy Policy', href: '/privacy' },
       { label: 'Terms of Service', href: '/terms' },
@@ -44,7 +40,8 @@ const Footer: React.FC = () => {
             </span>
           </Link>
           <p className="text-gray-400 text-sm sm:text-base max-w-md">
-            Transform unstructured documents into structured data with our intelligent parsing platform.
+            Transform unstructured documents into structured data with our intelligent parsing
+            platform.
           </p>
         </div>
 
@@ -87,9 +84,7 @@ const Footer: React.FC = () => {
 
         {/* Bottom */}
         <div className="border-t border-gray-800 pt-6 sm:pt-8 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
-          <p className="text-gray-400 text-sm">
-            © {currentYear} Parscade. All rights reserved.
-          </p>
+          <p className="text-gray-400 text-sm">© {currentYear} Parscade. All rights reserved.</p>
           <div className="flex space-x-4 sm:space-x-6">
             <Link
               to="/privacy"

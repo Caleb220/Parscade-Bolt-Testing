@@ -10,8 +10,10 @@ import type { SeoConfig } from '@/shared/schemas';
  */
 export const defaultSEO: SeoConfig = {
   title: 'Parscade - Intelligent Document Processing',
-  description: 'Transform unstructured documents into structured data with our intelligent parsing platform. Join our beta program and help build the future of document processing.',
-  keywords: 'document parsing, data extraction, OCR, document processing, AI parsing, structured data, enterprise software, beta program',
+  description:
+    'Transform unstructured documents into structured data with our intelligent parsing platform. Join our beta program and help build the future of document processing.',
+  keywords:
+    'document parsing, data extraction, OCR, document processing, AI parsing, structured data, enterprise software, beta program',
   author: 'Parscade',
   url: 'https://parscade.com',
   image: 'https://parscade.com/main-logo.png',
@@ -32,7 +34,7 @@ export const updateSEO = (config: Partial<SeoConfig>): void => {
   const updateMetaTag = (name: string, content: string, property?: string) => {
     const selector = property ? `meta[property="${property}"]` : `meta[name="${name}"]`;
     let meta = document.querySelector(selector) as HTMLMetaElement;
-    
+
     if (!meta) {
       meta = document.createElement('meta');
       if (property) {
@@ -42,7 +44,7 @@ export const updateSEO = (config: Partial<SeoConfig>): void => {
       }
       document.head.appendChild(meta);
     }
-    
+
     meta.setAttribute('content', content);
   };
 

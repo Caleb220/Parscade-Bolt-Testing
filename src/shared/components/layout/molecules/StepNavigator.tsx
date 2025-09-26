@@ -38,13 +38,13 @@ const StepNavigator: React.FC<StepNavigatorProps> = ({
               <div className="flex flex-col items-center">
                 <button
                   onClick={() => onStepChange(index)}
-                  onKeyDown={(e) => handleKeyDown(e, index)}
+                  onKeyDown={e => handleKeyDown(e, index)}
                   className={`relative w-12 h-12 lg:w-16 lg:h-16 rounded-full border-2 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
                     index === currentStep
                       ? 'bg-blue-600 border-blue-600 shadow-lg scale-110'
                       : index < currentStep
-                      ? 'bg-green-500 border-green-500 hover:scale-105'
-                      : 'bg-white border-gray-300 hover:border-blue-300 hover:scale-105'
+                        ? 'bg-green-500 border-green-500 hover:scale-105'
+                        : 'bg-white border-gray-300 hover:border-blue-300 hover:scale-105'
                   }`}
                   aria-label={`Go to step ${index + 1}: ${step.title}`}
                 >
@@ -104,8 +104,8 @@ const StepNavigator: React.FC<StepNavigatorProps> = ({
                       index === currentStep
                         ? 'text-blue-600'
                         : index < currentStep
-                        ? 'text-green-600'
-                        : 'text-gray-600'
+                          ? 'text-green-600'
+                          : 'text-gray-600'
                     }`}
                   >
                     {step.shortTitle ?? step.title}
@@ -143,23 +143,19 @@ const StepNavigator: React.FC<StepNavigatorProps> = ({
                 {/* Mobile Node */}
                 <button
                   onClick={() => onStepChange(index)}
-                  onKeyDown={(e) => handleKeyDown(e, index)}
+                  onKeyDown={e => handleKeyDown(e, index)}
                   className={`relative w-8 h-8 rounded-full border-2 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
                     index === currentStep
                       ? 'bg-blue-600 border-blue-600 shadow-lg scale-110'
                       : index < currentStep
-                      ? 'bg-green-500 border-green-500'
-                      : 'bg-white border-gray-300'
+                        ? 'bg-green-500 border-green-500'
+                        : 'bg-white border-gray-300'
                   }`}
                   aria-label={`Go to step ${index + 1}: ${step.title}`}
                 >
                   <div className="flex items-center justify-center w-full h-full">
                     {index < currentStep ? (
-                      <svg
-                        className="w-4 h-4 text-white"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
+                      <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                         <path
                           fillRule="evenodd"
                           d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"

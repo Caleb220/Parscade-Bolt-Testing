@@ -16,6 +16,9 @@ interface DashboardHeaderProps {
   subtitle?: string;
   actions?: ReactNode;
   onMenuToggle?: () => void;
+  variant?: 'default' | 'compact' | 'extended';
+  showBreadcrumbs?: boolean;
+  layoutVariant?: 'default' | 'command-center' | 'analytics' | 'minimal';
 }
 
 /**
@@ -26,6 +29,9 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   subtitle,
   actions,
   onMenuToggle,
+  variant = 'default',
+  showBreadcrumbs = false,
+  layoutVariant = 'default',
 }) => {
   const { user } = useAuth();
 
@@ -52,17 +58,21 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             <div className="min-w-0 flex-1">
               {title ? (
                 <div>
-                  <h1 className="text-lg sm:text-xl font-semibold text-gray-900 truncate">{title}</h1>
+                  <h1 className="text-lg sm:text-xl font-semibold text-gray-900 truncate">
+                    {title}
+                  </h1>
                   {subtitle && (
-                    <p className="text-xs sm:text-sm text-blue-600 truncate hidden sm:block">{subtitle}</p>
+                    <p className="text-xs sm:text-sm text-blue-600 truncate hidden sm:block">
+                      {subtitle}
+                    </p>
                   )}
                 </div>
               ) : (
                 <div>
-                  <h1 className="text-lg sm:text-xl font-semibold text-gray-900">
-                    Dashboard
-                  </h1>
-                  <p className="text-xs sm:text-sm text-blue-600 hidden sm:block">Monitor your document processing and analytics</p>
+                  <h1 className="text-lg sm:text-xl font-semibold text-gray-900">Dashboard</h1>
+                  <p className="text-xs sm:text-sm text-blue-600 hidden sm:block">
+                    Monitor your document processing and analytics
+                  </p>
                 </div>
               )}
             </div>
@@ -78,7 +88,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
               aria-label="Notifications"
             >
               <Bell className="w-5 h-5" />
-              <motion.span 
+              <motion.span
                 className="absolute -top-1 -right-1 w-2 h-2 bg-blue-500 rounded-full"
                 animate={{ scale: [1, 1.2, 1] }}
                 transition={{ duration: 2, repeat: Infinity }}
@@ -86,10 +96,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             </motion.button>
 
             {/* Custom Actions */}
-            <div className="flex items-center space-x-1 sm:space-x-2">
-              {actions}
-            </div>
-
+            <div className="flex items-center space-x-1 sm:space-x-2">{actions}</div>
           </div>
         </div>
       </div>

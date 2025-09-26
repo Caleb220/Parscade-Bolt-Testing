@@ -34,9 +34,10 @@ export const useNetworkStatus = (): UseNetworkStatusReturn => {
 
   useEffect(() => {
     const updateNetworkStatus = () => {
-      const connection = (navigator as any).connection ||
-                        (navigator as any).mozConnection ||
-                        (navigator as any).webkitConnection;
+      const connection =
+        (navigator as any).connection ||
+        (navigator as any).mozConnection ||
+        (navigator as any).webkitConnection;
 
       const isOnline = navigator.onLine;
       const wasOnlineBefore = wasOnlineRef.current;
@@ -68,12 +69,8 @@ export const useNetworkStatus = (): UseNetworkStatusReturn => {
         // - Effective type is 'slow-2g' or '2g'
         // - Downlink is less than 1.5 Mbps
         // - RTT is greater than 300ms
-        isSlowConnection = (
-          effectiveType === 'slow-2g' ||
-          effectiveType === '2g' ||
-          downlink < 1.5 ||
-          rtt > 300
-        );
+        isSlowConnection =
+          effectiveType === 'slow-2g' || effectiveType === '2g' || downlink < 1.5 || rtt > 300;
       }
 
       setNetworkStatus({
@@ -98,9 +95,10 @@ export const useNetworkStatus = (): UseNetworkStatusReturn => {
     window.addEventListener('offline', handleOffline);
 
     // Listen for connection changes (if supported)
-    const connection = (navigator as any).connection ||
-                      (navigator as any).mozConnection ||
-                      (navigator as any).webkitConnection;
+    const connection =
+      (navigator as any).connection ||
+      (navigator as any).mozConnection ||
+      (navigator as any).webkitConnection;
 
     if (connection) {
       connection.addEventListener('change', handleConnectionChange);

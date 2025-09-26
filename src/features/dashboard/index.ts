@@ -4,6 +4,7 @@
  */
 
 // Pages
+export { default as CommandCentrePage } from './pages/CommandCentrePage';
 export { default as DashboardPage } from './pages/DashboardPage';
 export { default as DocumentsPage } from './pages/DocumentsPage';
 export { default as DocumentDetailPage } from './pages/DocumentDetailPage';

@@ -9,15 +9,20 @@ import { apiClient } from '../client';
 
 // Extract exact types from OpenAPI paths
 type SignUpRequest = paths['/v1/auth/signup']['post']['requestBody']['content']['application/json'];
-type SignUpResponse = paths['/v1/auth/signup']['post']['responses']['201']['content']['application/json'];
+type SignUpResponse =
+  paths['/v1/auth/signup']['post']['responses']['201']['content']['application/json'];
 
 type SignInRequest = paths['/v1/auth/signin']['post']['requestBody']['content']['application/json'];
-type SignInResponse = paths['/v1/auth/signin']['post']['responses']['200']['content']['application/json'];
+type SignInResponse =
+  paths['/v1/auth/signin']['post']['responses']['200']['content']['application/json'];
 
-type SignOutResponse = paths['/v1/auth/signout']['post']['responses']['200']['content']['application/json'];
+type SignOutResponse =
+  paths['/v1/auth/signout']['post']['responses']['200']['content']['application/json'];
 
-type ResetPasswordRequest = paths['/v1/auth/reset-password']['post']['requestBody']['content']['application/json'];
-type ResetPasswordResponse = paths['/v1/auth/reset-password']['post']['responses']['200']['content']['application/json'];
+type ResetPasswordRequest =
+  paths['/v1/auth/reset-password']['post']['requestBody']['content']['application/json'];
+type ResetPasswordResponse =
+  paths['/v1/auth/reset-password']['post']['responses']['200']['content']['application/json'];
 
 /**
  * User authentication API endpoints
@@ -49,9 +54,13 @@ export const userApi = {
    * Requires valid bearer token
    */
   async signOut(): Promise<SignOutResponse> {
-    return apiClient.post<SignOutResponse>('/v1/auth/signout', {}, {
-      retryable: false,
-    });
+    return apiClient.post<SignOutResponse>(
+      '/v1/auth/signout',
+      {},
+      {
+        retryable: false,
+      }
+    );
   },
 
   /**

@@ -10,7 +10,7 @@ export {
   ChartSkeleton,
   ProgressiveLoading,
   LoadingDots,
-  ButtonLoading
+  ButtonLoading,
 } from './LoadingStates';
 
 // Legacy export with different name

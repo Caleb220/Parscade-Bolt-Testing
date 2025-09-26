@@ -8,7 +8,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { ParscadeCard } from '@/shared/components/brand';
-import { Button } from '@/shared/components/ui/button';
+import Button from '@/shared/components/forms/atoms/Button';
 import { formatDate } from '@/shared/utils/formatters';
 import type { Project } from '@/types/api-types';
 
@@ -33,29 +33,19 @@ const ProjectInfoCard: React.FC<ProjectInfoCardProps> = ({ project }) => {
 
       <div className="space-y-4">
         <div>
-          <h4 className="font-medium text-gray-900 mb-1">
-            {project.name}
-          </h4>
-          {project.description && (
-            <p className="text-sm text-gray-600">
-              {project.description}
-            </p>
-          )}
+          <h4 className="font-medium text-gray-900 mb-1">{project.name}</h4>
+          {project.description && <p className="text-sm text-gray-600">{project.description}</p>}
         </div>
 
         <dl className="space-y-3">
           <div>
             <dt className="text-sm font-medium text-gray-500">Created</dt>
-            <dd className="mt-1 text-sm text-gray-900">
-              {formatDate(project.created_at)}
-            </dd>
+            <dd className="mt-1 text-sm text-gray-900">{formatDate(project.created_at)}</dd>
           </div>
 
           <div>
             <dt className="text-sm font-medium text-gray-500">Project ID</dt>
-            <dd className="mt-1 text-xs font-mono text-gray-900 break-all">
-              {project.id}
-            </dd>
+            <dd className="mt-1 text-xs font-mono text-gray-900 break-all">{project.id}</dd>
           </div>
         </dl>
 

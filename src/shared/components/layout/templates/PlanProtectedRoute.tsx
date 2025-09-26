@@ -42,22 +42,22 @@ const PlanProtectedRoute: React.FC<PlanProtectedRouteProps> = ({
 /**
  * Standard Plan Protected Route - Requires Standard plan or higher
  */
-export const StandardProtectedRoute: React.FC<Omit<PlanProtectedRouteProps, 'requiredPlan'>> = (props) => (
-  <PlanProtectedRoute requiredPlan="standard" {...props} />
-);
+export const StandardProtectedRoute: React.FC<
+  Omit<PlanProtectedRouteProps, 'requiredPlan'>
+> = props => <PlanProtectedRoute requiredPlan="standard" {...props} />;
 
 /**
  * Pro Plan Protected Route - Requires Pro plan or higher
  */
-export const ProProtectedRoute: React.FC<Omit<PlanProtectedRouteProps, 'requiredPlan'>> = (props) => (
+export const ProProtectedRoute: React.FC<Omit<PlanProtectedRouteProps, 'requiredPlan'>> = props => (
   <PlanProtectedRoute requiredPlan="pro" {...props} />
 );
 
 /**
  * Enterprise Plan Protected Route - Requires Enterprise plan
  */
-export const EnterpriseProtectedRoute: React.FC<Omit<PlanProtectedRouteProps, 'requiredPlan'>> = (props) => (
-  <PlanProtectedRoute requiredPlan="enterprise" {...props} />
-);
+export const EnterpriseProtectedRoute: React.FC<
+  Omit<PlanProtectedRouteProps, 'requiredPlan'>
+> = props => <PlanProtectedRoute requiredPlan="enterprise" {...props} />;
 
 export default PlanProtectedRoute;

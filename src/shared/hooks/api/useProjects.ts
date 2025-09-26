@@ -8,11 +8,11 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getErrorMessage } from '@/lib/api';
 import { projectsApi } from '@/lib/api/modules/projects';
 import { useToast } from '@/shared/components/ui/use-toast';
-import type { 
-  ProjectCreateData, 
-  ProjectUpdateData, 
+import type {
+  ProjectCreateData,
+  ProjectUpdateData,
   ProjectQueryParams,
-  DocumentAssociationData 
+  DocumentAssociationData,
 } from '@/types/dashboard-types';
 
 // Query keys
@@ -56,18 +56,18 @@ export const useProject = (projectId: string) => {
 export const useCreateProject = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  
+
   return useMutation({
     mutationFn: (data: ProjectCreateData) => projectsApi.createProject(data),
-    onSuccess: (project) => {
+    onSuccess: project => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.projects });
-      
+
       toast({
         title: 'Project created',
         description: `Project "${project.name}" has been created successfully.`,
       });
     },
-    onError: (error) => {
+    onError: error => {
       toast({
         title: 'Creation failed',
         description: getErrorMessage(error),
@@ -83,20 +83,20 @@ export const useCreateProject = () => {
 export const useUpdateProject = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  
+
   return useMutation({
-    mutationFn: ({ projectId, data }: { projectId: string; data: ProjectUpdateData }) => 
+    mutationFn: ({ projectId, data }: { projectId: string; data: ProjectUpdateData }) =>
       projectsApi.updateProject(projectId, data),
-    onSuccess: (project) => {
+    onSuccess: project => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.project(project.id) });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.projects });
-      
+
       toast({
         title: 'Project updated',
         description: `Project "${project.name}" has been updated successfully.`,
       });
     },
-    onError: (error) => {
+    onError: error => {
       toast({
         title: 'Update failed',
         description: getErrorMessage(error),
@@ -112,19 +112,19 @@ export const useUpdateProject = () => {
 export const useDeleteProject = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  
+
   return useMutation({
     mutationFn: (projectId: string) => projectsApi.deleteProject(projectId),
     onSuccess: (_, projectId) => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.project(projectId) });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.projects });
-      
+
       toast({
         title: 'Project deleted',
         description: 'The project has been deleted successfully.',
       });
     },
-    onError: (error) => {
+    onError: error => {
       toast({
         title: 'Deletion failed',
         description: getErrorMessage(error),
@@ -140,20 +140,20 @@ export const useDeleteProject = () => {
 export const useAssociateDocument = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  
+
   return useMutation({
-    mutationFn: ({ projectId, data }: { projectId: string; data: DocumentAssociationData }) => 
+    mutationFn: ({ projectId, data }: { projectId: string; data: DocumentAssociationData }) =>
       projectsApi.associateDocument(projectId, data),
     onSuccess: (_, { projectId }) => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.project(projectId) });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.projects });
-      
+
       toast({
         title: 'Document associated',
         description: 'The document has been added to the project.',
       });
     },
-    onError: (error) => {
+    onError: error => {
       toast({
         title: 'Association failed',
         description: getErrorMessage(error),
@@ -169,18 +169,18 @@ export const useAssociateDocument = () => {
 export const useRemoveDocument = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  
+
   return useMutation({
     mutationFn: (documentId: string) => projectsApi.removeDocument(documentId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.projects });
-      
+
       toast({
         title: 'Document removed',
         description: 'The document has been removed from the project.',
       });
     },
-    onError: (error) => {
+    onError: error => {
       toast({
         title: 'Removal failed',
         description: getErrorMessage(error),

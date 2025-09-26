@@ -41,15 +41,11 @@ const EmptyState: React.FC<EmptyStateProps> = ({
       <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
         {icon}
       </div>
-      
+
       <h3 className="text-lg font-medium text-gray-900 mb-2">{title}</h3>
       <p className="text-gray-600 mb-6 max-w-md mx-auto">{description}</p>
-      
-      {action && (
-        <Button onClick={action.onClick}>
-          {action.label}
-        </Button>
-      )}
+
+      {action && <Button onClick={action.onClick}>{action.label}</Button>}
     </motion.div>
   );
 };

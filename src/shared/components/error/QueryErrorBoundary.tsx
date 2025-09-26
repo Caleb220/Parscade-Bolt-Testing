@@ -41,11 +41,7 @@ interface ErrorFallbackProps {
   customFallback?: (error: Error, retry: () => void) => ReactNode;
 }
 
-const QueryErrorFallback: React.FC<ErrorFallbackProps> = ({
-  reset,
-  error,
-  customFallback
-}) => {
+const QueryErrorFallback: React.FC<ErrorFallbackProps> = ({ reset, error, customFallback }) => {
   if (error && customFallback) {
     return <>{customFallback(error, reset)}</>;
   }
@@ -53,10 +49,7 @@ const QueryErrorFallback: React.FC<ErrorFallbackProps> = ({
   return <DefaultQueryErrorFallback reset={reset} error={error} />;
 };
 
-const DefaultQueryErrorFallback: React.FC<ErrorFallbackProps> = ({
-  reset,
-  error
-}) => {
+const DefaultQueryErrorFallback: React.FC<ErrorFallbackProps> = ({ reset, error }) => {
   const errorMessage = error ? getErrorMessage(error) : 'Failed to load data';
   const isApi = error ? isApiError(error) : false;
 
@@ -70,9 +63,7 @@ const DefaultQueryErrorFallback: React.FC<ErrorFallbackProps> = ({
         {isApi ? 'Service Error' : 'Loading Error'}
       </h3>
 
-      <p className="text-gray-600 mb-4 max-w-md">
-        {errorMessage}
-      </p>
+      <p className="text-gray-600 mb-4 max-w-md">{errorMessage}</p>
 
       <Button onClick={reset} size="sm" className="flex items-center">
         <RefreshCw className="w-4 h-4 mr-2" />
@@ -81,9 +72,7 @@ const DefaultQueryErrorFallback: React.FC<ErrorFallbackProps> = ({
 
       {import.meta.env?.MODE === 'development' && error && (
         <details className="mt-4 text-left max-w-md w-full">
-          <summary className="cursor-pointer text-xs text-gray-500 mb-2">
-            Debug Information
-          </summary>
+          <summary className="cursor-pointer text-xs text-gray-500 mb-2">Debug Information</summary>
           <pre className="text-xs bg-gray-100 p-2 rounded overflow-auto max-h-32">
             {error.stack}
           </pre>

@@ -3,10 +3,10 @@
  * Feature-gated analytics dashboard with real backend integration
  */
 
-import { 
-  TrendingUp, 
-  Target, 
-  AlertTriangle, 
+import {
+  TrendingUp,
+  Target,
+  AlertTriangle,
   Calendar,
   RefreshCw,
   BarChart3,
@@ -20,18 +20,17 @@ import FeatureGate from '@/shared/components/layout/FeatureGate';
 import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
 import { Skeleton } from '@/shared/components/ui/skeleton';
-import { 
-  useAnalyticsOverview, 
-  useAnalyticsTrends, 
-  useAnalyticsAccuracy, 
-  useAnalyticsErrors 
+import {
+  useAnalyticsOverview,
+  useAnalyticsTrends,
+  useAnalyticsAccuracy,
+  useAnalyticsErrors,
 } from '@/shared/hooks/api/useAnalytics';
 import { formatDate } from '@/shared/utils/date';
 
 interface AdvancedAnalyticsProps {
   className?: string;
 }
-
 
 const AnalyticsHeader: React.FC = () => {
   return (
@@ -43,29 +42,31 @@ const AnalyticsHeader: React.FC = () => {
       className="flex flex-col"
     >
       <div className="auto-rows-fr h-full">
-      <div className="p-6 border-b border-slate-200">
-        <div className="flex items-center">
-          <BarChart3 className="w-6 h-6 text-blue-600 mr-3" />
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900">Advanced Analytics</h2>
-            <p className="text-sm text-blue-600">Detailed insights into your processing performance</p>
+        <div className="p-6 border-b border-slate-200">
+          <div className="flex items-center">
+            <BarChart3 className="w-6 h-6 text-blue-600 mr-3" />
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900">Advanced Analytics</h2>
+              <p className="text-sm text-blue-600">
+                Detailed insights into your processing performance
+              </p>
+            </div>
           </div>
         </div>
-      </div>
         <FeatureGate featureId="analytis">
           <AdvancedAnalytics />
         </FeatureGate>
-    </div>
+      </div>
     </ParscadeCard>
-  )
-}
+  );
+};
 
 /**
  * Advanced analytics dashboard with real-time data
  */
 const AdvancedAnalytics: React.FC<AdvancedAnalyticsProps> = ({ className = '' }) => {
   const [timeframe, setTimeframe] = useState<'week' | 'month' | 'year'>('month');
-  
+
   const { data: overview, isLoading, error, refetch } = useAnalyticsOverview({ timeframe });
   const { data: trends } = useAnalyticsTrends({ timeframe });
   const { data: accuracy } = useAnalyticsAccuracy({ timeframe });
@@ -111,13 +112,13 @@ const AdvancedAnalytics: React.FC<AdvancedAnalyticsProps> = ({ className = '' })
       {/* Analytics Header */}
       <div className="flex items-center justify-between">
         <AnalyticsHeader />
-        
+
         {/* Timeframe Selector */}
         <div className="flex items-center space-x-2">
           <Calendar className="w-4 h-4 text-gray-500" />
           <select
             value={timeframe}
-            onChange={(e) => setTimeframe(e.target.value as any)}
+            onChange={e => setTimeframe(e.target.value as any)}
             className="text-sm border border-gray-300 rounded-md px-3 py-1 bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
             <option value="week">Last 7 Days</option>
@@ -137,8 +138,11 @@ const AdvancedAnalytics: React.FC<AdvancedAnalyticsProps> = ({ className = '' })
             <div>
               <h3 className="font-semibold text-gray-900">Processing Trends</h3>
               <p className="text-sm text-blue-600">
-                {overview?.trends.summary.trend_direction === 'increasing' ? '↗ Increasing' : 
-                 overview?.trends.summary.trend_direction === 'decreasing' ? '↘ Decreasing' : '→ Stable'}
+                {overview?.trends.summary.trend_direction === 'increasing'
+                  ? '↗ Increasing'
+                  : overview?.trends.summary.trend_direction === 'decreasing'
+                    ? '↘ Decreasing'
+                    : '→ Stable'}
               </p>
             </div>
           </div>
@@ -146,9 +150,7 @@ const AdvancedAnalytics: React.FC<AdvancedAnalyticsProps> = ({ className = '' })
             <div className="text-2xl font-bold text-gray-900">
               {overview?.trends.summary.total_data_points || 0}
             </div>
-            <div className="text-sm text-slate-600">
-              Data points in {timeframe} analysis
-            </div>
+            <div className="text-sm text-slate-600">Data points in {timeframe} analysis</div>
           </div>
         </ParscadeCard>
 
@@ -204,17 +206,19 @@ const AdvancedAnalytics: React.FC<AdvancedAnalyticsProps> = ({ className = '' })
               <p className="text-sm text-blue-600">Performance breakdown</p>
             </div>
           </div>
-          
+
           <div className="space-y-4">
-            {accuracy?.data.map((item) => (
+            {accuracy?.data.map(item => (
               <div key={item.document_type} className="flex items-center justify-between">
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-sm font-medium text-gray-900">{item.document_type}</span>
-                    <span className="text-sm font-bold text-blue-600">{item.average_accuracy.toFixed(1)}%</span>
+                    <span className="text-sm font-bold text-blue-600">
+                      {item.average_accuracy.toFixed(1)}%
+                    </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div 
+                    <div
                       className="bg-gradient-to-r from-blue-500 to-emerald-500 h-2 rounded-full transition-all duration-500"
                       style={{ width: `${item.average_accuracy}%` }}
                     />
@@ -241,16 +245,21 @@ const AdvancedAnalytics: React.FC<AdvancedAnalyticsProps> = ({ className = '' })
               <p className="text-sm text-red-600">Common issues and trends</p>
             </div>
           </div>
-          
+
           <div className="space-y-4">
-            {errorRates?.data.map((error) => (
+            {errorRates?.data.map(error => (
               <div key={error.error_type} className="p-3 border border-gray-200 rounded-lg">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-medium text-gray-900">{error.error_type}</span>
                   <div className="flex items-center space-x-2">
-                    <Badge 
-                      variant={error.recent_trend === 'increasing' ? 'destructive' : 
-                              error.recent_trend === 'decreasing' ? 'default' : 'outline'}
+                    <Badge
+                      variant={
+                        error.recent_trend === 'increasing'
+                          ? 'destructive'
+                          : error.recent_trend === 'decreasing'
+                            ? 'default'
+                            : 'outline'
+                      }
                       className="text-xs"
                     >
                       {error.recent_trend}
@@ -274,10 +283,14 @@ const AdvancedAnalytics: React.FC<AdvancedAnalyticsProps> = ({ className = '' })
       {/* Metadata */}
       {overview?.metadata && (
         <div className="text-center text-xs text-gray-500">
-          Analytics generated {formatDate(overview.metadata.generated_at)} • 
-          Timeframe: {overview.metadata.timeframe}
+          Analytics generated {formatDate(overview.metadata.generated_at)} • Timeframe:{' '}
+          {overview.metadata.timeframe}
           {overview.metadata.date_range.start_date && overview.metadata.date_range.end_date && (
-            <> • Range: {overview.metadata.date_range.start_date} to {overview.metadata.date_range.end_date}</>
+            <>
+              {' '}
+              • Range: {overview.metadata.date_range.start_date} to{' '}
+              {overview.metadata.date_range.end_date}
+            </>
           )}
         </div>
       )}

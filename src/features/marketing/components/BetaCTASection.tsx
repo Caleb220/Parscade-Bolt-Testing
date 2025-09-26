@@ -12,8 +12,8 @@ interface BetaCTASectionProps {
 }
 
 const BetaCTASection: React.FC<BetaCTASectionProps> = ({
-  title = "Ready to shape the future with us?",
-  description = "Join our beta program and be among the first to experience next-generation document processing.",
+  title = 'Ready to shape the future with us?',
+  description = 'Join our beta program and be among the first to experience next-generation document processing.',
   primaryButtonText,
   secondaryButtonText,
 }) => {
@@ -55,12 +55,8 @@ const BetaCTASection: React.FC<BetaCTASectionProps> = ({
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-3xl lg:text-4xl font-bold text-white mb-6">
-            {title}
-          </h2>
-          <p className="text-xl text-blue-100 mb-8">
-            {description}
-          </p>
+          <h2 className="text-3xl lg:text-4xl font-bold text-white mb-6">{title}</h2>
+          <p className="text-xl text-blue-100 mb-8">{description}</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={handleJoinBetaClick}

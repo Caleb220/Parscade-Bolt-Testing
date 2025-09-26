@@ -64,11 +64,7 @@ const ProjectOverviewCard: React.FC<ProjectOverviewCardProps> = ({
   return (
     <div className="space-y-8">
       {/* Stats Cards */}
-      <ProjectStatsCards
-        project={project}
-        documents={documents}
-        jobs={jobs}
-      />
+      <ProjectStatsCards project={project} documents={documents} jobs={jobs} />
 
       {/* Project Overview */}
       <motion.div
@@ -87,20 +83,14 @@ const ProjectOverviewCard: React.FC<ProjectOverviewCardProps> = ({
             <div className="flex-1">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                    {project.name}
-                  </h2>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">{project.name}</h2>
                   {project.description && (
-                    <p className="text-gray-600 leading-relaxed">
-                      {project.description}
-                    </p>
+                    <p className="text-gray-600 leading-relaxed">{project.description}</p>
                   )}
                 </div>
 
                 <div className="flex items-center space-x-2">
-                  <Badge variant="secondary">
-                    Active Project
-                  </Badge>
+                  <Badge variant="secondary">Active Project</Badge>
                   {project.url && (
                     <a
                       href={project.url}

@@ -9,12 +9,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getErrorMessage } from '@/lib/api';
 import { jobsApi } from '@/lib/api/modules/jobs';
 import { useToast } from '@/shared/components/ui/use-toast';
-import type { 
-  Job, 
-  JobCreateData, 
-  JobUpdateData, 
-  JobQueryParams, 
-  PaginatedResponse 
+import type {
+  Job,
+  JobCreateData,
+  JobUpdateData,
+  JobQueryParams,
+  PaginatedResponse,
 } from '@/types/api-types';
 
 // Query keys
@@ -50,7 +50,7 @@ export const useJob = (jobId: string) => {
     queryKey: QUERY_KEYS.job(jobId),
     queryFn: () => jobsApi.getJob(jobId),
     enabled: !!jobId,
-    refetchInterval: (data) => {
+    refetchInterval: data => {
       // Poll every 2 seconds for active jobs
       if (data?.status === 'pending' || data?.status === 'processing') {
         return 2000;
@@ -67,18 +67,18 @@ export const useJob = (jobId: string) => {
 export const useCreateJob = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  
+
   return useMutation({
     mutationFn: (data: JobCreateData) => jobsApi.createJob(data),
-    onSuccess: (job) => {
+    onSuccess: job => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.jobs });
-      
+
       toast({
         title: 'Job created',
         description: `Processing job "${job.type}" has been created successfully.`,
       });
     },
-    onError: (error) => {
+    onError: error => {
       toast({
         title: 'Job creation failed',
         description: getErrorMessage(error),
@@ -94,20 +94,20 @@ export const useCreateJob = () => {
 export const useUpdateJob = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  
+
   return useMutation({
-    mutationFn: ({ jobId, data }: { jobId: string; data: JobUpdateData }) => 
+    mutationFn: ({ jobId, data }: { jobId: string; data: JobUpdateData }) =>
       jobsApi.updateJob(jobId, data),
-    onSuccess: (job) => {
+    onSuccess: job => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.job(job.id) });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.jobs });
-      
+
       toast({
         title: 'Job updated',
         description: 'Job has been updated successfully.',
       });
     },
-    onError: (error) => {
+    onError: error => {
       toast({
         title: 'Update failed',
         description: getErrorMessage(error),
@@ -123,19 +123,19 @@ export const useUpdateJob = () => {
 export const useDeleteJob = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  
+
   return useMutation({
     mutationFn: (jobId: string) => jobsApi.deleteJob(jobId),
     onSuccess: (_, jobId) => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.job(jobId) });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.jobs });
-      
+
       toast({
         title: 'Job deleted',
         description: 'The job has been deleted successfully.',
       });
     },
-    onError: (error) => {
+    onError: error => {
       toast({
         title: 'Deletion failed',
         description: getErrorMessage(error),
@@ -151,19 +151,19 @@ export const useDeleteJob = () => {
 export const useStartJob = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  
+
   return useMutation({
     mutationFn: (jobId: string) => jobsApi.startJob(jobId),
-    onSuccess: (job) => {
+    onSuccess: job => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.job(job.id) });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.jobs });
-      
+
       toast({
         title: 'Job started',
         description: 'The job has been started and is now processing.',
       });
     },
-    onError: (error) => {
+    onError: error => {
       toast({
         title: 'Start failed',
         description: getErrorMessage(error),
@@ -179,19 +179,19 @@ export const useStartJob = () => {
 export const useCancelJob = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  
+
   return useMutation({
     mutationFn: (jobId: string) => jobsApi.cancelJob(jobId),
-    onSuccess: (job) => {
+    onSuccess: job => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.job(job.id) });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.jobs });
-      
+
       toast({
         title: 'Job cancelled',
         description: 'The job has been cancelled successfully.',
       });
     },
-    onError: (error) => {
+    onError: error => {
       toast({
         title: 'Cancellation failed',
         description: getErrorMessage(error),
@@ -207,19 +207,19 @@ export const useCancelJob = () => {
 export const useRetryJob = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  
+
   return useMutation({
     mutationFn: (jobId: string) => jobsApi.retryJob(jobId),
-    onSuccess: (job) => {
+    onSuccess: job => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.job(job.id) });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.jobs });
-      
+
       toast({
         title: 'Job retrying',
         description: 'The job has been reset and will retry processing.',
       });
     },
-    onError: (error) => {
+    onError: error => {
       toast({
         title: 'Retry failed',
         description: getErrorMessage(error),
@@ -234,18 +234,21 @@ export const useRetryJob = () => {
  */
 export const useSubmitParseJob = () => {
   const createJobMutation = useCreateJob();
-  
+
   return useMutation({
-    mutationFn: ({ documentId, projectId, options }: { 
-      documentId: string; 
-      projectId?: string; 
-      options?: Record<string, unknown> 
-    }) => 
-      jobsApi.submitParseJob(documentId, projectId, options),
-    onSuccess: (job) => {
+    mutationFn: ({
+      documentId,
+      projectId,
+      options,
+    }: {
+      documentId: string;
+      projectId?: string;
+      options?: Record<string, unknown>;
+    }) => jobsApi.submitParseJob(documentId, projectId, options),
+    onSuccess: job => {
       // Success handling is done by createJobMutation
     },
-    onError: (error) => {
+    onError: error => {
       // Error handling is done by createJobMutation
     },
   });

@@ -4,7 +4,15 @@
  */
 
 import { motion } from 'framer-motion';
-import { CreditCard, Download, Calendar, DollarSign, TrendingUp, AlertCircle, Crown } from 'lucide-react';
+import {
+  CreditCard,
+  Download,
+  Calendar,
+  DollarSign,
+  TrendingUp,
+  AlertCircle,
+  Crown,
+} from 'lucide-react';
 import React, { useState } from 'react';
 
 import { ParscadeCard } from '@/shared/components/brand';
@@ -102,9 +110,7 @@ const DashboardBillingPage: React.FC = () => {
           <div className="min-h-screen flex items-center justify-center">
             <ParscadeCard className="p-12 text-center max-w-md">
               <CreditCard className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h2 className="text-xl font-bold text-gray-900 mb-2">
-                Admin Access Required
-              </h2>
+              <h2 className="text-xl font-bold text-gray-900 mb-2">Admin Access Required</h2>
               <p className="text-gray-600">
                 You need administrator privileges to access billing management.
               </p>
@@ -127,10 +133,7 @@ const DashboardBillingPage: React.FC = () => {
               </p>
             </div>
 
-            <CustomButton
-              variant="primary"
-              leftIcon={<Download className="w-4 h-4" />}
-            >
+            <CustomButton variant="primary" leftIcon={<Download className="w-4 h-4" />}>
               Download Invoice
             </CustomButton>
           </motion.div>
@@ -149,7 +152,9 @@ const DashboardBillingPage: React.FC = () => {
                     <div>
                       <h2 className="text-2xl font-bold text-gray-900">{currentPlan.name} Plan</h2>
                       <div className="flex items-center text-gray-600">
-                        <span className="text-3xl font-bold text-blue-600 mr-2">{currentPlan.price}</span>
+                        <span className="text-3xl font-bold text-blue-600 mr-2">
+                          {currentPlan.price}
+                        </span>
                         <span>per {currentPlan.period}</span>
                       </div>
                     </div>
@@ -165,7 +170,9 @@ const DashboardBillingPage: React.FC = () => {
                     </div>
                     <div>
                       <p className="text-gray-500">Next Billing</p>
-                      <p className="font-semibold">{new Date(currentPlan.nextBilling).toLocaleDateString()}</p>
+                      <p className="font-semibold">
+                        {new Date(currentPlan.nextBilling).toLocaleDateString()}
+                      </p>
                     </div>
                     <div>
                       <p className="text-gray-500">Status</p>
@@ -176,9 +183,7 @@ const DashboardBillingPage: React.FC = () => {
                   </div>
                 </div>
                 <div className="flex flex-col space-y-2">
-                  <CustomButton variant="outline">
-                    Change Plan
-                  </CustomButton>
+                  <CustomButton variant="outline">Change Plan</CustomButton>
                   <CustomButton variant="ghost" className="text-red-600">
                     Cancel Subscription
                   </CustomButton>
@@ -205,13 +210,13 @@ const DashboardBillingPage: React.FC = () => {
                       <div className="mb-4">
                         <div className="flex items-center justify-between mb-2">
                           <h3 className="text-sm font-medium text-gray-600">{stat.label}</h3>
-                          {percentage >= 90 && (
-                            <AlertCircle className="w-4 h-4 text-red-500" />
-                          )}
+                          {percentage >= 90 && <AlertCircle className="w-4 h-4 text-red-500" />}
                         </div>
                         <div className="flex items-baseline space-x-2">
                           <span className="text-2xl font-bold text-gray-900">{stat.current}</span>
-                          <span className="text-sm text-gray-500">/ {stat.limit} {stat.unit}</span>
+                          <span className="text-sm text-gray-500">
+                            / {stat.limit} {stat.unit}
+                          </span>
                         </div>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
@@ -281,10 +286,7 @@ const DashboardBillingPage: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
-            <DashboardSection
-              title="Payment Method"
-              description="Manage your billing information"
-            >
+            <DashboardSection title="Payment Method" description="Manage your billing information">
               <ParscadeCard className="p-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
@@ -296,9 +298,7 @@ const DashboardBillingPage: React.FC = () => {
                       <p className="text-gray-600 text-sm">Expires 12/26</p>
                     </div>
                   </div>
-                  <CustomButton variant="outline">
-                    Update Payment Method
-                  </CustomButton>
+                  <CustomButton variant="outline">Update Payment Method</CustomButton>
                 </div>
               </ParscadeCard>
             </DashboardSection>

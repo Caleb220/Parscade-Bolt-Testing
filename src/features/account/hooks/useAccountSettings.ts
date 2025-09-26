@@ -6,7 +6,8 @@ import type {
   IntegrationSettings,
   NotificationSettings,
   ProfileSettings,
-  SecuritySettings} from '@/shared/schemas/account/accountSettings';
+  SecuritySettings,
+} from '@/shared/schemas/account/accountSettings';
 import {
   accountSettingsSchema,
   createDefaultAccountSettings,
@@ -18,7 +19,6 @@ import {
   fetchOrCreateAccountSettings,
   updateAccountSettingsSection,
 } from '../services/accountSettingsService';
-
 
 interface UseAccountSettingsOptions {
   userId?: string;
@@ -38,7 +38,11 @@ interface UseAccountSettingsResult {
   saveIntegrations: (integrations: IntegrationSettings) => Promise<AccountSettings>;
 }
 
-export const useAccountSettings = ({ userId, email, fullName }: UseAccountSettingsOptions): UseAccountSettingsResult => {
+export const useAccountSettings = ({
+  userId,
+  email,
+  fullName,
+}: UseAccountSettingsOptions): UseAccountSettingsResult => {
   const [settings, setSettings] = useState<AccountSettings | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(!!userId);
   const [error, setError] = useState<string | null>(null);
@@ -88,7 +92,7 @@ export const useAccountSettings = ({ userId, email, fullName }: UseAccountSettin
       if (defaults) {
         setSettings(defaults);
       }
-      setError(formatErrorForUser(err, 'We could not load your settings.'))
+      setError(formatErrorForUser(err, 'We could not load your settings.'));
     } finally {
       setIsLoading(false);
       loadingRef.current = false;
@@ -105,7 +109,10 @@ export const useAccountSettings = ({ userId, email, fullName }: UseAccountSettin
   }, [defaults, settings]);
 
   const handleSectionSave = useCallback(
-    async <T extends AccountSettingsSection>(section: T, value: AccountSettings[T]): Promise<AccountSettings> => {
+    async <T extends AccountSettingsSection>(
+      section: T,
+      value: AccountSettings[T]
+    ): Promise<AccountSettings> => {
       if (!userId) {
         throw new Error('Unable to save settings without an authenticated user.');
       }
@@ -123,24 +130,30 @@ export const useAccountSettings = ({ userId, email, fullName }: UseAccountSettin
           error: err instanceof Error ? err : new Error(String(err)),
           metadata: { section },
         });
-        setError(formatErrorForUser(err, 'We could not load your settings.'))
+        setError(formatErrorForUser(err, 'We could not load your settings.'));
         throw err;
       } finally {
         setSavingSection(null);
       }
     },
-    [userId],
+    [userId]
   );
 
-  const saveProfile = useCallback((profile: ProfileSettings) => handleSectionSave('profile', profile), [handleSectionSave]);
-  const saveSecurity = useCallback((security: SecuritySettings) => handleSectionSave('security', security), [handleSectionSave]);
+  const saveProfile = useCallback(
+    (profile: ProfileSettings) => handleSectionSave('profile', profile),
+    [handleSectionSave]
+  );
+  const saveSecurity = useCallback(
+    (security: SecuritySettings) => handleSectionSave('security', security),
+    [handleSectionSave]
+  );
   const saveNotifications = useCallback(
     (notifications: NotificationSettings) => handleSectionSave('notifications', notifications),
-    [handleSectionSave],
+    [handleSectionSave]
   );
   const saveIntegrations = useCallback(
     (integrations: IntegrationSettings) => handleSectionSave('integrations', integrations),
-    [handleSectionSave],
+    [handleSectionSave]
   );
 
   return {
@@ -155,5 +168,3 @@ export const useAccountSettings = ({ userId, email, fullName }: UseAccountSettin
     saveIntegrations,
   };
 };
-
-

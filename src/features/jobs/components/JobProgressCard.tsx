@@ -60,9 +60,7 @@ const JobProgressCard: React.FC<JobProgressCardProps> = ({ job }) => {
     >
       <ParscadeCard className="p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-gray-900">
-            Processing Status
-          </h2>
+          <h2 className="text-lg font-semibold text-gray-900">Processing Status</h2>
           <div className="flex items-center space-x-2">
             {getStatusIcon(job.status)}
             <span className="text-sm font-medium text-gray-900">
@@ -83,7 +81,7 @@ const JobProgressCard: React.FC<JobProgressCardProps> = ({ job }) => {
                 className="bg-blue-600 h-3 rounded-full"
                 initial={{ width: 0 }}
                 animate={{ width: `${progress}%` }}
-                transition={{ duration: 0.5, ease: "easeOut" }}
+                transition={{ duration: 0.5, ease: 'easeOut' }}
               />
             </div>
           </div>
@@ -108,12 +106,8 @@ const JobProgressCard: React.FC<JobProgressCardProps> = ({ job }) => {
               <div className="flex items-start space-x-3">
                 <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="text-sm font-medium text-red-800 mb-1">
-                    Error Details
-                  </h4>
-                  <p className="text-sm text-red-700">
-                    {job.error_message}
-                  </p>
+                  <h4 className="text-sm font-medium text-red-800 mb-1">Error Details</h4>
+                  <p className="text-sm text-red-700">{job.error_message}</p>
                 </div>
               </div>
             </div>
@@ -124,9 +118,7 @@ const JobProgressCard: React.FC<JobProgressCardProps> = ({ job }) => {
               <div className="flex items-start space-x-3">
                 <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="text-sm font-medium text-green-800 mb-1">
-                    Processing Complete
-                  </h4>
+                  <h4 className="text-sm font-medium text-green-800 mb-1">Processing Complete</h4>
                   <p className="text-sm text-green-700">
                     Your job has been processed successfully. Results are available for download.
                   </p>

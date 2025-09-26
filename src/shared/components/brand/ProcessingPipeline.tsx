@@ -90,19 +90,23 @@ const ProcessingPipeline: React.FC<ProcessingPipelineProps> = ({
           <div className="flex flex-col items-center">
             <motion.div
               className={`relative w-16 h-16 rounded-2xl bg-gradient-to-br ${getStepColor(step.status)} flex items-center justify-center shadow-lg`}
-              animate={animated && step.status === 'active' ? {
-                scale: [1, 1.1, 1],
-                boxShadow: [
-                  '0 8px 32px rgba(124, 109, 242, 0.3)',
-                  '0 12px 48px rgba(124, 109, 242, 0.5)',
-                  '0 8px 32px rgba(124, 109, 242, 0.3)'
-                ]
-              } : {}}
+              animate={
+                animated && step.status === 'active'
+                  ? {
+                      scale: [1, 1.1, 1],
+                      boxShadow: [
+                        '0 8px 32px rgba(124, 109, 242, 0.3)',
+                        '0 12px 48px rgba(124, 109, 242, 0.5)',
+                        '0 8px 32px rgba(124, 109, 242, 0.3)',
+                      ],
+                    }
+                  : {}
+              }
               transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
               whileHover={{ scale: 1.05 }}
             >
               <step.icon className="w-8 h-8 text-white" />
-              
+
               {/* Active Pulse */}
               {step.status === 'active' && animated && (
                 <motion.div
@@ -119,14 +123,12 @@ const ProcessingPipeline: React.FC<ProcessingPipelineProps> = ({
                 />
               )}
             </motion.div>
-            
+
             <div className="mt-3 text-center">
               <div className={`text-sm font-bold ${getStepTextColor(step.status)}`}>
                 {step.title}
               </div>
-              <div className="text-xs text-gray-500 mt-1">
-                {step.description}
-              </div>
+              <div className="text-xs text-gray-500 mt-1">{step.description}</div>
             </div>
           </div>
 
@@ -136,8 +138,8 @@ const ProcessingPipeline: React.FC<ProcessingPipelineProps> = ({
               <motion.div
                 className="h-full bg-gradient-to-r from-purple-600 to-cyan-500 rounded-full"
                 initial={{ width: '0%' }}
-                animate={{ 
-                  width: currentStep > index ? '100%' : '0%'
+                animate={{
+                  width: currentStep > index ? '100%' : '0%',
                 }}
                 transition={{ duration: 0.8, delay: index * 0.2 }}
               />

@@ -20,12 +20,7 @@ import {
 } from '@/shared/hooks/api/useJobs';
 import { useProject } from '@/shared/hooks/api/useProjects';
 
-import {
-  JobDetailHeader,
-  JobProgressCard,
-  JobActionsCard,
-  JobInfoSidebar,
-} from '../components';
+import { JobDetailHeader, JobProgressCard, JobActionsCard, JobInfoSidebar } from '../components';
 
 /**
  * Streamlined Job Detail page
@@ -39,12 +34,7 @@ const JobDetailPage: React.FC = () => {
   const [showEditDialog, setShowEditDialog] = useState(false);
 
   // API hooks
-  const {
-    data: job,
-    isLoading: jobLoading,
-    error: jobError,
-    refetch: refetchJob,
-  } = useJob(jobId!);
+  const { data: job, isLoading: jobLoading, error: jobError, refetch: refetchJob } = useJob(jobId!);
 
   const { data: document } = useDocument(job?.document_id!, {
     enabled: !!job?.document_id,
@@ -188,9 +178,7 @@ const JobDetailPage: React.FC = () => {
     return (
       <Layout>
         <div className="text-center py-12">
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
-            Job not found
-          </h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Job not found</h2>
           <p className="text-gray-600 mb-4">
             The job you're looking for doesn't exist or you don't have access to it.
           </p>
@@ -205,11 +193,12 @@ const JobDetailPage: React.FC = () => {
     );
   }
 
-  const isLoading = startJob.isPending ||
-                   cancelJob.isPending ||
-                   retryJob.isPending ||
-                   deleteJob.isPending ||
-                   downloadDocument.isPending;
+  const isLoading =
+    startJob.isPending ||
+    cancelJob.isPending ||
+    retryJob.isPending ||
+    deleteJob.isPending ||
+    downloadDocument.isPending;
 
   return (
     <Layout>
@@ -235,11 +224,7 @@ const JobDetailPage: React.FC = () => {
           </div>
 
           {/* Sidebar */}
-          <JobInfoSidebar
-            job={job}
-            project={project}
-            document={document}
-          />
+          <JobInfoSidebar job={job} project={project} document={document} />
         </div>
 
         {/* TODO: Add EditJobDialog when needed */}

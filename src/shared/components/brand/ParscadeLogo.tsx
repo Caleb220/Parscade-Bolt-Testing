@@ -43,36 +43,35 @@ const ParscadeLogo: React.FC<ParscadeLogoProps> = ({
     gradient: 'text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-500',
   };
 
-  const logoAnimation = animated ? {
-    whileHover: { 
-      scale: 1.05,
-      transition: { duration: 0.2 }
-    },
-    whileTap: { scale: 0.95 }
-  } : {};
+  const logoAnimation = animated
+    ? {
+        whileHover: {
+          scale: 1.05,
+          transition: { duration: 0.2 },
+        },
+        whileTap: { scale: 0.95 },
+      }
+    : {};
 
   return (
-    <motion.div
-      className={`flex items-center ${className}`}
-      {...logoAnimation}
-    >
+    <motion.div className={`flex items-center ${className}`} {...logoAnimation}>
       {/* Logo Icon */}
       <motion.div
         className={`${sizeClasses[size]} rounded-xl bg-gradient-to-br from-blue-600 to-blue-500 flex items-center justify-center shadow-lg mr-3`}
-        animate={animated ? {
-          boxShadow: [
-            '0 4px 20px rgba(14, 165, 233, 0.2)',
-            '0 6px 25px rgba(14, 165, 233, 0.3)',
-            '0 4px 20px rgba(14, 165, 233, 0.2)'
-          ]
-        } : {}}
+        animate={
+          animated
+            ? {
+                boxShadow: [
+                  '0 4px 20px rgba(14, 165, 233, 0.2)',
+                  '0 6px 25px rgba(14, 165, 233, 0.3)',
+                  '0 4px 20px rgba(14, 165, 233, 0.2)',
+                ],
+              }
+            : {}
+        }
         transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
       >
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          className="w-1/2 h-1/2 text-white"
-        >
+        <svg viewBox="0 0 24 24" fill="none" className="w-1/2 h-1/2 text-white">
           <path
             d="M12 2L2 7L12 12L22 7L12 2Z"
             stroke="currentColor"

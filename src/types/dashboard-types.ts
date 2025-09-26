@@ -15,7 +15,15 @@ export interface DashboardStats {
 // Dashboard Activity
 export interface ActivityItem {
   readonly id: string;
-  readonly type: 'document.uploaded' | 'document.processed' | 'job.created' | 'job.processing' | 'job.completed' | 'job.failed' | 'project.created' | 'project.updated';
+  readonly type:
+    | 'document.uploaded'
+    | 'document.processed'
+    | 'job.created'
+    | 'job.processing'
+    | 'job.completed'
+    | 'job.failed'
+    | 'project.created'
+    | 'project.updated';
   readonly title: string;
   readonly description: string;
   readonly timestamp: string;

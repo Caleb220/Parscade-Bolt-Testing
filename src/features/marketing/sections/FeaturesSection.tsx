@@ -1,14 +1,14 @@
 import { motion } from 'framer-motion';
-import { 
-  FileText, 
-  Zap, 
-  Database, 
-  Shield, 
-  BarChart3, 
+import {
+  FileText,
+  Zap,
+  Database,
+  Shield,
+  BarChart3,
   Webhook,
   Clock,
   Users,
-  Globe
+  Globe,
 } from 'lucide-react';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -21,32 +21,38 @@ import { useAuth } from '../../auth';
 const features = [
   {
     title: 'Multi-Format Support',
-    description: 'Designed to handle PDFs, Word documents, images, spreadsheets, and more with intelligent format detection.',
+    description:
+      'Designed to handle PDFs, Word documents, images, spreadsheets, and more with intelligent format detection.',
     icon: FileText,
   },
   {
     title: 'Lightning Fast Processing',
-    description: 'Architecting for speed - targeting sub-second processing times with cloud-native scalability.',
+    description:
+      'Architecting for speed - targeting sub-second processing times with cloud-native scalability.',
     icon: Zap,
   },
   {
     title: 'Structured Output',
-    description: 'Clean, structured data output in JSON, CSV, or XML formats, designed for seamless integration.',
+    description:
+      'Clean, structured data output in JSON, CSV, or XML formats, designed for seamless integration.',
     icon: Database,
   },
   {
     title: 'Enterprise Security',
-    description: 'Building with enterprise-grade encryption, SOC 2 compliance, and GDPR-ready data handling from day one.',
+    description:
+      'Building with enterprise-grade encryption, SOC 2 compliance, and GDPR-ready data handling from day one.',
     icon: Shield,
   },
   {
     title: 'Advanced Analytics',
-    description: 'Comprehensive analytics dashboard for processing performance, accuracy metrics, and usage insights.',
+    description:
+      'Comprehensive analytics dashboard for processing performance, accuracy metrics, and usage insights.',
     icon: BarChart3,
   },
   {
     title: 'API & Webhooks',
-    description: 'Developer-friendly APIs and webhooks designed for seamless integration with your existing systems.',
+    description:
+      'Developer-friendly APIs and webhooks designed for seamless integration with your existing systems.',
     icon: Webhook,
   },
 ];
@@ -79,7 +85,8 @@ const FeaturesSection: React.FC = () => {
             The future of document processing
           </h2>
           <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto px-4">
-            We're building intelligent tools that will revolutionize how businesses handle document processing. Here's what we're working on.
+            We're building intelligent tools that will revolutionize how businesses handle document
+            processing. Here's what we're working on.
           </p>
         </motion.div>
 

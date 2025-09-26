@@ -2,24 +2,45 @@
  * Notifications Tab Component - Enhanced with Backend Integration
  * Comprehensive notification preferences management with real-time validation
  * Updated to use snake_case field names matching OpenAPI schema
- */ 
+ */
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
-import { Bell, Mail, Smartphone, Webhook, Clock, Save, AlertCircle, CheckCircle } from 'lucide-react';
+import {
+  Bell,
+  Mail,
+  Smartphone,
+  Webhook,
+  Clock,
+  Save,
+  AlertCircle,
+  CheckCircle,
+} from 'lucide-react';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 
 import { getErrorMessage } from '@/lib/api';
-import { notificationPreferencesSchema, type NotificationPreferencesFormData } from '@/lib/validation/account';
+import {
+  notificationPreferencesSchema,
+  type NotificationPreferencesFormData,
+} from '@/lib/validation/account';
 import { Button } from '@/shared/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/shared/components/ui/card';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { Switch } from '@/shared/components/ui/switch';
 import { useToast } from '@/shared/components/ui/use-toast';
-import { useNotificationPreferences, useUpdateNotificationPreferences } from '@/shared/hooks/api/useAccountData';
+import {
+  useNotificationPreferences,
+  useUpdateNotificationPreferences,
+} from '@/shared/hooks/api/useAccountData';
 
 import { useAccountContext } from '../AccountLayout';
 
@@ -75,11 +96,10 @@ const NotificationsTab: React.FC = () => {
   const watchedChannels = watch('channels');
   const watchedDndSettings = watch('dnd_settings');
 
-
   const onSubmit = async (data: NotificationPreferencesFormData) => {
     try {
       await updatePrefs.mutateAsync(data);
-      
+
       toast({
         title: 'Preferences saved',
         description: 'Your notification preferences have been updated successfully.',
@@ -126,9 +146,7 @@ const NotificationsTab: React.FC = () => {
             <AlertCircle className="w-8 h-8 text-red-600 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Failed to load preferences</h3>
             <p className="text-gray-600 mb-4">{getErrorMessage(error)}</p>
-            <Button onClick={() => refetch()}>
-              Retry
-            </Button>
+            <Button onClick={() => refetch()}>Retry</Button>
           </div>
         </CardContent>
       </Card>
@@ -149,9 +167,7 @@ const NotificationsTab: React.FC = () => {
               <Bell className="w-5 h-5 mr-2" />
               Notification Channels
             </CardTitle>
-            <CardDescription>
-              Choose how you want to receive notifications
-            </CardDescription>
+            <CardDescription>Choose how you want to receive notifications</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
@@ -164,7 +180,9 @@ const NotificationsTab: React.FC = () => {
               </div>
               <Switch
                 checked={watchedChannels?.email || false}
-                onCheckedChange={(checked) => setValue('channels.email', checked, { shouldDirty: true })}
+                onCheckedChange={checked =>
+                  setValue('channels.email', checked, { shouldDirty: true })
+                }
               />
             </div>
 
@@ -178,7 +196,9 @@ const NotificationsTab: React.FC = () => {
               </div>
               <Switch
                 checked={watchedChannels?.in_app || false}
-                onCheckedChange={(checked) => setValue('channels.in_app', checked, { shouldDirty: true })}
+                onCheckedChange={checked =>
+                  setValue('channels.in_app', checked, { shouldDirty: true })
+                }
               />
             </div>
 
@@ -192,7 +212,9 @@ const NotificationsTab: React.FC = () => {
               </div>
               <Switch
                 checked={watchedChannels?.webhook || false}
-                onCheckedChange={(checked) => setValue('channels.webhook', checked, { shouldDirty: true })}
+                onCheckedChange={checked =>
+                  setValue('channels.webhook', checked, { shouldDirty: true })
+                }
               />
             </div>
 
@@ -231,19 +253,42 @@ const NotificationsTab: React.FC = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             {[
-              { key: 'product' as const, label: 'Product Updates', description: 'New features and improvements' },
-              { key: 'billing' as const, label: 'Billing', description: 'Payment confirmations and invoices' },
-              { key: 'incidents' as const, label: 'Incidents', description: 'Service outages and issues' },
-              { key: 'jobs' as const, label: 'Job Status', description: 'Document processing updates' },
-              { key: 'digest' as const, label: 'Weekly Digest', description: 'Summary of your activity' },
+              {
+                key: 'product' as const,
+                label: 'Product Updates',
+                description: 'New features and improvements',
+              },
+              {
+                key: 'billing' as const,
+                label: 'Billing',
+                description: 'Payment confirmations and invoices',
+              },
+              {
+                key: 'incidents' as const,
+                label: 'Incidents',
+                description: 'Service outages and issues',
+              },
+              {
+                key: 'jobs' as const,
+                label: 'Job Status',
+                description: 'Document processing updates',
+              },
+              {
+                key: 'digest' as const,
+                label: 'Weekly Digest',
+                description: 'Summary of your activity',
+              },
             ].map(({ key, label, description }) => (
-              <div key={key} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+              <div
+                key={key}
+                className="flex items-center justify-between p-3 border border-gray-200 rounded-lg"
+              >
                 <div>
                   <div className="font-medium text-gray-900">{label}</div>
                   <div className="text-sm text-gray-500">{description}</div>
                 </div>
                 <div className="flex space-x-1">
-                  {(['off', 'immediate', 'daily'] as const).map((frequency) => (
+                  {(['off', 'immediate', 'daily'] as const).map(frequency => (
                     <label key={frequency} className="flex items-center space-x-1 cursor-pointer">
                       <input
                         type="radio"
@@ -325,8 +370,9 @@ const NotificationsTab: React.FC = () => {
 
             <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
               <p className="text-sm text-blue-800">
-                <strong>Do Not Disturb:</strong> When enabled, you won't receive notifications during the specified hours.
-                Email notifications will be delayed until the quiet period ends.
+                <strong>Do Not Disturb:</strong> When enabled, you won't receive notifications
+                during the specified hours. Email notifications will be delayed until the quiet
+                period ends.
               </p>
             </div>
           </CardContent>
@@ -357,7 +403,9 @@ const NotificationsTab: React.FC = () => {
             <CheckCircle className="w-5 h-5 text-green-600 mr-2 flex-shrink-0" />
             <div>
               <p className="text-sm font-medium text-green-800">Preferences saved</p>
-              <p className="text-sm text-green-700">Your notification preferences have been updated successfully</p>
+              <p className="text-sm text-green-700">
+                Your notification preferences have been updated successfully
+              </p>
             </div>
           </motion.div>
         )}
@@ -381,13 +429,9 @@ const NotificationsTab: React.FC = () => {
               </>
             )}
           </Button>
-          
+
           {/* Change Indicator */}
-          {isDirty && (
-            <p className="text-sm text-blue-600 mt-2">
-              You have unsaved changes
-            </p>
-          )}
+          {isDirty && <p className="text-sm text-blue-600 mt-2">You have unsaved changes</p>}
         </div>
       </form>
     </motion.div>

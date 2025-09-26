@@ -44,7 +44,13 @@ class Logger {
     this.globalContext[key] = value;
   }
 
-  private formatMessage(level: string, message: string, context?: LogContext, metadata?: LogMetadata, error?: Error): void {
+  private formatMessage(
+    level: string,
+    message: string,
+    context?: LogContext,
+    metadata?: LogMetadata,
+    error?: Error
+  ): void {
     if (!this.isInitialized && level !== 'info') return;
 
     const logData = {
@@ -55,12 +61,12 @@ class Logger {
       ...(metadata && { metadata }),
       ...(this.userContext && { user: this.userContext }),
       ...(Object.keys(this.globalContext).length > 0 && { global: this.globalContext }),
-      ...(error && { 
+      ...(error && {
         error: {
           name: error.name,
           message: error.message,
           stack: error.stack,
-        }
+        },
       }),
     };
 
@@ -91,11 +97,17 @@ class Logger {
     this.formatMessage('info', message, options?.context, options?.metadata);
   }
 
-  warn(message: string, options?: { context?: LogContext; metadata?: LogMetadata; error?: Error }): void {
+  warn(
+    message: string,
+    options?: { context?: LogContext; metadata?: LogMetadata; error?: Error }
+  ): void {
     this.formatMessage('warn', message, options?.context, options?.metadata, options?.error);
   }
 
-  error(message: string, options?: { context?: LogContext; metadata?: LogMetadata; error?: Error }): void {
+  error(
+    message: string,
+    options?: { context?: LogContext; metadata?: LogMetadata; error?: Error }
+  ): void {
     this.formatMessage('error', message, options?.context, options?.metadata, options?.error);
   }
 }

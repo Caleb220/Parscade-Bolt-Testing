@@ -10,7 +10,7 @@ interface PublicAuthLayoutProps {
 
 /**
  * Minimal layout for authentication flows (password reset, recovery).
- * 
+ *
  * DESIGN RATIONALE:
  * - No navigation bar or user chrome to avoid confusion during auth flows
  * - Clean, focused experience that feels secure and standalone
@@ -19,7 +19,9 @@ interface PublicAuthLayoutProps {
  */
 const PublicAuthLayout: React.FC<PublicAuthLayoutProps> = ({ children, className = '' }) => {
   return (
-    <div className={`min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 flex items-center justify-center px-4 ${className}`}>
+    <div
+      className={`min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 flex items-center justify-center px-4 ${className}`}
+    >
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -28,11 +30,9 @@ const PublicAuthLayout: React.FC<PublicAuthLayoutProps> = ({ children, className
       >
         {children}
       </motion.div>
-      
+
       {/* Subtle branding without navigation */}
-      <div className="fixed bottom-4 left-4 text-xs text-gray-500">
-        Parscade
-      </div>
+      <div className="fixed bottom-4 left-4 text-xs text-gray-500">Parscade</div>
     </div>
   );
 };

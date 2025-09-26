@@ -40,11 +40,12 @@ const JobConfigCard: React.FC<JobConfigCardProps> = ({ job }) => {
                 </dt>
                 <dd className="mt-1 text-sm text-gray-900">
                   {typeof value === 'boolean'
-                    ? (value ? 'Enabled' : 'Disabled')
+                    ? value
+                      ? 'Enabled'
+                      : 'Disabled'
                     : typeof value === 'object'
-                    ? JSON.stringify(value, null, 2)
-                    : String(value)
-                  }
+                      ? JSON.stringify(value, null, 2)
+                      : String(value)}
                 </dd>
               </div>
             ))}
@@ -65,9 +66,7 @@ const JobConfigCard: React.FC<JobConfigCardProps> = ({ job }) => {
       ) : (
         <div className="text-center py-6">
           <Database className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-          <p className="text-sm text-gray-500">
-            No custom configuration set for this job
-          </p>
+          <p className="text-sm text-gray-500">No custom configuration set for this job</p>
         </div>
       )}
     </ParscadeCard>

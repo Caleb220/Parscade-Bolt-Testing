@@ -37,9 +37,7 @@ const DashboardGrid: React.FC<DashboardGridProps> = ({
   };
 
   return (
-    <div className={`grid ${gridClasses[columns]} ${gapClasses[gap]} ${className}`}>
-      {children}
-    </div>
+    <div className={`grid ${gridClasses[columns]} ${gapClasses[gap]} ${className}`}>{children}</div>
   );
 };
 

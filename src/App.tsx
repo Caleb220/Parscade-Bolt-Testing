@@ -8,10 +8,9 @@ import { AuthProvider } from '@/features/auth/context/AuthContext';
 import ErrorPage from '@/features/marketing/pages/ErrorPage';
 import HomePage from '@/features/marketing/pages/HomePage';
 import NotFoundPage from '@/features/marketing/pages/NotFoundPage';
+import { ProProtectedRoute } from '@/shared/components/layout/templates';
 import ProtectedRoute from '@/shared/components/layout/templates/ProtectedRoute';
 import PublicAuthLayout from '@/shared/components/layout/templates/PublicAuthLayout';
-import { ProProtectedRoute } from '@/shared/components/layout/templates';
-
 // Critical pages (keep as regular imports for performance)
 import { Toaster } from '@/shared/components/ui/toaster';
 
@@ -25,9 +24,12 @@ const TermsPage = React.lazy(() => import('@/features/marketing/pages/TermsPage'
 const LoginSupportPage = React.lazy(() => import('@/features/auth/pages/LoginSupportPage'));
 
 // Lazy-loaded Dashboard Pages
+const CommandCentrePage = React.lazy(() => import('@/features/dashboard/pages/CommandCentrePage'));
 const DashboardPage = React.lazy(() => import('@/features/dashboard/pages/DashboardPage'));
 const DocumentsPage = React.lazy(() => import('@/features/dashboard/pages/DocumentsPage'));
-const DocumentDetailPage = React.lazy(() => import('@/features/dashboard/pages/DocumentDetailPage'));
+const DocumentDetailPage = React.lazy(
+  () => import('@/features/dashboard/pages/DocumentDetailPage')
+);
 const ProjectDetailPage = React.lazy(() => import('@/features/dashboard/pages/ProjectDetailPage'));
 const JobDetailPage = React.lazy(() => import('@/features/jobs/pages/JobDetailPage'));
 const JobsPage = React.lazy(() => import('@/features/dashboard/pages/JobsPage'));
@@ -35,14 +37,20 @@ const AnalyticsPage = React.lazy(() => import('@/features/dashboard/pages/Analyt
 const WorkflowsPage = React.lazy(() => import('@/features/dashboard/pages/WorkflowsPage'));
 const IntegrationsPage = React.lazy(() => import('@/features/dashboard/pages/IntegrationsPage'));
 const TeamPage = React.lazy(() => import('@/features/dashboard/pages/TeamPage'));
-const DashboardBillingPage = React.lazy(() => import('@/features/dashboard/pages/DashboardBillingPage'));
+const DashboardBillingPage = React.lazy(
+  () => import('@/features/dashboard/pages/DashboardBillingPage')
+);
 
 // Lazy-loaded Account Components
 const AccountLayout = React.lazy(() => import('@/features/account/components/AccountLayout'));
 const ProfileTab = React.lazy(() => import('@/features/account/components/tabs/ProfileTab'));
 const SecurityTab = React.lazy(() => import('@/features/account/components/tabs/SecurityTab'));
-const NotificationsTab = React.lazy(() => import('@/features/account/components/tabs/NotificationsTab'));
-const IntegrationsTab = React.lazy(() => import('@/features/account/components/tabs/IntegrationsTab'));
+const NotificationsTab = React.lazy(
+  () => import('@/features/account/components/tabs/NotificationsTab')
+);
+const IntegrationsTab = React.lazy(
+  () => import('@/features/account/components/tabs/IntegrationsTab')
+);
 const ApiKeysTab = React.lazy(() => import('@/features/account/components/tabs/ApiKeysTab'));
 
 const LoadingFallback = () => (
@@ -129,6 +137,16 @@ function App() {
                       <DashboardPage />
                     </Suspense>
                   </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/dashboard/command-centre"
+                element={
+                  <ProProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <CommandCentrePage />
+                    </Suspense>
+                  </ProProtectedRoute>
                 }
               />
               <Route

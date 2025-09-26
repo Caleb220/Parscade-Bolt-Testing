@@ -9,8 +9,8 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { ParscadeCard } from '@/shared/components/brand';
+import Button from '@/shared/components/forms/atoms/Button';
 import { Badge } from '@/shared/components/ui/badge';
-import { Button } from '@/shared/components/ui/button';
 import { formatDate, formatDuration } from '@/shared/utils/formatters';
 import type { Job } from '@/types/api-types';
 
@@ -38,19 +38,22 @@ const getStatusIcon = (status: string) => {
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'completed': return 'success';
-    case 'failed': return 'destructive';
-    case 'running': return 'default';
-    case 'pending': return 'secondary';
-    case 'cancelled': return 'outline';
-    default: return 'secondary';
+    case 'completed':
+      return 'success';
+    case 'failed':
+      return 'destructive';
+    case 'running':
+      return 'default';
+    case 'pending':
+      return 'secondary';
+    case 'cancelled':
+      return 'outline';
+    default:
+      return 'secondary';
   }
 };
 
-const DocumentJobsCard: React.FC<DocumentJobsCardProps> = ({
-  jobs,
-  isLoading = false,
-}) => {
+const DocumentJobsCard: React.FC<DocumentJobsCardProps> = ({ jobs, isLoading = false }) => {
   const navigate = useNavigate();
 
   if (isLoading) {
@@ -89,12 +92,8 @@ const DocumentJobsCard: React.FC<DocumentJobsCardProps> = ({
             <Activity className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">
-              Processing Jobs
-            </h2>
-            <p className="text-sm text-gray-500">
-              Jobs related to this document
-            </p>
+            <h2 className="text-lg font-semibold text-gray-900">Processing Jobs</h2>
+            <p className="text-sm text-gray-500">Jobs related to this document</p>
           </div>
         </div>
 
@@ -169,9 +168,7 @@ const DocumentJobsCard: React.FC<DocumentJobsCardProps> = ({
         ) : (
           <div className="text-center py-8">
             <Activity className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-            <h3 className="text-lg font-medium text-gray-900 mb-1">
-              No Processing Jobs
-            </h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-1">No Processing Jobs</h3>
             <p className="text-gray-500">
               No processing jobs are associated with this document yet.
             </p>

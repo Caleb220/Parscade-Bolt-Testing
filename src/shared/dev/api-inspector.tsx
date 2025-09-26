@@ -60,32 +60,36 @@ const ApiInspector: React.FC<ApiInspectorProps> = ({ isOpen, onToggle }) => {
           ? await response.clone().json()
           : null;
 
-        setApiCalls(prev => prev.map(call =>
-          call.id === callId
-            ? {
-                ...call,
-                status: response.ok ? 'success' : 'error',
-                duration,
-                responseData,
-                error: response.ok ? undefined : `${response.status} ${response.statusText}`,
-              }
-            : call
-        ));
+        setApiCalls(prev =>
+          prev.map(call =>
+            call.id === callId
+              ? {
+                  ...call,
+                  status: response.ok ? 'success' : 'error',
+                  duration,
+                  responseData,
+                  error: response.ok ? undefined : `${response.status} ${response.statusText}`,
+                }
+              : call
+          )
+        );
 
         return response;
       } catch (error) {
         const duration = Date.now() - startTime;
 
-        setApiCalls(prev => prev.map(call =>
-          call.id === callId
-            ? {
-                ...call,
-                status: 'error',
-                duration,
-                error: error instanceof Error ? error.message : 'Unknown error',
-              }
-            : call
-        ));
+        setApiCalls(prev =>
+          prev.map(call =>
+            call.id === callId
+              ? {
+                  ...call,
+                  status: 'error',
+                  duration,
+                  error: error instanceof Error ? error.message : 'Unknown error',
+                }
+              : call
+          )
+        );
 
         throw error;
       }
@@ -189,21 +193,15 @@ const ApiInspector: React.FC<ApiInspectorProps> = ({ isOpen, onToggle }) => {
                           call.status === 'success'
                             ? 'bg-green-500'
                             : call.status === 'error'
-                            ? 'bg-red-500'
-                            : 'bg-yellow-500'
+                              ? 'bg-red-500'
+                              : 'bg-yellow-500'
                         }`}
                       />
-                      <span className="font-mono text-sm font-medium">
-                        {call.method}
-                      </span>
+                      <span className="font-mono text-sm font-medium">{call.method}</span>
                     </div>
-                    <span className="text-xs text-gray-500">
-                      {call.duration}ms
-                    </span>
+                    <span className="text-xs text-gray-500">{call.duration}ms</span>
                   </div>
-                  <div className="text-sm text-gray-700 truncate mt-1">
-                    {call.endpoint}
-                  </div>
+                  <div className="text-sm text-gray-700 truncate mt-1">{call.endpoint}</div>
                   <div className="text-xs text-gray-500">
                     {new Date(call.timestamp).toLocaleTimeString()}
                   </div>
@@ -223,7 +221,9 @@ const ApiInspector: React.FC<ApiInspectorProps> = ({ isOpen, onToggle }) => {
                   <div>
                     <h4 className="font-medium mb-2">Request</h4>
                     <div className="bg-gray-100 p-3 rounded text-sm font-mono">
-                      <div>{selectedCall.method} {selectedCall.endpoint}</div>
+                      <div>
+                        {selectedCall.method} {selectedCall.endpoint}
+                      </div>
                       {selectedCall.requestData && (
                         <pre className="mt-2 text-xs overflow-auto">
                           {JSON.stringify(selectedCall.requestData, null, 2)}
@@ -238,23 +238,17 @@ const ApiInspector: React.FC<ApiInspectorProps> = ({ isOpen, onToggle }) => {
                       <div className="flex items-center gap-2 mb-2">
                         <span
                           className={`inline-block w-2 h-2 rounded-full ${
-                            selectedCall.status === 'success'
-                              ? 'bg-green-500'
-                              : 'bg-red-500'
+                            selectedCall.status === 'success' ? 'bg-green-500' : 'bg-red-500'
                           }`}
                         />
                         <span className="font-medium">
                           {selectedCall.status === 'success' ? 'Success' : 'Error'}
                         </span>
-                        <span className="text-gray-500">
-                          {selectedCall.duration}ms
-                        </span>
+                        <span className="text-gray-500">{selectedCall.duration}ms</span>
                       </div>
 
                       {selectedCall.error && (
-                        <div className="text-red-600 mb-2">
-                          Error: {selectedCall.error}
-                        </div>
+                        <div className="text-red-600 mb-2">Error: {selectedCall.error}</div>
                       )}
 
                       {selectedCall.responseData && (
@@ -271,13 +265,9 @@ const ApiInspector: React.FC<ApiInspectorProps> = ({ isOpen, onToggle }) => {
                       {Object.entries(validationSummary).find(([endpoint]) =>
                         selectedCall.endpoint.includes(endpoint.replace(':id', ''))
                       ) ? (
-                        <div className="text-green-600">
-                          ✅ Validation schemas registered
-                        </div>
+                        <div className="text-green-600">✅ Validation schemas registered</div>
                       ) : (
-                        <div className="text-yellow-600">
-                          ⚠️ No validation schemas found
-                        </div>
+                        <div className="text-yellow-600">⚠️ No validation schemas found</div>
                       )}
                     </div>
                   </div>

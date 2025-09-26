@@ -5,14 +5,21 @@
 
 import { motion } from 'framer-motion';
 import {
-  Eye, Edit3, Trash2, Download, MoreVertical,
-  FileText, Image, FileSpreadsheet, Archive
+  Eye,
+  Edit3,
+  Trash2,
+  Download,
+  MoreVertical,
+  FileText,
+  Image,
+  FileSpreadsheet,
+  Archive,
 } from 'lucide-react';
 import React from 'react';
 
 import { ParscadeCard } from '@/shared/components/brand';
+import Button from '@/shared/components/forms/atoms/Button';
 import { Badge } from '@/shared/components/ui/badge';
-import { Button } from '@/shared/components/ui/button';
 import { formatDate, formatBytes } from '@/shared/utils/formatters';
 import type { Document } from '@/types/api-types';
 
@@ -30,8 +37,10 @@ interface DocumentsTableProps {
 
 const getFileIcon = (mimeType: string) => {
   if (mimeType.startsWith('image/')) return <Image className="w-4 h-4" />;
-  if (mimeType.includes('spreadsheet') || mimeType.includes('excel')) return <FileSpreadsheet className="w-4 h-4" />;
-  if (mimeType.includes('zip') || mimeType.includes('archive')) return <Archive className="w-4 h-4" />;
+  if (mimeType.includes('spreadsheet') || mimeType.includes('excel'))
+    return <FileSpreadsheet className="w-4 h-4" />;
+  if (mimeType.includes('zip') || mimeType.includes('archive'))
+    return <Archive className="w-4 h-4" />;
   return <FileText className="w-4 h-4" />;
 };
 
@@ -147,11 +156,7 @@ const DocumentsTable: React.FC<DocumentsTableProps> = ({
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <Badge
-                      variant={document.status}
-                      showIcon
-                      animated
-                    />
+                    <Badge variant={document.status} showIcon animated />
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {document.file_size ? formatBytes(document.file_size) : '-'}

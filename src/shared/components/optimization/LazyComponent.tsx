@@ -42,20 +42,20 @@ const defaultAnimations = {
     initial: { opacity: 0, y: 20 },
     animate: { opacity: 1, y: 0 },
     exit: { opacity: 0, y: -20 },
-    transition: { duration: 0.3 }
+    transition: { duration: 0.3 },
   },
   section: {
     initial: { opacity: 0, scale: 0.95 },
     animate: { opacity: 1, scale: 1 },
     exit: { opacity: 0, scale: 0.95 },
-    transition: { duration: 0.2 }
+    transition: { duration: 0.2 },
   },
   component: {
     initial: { opacity: 0 },
     animate: { opacity: 1 },
     exit: { opacity: 0 },
-    transition: { duration: 0.15 }
-  }
+    transition: { duration: 0.15 },
+  },
 };
 
 /**
@@ -69,10 +69,11 @@ const LazyComponent: React.FC<LazyComponentProps> = ({
   preloadOptions = {},
   level = 'component',
   bandwidthAware = false,
-  animation
+  animation,
 }) => {
   // Get the component loader from the lazy component
-  const componentLoader = (Component as any)._payload?._result || (() => Promise.resolve(Component));
+  const componentLoader =
+    (Component as any)._payload?._result || (() => Promise.resolve(Component));
 
   // Use appropriate preload hook
   const preloadHook = bandwidthAware
@@ -116,10 +117,7 @@ const LazyComponent: React.FC<LazyComponentProps> = ({
       onMouseEnter={handleMouseEnter}
       className={preloadOptions.onVisible ? 'lazy-component' : undefined}
     >
-      <GlobalErrorBoundary
-        level={getErrorBoundaryLevel()}
-        fallback={errorFallback}
-      >
+      <GlobalErrorBoundary level={getErrorBoundaryLevel()} fallback={errorFallback}>
         <Suspense fallback={getFallback()}>
           <AnimatePresence mode="wait">
             <motion.div
@@ -140,9 +138,7 @@ const LazyComponent: React.FC<LazyComponentProps> = ({
         <div className="fixed bottom-4 right-4 bg-black bg-opacity-75 text-white text-xs p-2 rounded z-50">
           <div>Preloaded: {preloadHook.isPreloaded ? '✅' : '❌'}</div>
           <div>Loading: {preloadHook.isPreloading ? '⏳' : '❌'}</div>
-          {bandwidthAware && (
-            <div>Bandwidth Aware: ✅</div>
-          )}
+          {bandwidthAware && <div>Bandwidth Aware: ✅</div>}
         </div>
       )}
     </div>
@@ -158,13 +154,7 @@ export const withLazyPreload = <P extends object>(
   component: React.LazyExoticComponent<ComponentType<P>>,
   options: Omit<LazyComponentProps, 'component' | 'componentProps'> = {}
 ) => {
-  return (props: P) => (
-    <LazyComponent
-      component={component}
-      componentProps={props}
-      {...options}
-    />
-  );
+  return (props: P) => <LazyComponent component={component} componentProps={props} {...options} />;
 };
 
 /**
@@ -185,21 +175,16 @@ export const PreloadableLink: React.FC<PreloadableLinkProps> = ({
   className = '',
   preloadDelay = 100,
   priority = 'normal',
-  moduleLoader
+  moduleLoader,
 }) => {
-  const { preload } = usePreload(
-    moduleLoader || (() => Promise.resolve()),
-    to,
-    { onHover: true, delay: preloadDelay, priority }
-  );
+  const { preload } = usePreload(moduleLoader || (() => Promise.resolve()), to, {
+    onHover: true,
+    delay: preloadDelay,
+    priority,
+  });
 
   return (
-    <a
-      href={to}
-      className={className}
-      onMouseEnter={preload}
-      onFocus={preload}
-    >
+    <a href={to} className={className} onMouseEnter={preload} onFocus={preload}>
       {children}
     </a>
   );

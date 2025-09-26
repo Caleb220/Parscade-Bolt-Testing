@@ -8,7 +8,7 @@ import { Database, Copy, CheckCircle } from 'lucide-react';
 import React from 'react';
 
 import { ParscadeCard } from '@/shared/components/brand';
-import { Button } from '@/shared/components/ui/button';
+import Button from '@/shared/components/forms/atoms/Button';
 import { useClipboard } from '@/shared/hooks/useClipboard';
 import type { Document } from '@/types/api-types';
 
@@ -19,8 +19,8 @@ interface DocumentStructuredDataCardProps {
 const DocumentStructuredDataCard: React.FC<DocumentStructuredDataCardProps> = ({ document }) => {
   const { copyToClipboard, isCopied } = useClipboard();
 
-  const hasStructuredData = document.structured_data &&
-                           Object.keys(document.structured_data).length > 0;
+  const hasStructuredData =
+    document.structured_data && Object.keys(document.structured_data).length > 0;
 
   const handleCopyData = () => {
     if (document.structured_data) {
@@ -41,12 +41,8 @@ const DocumentStructuredDataCard: React.FC<DocumentStructuredDataCardProps> = ({
               <Database className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-gray-900">
-                Structured Data
-              </h2>
-              <p className="text-sm text-gray-500">
-                Extracted structured information and metadata
-              </p>
+              <h2 className="text-lg font-semibold text-gray-900">Structured Data</h2>
+              <p className="text-sm text-gray-500">Extracted structured information and metadata</p>
             </div>
           </div>
 
@@ -54,7 +50,9 @@ const DocumentStructuredDataCard: React.FC<DocumentStructuredDataCardProps> = ({
             <Button
               variant="outline"
               size="sm"
-              leftIcon={isCopied ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+              leftIcon={
+                isCopied ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />
+              }
               onClick={handleCopyData}
               className={isCopied ? 'text-green-600 border-green-200' : ''}
             >
@@ -82,9 +80,7 @@ const DocumentStructuredDataCard: React.FC<DocumentStructuredDataCardProps> = ({
                 <Database className="w-6 h-6 text-gray-400" />
               </div>
               <div>
-                <h3 className="text-lg font-medium text-gray-900 mb-1">
-                  No Structured Data
-                </h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-1">No Structured Data</h3>
                 <p className="text-gray-500">
                   No structured data has been extracted from this document yet.
                 </p>

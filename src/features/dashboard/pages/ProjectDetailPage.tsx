@@ -11,17 +11,13 @@ import LoadingSpinner from '@/shared/components/forms/atoms/LoadingSpinner';
 import { useToast } from '@/shared/components/ui/use-toast';
 import { useDocuments } from '@/shared/hooks/api/useDocuments';
 import { useCreateExport } from '@/shared/hooks/api/useExports';
-import { useJobs ,
-  useStartJob,
-  useCancelJob,
-  useRetryJob
-} from '@/shared/hooks/api/useJobs';
+import { useJobs, useStartJob, useCancelJob, useRetryJob } from '@/shared/hooks/api/useJobs';
 import {
   useProject,
   useUpdateProject,
   useDeleteProject,
   useAssociateDocument,
-  useRemoveDocument
+  useRemoveDocument,
 } from '@/shared/hooks/api/useProjects';
 import type { Document, Job } from '@/types/api-types';
 
@@ -48,11 +44,7 @@ const ProjectDetailPage: React.FC = () => {
   const [showAddDocumentDialog, setShowAddDocumentDialog] = useState(false);
 
   // API hooks
-  const {
-    data: project,
-    isLoading: projectLoading,
-    error: projectError,
-  } = useProject(projectId!);
+  const { data: project, isLoading: projectLoading, error: projectError } = useProject(projectId!);
 
   const { data: documentsData } = useDocuments({ project_id: projectId, limit: 100 });
   const { data: allDocumentsData } = useDocuments({ limit: 1000 }); // For add dialog
@@ -77,29 +69,34 @@ const ProjectDetailPage: React.FC = () => {
     setShowEditDialog(true);
   }, []);
 
-  const handleEditSubmit = useCallback(async (projectData: any) => {
-    if (!projectId) return;
+  const handleEditSubmit = useCallback(
+    async (projectData: any) => {
+      if (!projectId) return;
 
-    try {
-      await updateProject.mutateAsync({ id: projectId, ...projectData });
-      setShowEditDialog(false);
-      toast({
-        title: 'Project updated',
-        description: 'Project details have been updated successfully.',
-      });
-    } catch (error) {
-      toast({
-        title: 'Failed to update project',
-        description: getErrorMessage(error),
-        variant: 'destructive',
-      });
-    }
-  }, [projectId, updateProject, toast]);
+      try {
+        await updateProject.mutateAsync({ id: projectId, ...projectData });
+        setShowEditDialog(false);
+        toast({
+          title: 'Project updated',
+          description: 'Project details have been updated successfully.',
+        });
+      } catch (error) {
+        toast({
+          title: 'Failed to update project',
+          description: getErrorMessage(error),
+          variant: 'destructive',
+        });
+      }
+    },
+    [projectId, updateProject, toast]
+  );
 
   const handleDelete = useCallback(async () => {
     if (!projectId || !project) return;
 
-    const confirmed = confirm(`Are you sure you want to delete the project "${project.name}"? This action cannot be undone.`);
+    const confirmed = confirm(
+      `Are you sure you want to delete the project "${project.name}"? This action cannot be undone.`
+    );
     if (!confirmed) return;
 
     try {
@@ -129,7 +126,7 @@ const ProjectDetailPage: React.FC = () => {
       });
       toast({
         title: 'Export started',
-        description: 'Project export has been initiated. You will be notified when it\'s ready.',
+        description: "Project export has been initiated. You will be notified when it's ready.",
       });
     } catch (error) {
       toast({
@@ -145,102 +142,120 @@ const ProjectDetailPage: React.FC = () => {
     setShowAddDocumentDialog(true);
   }, []);
 
-  const handleAddDocumentSubmit = useCallback(async (documentIds: string[]) => {
-    if (!projectId) return;
+  const handleAddDocumentSubmit = useCallback(
+    async (documentIds: string[]) => {
+      if (!projectId) return;
 
-    try {
-      await Promise.all(
-        documentIds.map(documentId =>
-          associateDocument.mutateAsync({ projectId, documentId })
-        )
+      try {
+        await Promise.all(
+          documentIds.map(documentId => associateDocument.mutateAsync({ projectId, documentId }))
+        );
+        setShowAddDocumentDialog(false);
+        toast({
+          title: 'Documents added',
+          description: `${documentIds.length} document(s) have been added to the project.`,
+        });
+      } catch (error) {
+        toast({
+          title: 'Failed to add documents',
+          description: getErrorMessage(error),
+          variant: 'destructive',
+        });
+      }
+    },
+    [projectId, associateDocument, toast]
+  );
+
+  const handleViewDocument = useCallback(
+    (document: Document) => {
+      navigate(`/dashboard/documents/${document.id}`);
+    },
+    [navigate]
+  );
+
+  const handleRemoveDocument = useCallback(
+    async (document: Document) => {
+      if (!projectId) return;
+
+      const confirmed = confirm(
+        `Are you sure you want to remove "${document.name}" from this project?`
       );
-      setShowAddDocumentDialog(false);
-      toast({
-        title: 'Documents added',
-        description: `${documentIds.length} document(s) have been added to the project.`,
-      });
-    } catch (error) {
-      toast({
-        title: 'Failed to add documents',
-        description: getErrorMessage(error),
-        variant: 'destructive',
-      });
-    }
-  }, [projectId, associateDocument, toast]);
+      if (!confirmed) return;
 
-  const handleViewDocument = useCallback((document: Document) => {
-    navigate(`/dashboard/documents/${document.id}`);
-  }, [navigate]);
-
-  const handleRemoveDocument = useCallback(async (document: Document) => {
-    if (!projectId) return;
-
-    const confirmed = confirm(`Are you sure you want to remove "${document.name}" from this project?`);
-    if (!confirmed) return;
-
-    try {
-      await removeDocument.mutateAsync({ projectId, documentId: document.id });
-      toast({
-        title: 'Document removed',
-        description: `"${document.name}" has been removed from the project.`,
-      });
-    } catch (error) {
-      toast({
-        title: 'Failed to remove document',
-        description: getErrorMessage(error),
-        variant: 'destructive',
-      });
-    }
-  }, [projectId, removeDocument, toast]);
+      try {
+        await removeDocument.mutateAsync({ projectId, documentId: document.id });
+        toast({
+          title: 'Document removed',
+          description: `"${document.name}" has been removed from the project.`,
+        });
+      } catch (error) {
+        toast({
+          title: 'Failed to remove document',
+          description: getErrorMessage(error),
+          variant: 'destructive',
+        });
+      }
+    },
+    [projectId, removeDocument, toast]
+  );
 
   // Job actions
-  const handleStartJob = useCallback(async (job: Job) => {
-    try {
-      await startJob.mutateAsync(job.id);
-      toast({
-        title: 'Job started',
-        description: `Job "${job.name || job.id}" has been started.`,
-      });
-    } catch (error) {
-      toast({
-        title: 'Failed to start job',
-        description: getErrorMessage(error),
-        variant: 'destructive',
-      });
-    }
-  }, [startJob, toast]);
+  const handleStartJob = useCallback(
+    async (job: Job) => {
+      try {
+        await startJob.mutateAsync(job.id);
+        toast({
+          title: 'Job started',
+          description: `Job "${job.name || job.id}" has been started.`,
+        });
+      } catch (error) {
+        toast({
+          title: 'Failed to start job',
+          description: getErrorMessage(error),
+          variant: 'destructive',
+        });
+      }
+    },
+    [startJob, toast]
+  );
 
-  const handleCancelJob = useCallback(async (job: Job) => {
-    try {
-      await cancelJob.mutateAsync(job.id);
-      toast({
-        title: 'Job cancelled',
-        description: `Job "${job.name || job.id}" has been cancelled.`,
-      });
-    } catch (error) {
-      toast({
-        title: 'Failed to cancel job',
-        description: getErrorMessage(error),
-        variant: 'destructive',
-      });
-    }
-  }, [cancelJob, toast]);
+  const handleCancelJob = useCallback(
+    async (job: Job) => {
+      try {
+        await cancelJob.mutateAsync(job.id);
+        toast({
+          title: 'Job cancelled',
+          description: `Job "${job.name || job.id}" has been cancelled.`,
+        });
+      } catch (error) {
+        toast({
+          title: 'Failed to cancel job',
+          description: getErrorMessage(error),
+          variant: 'destructive',
+        });
+      }
+    },
+    [cancelJob, toast]
+  );
 
-  const handleRetryJob = useCallback(async (job: Job) => {
-    try {
-      await retryJob.mutateAsync(job.id);
-      toast({
-        title: 'Job retried',
-        description: `Job "${job.name || job.id}" has been retried.`,
-      });
-    } catch (error) {
-      toast({
-        title: 'Failed to retry job',
-        description: getErrorMessage(error),
-        variant: 'destructive',
-      });
-    }
-  }, [retryJob, toast]);
+  const handleRetryJob = useCallback(
+    async (job: Job) => {
+      try {
+        await retryJob.mutateAsync(job.id);
+        toast({
+          title: 'Job retried',
+          description: `Job "${job.name || job.id}" has been retried.`,
+        });
+      } catch (error) {
+        toast({
+          title: 'Failed to retry job',
+          description: getErrorMessage(error),
+          variant: 'destructive',
+        });
+      }
+    },
+    [retryJob, toast]
+  );
 
   // Loading and error states
   if (projectLoading) {
@@ -257,9 +272,7 @@ const ProjectDetailPage: React.FC = () => {
     return (
       <DashboardLayout>
         <div className="text-center py-12">
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
-            Project not found
-          </h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Project not found</h2>
           <p className="text-gray-600 mb-4">
             The project you're looking for doesn't exist or you don't have access to it.
           </p>

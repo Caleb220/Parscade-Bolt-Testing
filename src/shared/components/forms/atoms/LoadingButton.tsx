@@ -1,6 +1,6 @@
 /**
  * Enhanced Loading Button Component
- * 
+ *
  * DESIGN PRINCIPLES:
  * - Prevents double-submission during loading states
  * - Smooth loading animations with proper accessibility
@@ -36,7 +36,8 @@ const LoadingButton: React.FC<LoadingButtonProps> = ({
   className = '',
   ...props
 }) => {
-  const baseClasses = 'inline-flex items-center justify-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden';
+  const baseClasses =
+    'inline-flex items-center justify-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden';
 
   const variantClasses: Record<NonNullable<LoadingButtonProps['variant']>, string> = {
     primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 shadow-sm',
@@ -64,11 +65,7 @@ const LoadingButton: React.FC<LoadingButtonProps> = ({
   const isDisabled = disabled || isLoading;
 
   return (
-    <button
-      className={classes}
-      disabled={isDisabled}
-      {...props}
-    >
+    <button className={classes} disabled={isDisabled} {...props}>
       {/* Loading Overlay */}
       <motion.div
         initial={{ opacity: 0 }}
@@ -89,13 +86,9 @@ const LoadingButton: React.FC<LoadingButtonProps> = ({
         className="flex items-center justify-center"
         aria-hidden={isLoading}
       >
-        {leftIcon && !isLoading && (
-          <span className="mr-2">{leftIcon}</span>
-        )}
+        {leftIcon && !isLoading && <span className="mr-2">{leftIcon}</span>}
         {children}
-        {rightIcon && !isLoading && (
-          <span className="ml-2">{rightIcon}</span>
-        )}
+        {rightIcon && !isLoading && <span className="ml-2">{rightIcon}</span>}
       </motion.div>
 
       {/* Screen Reader Loading State */}

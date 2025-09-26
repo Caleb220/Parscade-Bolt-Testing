@@ -3,13 +3,19 @@ import React, { useCallback } from 'react';
 
 import { getErrorMessage } from '@/lib/api';
 import { Button } from '@/shared/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/shared/components/ui/card';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import StatusBadge from '@/shared/components/ui/status-badge';
 import {
   useServices,
   useConnectService,
-  useDisconnectService
+  useDisconnectService,
 } from '@/shared/hooks/api/useAccountData';
 import { formatDate } from '@/shared/utils/date';
 
@@ -18,13 +24,19 @@ const ServicesSection: React.FC = () => {
   const connectService = useConnectService();
   const disconnectService = useDisconnectService();
 
-  const handleConnectService = useCallback((serviceId: string) => {
-    connectService.mutate(serviceId);
-  }, [connectService]);
+  const handleConnectService = useCallback(
+    (serviceId: string) => {
+      connectService.mutate(serviceId);
+    },
+    [connectService]
+  );
 
-  const handleDisconnectService = useCallback((serviceId: string) => {
-    disconnectService.mutate(serviceId);
-  }, [disconnectService]);
+  const handleDisconnectService = useCallback(
+    (serviceId: string) => {
+      disconnectService.mutate(serviceId);
+    },
+    [disconnectService]
+  );
 
   const handleImageError = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
     const target = e.target as HTMLImageElement;
@@ -40,9 +52,7 @@ const ServicesSection: React.FC = () => {
     <Card>
       <CardHeader>
         <CardTitle>Connected Services</CardTitle>
-        <CardDescription>
-          Connect third-party services to enhance your workflow
-        </CardDescription>
+        <CardDescription>Connect third-party services to enhance your workflow</CardDescription>
       </CardHeader>
       <CardContent>
         {servicesLoading ? (
@@ -58,7 +68,7 @@ const ServicesSection: React.FC = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {services?.map((service) => (
+            {services?.map(service => (
               <div
                 key={service.id}
                 className="p-4 border border-gray-200 rounded-lg flex items-center justify-between"

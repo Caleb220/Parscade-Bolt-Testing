@@ -26,41 +26,32 @@ interface StatCardProps {
   color: string;
 }
 
-const StatCard: React.FC<StatCardProps> = React.memo(({
-  icon,
-  title,
-  value,
-  subtitle,
-  delay,
-  color
-}) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.5, delay }}
-  >
-    <ParscadeCard className="p-6 text-center hover:shadow-lg transition-shadow">
-      <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${color} mx-auto mb-4 flex items-center justify-center`}>
-        {icon}
-      </div>
-      <div className="text-2xl font-bold text-gray-900 mb-1">
-        {typeof value === 'number' ? value.toLocaleString() : value}
-      </div>
-      <div className="text-sm text-gray-500 mb-1">{title}</div>
-      {subtitle && (
-        <div className="text-xs text-gray-400">{subtitle}</div>
-      )}
-    </ParscadeCard>
-  </motion.div>
-));
+const StatCard: React.FC<StatCardProps> = React.memo(
+  ({ icon, title, value, subtitle, delay, color }) => (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay }}
+    >
+      <ParscadeCard className="p-6 text-center hover:shadow-lg transition-shadow">
+        <div
+          className={`w-12 h-12 rounded-lg bg-gradient-to-br ${color} mx-auto mb-4 flex items-center justify-center`}
+        >
+          {icon}
+        </div>
+        <div className="text-2xl font-bold text-gray-900 mb-1">
+          {typeof value === 'number' ? value.toLocaleString() : value}
+        </div>
+        <div className="text-sm text-gray-500 mb-1">{title}</div>
+        {subtitle && <div className="text-xs text-gray-400">{subtitle}</div>}
+      </ParscadeCard>
+    </motion.div>
+  )
+);
 
 StatCard.displayName = 'StatCard';
 
-const ProjectStatsCards: React.FC<ProjectStatsCardsProps> = ({
-  project,
-  documents,
-  jobs,
-}) => {
+const ProjectStatsCards: React.FC<ProjectStatsCardsProps> = ({ project, documents, jobs }) => {
   const stats = React.useMemo(() => {
     const totalDocuments = documents.length;
     const totalJobs = jobs.length;
@@ -69,7 +60,7 @@ const ProjectStatsCards: React.FC<ProjectStatsCardsProps> = ({
     return {
       documents: totalDocuments,
       jobs: totalJobs,
-      lastActivity: formatRelativeTime(lastActivity)
+      lastActivity: formatRelativeTime(lastActivity),
     };
   }, [documents, jobs, project.updated_at]);
 

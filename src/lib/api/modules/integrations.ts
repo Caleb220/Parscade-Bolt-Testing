@@ -3,7 +3,7 @@
  * Fully aligned with OpenAPI schema definitions using snake_case
  */
 
-import type { 
+import type {
   paths,
   Webhook,
   WebhookListResponse,
@@ -14,19 +14,26 @@ import type {
   ServiceConnectionResponse,
   DataSource,
   DataSourceListResponse,
-  CreateDataSourceRequest
+  CreateDataSourceRequest,
 } from '@/types/api-types';
 
 import { apiClient } from '../client';
 
 // Extract exact types from OpenAPI paths
-type GetWebhooksResponse = paths['/v1/integrations/webhooks']['get']['responses']['200']['content']['application/json'];
-type CreateWebhookResponse = paths['/v1/integrations/webhooks']['post']['responses']['201']['content']['application/json'];
-type TestWebhookResponse = paths['/v1/integrations/webhooks/{webhookId}/test']['post']['responses']['200']['content']['application/json'];
-type GetServicesResponse = paths['/v1/integrations/services']['get']['responses']['200']['content']['application/json'];
-type ConnectServiceResponse = paths['/v1/integrations/services/{serviceId}/connect']['post']['responses']['200']['content']['application/json'];
-type GetDataSourcesResponse = paths['/v1/integrations/data-sources']['get']['responses']['200']['content']['application/json'];
-type CreateDataSourceResponse = paths['/v1/integrations/data-sources']['post']['responses']['201']['content']['application/json'];
+type GetWebhooksResponse =
+  paths['/v1/integrations/webhooks']['get']['responses']['200']['content']['application/json'];
+type CreateWebhookResponse =
+  paths['/v1/integrations/webhooks']['post']['responses']['201']['content']['application/json'];
+type TestWebhookResponse =
+  paths['/v1/integrations/webhooks/{webhookId}/test']['post']['responses']['200']['content']['application/json'];
+type GetServicesResponse =
+  paths['/v1/integrations/services']['get']['responses']['200']['content']['application/json'];
+type ConnectServiceResponse =
+  paths['/v1/integrations/services/{serviceId}/connect']['post']['responses']['200']['content']['application/json'];
+type GetDataSourcesResponse =
+  paths['/v1/integrations/data-sources']['get']['responses']['200']['content']['application/json'];
+type CreateDataSourceResponse =
+  paths['/v1/integrations/data-sources']['post']['responses']['201']['content']['application/json'];
 
 /**
  * Integrations endpoints
