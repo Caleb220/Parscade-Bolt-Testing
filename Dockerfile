@@ -12,6 +12,8 @@ COPY package.json package-lock.json ./
 # Copy source code
 COPY . .
 
+RUN npm ci
+
 # Declare build arguments for Vite environment variables
 ARG VITE_SUPABASE_URL
 ARG VITE_SUPABASE_ANON_KEY
@@ -39,19 +41,12 @@ RUN npm run build
 # Production stage
 FROM nginx:alpine
 
-# Install runtime dependencies
-RUN apk add --no-cache curl
-
 # Copy custom nginx config
 COPY nginx.conf /etc/nginx/nginx.conf
 
 # Copy built app from builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Create healthcheck script
-RUN echo '#!/bin/sh' > /healthcheck.sh && \
-    echo 'curl -f http://localhost/health || exit 1' >> /healthcheck.sh && \
-    chmod +x /healthcheck.sh
 
 # Add healthcheck
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
