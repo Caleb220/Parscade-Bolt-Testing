@@ -83,6 +83,8 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         // Handle external dependencies properly
         external: [],
+        // Ensure React is available as a shared dependency
+        preserveEntrySignatures: 'strict',
         output: {
           // Manual chunks for better code splitting
           manualChunks: (id) => {
@@ -90,8 +92,11 @@ export default defineConfig(({ mode }) => {
             const normalizedId = id.replace(/\\/g, '/');
             // Vendor chunks
             if (normalizedId.includes('node_modules')) {
-              // Core React dependencies
-              if (normalizedId.includes('react') || normalizedId.includes('react-dom')) {
+              // Core React dependencies - must be loaded first
+              if (normalizedId.includes('react-dom')) {
+                return 'react-core';
+              }
+              if (normalizedId.includes('react') && !normalizedId.includes('react-router') && !normalizedId.includes('@radix-ui')) {
                 return 'react-core';
               }
               // React Router - separate chunk
@@ -178,7 +183,13 @@ export default defineConfig(({ mode }) => {
             }
             return `assets/[name]-[hash][extname]`;
           },
-          chunkFileNames: 'js/[name]-[hash].js',
+          chunkFileNames: (chunkInfo) => {
+            // Ensure React core is loaded first with a predictable name
+            if (chunkInfo.name === 'react-core') {
+              return 'js/01-react-core-[hash].js';
+            }
+            return 'js/[name]-[hash].js';
+          },
           entryFileNames: 'js/[name]-[hash].js',
           // Ensure consistent chunk generation
           generatedCode: {
@@ -213,8 +224,13 @@ export default defineConfig(({ mode }) => {
     },
 
     resolve: {
-      dedupe: ['react', 'react-dom', 'react-router-dom'],
+      dedupe: ['react', 'react-dom', 'react-router-dom', 'react/jsx-runtime'],
+      // Explicitly set React aliases to prevent duplicate instances
       alias: {
+        'react': path.resolve(__dirname, 'node_modules/react'),
+        'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
+        'react/jsx-runtime': path.resolve(__dirname, 'node_modules/react/jsx-runtime'),
+        'react/jsx-dev-runtime': path.resolve(__dirname, 'node_modules/react/jsx-dev-runtime'),
         '@': path.resolve(__dirname, './src'),
         '@/app': path.resolve(__dirname, './src/app'),
         '@/shared': path.resolve(__dirname, './src/shared'),
@@ -232,6 +248,8 @@ export default defineConfig(({ mode }) => {
       include: [
         'react',
         'react-dom',
+        'react/jsx-runtime',
+        'react/jsx-dev-runtime',
         'react-router-dom',
         'react-remove-scroll',
         'react-remove-scroll-bar',
@@ -249,17 +267,29 @@ export default defineConfig(({ mode }) => {
         '@radix-ui/react-select',
         '@radix-ui/react-switch',
         '@radix-ui/react-toast',
+        '@radix-ui/react-avatar',
+        '@radix-ui/react-slot',
+        '@radix-ui/react-primitive',
+        '@radix-ui/react-use-layout-effect',
         'class-variance-authority',
         'tailwind-merge',
       ],
       exclude: ['@vite/client', '@vite/env'],
-      // Force pre-bundling in dev
-      force: isDev,
+      // Force pre-bundling to ensure consistent behavior
+      force: true,
       // Increase discovery depth
       entries: [
         './src/**/*.{tsx,ts,jsx,js}',
         './index.html',
       ],
+      esbuildOptions: {
+        // Ensure React is treated as a global
+        define: {
+          global: 'globalThis',
+        },
+        // Ensure proper JSX handling
+        jsx: 'automatic',
+      },
     },
 
     // Server configuration
