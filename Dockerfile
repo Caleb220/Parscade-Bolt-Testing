@@ -33,6 +33,9 @@ ENV VITE_ENABLE_AI_FEATURES=${VITE_ENABLE_AI_FEATURES}
 ENV NODE_ENV=${NODE_ENV}
 
 
+RUN npm run build
+
+
 # Production stage
 FROM nginx:alpine
 
