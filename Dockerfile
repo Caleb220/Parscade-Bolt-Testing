@@ -4,17 +4,10 @@
 # Build stage
 FROM node:20-alpine as builder
 
-# Install build dependencies
-RUN apk add --no-cache python3 make g++ git
-
 WORKDIR /app
 
 # Copy package files
 COPY package.json package-lock.json ./
-
-# Clean install with cache mount for faster rebuilds
-RUN --mount=type=cache,target=/root/.npm \
-    npm ci --prefer-offline --no-audit --loglevel=error
 
 # Copy source code
 COPY . .
