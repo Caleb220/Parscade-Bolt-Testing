@@ -32,15 +32,6 @@ ENV VITE_ENABLE_WEBHOOKS=${VITE_ENABLE_WEBHOOKS}
 ENV VITE_ENABLE_AI_FEATURES=${VITE_ENABLE_AI_FEATURES}
 ENV NODE_ENV=${NODE_ENV}
 
-# Clear any existing cache and build
-RUN rm -rf dist node_modules/.vite node_modules/.cache && \
-    npm run build:prod
-
-# Verify build output
-RUN ls -la dist && \
-    if [ ! -f dist/index.html ]; then \
-        echo "Build failed: dist/index.html not found" && exit 1; \
-    fi
 
 # Production stage
 FROM nginx:alpine
@@ -62,16 +53,6 @@ RUN echo '#!/bin/sh' > /healthcheck.sh && \
 # Add healthcheck
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD /healthcheck.sh
-
-# Create a non-root user
-RUN addgroup -g 1001 -S nginx && \
-    adduser -u 1001 -S nginx -G nginx && \
-    chown -R nginx:nginx /usr/share/nginx/html && \
-    chown -R nginx:nginx /var/cache/nginx && \
-    chown -R nginx:nginx /var/log/nginx && \
-    chown -R nginx:nginx /etc/nginx/conf.d && \
-    touch /var/run/nginx.pid && \
-    chown -R nginx:nginx /var/run/nginx.pid
 
 # Switch to non-root user
 USER nginx
