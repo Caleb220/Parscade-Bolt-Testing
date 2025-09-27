@@ -5,6 +5,7 @@ import { QueryProvider } from '@/app/providers/QueryProvider';
 
 import App from './App.tsx';
 import './index.css';
+import 'dotenv/config';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
