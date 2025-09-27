@@ -60,7 +60,7 @@ const ErrorPage: React.FC<ErrorPageProps> = ({ error, resetError }) => {
             this issue.
           </p>
 
-          {process.env.NODE_ENV === 'development' && error && (
+          {import.meta.env.NODE_ENV === 'development' && error && (
             <details className="text-left bg-gray-100 rounded-lg p-4 mb-4">
               <summary className="cursor-pointer text-sm font-medium text-gray-700 mb-2">
                 Error Details (Development)

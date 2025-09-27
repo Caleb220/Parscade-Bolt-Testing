@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   const isDev = mode === 'development';
   const isProd = mode === 'production';
-  const isAnalyze = process.env.ANALYZE === 'true';
+  const isAnalyze = import.meta.env.ANALYZE === 'true';
 
   return {
     plugins: [
@@ -93,8 +93,8 @@ export default defineConfig(({ mode }) => {
 
     define: {
       global: 'globalThis',
-      'process.env.NODE_ENV': JSON.stringify(mode),
-      'process.env': {},
+      'import.meta.env.NODE_ENV': JSON.stringify(mode),
+      'import.meta.env': {},
       'import.meta.env.BUILD_TIME': JSON.stringify(new Date().toISOString()),
     },
 
@@ -162,6 +162,6 @@ export default defineConfig(({ mode }) => {
     },
 
     logLevel: 'info',
-    clearScreen: !process.env.CI,
+    clearScreen: !import.meta.env.CI,
   };
 });
