@@ -4,7 +4,7 @@ import path from 'path';
 import { visualizer } from 'rollup-plugin-visualizer';
 import { defineConfig, loadEnv } from 'vite';
 import compression from 'vite-plugin-compression';
-import nodePolyfills from 'vite-plugin-node-polyfills';
+import { nodePolyfills  } from 'vite-plugin-node-polyfills';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
@@ -144,10 +144,10 @@ export default defineConfig(({ mode }) => {
       port: parseInt(env.VITE_PORT || '5173'),
       strictPort: false,
       host: 'localhost',
-      proxy: env.VITE_API_URL
+      proxy: env.VITE_API_BASE_URL
         ? {
           '/api': {
-            target: env.VITE_API_URL,
+            target: env.VITE_API_BASE_URL,
             changeOrigin: true,
             rewrite: (p) => p.replace(/^\/api/, ''),
           },
