@@ -1,20 +1,23 @@
-// vite.config.ts - Optimized build configuration for Parscade Frontend
+// vite.config.ts
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import { visualizer } from 'rollup-plugin-visualizer';
 import { defineConfig, loadEnv } from 'vite';
 import compression from 'vite-plugin-compression';
+import nodePolyfills from 'vite-plugin-node-polyfills';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   const isDev = mode === 'development';
   const isProd = mode === 'production';
-  const isAnalyze = import.meta.env.ANALYZE === 'true';
+  const isAnalyze = env.ANALYZE === 'true';
 
   return {
     plugins: [
       react(),
-      // Production optimizations
+      nodePolyfills({
+        protocolImports: true, // allows e.g. node:stream
+      }),
       ...(isProd
         ? [
           compression({
@@ -24,7 +27,6 @@ export default defineConfig(({ mode }) => {
           }),
         ]
         : []),
-      // Bundle analyzer
       isAnalyze &&
       visualizer({
         open: true,
@@ -51,22 +53,11 @@ export default defineConfig(({ mode }) => {
       reportCompressedSize: false,
       rollupOptions: {
         output: {
-          // Simplified chunk strategy
           manualChunks: (id) => {
             if (id.includes('node_modules')) {
-              // React core
-              if (id.includes('react') || id.includes('react-dom')) {
-                return 'vendor-react';
-              }
-              // UI libraries
-              if (id.includes('@radix-ui') || id.includes('framer-motion')) {
-                return 'vendor-ui';
-              }
-              // Data/Auth
-              if (id.includes('@tanstack') || id.includes('@supabase')) {
-                return 'vendor-data';
-              }
-              // Other vendors
+              if (id.includes('react') || id.includes('react-dom')) return 'vendor-react';
+              if (id.includes('@radix-ui') || id.includes('framer-motion')) return 'vendor-ui';
+              if (id.includes('@tanstack') || id.includes('@supabase')) return 'vendor-data';
               return 'vendor';
             }
           },
@@ -83,32 +74,33 @@ export default defineConfig(({ mode }) => {
           chunkFileNames: 'js/[name]-[hash].js',
           entryFileNames: 'js/[name]-[hash].js',
         },
-        treeshake: {
-          preset: 'recommended',
-        },
+        treeshake: { preset: 'recommended' },
       },
       cssCodeSplit: true,
       cssMinify: isProd,
     },
 
+    // These replaces stop "process is not defined" at runtime
     define: {
       global: 'globalThis',
-      'import.meta.env.NODE_ENV': JSON.stringify(mode),
-      'import.meta.env': {},
+      'process.env.NODE_ENV': JSON.stringify(mode),
+      'process.env': '{}',
+      'process.platform': '"browser"',
       'import.meta.env.BUILD_TIME': JSON.stringify(new Date().toISOString()),
     },
 
     resolve: {
       dedupe: ['react', 'react-dom', 'react-router-dom'],
       alias: {
-        // Node.js polyfills for browser compatibility (fixes Supabase issues)
-        stream: 'stream-browserify',
-        http: 'stream-http',
-        https: 'stream-http',
-        url: 'url',
-        util: 'util',
+        // Correct polyfills
         process: 'process/browser',
         buffer: 'buffer',
+        stream: 'stream-browserify',
+        http: 'stream-http',
+        https: 'https-browserify',
+        url: 'url',
+        util: 'util',
+        path: 'path-browserify',
 
         // App aliases
         '@': path.resolve(__dirname, './src'),
@@ -121,6 +113,7 @@ export default defineConfig(({ mode }) => {
       },
     },
 
+    // Make esbuild see the shims during dependency pre-bundle
     optimizeDeps: {
       include: [
         'react',
@@ -129,14 +122,21 @@ export default defineConfig(({ mode }) => {
         '@tanstack/react-query',
         '@supabase/supabase-js',
         'zod',
-        // Include polyfills for optimization
+        // shims
         'buffer',
         'process',
         'stream-browserify',
-        'stream-http',
+        'https-browserify',
         'url',
         'util',
+        'path-browserify',
       ],
+      esbuildOptions: {
+        define: {
+          global: 'globalThis',
+          'process.env.NODE_ENV': JSON.stringify(isDev ? 'development' : 'production'),
+        },
+      },
       exclude: ['@vite/client', '@vite/env'],
     },
 
@@ -149,7 +149,7 @@ export default defineConfig(({ mode }) => {
           '/api': {
             target: env.VITE_API_URL,
             changeOrigin: true,
-            rewrite: (path) => path.replace(/^\/api/, ''),
+            rewrite: (p) => p.replace(/^\/api/, ''),
           },
         }
         : undefined,
@@ -162,6 +162,6 @@ export default defineConfig(({ mode }) => {
     },
 
     logLevel: 'info',
-    clearScreen: !import.meta.env.CI,
+    clearScreen: !env.CI,
   };
 });
