@@ -164,7 +164,6 @@ export const httpsUrlSchema = z
       return false;
     }
   }, 'URL must use HTTPS (HTTP allowed for localhost and .local domains only).')
-  .max(2048, 'URL must be 2048 characters or less.')
   .transform(dropTrailingSlashes);
 
 /** Optional HTTPS URL schema that tolerates blank strings. */
@@ -190,8 +189,7 @@ const imagePathSchema = z
     } catch {
       return false;
     }
-  }, 'Image must be HTTPS, root-relative, or HTTP on localhost/.local domains during development.')
-  .max(2048, 'Image path must be 2048 characters or less.');
+  }, 'Image must be HTTPS, root-relative, or HTTP on localhost/.local domains during development.');
 
 /** Optional HTTPS image URL or root-relative path schema. */
 export const optionalImagePathSchema = optionalize(imagePathSchema);

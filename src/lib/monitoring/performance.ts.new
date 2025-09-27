@@ -1,0 +1,460 @@
+/**
+ * Performance Monitoring with Native Performance Observer API
+ * Tracks and reports key performance metrics without external dependencies
+ * Replaces web-vitals library with native browser APIs
+ */
+
+export interface PerformanceMetrics {
+  CLS?: number;  // Cumulative Layout Shift
+  FCP?: number;  // First Contentful Paint
+  FID?: number;  // First Input Delay
+  LCP?: number;  // Largest Contentful Paint
+  TTFB?: number; // Time to First Byte
+  INP?: number;  // Interaction to Next Paint
+}
+
+export interface PerformanceReport {
+  metrics: PerformanceMetrics;
+  timestamp: number;
+  url: string;
+  userAgent: string;
+  connection?: {
+    effectiveType?: string;
+    downlink?: number;
+    rtt?: number;
+  };
+}
+
+type MetricRating = 'good' | 'needs-improvement' | 'poor';
+
+interface MetricThresholds {
+  good: number;
+  poor: number;
+}
+
+// Core Web Vitals thresholds
+const THRESHOLDS: Record<keyof PerformanceMetrics, MetricThresholds> = {
+  CLS: { good: 0.1, poor: 0.25 },
+  FCP: { good: 1800, poor: 3000 },
+  FID: { good: 100, poor: 300 },
+  LCP: { good: 2500, poor: 4000 },
+  TTFB: { good: 800, poor: 1800 },
+  INP: { good: 200, poor: 500 },
+};
+
+function getRating(value: number, thresholds: MetricThresholds): MetricRating {
+  if (value <= thresholds.good) return 'good';
+  if (value <= thresholds.poor) return 'needs-improvement';
+  return 'poor';
+}
+
+class PerformanceMonitor {
+  private metrics: PerformanceMetrics = {};
+  private reportCallback?: (report: PerformanceReport) => void;
+  private reportThreshold = 5000; // Report every 5 seconds
+  private reportTimer?: number;
+  private enabled = true;
+  private observers: PerformanceObserver[] = [];
+
+  constructor() {
+    this.initializeMonitoring();
+  }
+
+  private initializeMonitoring() {
+    if (typeof window === 'undefined' || !('PerformanceObserver' in window)) {
+      console.warn('[Performance] PerformanceObserver not available');
+      return;
+    }
+
+    // Observe paint events (FCP)
+    this.observePaint();
+
+    // Observe layout shifts (CLS)
+    this.observeLayoutShift();
+
+    // Observe largest contentful paint (LCP)
+    this.observeLCP();
+
+    // Observe first input delay (FID)
+    this.observeFID();
+
+    // Observe interaction to next paint (INP)
+    this.observeINP();
+
+    // Observe navigation timing (TTFB)
+    this.observeNavigation();
+
+    // Custom performance marks
+    this.observeCustomMarks();
+
+    // Resource timing
+    this.observeResourceTiming();
+  }
+
+  private observePaint() {
+    try {
+      const observer = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          if (entry.name === 'first-contentful-paint') {
+            this.handleMetric('FCP', entry.startTime);
+          }
+        }
+      });
+      observer.observe({ type: 'paint', buffered: true });
+      this.observers.push(observer);
+    } catch (e) {
+      console.warn('[Performance] Failed to observe paint events:', e);
+    }
+  }
+
+  private observeLayoutShift() {
+    try {
+      let clsValue = 0;
+      const observer = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          const layoutShift = entry as PerformanceEntry & { value: number; hadRecentInput: boolean };
+          if (!layoutShift.hadRecentInput) {
+            clsValue += layoutShift.value;
+            this.handleMetric('CLS', clsValue);
+          }
+        }
+      });
+      observer.observe({ type: 'layout-shift', buffered: true });
+      this.observers.push(observer);
+    } catch (e) {
+      console.warn('[Performance] Failed to observe layout shifts:', e);
+    }
+  }
+
+  private observeLCP() {
+    try {
+      const observer = new PerformanceObserver((list) => {
+        const entries = list.getEntries();
+        const lastEntry = entries[entries.length - 1];
+        if (lastEntry) {
+          this.handleMetric('LCP', lastEntry.startTime);
+        }
+      });
+      observer.observe({ type: 'largest-contentful-paint', buffered: true });
+      this.observers.push(observer);
+    } catch (e) {
+      console.warn('[Performance] Failed to observe LCP:', e);
+    }
+  }
+
+  private observeFID() {
+    try {
+      const observer = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          const fidEntry = entry as PerformanceEntry & { processingStart: number };
+          const fid = fidEntry.processingStart - entry.startTime;
+          this.handleMetric('FID', fid);
+        }
+      });
+      observer.observe({ type: 'first-input', buffered: true });
+      this.observers.push(observer);
+    } catch (e) {
+      console.warn('[Performance] Failed to observe FID:', e);
+    }
+  }
+
+  private observeINP() {
+    try {
+      let worstINP = 0;
+      const observer = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          const inpEntry = entry as PerformanceEntry & { processingStart: number; processingEnd: number };
+          const inp = inpEntry.processingEnd - entry.startTime;
+          if (inp > worstINP) {
+            worstINP = inp;
+            this.handleMetric('INP', inp);
+          }
+        }
+      });
+      observer.observe({ type: 'event', buffered: true });
+      this.observers.push(observer);
+    } catch (e) {
+      // INP may not be available in all browsers
+      console.debug('[Performance] INP observation not supported');
+    }
+  }
+
+  private observeNavigation() {
+    try {
+      const observer = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          const navEntry = entry as PerformanceNavigationTiming;
+          const ttfb = navEntry.responseStart - navEntry.requestStart;
+          this.handleMetric('TTFB', ttfb);
+          this.handleNavigationMetrics(navEntry);
+        }
+      });
+      observer.observe({ type: 'navigation', buffered: true });
+      this.observers.push(observer);
+    } catch (e) {
+      console.warn('[Performance] Failed to observe navigation:', e);
+    }
+  }
+
+  private observeCustomMarks() {
+    try {
+      const observer = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          if (entry.entryType === 'mark' || entry.entryType === 'measure') {
+            this.handleCustomMetric(entry);
+          }
+        }
+      });
+      observer.observe({ type: 'mark', buffered: true });
+      observer.observe({ type: 'measure', buffered: true });
+      this.observers.push(observer);
+    } catch (e) {
+      console.warn('[Performance] Failed to observe custom marks:', e);
+    }
+  }
+
+  private observeResourceTiming() {
+    try {
+      const observer = new PerformanceObserver((list) => {
+        const entries = list.getEntries() as PerformanceResourceTiming[];
+        const slowResources = entries.filter(entry => entry.duration > 1000);
+
+        if (slowResources.length > 0 && import.meta.env.DEV) {
+          console.warn('[Performance] Slow resources detected:', slowResources.map(r => ({
+            name: r.name,
+            duration: r.duration,
+            type: r.initiatorType
+          })));
+        }
+      });
+      observer.observe({ type: 'resource', buffered: true });
+      this.observers.push(observer);
+    } catch (e) {
+      console.warn('[Performance] Failed to observe resources:', e);
+    }
+  }
+
+  private handleMetric(name: keyof PerformanceMetrics, value: number) {
+    if (!this.enabled) return;
+
+    // Store metric
+    this.metrics[name] = value;
+
+    // Log in development
+    if (import.meta.env.DEV) {
+      const thresholds = THRESHOLDS[name];
+      const rating = thresholds ? getRating(value, thresholds) : 'none';
+      const color = rating === 'good' ? 'green' : rating === 'needs-improvement' ? 'orange' : 'red';
+      console.log(`%c[Performance] ${name}: ${value.toFixed(2)}ms (${rating})`, `color: ${color}`);
+    }
+
+    // Schedule report
+    this.scheduleReport();
+  }
+
+  private handleCustomMetric(entry: PerformanceEntry) {
+    if (import.meta.env.DEV) {
+      console.log(`[Performance] Custom ${entry.entryType}: ${entry.name} = ${entry.duration.toFixed(2)}ms`);
+    }
+  }
+
+  private handleNavigationMetrics(entry: PerformanceNavigationTiming) {
+    const metrics = {
+      domContentLoaded: entry.domContentLoadedEventEnd - entry.domContentLoadedEventStart,
+      domComplete: entry.domComplete - entry.domInteractive,
+      loadComplete: entry.loadEventEnd - entry.loadEventStart,
+      domInteractive: entry.domInteractive - entry.fetchStart,
+      redirect: entry.redirectEnd - entry.redirectStart,
+      dns: entry.domainLookupEnd - entry.domainLookupStart,
+      tcp: entry.connectEnd - entry.connectStart,
+      request: entry.responseStart - entry.requestStart,
+      response: entry.responseEnd - entry.responseStart,
+    };
+
+    if (import.meta.env.DEV) {
+      console.log('[Performance] Navigation metrics:', metrics);
+    }
+  }
+
+  private scheduleReport() {
+    if (this.reportTimer) {
+      window.clearTimeout(this.reportTimer);
+    }
+
+    this.reportTimer = window.setTimeout(() => {
+      this.sendReport();
+    }, this.reportThreshold);
+  }
+
+  private sendReport() {
+    if (!this.reportCallback || Object.keys(this.metrics).length === 0) return;
+
+    const report: PerformanceReport = {
+      metrics: { ...this.metrics },
+      timestamp: Date.now(),
+      url: window.location.href,
+      userAgent: navigator.userAgent,
+      connection: this.getConnectionInfo(),
+    };
+
+    this.reportCallback(report);
+  }
+
+  private getConnectionInfo() {
+    const nav = navigator as Navigator & {
+      connection?: {
+        effectiveType?: string;
+        downlink?: number;
+        rtt?: number;
+      };
+    };
+    return nav.connection;
+  }
+
+  // Public API
+
+  /**
+   * Enable or disable monitoring
+   */
+  setEnabled(enabled: boolean) {
+    this.enabled = enabled;
+    if (!enabled) {
+      this.disconnect();
+    }
+  }
+
+  /**
+   * Set callback for performance reports
+   */
+  onReport(callback: (report: PerformanceReport) => void) {
+    this.reportCallback = callback;
+  }
+
+  /**
+   * Manually trigger a report
+   */
+  report() {
+    this.sendReport();
+  }
+
+  /**
+   * Get current metrics
+   */
+  getMetrics(): PerformanceMetrics {
+    return { ...this.metrics };
+  }
+
+  /**
+   * Mark a custom timing
+   */
+  mark(name: string) {
+    if (typeof window !== 'undefined' && window.performance) {
+      window.performance.mark(name);
+    }
+  }
+
+  /**
+   * Measure between two marks
+   */
+  measure(name: string, startMark: string, endMark?: string) {
+    if (typeof window !== 'undefined' && window.performance) {
+      try {
+        if (endMark) {
+          window.performance.measure(name, startMark, endMark);
+        } else {
+          window.performance.measure(name, startMark);
+        }
+      } catch (error) {
+        console.warn(`Failed to measure ${name}:`, error);
+      }
+    }
+  }
+
+  /**
+   * Clear all metrics
+   */
+  clear() {
+    this.metrics = {};
+  }
+
+  /**
+   * Disconnect all observers
+   */
+  disconnect() {
+    this.observers.forEach(observer => observer.disconnect());
+    this.observers = [];
+    if (this.reportTimer) {
+      window.clearTimeout(this.reportTimer);
+    }
+  }
+}
+
+// Singleton instance
+let instance: PerformanceMonitor | null = null;
+
+export function getPerformanceMonitor(): PerformanceMonitor {
+  if (!instance) {
+    instance = new PerformanceMonitor();
+  }
+  return instance;
+}
+
+// React hook for performance monitoring
+export function usePerformanceMonitor() {
+  const monitor = getPerformanceMonitor();
+
+  return {
+    mark: monitor.mark.bind(monitor),
+    measure: monitor.measure.bind(monitor),
+    getMetrics: monitor.getMetrics.bind(monitor),
+    report: monitor.report.bind(monitor),
+  };
+}
+
+// Initialize monitoring and send to analytics
+export function initializePerformanceMonitoring(analyticsEndpoint?: string) {
+  const monitor = getPerformanceMonitor();
+
+  monitor.onReport((report) => {
+    // Log in development
+    if (import.meta.env.DEV) {
+      console.log('[Performance Report]', report);
+    }
+
+    // Send to analytics endpoint if provided
+    if (analyticsEndpoint) {
+      fetch(analyticsEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(report),
+        keepalive: true,
+      }).catch((error) => {
+        console.error('Failed to send performance report:', error);
+      });
+    }
+
+    // Check for performance issues
+    const { metrics } = report;
+    const issues = [];
+
+    if (metrics.LCP && metrics.LCP > 2500) {
+      issues.push(`Slow LCP: ${metrics.LCP.toFixed(0)}ms (target: <2500ms)`);
+    }
+
+    if (metrics.FID && metrics.FID > 100) {
+      issues.push(`High FID: ${metrics.FID.toFixed(0)}ms (target: <100ms)`);
+    }
+
+    if (metrics.CLS && metrics.CLS > 0.1) {
+      issues.push(`High CLS: ${metrics.CLS.toFixed(3)} (target: <0.1)`);
+    }
+
+    if (issues.length > 0 && import.meta.env.DEV) {
+      console.warn('[Performance Issues Detected]', issues);
+    }
+  });
+
+  return monitor;
+}
+
+export default PerformanceMonitor;

@@ -1,18 +1,22 @@
 # Multi-stage Dockerfile for Parscade Frontend
-# Optimized for build reliability and caching
+# Optimized for build reliability and caching with pnpm
 
 # Build stage
 FROM node:20-alpine as builder
 
 WORKDIR /app
 
-# Copy package files
-COPY package.json package-lock.json ./
+# Enable pnpm
+RUN corepack enable && corepack prepare pnpm@9.15.4 --activate
+
+# Copy package manifests first for better caching
+COPY package.json pnpm-lock.yaml ./
+
+# Install dependencies
+RUN pnpm install --frozen-lockfile
 
 # Copy source code
 COPY . .
-
-RUN npm ci
 
 # Declare build arguments for Vite environment variables
 ARG VITE_SUPABASE_URL
@@ -35,8 +39,7 @@ ENV VITE_ENABLE_AI_FEATURES=${VITE_ENABLE_AI_FEATURES}
 ENV NODE_ENV=${NODE_ENV}
 
 
-RUN npm run build
-
+RUN pnpm run build
 
 # Production stage
 FROM nginx:alpine
@@ -46,11 +49,6 @@ COPY nginx.conf /etc/nginx/nginx.conf
 
 # Copy built app from builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html
-
-
-# Add healthcheck
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD /healthcheck.sh
 
 # Switch to non-root user
 USER nginx
