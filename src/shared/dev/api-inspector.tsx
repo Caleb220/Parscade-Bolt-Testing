@@ -33,7 +33,7 @@ const ApiInspector: React.FC<ApiInspectorProps> = ({ isOpen, onToggle }) => {
 
   // Intercept fetch calls in development
   useEffect(() => {
-    if (process.env.NODE_ENV !== 'development') return;
+    if (import.meta.env.NODE_ENV !== 'development') return;
 
     const originalFetch = window.fetch;
 
@@ -107,7 +107,7 @@ const ApiInspector: React.FC<ApiInspectorProps> = ({ isOpen, onToggle }) => {
 
   const validationSummary = getValidationSummary();
 
-  if (process.env.NODE_ENV !== 'development') {
+  if (import.meta.env.NODE_ENV !== 'development') {
     return null;
   }
 

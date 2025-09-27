@@ -72,7 +72,7 @@ class EnterpriseErrorBoundary extends Component<Props, State> {
     });
 
     // Report to error tracking service in production
-    if (process.env.NODE_ENV === 'production') {
+    if (import.meta.env.NODE_ENV === 'production') {
       // Integration point for Sentry, Bugsnag, etc.
       console.error('Production error:', { error, errorInfo, context });
     }
@@ -197,7 +197,7 @@ class EnterpriseErrorBoundary extends Component<Props, State> {
                 fix.
               </p>
 
-              {process.env.NODE_ENV === 'development' && error && (
+              {import.meta.env.NODE_ENV === 'development' && error && (
                 <details className="text-left bg-gray-50 rounded-lg p-4 mb-6 text-xs">
                   <summary className="cursor-pointer font-medium text-gray-700 mb-2">
                     Technical Details

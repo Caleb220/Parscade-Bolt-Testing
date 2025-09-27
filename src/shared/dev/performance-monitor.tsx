@@ -230,7 +230,7 @@ const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({ isOpen, onToggl
   }, []);
 
   useEffect(() => {
-    if (process.env.NODE_ENV !== 'development') return;
+    if (import.meta.env.NODE_ENV !== 'development') return;
 
     measureWebVitals();
     analyzeBundleSize();
@@ -274,7 +274,7 @@ const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({ isOpen, onToggl
     }
   };
 
-  if (process.env.NODE_ENV !== 'development') {
+  if (import.meta.env.NODE_ENV !== 'development') {
     return null;
   }
 

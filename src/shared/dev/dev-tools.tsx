@@ -13,7 +13,7 @@ const DevTools: React.FC = () => {
   const [apiInspectorOpen, setApiInspectorOpen] = useState(false);
   const [performanceMonitorOpen, setPerformanceMonitorOpen] = useState(false);
 
-  if (process.env.NODE_ENV !== 'development') {
+  if (import.meta.env.NODE_ENV !== 'development') {
     return null;
   }
 

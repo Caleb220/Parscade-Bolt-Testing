@@ -30,7 +30,7 @@ export class ApiValidator {
   private readonly isDevelopment: boolean;
 
   constructor() {
-    this.isDevelopment = process.env.NODE_ENV === 'development';
+    this.isDevelopment = import.meta.env.NODE_ENV === 'development';
   }
 
   /**
