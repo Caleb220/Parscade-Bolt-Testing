@@ -18,11 +18,6 @@ RUN pnpm install --frozen-lockfile
 # Copy source code
 COPY . .
 
-RUN pnpm run build
-
-# Production stage
-FROM nginx:alpine
-
 ARG VITE_SUPABASE_ANON_KEY
 ARG VITE_SUPABASE_URL
 ARG VITE_API_BASE_URL
@@ -46,6 +41,11 @@ ENV VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY} \
     VITE_ENABLE_AI_FEATURES=${VITE_ENABLE_AI_FEATURES} \
     NODE_ENV=${NODE_ENV} \
     ENABLE_BILLING=${ENABLE_BILLING}
+
+RUN pnpm run build
+
+# Production stage
+FROM nginx:alpine
 
 # Copy custom nginx config
 COPY nginx.conf /etc/nginx/nginx.conf
