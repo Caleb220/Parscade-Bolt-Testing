@@ -29,9 +29,6 @@ COPY nginx.conf /etc/nginx/nginx.conf
 # Copy built app from builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Switch to non-root user
-USER nginx
-
 # Expose port 80
 EXPOSE 80
 
